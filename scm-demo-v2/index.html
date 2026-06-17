@@ -472,7 +472,20 @@
           <!-- Email Field -->
           <div class="form-group">
             <label for="user-email">Work/Personal Email</label>
-            <input type="email" id="user-email" required placeholder="e.g., amit@example.com" class="form-control">
+            <div style="display: flex; gap: 8px; align-items: stretch;">
+              <input type="email" id="user-email" required placeholder="e.g., amit@example.com" class="form-control" style="flex: 1; min-width: 0;">
+              <button type="button" id="send-otp-btn" class="btn-primary-sm" style="white-space: nowrap; padding: 0 16px; border-radius: 6px; font-size: 12px; height: auto;">Send OTP</button>
+            </div>
+            <span id="email-otp-status" style="font-size: 11px; margin-top: 4px; display: block; font-weight: 500;"></span>
+          </div>
+
+          <!-- OTP Verification Field (Initially Hidden) -->
+          <div class="form-group" id="otp-input-group" style="display: none; margin-top: 10px;">
+            <label for="user-otp">Enter 6-Digit Verification Code</label>
+            <div style="display: flex; gap: 8px; align-items: stretch;">
+              <input type="text" id="user-otp" placeholder="Enter OTP" maxlength="6" pattern="[0-9]{6}" class="form-control" style="flex: 1; min-width: 0; text-align: center; font-weight: bold; letter-spacing: 2px;">
+              <button type="button" id="verify-otp-btn" class="btn-primary-sm" style="white-space: nowrap; padding: 0 16px; border-radius: 6px; font-size: 12px; background: #21c45d; border-color: #21c45d; height: auto;">Verify Code</button>
+            </div>
           </div>
 
           <!-- Phone Number -->
@@ -497,8 +510,8 @@
           </div>
 
           <!-- Submit Button -->
-          <button type="submit" class="btn-primary-full margin-top-20" id="submit-booking-btn">
-            Confirm My Demo Seat — Free
+          <button type="submit" class="btn-primary-full margin-top-20" id="submit-booking-btn" disabled style="opacity: 0.5; cursor: not-allowed;">
+            Confirm My Demo Seat (Verify Email First)
           </button>
           
           <p class="form-secure-note">

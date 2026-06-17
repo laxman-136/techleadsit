@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initSeatCounter();
   calculateSalaryPotential(); // Initial calculation
   injectTrackingFieldsToAllForms();
+  initOtpVerification();
 });
 
 // 1. DYNAMIC DATES CALCULATION (Thursday & Saturday schedule)
@@ -315,7 +316,30 @@ function closeBookingModal() {
     setTimeout(() => {
       document.getElementById("modal-form-state").classList.remove("hidden");
       document.getElementById("modal-success-state").classList.add("hidden");
-      document.getElementById("booking-form").reset();
+      
+      const form = document.getElementById("booking-form");
+      if (form) form.reset();
+
+      const emailInput = document.getElementById("user-email");
+      const sendOtpBtn = document.getElementById("send-otp-btn");
+      const otpStatus = document.getElementById("email-otp-status");
+      const otpInputGroup = document.getElementById("otp-input-group");
+      const submitBtn = document.getElementById("submit-booking-btn");
+      
+      if (emailInput) emailInput.readOnly = false;
+      if (sendOtpBtn) {
+        sendOtpBtn.style.display = "block";
+        sendOtpBtn.textContent = "Send OTP";
+        sendOtpBtn.disabled = false;
+      }
+      if (otpStatus) otpStatus.textContent = "";
+      if (otpInputGroup) otpInputGroup.style.display = "none";
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = "0.5";
+        submitBtn.style.cursor = "not-allowed";
+        submitBtn.textContent = "Confirm My Demo Seat (Verify Email First)";
+      }
     }, 400);
   }
 }
@@ -425,6 +449,119 @@ function injectTrackingFieldsToAllForms() {
       }
       input.value = value;
     }
+  });
+}
+
+// 6.7 EMAIL OTP VERIFICATION ENGINE
+function initOtpVerification() {
+  const emailInput = document.getElementById("user-email");
+  const sendOtpBtn = document.getElementById("send-otp-btn");
+  const otpStatus = document.getElementById("email-otp-status");
+  const otpInputGroup = document.getElementById("otp-input-group");
+  const otpInput = document.getElementById("user-otp");
+  const verifyOtpBtn = document.getElementById("verify-otp-btn");
+  const submitBtn = document.getElementById("submit-booking-btn");
+
+  if (!sendOtpBtn || !verifyOtpBtn) return;
+
+  sendOtpBtn.addEventListener("click", () => {
+    const email = emailInput.value.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRegex.test(email)) {
+      alert("Please enter a valid email address first.");
+      return;
+    }
+
+    sendOtpBtn.textContent = "Sending...";
+    sendOtpBtn.disabled = true;
+    otpStatus.textContent = "Sending verification code...";
+    otpStatus.style.color = "#a1a1aa"; // Grayish
+
+    fetch('/wp-json/techleadsit/v1/send-otp', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email })
+    })
+    .then(response => {
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.indexOf("application/json") !== -1) {
+        return response.json().then(data => ({ status: response.status, body: data }));
+      } else {
+        return { status: response.status, body: { success: false, message: `Server error (${response.status})` } };
+      }
+    })
+    .then(res => {
+      if (res.status === 200 && res.body.success) {
+        otpStatus.textContent = "OTP sent! Please check your inbox (and spam folder).";
+        otpStatus.style.color = "#21c45d"; // Green
+        otpInputGroup.style.display = "block"; // Show OTP input field
+        sendOtpBtn.textContent = "Resend OTP";
+        sendOtpBtn.disabled = false;
+      } else {
+        throw new Error(res.body.message || "Failed to send OTP.");
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      otpStatus.textContent = err.message || "Error sending code. Try again.";
+      otpStatus.style.color = "#ef4444"; // Red
+      sendOtpBtn.textContent = "Send OTP";
+      sendOtpBtn.disabled = false;
+    });
+  });
+
+  verifyOtpBtn.addEventListener("click", () => {
+    const email = emailInput.value.trim();
+    const otp = otpInput.value.trim();
+
+    if (!otp || otp.length !== 6 || isNaN(otp)) {
+      alert("Please enter a valid 6-digit OTP code.");
+      return;
+    }
+
+    verifyOtpBtn.textContent = "Verifying...";
+    verifyOtpBtn.disabled = true;
+
+    fetch('/wp-json/techleadsit/v1/verify-otp', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, otp })
+    })
+    .then(response => {
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.indexOf("application/json") !== -1) {
+        return response.json().then(data => ({ status: response.status, body: data }));
+      } else {
+        return { status: response.status, body: { success: false, message: `Server error (${response.status})` } };
+      }
+    })
+    .then(res => {
+      if (res.status === 200 && res.body.success) {
+        otpStatus.textContent = "Email verified successfully!";
+        otpStatus.style.color = "#21c45d"; // Green
+        otpInputGroup.style.display = "none"; // Hide OTP input once verified
+        sendOtpBtn.style.display = "none"; // Hide send OTP button once verified
+        emailInput.readOnly = true; // Lock email field once verified
+        
+        // Enable submit button
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = "1";
+        submitBtn.style.cursor = "pointer";
+        submitBtn.textContent = "Confirm My Demo Seat — Free";
+      } else {
+        throw new Error(res.body.message || "Invalid OTP code.");
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      alert(err.message || "Verification failed. Please try again.");
+      verifyOtpBtn.textContent = "Verify Code";
+      verifyOtpBtn.disabled = false;
+    });
   });
 }
 

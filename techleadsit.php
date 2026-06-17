@@ -57,6 +57,16 @@ add_action('rest_api_init', function () {
         'callback' => 'techleadsit_handle_crm_lead',
         'permission_callback' => '__return_true'
     ));
+    register_rest_route('techleadsit/v1', '/send-otp', array(
+        'methods' => 'POST',
+        'callback' => 'techleadsit_handle_send_otp',
+        'permission_callback' => '__return_true'
+    ));
+    register_rest_route('techleadsit/v1', '/verify-otp', array(
+        'methods' => 'POST',
+        'callback' => 'techleadsit_handle_verify_otp',
+        'permission_callback' => '__return_true'
+    ));
 });
 
 function techleadsit_handle_crm_lead(WP_REST_Request $request) {
@@ -69,6 +79,14 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
     $role = sanitize_text_field($params['role'] ?? '');
     $salary = sanitize_text_field($params['salary'] ?? '');
     $experience = sanitize_text_field($params['experience'] ?? '');
+
+    // Verify OTP first if email is provided
+    if (!empty($email)) {
+        $is_verified = get_transient('techleads_verified_' . md5($email));
+        if ($is_verified === false || $is_verified !== '1') {
+            return new WP_REST_Response(array('success' => false, 'message' => 'Please verify your email address first using OTP.'), 400);
+        }
+    }
 
     // Capture the 16 tracking fields
     $fbp = sanitize_text_field($params['fbp'] ?? '');
@@ -183,5 +201,58 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
         return new WP_REST_Response(array('success' => false, 'message' => 'CRM rejected request: ' . $body), $response_code);
     }
 
+    // Success! Consume the verification transient so it cannot be reused for multiple submissions
+    if (!empty($email)) {
+        delete_transient('techleads_verified_' . md5($email));
+    }
+
     return new WP_REST_Response(array('success' => true, 'message' => 'Lead successfully saved and routed.'), 200);
 }
+
+function techleadsit_handle_send_otp(WP_REST_Request $request) {
+    $params = $request->get_json_params();
+    $email = sanitize_email($params['email'] ?? '');
+
+    if (empty($email) || !is_email($email)) {
+        return new WP_REST_Response(array('success' => false, 'message' => 'Please provide a valid email address.'), 400);
+    }
+
+    $otp = strval(rand(100000, 999999));
+    set_transient('techleads_otp_' . md5($email), $otp, 300); // 5 min expiry
+
+    $subject = "Your Verification Code - TechLeadsIT";
+    $message = "Hello,\n\nYour 6-digit verification code is: " . $otp . "\n\nThis code will expire in 5 minutes.\n\nBest regards,\nTechLeadsIT";
+    $headers = array('Content-Type: text/plain; charset=UTF-8');
+    
+    $sent = wp_mail($email, $subject, $message, $headers);
+
+    if (!$sent) {
+        return new WP_REST_Response(array('success' => false, 'message' => 'Failed to send verification email. Please check your email host config.'), 500);
+    }
+
+    return new WP_REST_Response(array('success' => true, 'message' => 'Verification code sent to your email.'), 200);
+}
+
+function techleadsit_handle_verify_otp(WP_REST_Request $request) {
+    $params = $request->get_json_params();
+    $email = sanitize_email($params['email'] ?? '');
+    $otp = sanitize_text_field($params['otp'] ?? '');
+
+    if (empty($email) || empty($otp)) {
+        return new WP_REST_Response(array('success' => false, 'message' => 'Email and code are required.'), 400);
+    }
+
+    $stored_otp = get_transient('techleads_otp_' . md5($email));
+
+    if ($stored_otp === false || $stored_otp !== $otp) {
+        return new WP_REST_Response(array('success' => false, 'message' => 'Invalid or expired verification code.'), 400);
+    }
+
+    // Mark as verified for 10 minutes
+    set_transient('techleads_verified_' . md5($email), '1', 600);
+    // Delete the OTP transient so it cannot be reused
+    delete_transient('techleads_otp_' . md5($email));
+
+    return new WP_REST_Response(array('success' => true, 'message' => 'Email verified successfully.'), 200);
+}
+
