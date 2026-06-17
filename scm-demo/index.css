@@ -209,7 +209,7 @@ section {
 /* Section Tag Pill */
 .section-tag {
   display: inline-flex;
-  align-self: center;
+  align-self: flex-start;
   font-family: 'Inter', sans-serif;
   font-size: 11px;
   font-weight: 700;
@@ -220,6 +220,10 @@ section {
   color: #ffffff;
   border-radius: 4px;
   margin-bottom: 4px;
+}
+
+.text-center .section-tag {
+  align-self: center;
 }
 
 /* Header Styling with Blur */
