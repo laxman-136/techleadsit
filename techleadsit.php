@@ -126,7 +126,15 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
             'utm_term' => $utm_term,
             'utm_content' => $utm_content,
             'landing_page' => $landing_page,
-            'referrer' => $referrer
+            'referrer' => $referrer,
+            // Custom fields without underscores (matching your TeleCRM account fields)
+            'utmsource' => $utm_source,
+            'utmmedium' => $utm_medium,
+            'utmcampaign' => $utm_campaign,
+            'utmadgroup' => $utm_adgroup,
+            'utmterm' => $utm_term,
+            'utmcontent' => $utm_content,
+            'landingpage' => $landing_page
         ),
         'actions' => array(
             array(
