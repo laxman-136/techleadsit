@@ -356,7 +356,7 @@ function initTestimonialCarousel() {
   startAutoPlay();
 }
 
-// 6. FORM SUBMIT HANDLER & SUCCESS STATE
+// 6. FORM SUBMIT HANDLER & SUCCESS STATE (Hooked to WordPress REST API)
 function initFormSubmit() {
   const form = document.getElementById("lead-capture-form");
   if (!form) return;
@@ -381,12 +381,52 @@ function initFormSubmit() {
       alert("Please enter a valid 10-digit WhatsApp mobile number.");
       return;
     }
-    
-    console.log("Form Submitted Successfully:", {
-      name, phone, role, salary, experience, utmSource, utmCampaign
+
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn.textContent;
+    submitBtn.textContent = "Reserving Seat...";
+    submitBtn.disabled = true;
+
+    // Send payload to the custom WordPress secure endpoint
+    fetch('/wp-json/techleadsit/v1/submit-lead', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        name,
+        phone,
+        role,
+        salary,
+        experience,
+        utm_source: utmSource,
+        utm_campaign: utmCampaign
+      })
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Server returned error status');
+      }
+      return response.json();
+    })
+    .then(data => {
+      if (data.success) {
+        renderSuccessCard(name, phone);
+      } else {
+        alert("Registration failed: " + (data.message || "Please check your details."));
+        submitBtn.textContent = originalBtnText;
+        submitBtn.disabled = false;
+      }
+    })
+    .catch(error => {
+      console.error("Error submitting lead:", error);
+      alert("Unable to connect to the server. Please check your internet connection and try again.");
+      submitBtn.textContent = originalBtnText;
+      submitBtn.disabled = false;
     });
-    
-    // Transition the Form wrapper container to Success State Card
+  });
+
+  function renderSuccessCard(name, phone) {
     const formWrapper = document.querySelector(".form-wrapper");
     if (formWrapper) {
       formWrapper.innerHTML = `
@@ -427,5 +467,5 @@ function initFormSubmit() {
       // Auto smooth scroll to top of success card
       formWrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
-  });
+  }
 }
