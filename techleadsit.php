@@ -69,8 +69,24 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
     $role = sanitize_text_field($params['role'] ?? '');
     $salary = sanitize_text_field($params['salary'] ?? '');
     $experience = sanitize_text_field($params['experience'] ?? '');
+
+    // Capture the 16 tracking fields
+    $fbp = sanitize_text_field($params['fbp'] ?? '');
+    $fbc = sanitize_text_field($params['fbc'] ?? '');
+    $gclid = sanitize_text_field($params['gclid'] ?? '');
+    $gbraid = sanitize_text_field($params['gbraid'] ?? '');
+    $wbraid = sanitize_text_field($params['wbraid'] ?? '');
+    $fbclid = sanitize_text_field($params['fbclid'] ?? '');
+    $ga_client_id = sanitize_text_field($params['ga_client_id'] ?? '');
+    $session_id = sanitize_text_field($params['session_id'] ?? '');
     $utm_source = sanitize_text_field($params['utm_source'] ?? 'Direct');
+    $utm_medium = sanitize_text_field($params['utm_medium'] ?? '');
     $utm_campaign = sanitize_text_field($params['utm_campaign'] ?? '');
+    $utm_adgroup = sanitize_text_field($params['utm_adgroup'] ?? '');
+    $utm_term = sanitize_text_field($params['utm_term'] ?? '');
+    $utm_content = sanitize_text_field($params['utm_content'] ?? '');
+    $landing_page = esc_url_raw($params['landing_page'] ?? '');
+    $referrer = sanitize_text_field($params['referrer'] ?? '');
 
     if (empty($name) || !preg_match('/^[0-9]{10}$/', $phone)) {
         return new WP_REST_Response(array('success' => false, 'message' => 'Invalid validation requirements.'), 400);
@@ -93,8 +109,22 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
             'role' => $role,
             'salary' => $salary,
             'experience' => $experience,
-            'source' => $utm_source,
-            'campaign' => $utm_campaign
+            'fbp' => $fbp,
+            'fbc' => $fbc,
+            'gclid' => $gclid,
+            'gbraid' => $gbraid,
+            'wbraid' => $wbraid,
+            'fbclid' => $fbclid,
+            'ga_client_id' => $ga_client_id,
+            'session_id' => $session_id,
+            'utm_source' => $utm_source,
+            'utm_medium' => $utm_medium,
+            'utm_campaign' => $utm_campaign,
+            'utm_adgroup' => $utm_adgroup,
+            'utm_term' => $utm_term,
+            'utm_content' => $utm_content,
+            'landing_page' => $landing_page,
+            'referrer' => $referrer
         )
     );
 

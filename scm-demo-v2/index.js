@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initCountdownTimer();
   initSeatCounter();
   calculateSalaryPotential(); // Initial calculation
+  injectTrackingFieldsToAllForms();
 });
 
 // 1. DYNAMIC DATES CALCULATION (Thursday & Saturday schedule)
@@ -301,6 +302,7 @@ function openBookingModal() {
   if (modal) {
     modal.showModal();
     document.body.style.overflow = "hidden"; // Prevent background scroll
+    injectTrackingFieldsToAllForms();
   }
 }
 
@@ -333,6 +335,99 @@ if (modal) {
   });
 }
 
+// 6.5 SECURE MARKETING & SESSION TRACKING CAPTURE ENGINE
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+  return '';
+}
+
+function getGaClientId() {
+  const gaCookie = getCookie('_ga');
+  if (gaCookie) {
+    const parts = gaCookie.split('.');
+    if (parts.length >= 4) {
+      return parts.slice(-2).join('.');
+    }
+    return gaCookie;
+  }
+  return '';
+}
+
+function getSessionId() {
+  let sessId = sessionStorage.getItem('techleads_session_id');
+  if (!sessId) {
+    sessId = 's' + Date.now() + '$r' + Math.floor(Math.random() * 1000000);
+    sessionStorage.setItem('techleads_session_id', sessId);
+  }
+  return sessId;
+}
+
+function getTrackingData() {
+  const data = {};
+  const urlParams = new URLSearchParams(window.location.search);
+  
+  // 1. URL params with session persistence
+  const queryParams = [
+    'utm_source', 'utm_medium', 'utm_campaign', 'utm_adgroup', 'utm_term', 'utm_content',
+    'gclid', 'gbraid', 'wbraid', 'fbclid'
+  ];
+  
+  queryParams.forEach(param => {
+    let val = urlParams.get(param);
+    if (val) {
+      sessionStorage.setItem('techleads_' + param, val);
+    } else {
+      val = sessionStorage.getItem('techleads_' + param) || '';
+    }
+    data[param] = val;
+  });
+  
+  // 2. Cookie params
+  data['fbp'] = getCookie('_fbp') || '';
+  
+  // fbc can be cookie-based or fallback to fbclid URL parameter
+  let fbc = getCookie('_fbc') || '';
+  if (!fbc && data['fbclid']) {
+    fbc = `fb.1.${Date.now()}.${data['fbclid']}`;
+  }
+  data['fbc'] = fbc;
+  
+  data['ga_client_id'] = getGaClientId();
+  
+  // 3. Session / Metadata
+  data['session_id'] = getSessionId();
+  data['landing_page'] = window.location.href;
+  
+  let ref = sessionStorage.getItem('techleads_referrer');
+  if (!ref) {
+    ref = document.referrer || 'direct';
+    sessionStorage.setItem('techleads_referrer', ref);
+  }
+  data['referrer'] = ref;
+  
+  return data;
+}
+
+function injectTrackingFieldsToAllForms() {
+  const trackingData = getTrackingData();
+  const forms = document.querySelectorAll('form');
+  
+  forms.forEach(form => {
+    for (const [key, value] of Object.entries(trackingData)) {
+      let input = form.querySelector(`input[name="${key}"]`);
+      if (!input) {
+        input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        form.appendChild(input);
+      }
+      input.value = value;
+    }
+  });
+}
+
 // 7. FORM SUBMISSION (Securely integrated with WP REST API and TeleCRM)
 function handleFormSubmit(event) {
   event.preventDefault();
@@ -361,22 +456,27 @@ function handleFormSubmit(event) {
     submitBtn.disabled = true;
   }
 
+  // Compile payload dynamically from all form fields (including dynamically injected ones)
+  const formData = new FormData(event.target);
+  const payload = {
+    name: name,
+    email: email,
+    phone: phone,
+    role: domain ? `SCM Domain: ${domain}` : '',
+    experience: exp ? `${exp} Years` : '',
+    salary: currentSalary ? `${currentSalary} LPA` : ''
+  };
+  formData.forEach((value, key) => {
+    payload[key] = value;
+  });
+
   // Send AJAX post to secure WordPress endpoint
   fetch('/wp-json/techleadsit/v1/submit-lead', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({
-      name: name,
-      email: email,
-      phone: phone,
-      role: domain ? `SCM Domain: ${domain}` : '',
-      experience: exp ? `${exp} Years` : '',
-      salary: currentSalary ? `${currentSalary} LPA` : '',
-      utm_source: 'Direct-V2',
-      utm_campaign: 'LandingPage-V2'
-    })
+    body: JSON.stringify(payload)
   })
   .then(response => {
     if (!response.ok) {

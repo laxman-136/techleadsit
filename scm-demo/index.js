@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initDynamicDates();
   initCountdownTimer();
   initFaqAccordion();
-  initUtmCapture();
+  injectTrackingFieldsToAllForms();
   initFormSubmit();
   initTestimonialCarousel();
 });
@@ -149,20 +149,95 @@ function initCountdownTimer() {
   setInterval(updateClock, 1000);
 }
 
-// 3. UTM PARAMETER EXTRACTION
-function initUtmCapture() {
+// 3. SECURE MARKETING & SESSION TRACKING CAPTURE ENGINE
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+  return '';
+}
+
+function getGaClientId() {
+  const gaCookie = getCookie('_ga');
+  if (gaCookie) {
+    const parts = gaCookie.split('.');
+    if (parts.length >= 4) {
+      return parts.slice(-2).join('.');
+    }
+    return gaCookie;
+  }
+  return '';
+}
+
+function getSessionId() {
+  let sessId = sessionStorage.getItem('techleads_session_id');
+  if (!sessId) {
+    sessId = 's' + Date.now() + '$r' + Math.floor(Math.random() * 1000000);
+    sessionStorage.setItem('techleads_session_id', sessId);
+  }
+  return sessId;
+}
+
+function getTrackingData() {
+  const data = {};
   const urlParams = new URLSearchParams(window.location.search);
-  const utms = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
   
-  utms.forEach(utm => {
-    const value = urlParams.get(utm);
-    if (value) {
-      // Find corresponding hidden input and set value
-      const hiddenInput = document.getElementById(utm);
-      if (hiddenInput) {
-        hiddenInput.value = decodeURIComponent(value);
-        console.log(`UTM Captured: ${utm} = ${hiddenInput.value}`);
+  // 1. URL params with session persistence
+  const queryParams = [
+    'utm_source', 'utm_medium', 'utm_campaign', 'utm_adgroup', 'utm_term', 'utm_content',
+    'gclid', 'gbraid', 'wbraid', 'fbclid'
+  ];
+  
+  queryParams.forEach(param => {
+    let val = urlParams.get(param);
+    if (val) {
+      sessionStorage.setItem('techleads_' + param, val);
+    } else {
+      val = sessionStorage.getItem('techleads_' + param) || '';
+    }
+    data[param] = val;
+  });
+  
+  // 2. Cookie params
+  data['fbp'] = getCookie('_fbp') || '';
+  
+  // fbc can be cookie-based or fallback to fbclid URL parameter
+  let fbc = getCookie('_fbc') || '';
+  if (!fbc && data['fbclid']) {
+    fbc = `fb.1.${Date.now()}.${data['fbclid']}`;
+  }
+  data['fbc'] = fbc;
+  
+  data['ga_client_id'] = getGaClientId();
+  
+  // 3. Session / Metadata
+  data['session_id'] = getSessionId();
+  data['landing_page'] = window.location.href;
+  
+  let ref = sessionStorage.getItem('techleads_referrer');
+  if (!ref) {
+    ref = document.referrer || 'direct';
+    sessionStorage.setItem('techleads_referrer', ref);
+  }
+  data['referrer'] = ref;
+  
+  return data;
+}
+
+function injectTrackingFieldsToAllForms() {
+  const trackingData = getTrackingData();
+  const forms = document.querySelectorAll('form');
+  
+  forms.forEach(form => {
+    for (const [key, value] of Object.entries(trackingData)) {
+      let input = form.querySelector(`input[name="${key}"]`);
+      if (!input) {
+        input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        form.appendChild(input);
       }
+      input.value = value;
     }
   });
 }
@@ -364,16 +439,15 @@ function initFormSubmit() {
   form.addEventListener("submit", (e) => {
     e.preventDefault();
     
+    // Ensure all tracking fields are injected and populated before submission
+    injectTrackingFieldsToAllForms();
+
     // Read input fields
     const name = document.getElementById("user-name").value.trim();
     const phone = document.getElementById("user-phone").value.trim();
     const role = document.getElementById("user-role").value.trim();
     const salary = document.getElementById("user-salary").value;
     const experience = document.getElementById("user-experience").value;
-    
-    // Read UTM fields for tracking log
-    const utmSource = document.getElementById("utm_source").value || "Direct";
-    const utmCampaign = document.getElementById("utm_campaign").value || "None";
     
     // Validate phone number (10 digit regex check)
     const phoneRegex = /^[0-9]{10}$/;
@@ -387,21 +461,26 @@ function initFormSubmit() {
     submitBtn.textContent = "Reserving Seat...";
     submitBtn.disabled = true;
 
+    // Compile the payload dynamically from all form fields (including dynamically injected ones)
+    const formData = new FormData(form);
+    const payload = {
+      name,
+      phone,
+      role,
+      salary,
+      experience
+    };
+    formData.forEach((value, key) => {
+      payload[key] = value;
+    });
+
     // Send payload to the custom WordPress secure endpoint
     fetch('/wp-json/techleadsit/v1/submit-lead', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        name,
-        phone,
-        role,
-        salary,
-        experience,
-        utm_source: utmSource,
-        utm_campaign: utmCampaign
-      })
+      body: JSON.stringify(payload)
     })
     .then(response => {
       if (!response.ok) {
