@@ -92,6 +92,10 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
         return new WP_REST_Response(array('success' => false, 'message' => 'Invalid validation requirements.'), 400);
     }
 
+    if (!empty($params['email']) && !is_email($email)) {
+        return new WP_REST_Response(array('success' => false, 'message' => 'Please enter a valid email address.'), 400);
+    }
+
     // -------------------------------------------------------------
     // TELECRM API INTEGRATION CONFIGURATION
     // -------------------------------------------------------------

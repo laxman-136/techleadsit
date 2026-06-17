@@ -441,6 +441,13 @@ function handleFormSubmit(event) {
   const exp = document.getElementById("calc-exp") ? document.getElementById("calc-exp").value : "";
   const currentSalary = document.getElementById("calc-current-salary") ? document.getElementById("calc-current-salary").value : "";
 
+  // Validate email
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    alert("Please enter a valid email address.");
+    return;
+  }
+
   // Validate phone
   const phoneRegex = /^[0-9]{10}$/;
   if (!phoneRegex.test(phone)) {
