@@ -79,10 +79,10 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
     // -------------------------------------------------------------
     // TELECRM API INTEGRATION CONFIGURATION
     // -------------------------------------------------------------
-    // Replace 'YOUR_TELECRM_API_KEY' with your actual TeleCRM API token.
-    // Replace 'YOUR_TELECRM_PIPELINE_URL' with your TeleCRM API URL.
+    // For security on public repos, define 'TELECRM_API_KEY' in your server's wp-config.php:
+    // define('TELECRM_API_KEY', 'your-actual-api-key-here');
     $telecrm_api_url = 'https://api.telecrm.in/api/v1/leads/create'; 
-    $api_key = 'YOUR_TELECRM_API_KEY'; 
+    $api_key = defined('TELECRM_API_KEY') ? TELECRM_API_KEY : ''; 
 
     // Build the payload matching TeleCRM API specification
     $payload = array(
