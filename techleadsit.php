@@ -222,7 +222,10 @@ function techleadsit_handle_send_otp(WP_REST_Request $request) {
 
     $subject = "Your Verification Code - TechLeadsIT";
     $message = "Hello,\n\nYour 6-digit verification code is: " . $otp . "\n\nThis code will expire in 5 minutes.\n\nBest regards,\nTechLeadsIT";
-    $headers = array('Content-Type: text/plain; charset=UTF-8');
+    $headers = array(
+        'Content-Type: text/plain; charset=UTF-8',
+        'From: TechLeadsIT <support@lp.techleadsit.com>'
+    );
     
     $sent = wp_mail($email, $subject, $message, $headers);
 
