@@ -212,7 +212,7 @@ function getTrackingData() {
   
   // 3. Session / Metadata
   data['session_id'] = getSessionId();
-  data['landing_page'] = window.location.href;
+  data['landing_page'] = window.location.origin + window.location.pathname;
   
   let ref = sessionStorage.getItem('techleads_referrer');
   if (!ref) {
