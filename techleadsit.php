@@ -97,8 +97,8 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
     // -------------------------------------------------------------
     // For security on public repos, define 'TELECRM_API_KEY' in your server's wp-config.php:
     // define('TELECRM_API_KEY', 'your-actual-api-key-here');
-    $telecrm_api_url = 'https://api.telecrm.in/api/v1/leads'; 
     $api_key = defined('TELECRM_API_KEY') ? TELECRM_API_KEY : ''; 
+    $telecrm_api_url = 'https://app.telecrm.in/api/b1/enterprise/' . $api_key . '/autoupdatelead'; 
 
     // Build the payload matching TeleCRM API specification
     $payload = array(
@@ -131,8 +131,7 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
     // Call TeleCRM API securely via WordPress HTTP API
     $response = wp_remote_post($telecrm_api_url, array(
         'headers'     => array(
-            'Content-Type' => 'application/json',
-            'Authorization' => 'Bearer ' . $api_key
+            'Content-Type' => 'application/json'
         ),
         'body'        => json_encode($payload),
         'method'      => 'POST',
