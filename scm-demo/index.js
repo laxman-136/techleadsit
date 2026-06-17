@@ -484,7 +484,11 @@ function initFormSubmit() {
     })
     .then(response => {
       if (!response.ok) {
-        throw new Error('Server returned error status');
+        return response.json().then(errData => {
+          throw new Error(errData.message || 'Server returned error status');
+        }).catch(() => {
+          throw new Error('Server returned error status');
+        });
       }
       return response.json();
     })
@@ -499,7 +503,7 @@ function initFormSubmit() {
     })
     .catch(error => {
       console.error("Error submitting lead:", error);
-      alert("Unable to connect to the server. Please check your internet connection and try again.");
+      alert("Unable to register: " + error.message);
       submitBtn.textContent = originalBtnText;
       submitBtn.disabled = false;
     });

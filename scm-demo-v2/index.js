@@ -480,7 +480,11 @@ function handleFormSubmit(event) {
   })
   .then(response => {
     if (!response.ok) {
-      throw new Error('Lead submission rejected by server');
+      return response.json().then(errData => {
+        throw new Error(errData.message || 'Lead submission rejected by server');
+      }).catch(() => {
+        throw new Error('Lead submission rejected by server');
+      });
     }
     return response.json();
   })
@@ -503,7 +507,7 @@ function handleFormSubmit(event) {
   })
   .catch(error => {
     console.error("Error submitting lead:", error);
-    alert("Unable to register. Please check your network connection and try again.");
+    alert("Unable to register: " + error.message);
     if (submitBtn) {
       submitBtn.innerHTML = originalBtnText;
       submitBtn.disabled = false;

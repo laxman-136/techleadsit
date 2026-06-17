@@ -146,7 +146,8 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
 
     $response_code = wp_remote_retrieve_response_code($response);
     if ($response_code >= 400) {
-        return new WP_REST_Response(array('success' => false, 'message' => 'CRM rejected request.'), $response_code);
+        $body = wp_remote_retrieve_body($response);
+        return new WP_REST_Response(array('success' => false, 'message' => 'CRM rejected request: ' . $body), $response_code);
     }
 
     return new WP_REST_Response(array('success' => true, 'message' => 'Lead successfully saved and routed.'), 200);
