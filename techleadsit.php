@@ -19,8 +19,8 @@ function techleadsit_route_landing_pages() {
     // Define your landing pages and their corresponding HTML files here
     // Slug key => HTML filename
     $landing_pages = array(
-        'scm-demo' => 'index.html',
-        // You can add more pages here in the future! E.g. 'scm-offer' => 'offer.html'
+        'scm-demo' => 'scm-demo/index.html',
+        // You can add more pages here in the future! E.g. 'scm-offer' => 'scm-offer/index.html'
     );
 
     foreach ($landing_pages as $slug => $file) {
@@ -31,8 +31,12 @@ function techleadsit_route_landing_pages() {
             if (file_exists($html_filepath)) {
                 $html_content = file_get_contents($html_filepath);
                 
-                // Dynamically rewrite relative paths for CSS and JS to point to the plugin folder
-                $plugin_url = plugin_dir_url(__FILE__);
+                // Get folder directory relative to the plugin (e.g., scm-demo/)
+                $folder = dirname($file);
+                $folder_path = ($folder !== '.' && $folder !== '/') ? $folder . '/' : '';
+                
+                // Dynamically rewrite relative paths for CSS and JS to point to the correct subfolder
+                $plugin_url = plugin_dir_url(__FILE__) . $folder_path;
                 $html_content = str_replace('href="index.css"', 'href="' . $plugin_url . 'index.css"', $html_content);
                 $html_content = str_replace('src="index.js"', 'src="' . $plugin_url . 'index.js"', $html_content);
                 
