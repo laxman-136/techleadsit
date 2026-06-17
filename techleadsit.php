@@ -109,6 +109,8 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
             'role' => $role,
             'salary' => $salary,
             'experience' => $experience,
+            'source' => $utm_source,      // Maps to TeleCRM default source field
+            'campaign' => $utm_campaign,  // Maps to TeleCRM default campaign field
             'fbp' => $fbp,
             'fbc' => $fbc,
             'gclid' => $gclid,
@@ -125,6 +127,26 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
             'utm_content' => $utm_content,
             'landing_page' => $landing_page,
             'referrer' => $referrer
+        ),
+        'actions' => array(
+            array(
+                'type' => 'SYSTEM_NOTE',
+                'text' => "Marketing Tracking Details:\n" .
+                          "- Source: " . $utm_source . "\n" .
+                          "- Medium: " . $utm_medium . "\n" .
+                          "- Campaign: " . $utm_campaign . "\n" .
+                          "- Adgroup: " . $utm_adgroup . "\n" .
+                          "- Term: " . $utm_term . "\n" .
+                          "- Content: " . $utm_content . "\n" .
+                          "- GCLID: " . $gclid . "\n" .
+                          "- FBCLID: " . $fbclid . "\n" .
+                          "- FBC: " . $fbc . "\n" .
+                          "- FBP: " . $fbp . "\n" .
+                          "- GA Client ID: " . $ga_client_id . "\n" .
+                          "- Session ID: " . $session_id . "\n" .
+                          "- Landing Page: " . $landing_page . "\n" .
+                          "- Referrer: " . $referrer
+            )
         )
     );
 
