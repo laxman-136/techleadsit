@@ -97,7 +97,7 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
     // -------------------------------------------------------------
     // For security on public repos, define 'TELECRM_API_KEY' in your server's wp-config.php:
     // define('TELECRM_API_KEY', 'your-actual-api-key-here');
-    $telecrm_api_url = 'https://api.telecrm.in/api/v1/leads/create'; 
+    $telecrm_api_url = 'https://api.telecrm.in/api/v1/leads'; 
     $api_key = defined('TELECRM_API_KEY') ? TELECRM_API_KEY : ''; 
 
     // Build the payload matching TeleCRM API specification
