@@ -20,6 +20,7 @@ function techleadsit_route_landing_pages() {
     // Slug key => HTML filename
     $landing_pages = array(
         'scm-demo' => 'scm-demo/index.html',
+        'scm-demo-v2' => 'scm-demo-v2/index.html',
         // You can add more pages here in the future! E.g. 'scm-offer' => 'scm-offer/index.html'
     );
 
@@ -64,6 +65,7 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
     // Validate name and 10-digit phone number
     $name = sanitize_text_field($params['name'] ?? '');
     $phone = sanitize_text_field($params['phone'] ?? '');
+    $email = sanitize_email($params['email'] ?? '');
     $role = sanitize_text_field($params['role'] ?? '');
     $salary = sanitize_text_field($params['salary'] ?? '');
     $experience = sanitize_text_field($params['experience'] ?? '');
@@ -87,6 +89,7 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
         'fields' => array(
             'name' => $name,
             'phone' => '+91' . $phone,
+            'email' => $email,
             'role' => $role,
             'salary' => $salary,
             'experience' => $experience,
