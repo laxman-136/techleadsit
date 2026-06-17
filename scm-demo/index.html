@@ -589,6 +589,25 @@
             </div>
           </div>
           
+          <!-- Email Field -->
+          <div class="form-group val-group" style="margin-bottom: 20px;">
+            <label for="user-email">Work/Personal Email</label>
+            <div style="display: flex; gap: 8px; align-items: stretch;">
+              <input type="email" id="user-email" required placeholder="e.g., amit@example.com" class="form-control" style="flex: 1; min-width: 0;">
+              <button type="button" id="send-otp-btn" class="btn btn-primary" style="height: 48px; padding: 0 16px; margin: 0; box-shadow: none; font-size: 11px; white-space: nowrap; border-radius: 4px;">Send OTP</button>
+            </div>
+            <span id="email-otp-status" style="font-size: 11px; margin-top: 4px; display: block; font-weight: 500;"></span>
+          </div>
+
+          <!-- OTP Verification Field (Initially Hidden) -->
+          <div class="form-group val-group" id="otp-input-group" style="display: none; margin-bottom: 20px;">
+            <label for="user-otp">Enter 6-Digit Verification Code</label>
+            <div style="display: flex; gap: 8px; align-items: stretch;">
+              <input type="text" id="user-otp" placeholder="Enter OTP" maxlength="6" pattern="[0-9]{6}" class="form-control" style="flex: 1; min-width: 0; text-align: center; font-weight: bold; letter-spacing: 2px;">
+              <button type="button" id="verify-otp-btn" class="btn btn-primary" style="height: 48px; padding: 0 16px; margin: 0; box-shadow: none; font-size: 11px; white-space: nowrap; border-radius: 4px; background: #21c45d; border-color: #21c45d;">Verify Code</button>
+            </div>
+          </div>
+          
           <div class="form-group">
             <label for="user-role">Current Job Role</label>
             <input type="text" id="user-role" class="form-control" required placeholder="e.g. Supply Chain Analyst, Logistics Executive, Procurement Manager">
@@ -618,7 +637,7 @@
             </div>
           </div>
           
-          <button type="submit" class="btn btn-primary btn-submit-full" style="margin-top: 10px;">Confirm My Free Demo Seat →</button>
+          <button type="submit" class="btn btn-primary btn-submit-full" id="submit-booking-btn" disabled style="margin-top: 10px; opacity: 0.5; cursor: not-allowed;">Confirm My Demo Seat (Verify Email First)</button>
           
           <p class="form-footer-note">🔒 Data is encrypted. No sales spam. Zoom link sent instantly on submission.</p>
         </form>
