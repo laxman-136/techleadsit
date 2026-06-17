@@ -1329,6 +1329,9 @@ section {
   .form-row {
     grid-template-columns: 1fr;
   }
+  .header-badge {
+    display: none; /* Hide next demo badge on mobile to keep header clean and prevent overflow */
+  }
 }
 
 .form-group {
