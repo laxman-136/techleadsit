@@ -114,20 +114,35 @@ body {
   z-index: 10;
 }
 
-.logo-text {
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 1.45rem;
-  letter-spacing: -0.5px;
-  color: var(--text-primary);
+.logo-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
   user-select: none;
 }
 
-.text-gold {
+.brand-logo {
+  height: 32px;
+  width: auto;
+  display: block;
+  object-fit: contain;
+}
+
+.logo-divider {
+  font-size: 1.5rem;
+  color: rgba(255, 255, 255, 0.2);
+  font-weight: 300;
+  line-height: 1;
+}
+
+.logo-brand-name {
+  font-family: 'Instrument Serif', serif;
+  font-size: 2rem;
+  font-weight: 400;
+  font-style: italic;
   color: var(--color-primary);
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-primary) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  letter-spacing: 0.5px;
+  line-height: 1;
 }
 
 /* Progress Bar */
