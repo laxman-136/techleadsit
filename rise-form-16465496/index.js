@@ -335,6 +335,7 @@ function initConversationalForm() {
     initialInput.focus();
   }
   updateProgressBar();
+  initLiveValidation();
 
   // -------------------------------------------------------------
   // FORM SUBMISSION (CRM + GOOGLE SHEET WEBAPP)
@@ -563,6 +564,59 @@ function initConversationalForm() {
         </div>
       </div>
     `;
+  }
+
+  // 11. Add Live Input Listeners for real-time validation feedback
+  function initLiveValidation() {
+    const inputs = document.querySelectorAll(".step-card[data-step='1'] input");
+    inputs.forEach(input => {
+      // Validate on input typing (to remove error once it becomes valid)
+      input.addEventListener("input", function() {
+        validateSingleInput(this, false); // don't force show error if empty on typing
+      });
+      
+      // Validate on blur (when user moves to next field)
+      input.addEventListener("blur", function() {
+        validateSingleInput(this, true); // force show error if invalid on blur
+      });
+    });
+  }
+
+  function validateSingleInput(input, showIfInvalid) {
+    const val = input.value.trim();
+    const errorMsg = input.parentNode.querySelector(".input-error-msg");
+    if (!errorMsg) return true;
+    
+    let isValid = true;
+    
+    // Empty check
+    if (input.required && !val) {
+      isValid = false;
+    }
+    
+    // Phone pattern check
+    if (isValid && input.type === "tel") {
+      const phoneRegex = /^[0-9]{10}$/;
+      if (!phoneRegex.test(val)) {
+        isValid = false;
+      }
+    }
+    
+    // Email pattern check
+    if (isValid && input.type === "email") {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(val)) {
+        isValid = false;
+      }
+    }
+    
+    if (isValid) {
+      errorMsg.classList.remove("visible");
+    } else if (showIfInvalid) {
+      errorMsg.classList.add("visible");
+    }
+    
+    return isValid;
   }
 }
 
