@@ -21,6 +21,10 @@ function techleadsit_route_landing_pages() {
     $landing_pages = array(
         'scm-demo' => 'scm-demo/index.html',
         'scm-demo-v2' => 'scm-demo-v2/index.html',
+        'rise-v1' => 'rise-v1/index.html',
+        'rise-v2' => 'rise-v2/index.html',
+        'oracle-fusion-scm-training' => 'oracle-fusion-scm-training/index.html',
+        'rise-form-16465496' => 'rise-form-16465496/index.html',
         // You can add more pages here in the future! E.g. 'scm-offer' => 'scm-offer/index.html'
     );
 
@@ -42,6 +46,7 @@ function techleadsit_route_landing_pages() {
                 $html_content = str_replace('src="index.js"', 'src="' . $plugin_url . 'index.js"', $html_content);
                 $html_content = str_replace('src="logo-dark.png"', 'src="' . $plugin_url . 'logo-dark.png"', $html_content);
                 $html_content = str_replace('src="logo-light.png"', 'src="' . $plugin_url . 'logo-light.png"', $html_content);
+                $html_content = str_replace('src="images/', 'src="' . $plugin_url . 'images/', $html_content);
                 
                 // Output headers and HTML content
                 header('Content-Type: text/html; charset=utf-8');
@@ -82,8 +87,13 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
     $salary = sanitize_text_field($params['salary'] ?? '');
     $experience = sanitize_text_field($params['experience'] ?? '');
 
-    // Verify OTP first if email is provided
-    if (!empty($email)) {
+    // Verify OTP first if email is provided, unless bypassed for specific landing pages
+    $bypass_otp = false;
+    if (!empty($landing_page) && (strpos($landing_page, 'oracle-fusion-scm-training') !== false || strpos($landing_page, 'scm-training') !== false)) {
+        $bypass_otp = true;
+    }
+
+    if (!empty($email) && !$bypass_otp) {
         $is_verified = get_transient('techleads_verified_' . md5($email));
         if ($is_verified === false || $is_verified !== '1') {
             return new WP_REST_Response(array('success' => false, 'message' => 'Please verify your email address first using OTP.'), 400);
