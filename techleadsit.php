@@ -86,10 +86,15 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
     $role = sanitize_text_field($params['role'] ?? '');
     $salary = sanitize_text_field($params['salary'] ?? '');
     $experience = sanitize_text_field($params['experience'] ?? '');
+    $landing_page = esc_url_raw($params['landing_page'] ?? '');
 
     // Verify OTP first if email is provided, unless bypassed for specific landing pages
     $bypass_otp = false;
-    if (!empty($landing_page) && (strpos($landing_page, 'oracle-fusion-scm-training') !== false || strpos($landing_page, 'scm-training') !== false)) {
+    if (!empty($landing_page) && (
+        strpos($landing_page, 'oracle-fusion-scm-training') !== false || 
+        strpos($landing_page, 'scm-training') !== false ||
+        strpos($landing_page, 'rise-form-16465496') !== false
+    )) {
         $bypass_otp = true;
     }
 
@@ -115,7 +120,6 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
     $utm_adgroup = sanitize_text_field($params['utm_adgroup'] ?? '');
     $utm_term = sanitize_text_field($params['utm_term'] ?? '');
     $utm_content = sanitize_text_field($params['utm_content'] ?? '');
-    $landing_page = esc_url_raw($params['landing_page'] ?? '');
     $referrer = sanitize_text_field($params['referrer'] ?? '');
 
     if (empty($name) || !preg_match('/^[0-9]{10}$/', $phone)) {
