@@ -87,6 +87,7 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
     $salary = sanitize_text_field($params['salary'] ?? '');
     $experience = sanitize_text_field($params['experience'] ?? '');
     $landing_page = esc_url_raw($params['landing_page'] ?? '');
+    $location = sanitize_text_field($params['location'] ?? '');
 
     // Verify OTP first if email is provided, unless bypassed for specific landing pages
     $bypass_otp = false;
@@ -147,6 +148,7 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
             'role' => $role,
             'salary' => $salary,
             'experience' => $experience,
+            'location' => $location,
             'source' => $utm_source,      // Maps to TeleCRM default source field
             'campaign' => $utm_campaign,  // Maps to TeleCRM default campaign field
             'fbp' => $fbp,
@@ -172,12 +174,14 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
             'utmadgroup' => $utm_adgroup,
             'utmterm' => $utm_term,
             'utmcontent' => $utm_content,
-            'landingpage' => $landing_page
+            'landingpage' => $landing_page,
+            'location' => $location
         ),
         'actions' => array(
             array(
                 'type' => 'SYSTEM_NOTE',
-                'text' => "Marketing Tracking Details:\n" .
+                'text' => "Location: " . $location . "\n\n" .
+                          "Marketing Tracking Details:\n" .
                           "- Source: " . $utm_source . "\n" .
                           "- Medium: " . $utm_medium . "\n" .
                           "- Campaign: " . $utm_campaign . "\n" .

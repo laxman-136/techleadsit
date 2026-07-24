@@ -17,9 +17,11 @@ document.addEventListener("DOMContentLoaded", () => {
 function initConversationalForm() {
   const form = document.getElementById("conversational-lead-form");
   const stepCards = document.querySelectorAll(".step-card");
+  const progressBar = document.getElementById("progress-bar");
   const progressFill = document.getElementById("progress-fill");
   const progressLabel = document.getElementById("progress-label");
   const submittingState = document.querySelector(".form-submitting-state");
+  const submissionError = document.getElementById("submission-error");
   const cardContainer = document.querySelector(".form-card-container");
   
   if (!form) return;
@@ -41,13 +43,21 @@ function initConversationalForm() {
   }
 
   let currentStepId = "1";
+  let isSubmitting = false;
   const historyStack = [];
   const answers = {};
+  const branchAnswerNames = [
+    "step4a_ans", "step5a_ans",
+    "step4b_ans", "step5b_ans",
+    "step4c_ans", "step5c_ans",
+    "step4d_ans", "step5d_ans"
+  ];
 
   // Step percentage mapping for progress indicator
   const progressPercentages = {
-    "1": 20,
-    "2": 40,
+    "1": 15,
+    "1.5": 30,
+    "2": 45,
     "3": 60,
     "4a": 75, "4b": 75, "4c": 75, "4d": 75,
     "5a": 90, "5b": 90, "5c": 90, "5d": 90,
@@ -55,10 +65,49 @@ function initConversationalForm() {
     "success": 100
   };
 
+  stepCards.forEach((stepCard, index) => {
+    const heading = stepCard.querySelector(".step-question");
+    const optionGroup = stepCard.querySelector(".options-grid");
+    if (!heading || !optionGroup) return;
+
+    if (!heading.id) heading.id = `step-question-${index + 1}`;
+    optionGroup.setAttribute("aria-labelledby", heading.id);
+  });
+
   // 1. Get next step ID based on branching logic
+  function getActiveBranchAnswerNames(role) {
+    const branchMap = {
+      "Fresher / Just completed training": ["step4a_ans", "step5a_ans"],
+      "Working professional looking to switch": ["step4b_ans", "step5b_ans"],
+      "EBS consultant moving to Fusion": ["step4c_ans", "step5c_ans"],
+      "Unemployed, actively looking": ["step4d_ans", "step5d_ans"]
+    };
+    return branchMap[role] || [];
+  }
+
+  function clearInactiveBranchAnswers(role) {
+    const activeNames = getActiveBranchAnswerNames(role);
+
+    branchAnswerNames.forEach(name => {
+      if (activeNames.includes(name)) return;
+
+      delete answers[name];
+      const input = form.querySelector(`[name="${name}"]`);
+      if (!input) return;
+
+      input.value = "";
+      const branchCard = input.closest(".step-card");
+      branchCard.querySelectorAll(".option-card").forEach(option => {
+        option.classList.remove("selected");
+        option.setAttribute("aria-pressed", "false");
+      });
+    });
+  }
+
   function getNextStepId(stepId) {
     switch (stepId) {
-      case "1": return "2";
+      case "1": return "1.5";
+      case "1.5": return "2";
       case "2": return "3";
       case "3":
         const role = answers["role"];
@@ -94,8 +143,10 @@ function initConversationalForm() {
         const val = input.value.trim();
         const errorMsg = input.parentNode.querySelector(".input-error-msg");
         if (errorMsg) errorMsg.classList.remove("visible");
+        input.setAttribute("aria-invalid", "false");
 
         if (input.required && !val) {
+          input.setAttribute("aria-invalid", "true");
           showError(errorMsg);
           if (allValid) input.focus();
           allValid = false;
@@ -105,6 +156,7 @@ function initConversationalForm() {
         if (input.type === "tel") {
           const phoneRegex = /^[0-9]{10}$/;
           if (!phoneRegex.test(val)) {
+            input.setAttribute("aria-invalid", "true");
             showError(errorMsg);
             if (allValid) input.focus();
             allValid = false;
@@ -115,6 +167,7 @@ function initConversationalForm() {
         if (input.type === "email") {
           const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
           if (!emailRegex.test(val)) {
+            input.setAttribute("aria-invalid", "true");
             showError(errorMsg);
             if (allValid) input.focus();
             allValid = false;
@@ -122,7 +175,6 @@ function initConversationalForm() {
           }
         }
 
-        // Save input value to answers mapping
         answers[input.name] = val;
       });
 
@@ -133,8 +185,10 @@ function initConversationalForm() {
       if (errorMsg) errorMsg.classList.remove("visible");
       
       const hiddenInput = card.querySelector('input[type="hidden"]');
-      if (hiddenInput && hiddenInput.required && !hiddenInput.value) {
+      if (hiddenInput && !hiddenInput.value) {
         showError(errorMsg);
+        const firstOption = card.querySelector(".option-card");
+        if (firstOption) firstOption.focus();
         return false;
       }
       return true;
@@ -191,10 +245,9 @@ function initConversationalForm() {
 
     currentStepId = targetStepId;
 
-    // Focus target input
-    const input = targetCard.querySelector("input");
-    if (input) {
-      setTimeout(() => input.focus(), 150);
+    const focusTarget = targetCard.querySelector(".conversational-input, .option-card, .btn");
+    if (focusTarget) {
+      setTimeout(() => focusTarget.focus(), 150);
     }
 
     updateProgressBar();
@@ -206,6 +259,7 @@ function initConversationalForm() {
     const percent = progressPercentages[currentStepId] || 0;
     progressFill.style.width = `${percent}%`;
     progressLabel.textContent = `${percent}% completed`;
+    progressBar.setAttribute("aria-valuenow", String(percent));
   }
 
   // 5. Inject dynamic user name in prompts
@@ -264,11 +318,13 @@ function initConversationalForm() {
       const parentStep = this.closest(".step-card");
       const stepId = parentStep.getAttribute("data-step");
       
-      // Deselect siblings
-      grid.querySelectorAll(".option-card").forEach(c => c.classList.remove("selected"));
-      
-      // Select clicked
+      grid.querySelectorAll(".option-card").forEach(c => {
+        c.classList.remove("selected");
+        c.setAttribute("aria-pressed", "false");
+      });
+
       this.classList.add("selected");
+      this.setAttribute("aria-pressed", "true");
       
       const val = this.getAttribute("data-value");
       const hiddenInput = parentStep.querySelector('input[type="hidden"]');
@@ -277,9 +333,12 @@ function initConversationalForm() {
         hiddenInput.value = val;
       }
 
-      // Save answer
+      const errorMsg = parentStep.querySelector(".input-error-msg");
+      if (errorMsg) errorMsg.classList.remove("visible");
+
       const inputName = hiddenInput.getAttribute("name");
       answers[inputName] = val;
+      if (inputName === "role") clearInactiveBranchAnswers(val);
 
       // Auto-proceed with micro-delay for visual feedback
       setTimeout(() => {
@@ -311,6 +370,7 @@ function initConversationalForm() {
     // Pressing Esc to clear active input
     if (e.key === "Escape" && activeIsInput && document.activeElement) {
       document.activeElement.value = "";
+      document.activeElement.dispatchEvent(new Event("input", { bubbles: true }));
     }
 
     // Keyboard Shortcuts (A/B/C/D) for option selections
@@ -341,18 +401,21 @@ function initConversationalForm() {
   // FORM SUBMISSION (CRM + GOOGLE SHEET WEBAPP)
   // -------------------------------------------------------------
   function submitForm() {
-    // Hide active step card
+    if (isSubmitting) return;
+
+    isSubmitting = true;
+    submissionError.hidden = true;
+    form.querySelectorAll("button").forEach(button => button.disabled = true);
+
     const activeCard = document.querySelector(`.step-card[data-step="${currentStepId}"]`);
     if (activeCard) {
       activeCard.classList.remove("active");
     }
 
-    // Show submitting spinner
     submittingState.style.display = "flex";
-    
-    // Update progress bar to final submission state
     progressFill.style.width = `98%`;
     progressLabel.textContent = `Submitting details...`;
+    progressBar.setAttribute("aria-valuenow", "98");
 
     // Compile payload
     const formElement = document.getElementById("conversational-lead-form");
@@ -387,6 +450,7 @@ function initConversationalForm() {
     payload["name"] = answers["name"] || "";
     payload["phone"] = answers["phone"] || "";
     payload["email"] = answers["email"] || "";
+    payload["location"] = answers["location"] || "";
     payload["scm_training"] = answers["scm_training"] || "";
     payload["role"] = answers["role"] || "";
     payload["experience"] = step3Ans; // Aligning CRM fields
@@ -431,32 +495,40 @@ function initConversationalForm() {
       });
     }
 
-    // Resolve promises concurrently
     Promise.all([crmSubmitPromise, sheetSubmitPromise])
-    .then(([crmData, sheetData]) => {
+    .then(() => {
       submittingState.style.display = "none";
       progressFill.style.width = `100%`;
       progressLabel.textContent = `100% completed`;
+      progressBar.setAttribute("aria-valuenow", "100");
       renderSuccessState();
     })
     .catch(err => {
       console.error("Submission failed:", err);
-      // Fallback: If CRM post is rejected but it is running locally / offline mock it
       if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:") {
         console.log("Local/Offline environment: Mocking success state.");
         setTimeout(() => {
           submittingState.style.display = "none";
           progressFill.style.width = `100%`;
           progressLabel.textContent = `100% completed`;
+          progressBar.setAttribute("aria-valuenow", "100");
           renderSuccessState();
         }, 1000);
       } else {
-        alert("There was an error saving your application. Please check your network and try again.");
+        isSubmitting = false;
         submittingState.style.display = "none";
-        // Return to commitment step
+        form.querySelectorAll("button").forEach(button => button.disabled = false);
+        submissionError.hidden = false;
         transitionToStep("6", "backward");
+        submissionError.focus();
       }
     });
+  }
+
+  function escapeHtml(value) {
+    const element = document.createElement("span");
+    element.textContent = String(value);
+    return element.innerHTML;
   }
 
   // 9. Renders final clean Success Card state
@@ -464,19 +536,22 @@ function initConversationalForm() {
     const name = answers["name"] || "Applicant";
     const phone = answers["phone"] || "";
     const role = answers["role"] || "";
-    
+
     // Save to localStorage to prevent duplicate submissions
     localStorage.setItem("rise_form_submitted", "true");
     localStorage.setItem("rise_form_name", name);
     localStorage.setItem("rise_form_phone", phone);
     localStorage.setItem("rise_form_role", role);
 
-    // Capitalize first name
     const parts = name.trim().split(" ");
     const firstName = parts[0].charAt(0).toUpperCase() + parts[0].slice(1).toLowerCase();
+    const safeFirstName = escapeHtml(firstName);
+    const safeName = escapeHtml(name);
+    const safePhone = escapeHtml(phone);
+    const safeRole = escapeHtml(role);
 
     cardContainer.innerHTML = `
-      <div class="form-success-card">
+      <div class="form-success-card" role="status" aria-live="polite">
         <div class="success-icon-box">
           <svg class="success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="20 6 9 17 4 12"></polyline>
@@ -484,27 +559,27 @@ function initConversationalForm() {
         </div>
         
         <h2 class="success-title">Application Submitted!</h2>
-        <p class="success-sub">Thank you, ${firstName} — your details have been received and saved. Our admissions team will review your profile shortly.</p>
+        <p class="success-sub">Thank you, ${safeFirstName} — your details have been received and saved. Our admissions team will review your profile shortly.</p>
         
         <div class="success-details-box">
           <div class="success-item">
             <span>Applicant Name</span>
-            <span>${name}</span>
+            <span>${safeName}</span>
           </div>
           <div class="success-item">
             <span>WhatsApp Number</span>
-            <span>+91 ${phone}</span>
+            <span>+91 ${safePhone}</span>
           </div>
           <div class="success-item">
             <span>Profile Category</span>
-            <span>${role}</span>
+            <span>${safeRole}</span>
           </div>
         </div>
         
         <div class="success-counselor-box">
           <h4>Admissions Assessment Pending</h4>
           <p>Our Admissions Officer will contact you on WhatsApp within 24 hours with the next steps for the RISE program.</p>
-          <a href="https://wa.me/918125323232?text=Hi,%20I%20have%20submitted%20my%20conversational%20eligibility%20form%20for%20RISE.%20My%20name%20is%20${encodeURIComponent(name)}." target="_blank" class="btn btn-whatsapp">
+          <a href="https://wa.me/918125323232?text=Hi,%20I%20have%20submitted%20my%20conversational%20eligibility%20form%20for%20RISE.%20My%20name%20is%20${encodeURIComponent(name)}." target="_blank" rel="noopener noreferrer" class="btn btn-whatsapp">
             <svg viewBox="0 0 24 24">
               <path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984a9.96 9.96 0 0 0 1.333 4.982L2 22l5.202-1.362a9.923 9.923 0 0 0 4.81 1.226h.003c5.505 0 9.99-4.477 9.99-9.985C22.005 6.478 17.519 2 12.012 2zm5.823 14.153c-.255.719-1.5 1.305-2.073 1.393-.503.076-1.162.138-3.355-.77-2.804-1.158-4.577-4.01-4.717-4.197-.14-.187-1.137-1.513-1.137-2.887 0-1.373.72-2.046.974-2.323.255-.277.556-.346.741-.346.186 0 .372.001.533.008.172.007.404-.066.634.488.236.568.805 1.954.875 2.093.07.14.116.301.023.486-.092.185-.14.3-.277.462-.138.163-.291.363-.415.488-.139.14-.284.293-.122.57.162.277.72 1.187 1.543 1.916.634.562 1.171.737 1.496.899.325.161.512.139.704-.077.192-.217.823-.956 1.043-1.28.22-.323.44-.27.742-.16.301.111 1.912.9 2.237 1.062.325.162.541.242.622.378.082.139.082.806-.173 1.525z"/>
             </svg>
@@ -519,56 +594,71 @@ function initConversationalForm() {
   function renderAlreadySubmittedState(name, phone, role) {
     progressFill.style.width = `100%`;
     progressLabel.textContent = `100% completed`;
-    
-    // Capitalize first name
+    progressBar.setAttribute("aria-valuenow", "100");
+
     const parts = name.trim().split(" ");
     const firstName = parts[0].charAt(0).toUpperCase() + parts[0].slice(1).toLowerCase();
+    const safeFirstName = escapeHtml(firstName);
+    const safeName = escapeHtml(name);
+    const safePhone = escapeHtml(phone);
+    const safeRole = escapeHtml(role);
 
     cardContainer.innerHTML = `
-      <div class="form-success-card">
+      <div class="form-success-card" role="status" aria-live="polite">
         <div class="success-icon-box" style="background: rgba(212, 163, 89, 0.1); color: var(--color-primary);">
           <svg class="success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
             <polyline points="22 4 12 14.01 9 11.01"></polyline>
           </svg>
         </div>
-        
+
         <h2 class="success-title">Already Submitted!</h2>
-        <p class="success-sub">Hi ${firstName}, you have already submitted your details. Our counselor will call you shortly.</p>
-        
+        <p class="success-sub">Hi ${safeFirstName}, you have already submitted your details. Our counselor will call you shortly.</p>
+
         <div class="success-details-box">
           <div class="success-item">
             <span>Name</span>
-            <span>${name}</span>
+            <span>${safeName}</span>
           </div>
           <div class="success-item">
             <span>WhatsApp Number</span>
-            <span>+91 ${phone}</span>
+            <span>+91 ${safePhone}</span>
           </div>
           ${role ? `
           <div class="success-item">
             <span>Profile Category</span>
-            <span>${role}</span>
+            <span>${safeRole}</span>
           </div>` : ''}
         </div>
-        
+
         <div class="success-counselor-box">
           <h4>Admissions Assessment Pending</h4>
           <p>We will contact you on WhatsApp shortly to align you with the RISE program requirements.</p>
-          <a href="https://wa.me/918125323232?text=Hi,%20I%20have%20already%20submitted%20my%20conversational%20eligibility%20form%20for%20RISE.%20My%20name%20is%20${encodeURIComponent(name)}." target="_blank" class="btn btn-whatsapp">
+          <a href="https://wa.me/918125323232?text=Hi,%20I%20have%20already%20submitted%20my%20conversational%20eligibility%20form%20for%20RISE.%20My%20name%20is%20${encodeURIComponent(name)}." target="_blank" rel="noopener noreferrer" class="btn btn-whatsapp">
             <svg viewBox="0 0 24 24">
               <path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984a9.96 9.96 0 0 0 1.333 4.982L2 22l5.202-1.362a9.923 9.923 0 0 0 4.81 1.226h.003c5.505 0 9.99-4.477 9.99-9.985C22.005 6.478 17.519 2 12.012 2zm5.823 14.153c-.255.719-1.5 1.305-2.073 1.393-.503.076-1.162.138-3.355-.77-2.804-1.158-4.577-4.01-4.717-4.197-.14-.187-1.137-1.513-1.137-2.887 0-1.373.72-2.046.974-2.323.255-.277.556-.346.741-.346.186 0 .372.001.533.008.172.007.404-.066.634.488.236.568.805 1.954.875 2.093.07.14.116.301.023.486-.092.185-.14.3-.277.462-.138.163-.291.363-.415.488-.139.14-.284.293-.122.57.162.277.72 1.187 1.543 1.916.634.562 1.171.737 1.496.899.325.161.512.139.704-.077.192-.217.823-.956 1.043-1.28.22-.323.44-.27.742-.16.301.111 1.912.9 2.237 1.062.325.162.541.242.622.378.082.139.082.806-.173 1.525z"/>
             </svg>
             Message Admissions on WhatsApp
           </a>
+          <button type="button" class="btn btn-outline restart-application">Start a new application</button>
+          <p class="restart-note">This only resets this browser's form status. It does not remove an existing application.</p>
         </div>
       </div>
     `;
+
+    const restartButton = cardContainer.querySelector(".restart-application");
+    if (restartButton) {
+      restartButton.addEventListener("click", () => {
+        if (!window.confirm("Start a new application on this browser? Your previous application will remain on record.")) return;
+        ["rise_form_submitted", "rise_form_name", "rise_form_phone", "rise_form_role"].forEach(key => localStorage.removeItem(key));
+        window.location.reload();
+      });
+    }
   }
 
   // 11. Add Live Input Listeners for real-time validation feedback
   function initLiveValidation() {
-    const inputs = document.querySelectorAll(".step-card[data-step='1'] input");
+    const inputs = document.querySelectorAll(".step-card[data-step='1'] input, .step-card[data-step='1.5'] input");
     inputs.forEach(input => {
       // Validate on input typing (to remove error once it becomes valid)
       input.addEventListener("input", function() {
@@ -610,12 +700,14 @@ function initConversationalForm() {
       }
     }
     
+    input.setAttribute("aria-invalid", String(!isValid));
+
     if (isValid) {
       errorMsg.classList.remove("visible");
     } else if (showIfInvalid) {
       errorMsg.classList.add("visible");
     }
-    
+
     return isValid;
   }
 }
