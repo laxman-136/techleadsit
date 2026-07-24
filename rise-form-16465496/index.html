@@ -124,9 +124,46 @@
         </div>
       </div>
 
+      <!-- STEP 2.5: SCM Year (Conditional) -->
+      <div class="step-card branch-node" data-step="2.5" data-type="select" aria-live="polite">
+        <div class="step-badge">04 → SCM Completion Year</div>
+        <h1 class="step-question">When did you complete your training, <span class="dynamic-name">there</span>?</h1>
+        <p class="step-description">Select your completion year. Click an option or press the letter key.</p>
+        
+        <div class="options-grid row-layout" role="group">
+          <button type="button" class="option-card" aria-pressed="false" data-value="2026">
+            <span class="option-key">A</span>
+            <span class="option-text">2026</span>
+          </button>
+          <button type="button" class="option-card" aria-pressed="false" data-value="2025">
+            <span class="option-key">B</span>
+            <span class="option-text">2025</span>
+          </button>
+          <button type="button" class="option-card" aria-pressed="false" data-value="2024">
+            <span class="option-key">C</span>
+            <span class="option-text">2024</span>
+          </button>
+          <button type="button" class="option-card" aria-pressed="false" data-value="2023">
+            <span class="option-key">D</span>
+            <span class="option-text">2023</span>
+          </button>
+          <button type="button" class="option-card" aria-pressed="false" data-value="Before 2023">
+            <span class="option-key">E</span>
+            <span class="option-text">Before 2023</span>
+          </button>
+        </div>
+        
+        <input type="hidden" id="user-scm-year" name="scm_year">
+        <div class="input-error-msg" role="alert" id="scm-year-error" style="text-align: center; margin-top: 15px;">Please select one option to proceed.</div>
+        
+        <div class="step-actions">
+          <button type="button" class="btn btn-outline btn-back">Back</button>
+        </div>
+      </div>
+
       <!-- STEP 3: Current Status (Segmenting point) -->
       <div class="step-card" data-step="3" data-type="select" aria-live="polite">
-        <div class="step-badge">04 → Current Status</div>
+        <div class="step-badge">05 → Current Status</div>
         <h1 class="step-question">Where are you right now, <span class="dynamic-name">there</span>?</h1>
         <p class="step-description">Select the profile that best describes you. Click an option or press the letter key.</p>
         
@@ -163,7 +200,7 @@
       
       <!-- Step 4A -->
       <div class="step-card branch-node branch-fresher" data-step="4a" data-type="select" aria-live="polite">
-        <div class="step-badge">05 → Interview Prep</div>
+        <div class="step-badge">06 → Interview Prep</div>
         <h1 class="step-question">Have you appeared for any SCM interviews yet, <span class="dynamic-name">there</span>?</h1>
         <p class="step-description">Click an option or press the corresponding key.</p>
         
@@ -188,7 +225,7 @@
 
       <!-- Step 5A -->
       <div class="step-card branch-node branch-fresher" data-step="5a" data-type="select" aria-live="polite">
-        <div class="step-badge">06 → Blockers</div>
+        <div class="step-badge">07 → Blockers</div>
         <h1 class="step-question">What's stopping you the most?</h1>
         <p class="step-description">Identify your main challenge. Click or press the letter key.</p>
         
@@ -225,7 +262,7 @@
       
       <!-- Step 4B -->
       <div class="step-card branch-node branch-professional" data-step="4b" data-type="select" aria-live="polite">
-        <div class="step-badge">05 → Experience</div>
+        <div class="step-badge">06 → Experience</div>
         <h1 class="step-question">How many years of experience do you have, <span class="dynamic-name">there</span>?</h1>
         <p class="step-description">Click an option or press the letter key.</p>
         
@@ -254,7 +291,7 @@
 
       <!-- Step 5B -->
       <div class="step-card branch-node branch-professional" data-step="5b" data-type="select" aria-live="polite">
-        <div class="step-badge">06 → Switch Drivers</div>
+        <div class="step-badge">07 → Switch Drivers</div>
         <h1 class="step-question">Why are you looking to switch?</h1>
         <p class="step-description">Identify your main motivation. Click or press the letter key.</p>
         
@@ -291,7 +328,7 @@
       
       <!-- Step 4C -->
       <div class="step-card branch-node branch-ebs" data-step="4c" data-type="select" aria-live="polite">
-        <div class="step-badge">05 → EBS Legacy</div>
+        <div class="step-badge">06 → EBS Legacy</div>
         <h1 class="step-question">How many years of EBS experience do you have, <span class="dynamic-name">there</span>?</h1>
         <p class="step-description">Click an option or press the letter key.</p>
         
@@ -320,7 +357,7 @@
 
       <!-- Step 5C -->
       <div class="step-card branch-node branch-ebs" data-step="5c" data-type="select" aria-live="polite">
-        <div class="step-badge">06 → Transition Concerns</div>
+        <div class="step-badge">07 → Transition Concerns</div>
         <h1 class="step-question">What's your biggest concern about the switch?</h1>
         <p class="step-description">Select your main blocker. Click or press the letter key.</p>
         
@@ -357,7 +394,7 @@
       
       <!-- Step 4D -->
       <div class="step-card branch-node branch-unemployed" data-step="4d" data-type="select" aria-live="polite">
-        <div class="step-badge">05 → Search Timeline</div>
+        <div class="step-badge">06 → Search Timeline</div>
         <h1 class="step-question">How long have you been searching, <span class="dynamic-name">there</span>?</h1>
         <p class="step-description">Select your search duration. Click or press the letter key.</p>
         
@@ -386,7 +423,7 @@
 
       <!-- Step 5D -->
       <div class="step-card branch-node branch-unemployed" data-step="5d" data-type="select" aria-live="polite">
-        <div class="step-badge">06 → Biggest Blocker</div>
+        <div class="step-badge">07 → Biggest Blocker</div>
         <h1 class="step-question">What has been the biggest blocker?</h1>
         <p class="step-description">Select the primary obstacle. Click or press the letter key.</p>
         
@@ -421,7 +458,7 @@
       <!-- STEP 6: Daily Commitment (All branches) -->
       <!-- ========================================== -->
       <div class="step-card" data-step="6" data-type="select" aria-live="polite">
-        <div class="step-badge">07 → Commitment</div>
+        <div class="step-badge">08 → Commitment</div>
         <h1 class="step-question"><span class="dynamic-name">there</span>, can you commit 4 hours daily for 45 days?</h1>
         <p class="step-description">RISE is built on conditioning and rigorous daily simulation practice.</p>
         

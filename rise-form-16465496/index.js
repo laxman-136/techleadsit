@@ -56,9 +56,10 @@ function initConversationalForm() {
   // Step percentage mapping for progress indicator
   const progressPercentages = {
     "1": 15,
-    "1.5": 30,
-    "2": 45,
-    "3": 60,
+    "1.5": 25,
+    "2": 35,
+    "2.5": 50,
+    "3": 65,
     "4a": 75, "4b": 75, "4c": 75, "4d": 75,
     "5a": 90, "5b": 90, "5c": 90, "5d": 90,
     "6": 95,
@@ -108,7 +109,11 @@ function initConversationalForm() {
     switch (stepId) {
       case "1": return "1.5";
       case "1.5": return "2";
-      case "2": return "3";
+      case "2":
+        const scmTraining = answers["scm_training"];
+        if (scmTraining === "Yes, completed") return "2.5";
+        return "3";
+      case "2.5": return "3";
       case "3":
         const role = answers["role"];
         if (role === "Fresher / Just completed training") return "4a";
@@ -339,6 +344,18 @@ function initConversationalForm() {
       const inputName = hiddenInput.getAttribute("name");
       answers[inputName] = val;
       if (inputName === "role") clearInactiveBranchAnswers(val);
+      if (inputName === "scm_training" && val !== "Yes, completed") {
+        delete answers["scm_year"];
+        const yearCard = document.querySelector(`.step-card[data-step="2.5"]`);
+        if (yearCard) {
+          const yearHiddenInput = yearCard.querySelector('input[type="hidden"]');
+          if (yearHiddenInput) yearHiddenInput.value = "";
+          yearCard.querySelectorAll(".option-card").forEach(o => {
+            o.classList.remove("selected");
+            o.setAttribute("aria-pressed", "false");
+          });
+        }
+      }
 
       // Auto-proceed with micro-delay for visual feedback
       setTimeout(() => {
@@ -452,6 +469,7 @@ function initConversationalForm() {
     payload["email"] = answers["email"] || "";
     payload["location"] = answers["location"] || "";
     payload["scm_training"] = answers["scm_training"] || "";
+    payload["scm_year"] = answers["scm_year"] || "";
     payload["role"] = answers["role"] || "";
     payload["experience"] = step3Ans; // Aligning CRM fields
     payload["salary"] = step4Ans;     // Map secondary segment selection to salary parameter to fit standard schema

@@ -88,6 +88,7 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
     $experience = sanitize_text_field($params['experience'] ?? '');
     $landing_page = esc_url_raw($params['landing_page'] ?? '');
     $location = sanitize_text_field($params['location'] ?? '');
+    $scm_year = sanitize_text_field($params['scm_year'] ?? '');
 
     // Verify OTP first if email is provided, unless bypassed for specific landing pages
     $bypass_otp = false;
@@ -149,6 +150,7 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
             'salary' => $salary,
             'experience' => $experience,
             'location' => $location,
+            'scm_year' => $scm_year,
             'source' => $utm_source,      // Maps to TeleCRM default source field
             'campaign' => $utm_campaign,  // Maps to TeleCRM default campaign field
             'fbp' => $fbp,
@@ -175,12 +177,14 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
             'utmterm' => $utm_term,
             'utmcontent' => $utm_content,
             'landingpage' => $landing_page,
-            'location' => $location
+            'location' => $location,
+            'scmyear' => $scm_year
         ),
         'actions' => array(
             array(
                 'type' => 'SYSTEM_NOTE',
-                'text' => "Location: " . $location . "\n\n" .
+                'text' => "Location: " . $location . "\n" .
+                          "SCM Training Year: " . $scm_year . "\n\n" .
                           "Marketing Tracking Details:\n" .
                           "- Source: " . $utm_source . "\n" .
                           "- Medium: " . $utm_medium . "\n" .
