@@ -367,38 +367,53 @@ body {
 }
 
 .country-select-dropdown {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
   background: transparent;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f59e0b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.6rem center;
+  background-size: 0.85rem;
   color: var(--text-primary);
   border: none;
-  font-size: 1.6rem;
-  font-weight: 600;
+  font-size: 1.45rem;
+  font-weight: 500;
   outline: none;
   cursor: pointer;
-  padding: 0.75rem 0.5rem 0.75rem 0;
+  padding: 0.75rem 2rem 0.75rem 0.5rem;
   font-family: var(--font-sans);
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  border-right: 1px solid rgba(255, 255, 255, 0.15);
   margin-right: 0.75rem;
+}
+
+.country-select-dropdown::-ms-expand {
+  display: none;
 }
 
 .country-select-dropdown option {
   background: var(--bg-surface);
   color: var(--text-primary);
-  font-size: 1rem;
+  font-size: 1.05rem;
 }
 
 .phone-input-wrapper .conversational-input {
   border-bottom: none !important;
-  padding-left: 0.25rem;
-  font-size: 1.75rem;
+  padding: 0.75rem 0.5rem !important;
+  font-size: 1.65rem;
 }
 
 @media (max-width: 768px) {
   .country-select-dropdown {
-    font-size: 1.25rem;
-    padding: 0.5rem 0.35rem 0.5rem 0;
+    font-size: 1.15rem;
+    padding: 0.5rem 1.6rem 0.5rem 0.25rem;
+    background-size: 0.75rem;
+    background-position: right 0.4rem center;
+    margin-right: 0.5rem;
   }
   .phone-input-wrapper .conversational-input {
-    font-size: 1.35rem !important;
+    font-size: 1.25rem !important;
+    padding: 0.5rem 0.25rem !important;
   }
 }
 
