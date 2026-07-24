@@ -4,7 +4,7 @@
 // CONFIGURATION
 // -------------------------------------------------------------
 // Paste your Google Apps Script Web App URL here after deployment
-const GOOGLE_SHEET_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwNN0vB-XQnsJ09egJ2L2MeC4hJCQ4E_9MhYvGCljt1Pnvm8eLU6C64ypwdhzMnbZsn-A/exec";
+const GOOGLE_SHEET_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbw7yoGrC-xyQpliFSxb3b6dUnSt0aQN5Suk9EhcSdcON9HJJsFgLbWBidES6aUJ6Gm2YA/exec";
 
 document.addEventListener("DOMContentLoaded", () => {
   initConversationalForm();
