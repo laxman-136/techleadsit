@@ -348,6 +348,61 @@ body {
   border-bottom-color: var(--color-danger);
 }
 
+/* Phone input with country code styling */
+.phone-input-wrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.12);
+  transition: border-color var(--transition-fast);
+}
+
+.phone-input-wrapper:focus-within {
+  border-bottom-color: var(--color-primary);
+}
+
+.phone-input-wrapper[aria-invalid="true"] {
+  border-bottom-color: var(--color-danger);
+}
+
+.country-select-dropdown {
+  background: transparent;
+  color: var(--text-primary);
+  border: none;
+  font-size: 1.6rem;
+  font-weight: 600;
+  outline: none;
+  cursor: pointer;
+  padding: 0.75rem 0.5rem 0.75rem 0;
+  font-family: var(--font-sans);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  margin-right: 0.75rem;
+}
+
+.country-select-dropdown option {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-size: 1rem;
+}
+
+.phone-input-wrapper .conversational-input {
+  border-bottom: none !important;
+  padding-left: 0.25rem;
+  font-size: 1.75rem;
+}
+
+@media (max-width: 768px) {
+  .country-select-dropdown {
+    font-size: 1.25rem;
+    padding: 0.5rem 0.35rem 0.5rem 0;
+  }
+  .phone-input-wrapper .conversational-input {
+    font-size: 1.35rem !important;
+  }
+}
+
+
 /* Error Messages */
 .input-error-msg {
   color: var(--color-danger);

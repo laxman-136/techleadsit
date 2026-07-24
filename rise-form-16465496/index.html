@@ -62,8 +62,25 @@
 
         <div class="form-group">
           <label for="user-phone" class="conversational-label">WhatsApp Number</label>
-          <input type="tel" id="user-phone" name="phone" class="conversational-input" placeholder="10-digit WhatsApp mobile number..." pattern="[0-9]{10}" autocomplete="tel" aria-describedby="phone-error" aria-invalid="false" required>
-          <div class="input-error-msg" role="alert" id="phone-error">Please enter a valid 10-digit WhatsApp number.</div>
+          <div class="phone-input-wrapper">
+            <select id="country-code" name="country_code" class="country-select-dropdown" required>
+              <option value="+91" selected>🇮🇳 +91</option>
+              <option value="+1">🇺🇸 +1</option>
+              <option value="+44">🇬🇧 +44</option>
+              <option value="+971">🇦🇪 +971</option>
+              <option value="+966">🇸🇦 +966</option>
+              <option value="+65">🇸🇬 +65</option>
+              <option value="+61">🇦🇺 +61</option>
+              <option value="+1">🇨🇦 +1</option>
+              <option value="+60">🇲🇾 +60</option>
+              <option value="+968">🇴🇲 +968</option>
+              <option value="+973">🇧🇭 +973</option>
+              <option value="+974">🇶🇦 +974</option>
+              <option value="+965">🇰🇼 +965</option>
+            </select>
+            <input type="tel" id="user-phone" name="phone" class="conversational-input" placeholder="WhatsApp mobile number..." pattern="[0-9]{7,15}" autocomplete="tel" aria-describedby="phone-error" aria-invalid="false" required>
+          </div>
+          <div class="input-error-msg" role="alert" id="phone-error">Please enter a valid WhatsApp number.</div>
         </div>
 
         <div class="form-group">

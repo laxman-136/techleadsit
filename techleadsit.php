@@ -144,7 +144,7 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
     $payload = array(
         'fields' => array(
             'name' => $name,
-            'phone' => '+91' . $phone,
+            'phone' => (strpos($phone, '+') === 0) ? $phone : '+91' . $phone,
             'email' => $email,
             'role' => $role,
             'salary' => $salary,

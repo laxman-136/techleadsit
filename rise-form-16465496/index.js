@@ -139,19 +139,28 @@ function initConversationalForm() {
     const type = card.getAttribute("data-type");
 
     if (type === "input") {
-      const inputs = card.querySelectorAll("input");
+      const inputs = card.querySelectorAll("input, select");
       if (inputs.length === 0) return true;
 
       let allValid = true;
 
       inputs.forEach(input => {
+        if (input.tagName.toLowerCase() === "select") {
+          answers[input.name] = input.value;
+          return;
+        }
+
         const val = input.value.trim();
-        const errorMsg = input.parentNode.querySelector(".input-error-msg");
+        const errorMsg = input.closest(".form-group").querySelector(".input-error-msg");
         if (errorMsg) errorMsg.classList.remove("visible");
         input.setAttribute("aria-invalid", "false");
 
+        const wrapper = input.closest(".phone-input-wrapper");
+        if (wrapper) wrapper.setAttribute("aria-invalid", "false");
+
         if (input.required && !val) {
           input.setAttribute("aria-invalid", "true");
+          if (wrapper) wrapper.setAttribute("aria-invalid", "true");
           showError(errorMsg);
           if (allValid) input.focus();
           allValid = false;
@@ -159,9 +168,10 @@ function initConversationalForm() {
         }
 
         if (input.type === "tel") {
-          const phoneRegex = /^[0-9]{10}$/;
+          const phoneRegex = /^[0-9]{7,15}$/;
           if (!phoneRegex.test(val)) {
             input.setAttribute("aria-invalid", "true");
+            if (wrapper) wrapper.setAttribute("aria-invalid", "true");
             showError(errorMsg);
             if (allValid) input.focus();
             allValid = false;
@@ -474,7 +484,7 @@ function initConversationalForm() {
 
     // Standard CRM fields alignment
     payload["name"] = answers["name"] || "";
-    payload["phone"] = answers["phone"] || "";
+    payload["phone"] = (answers["country_code"] || "+91") + (answers["phone"] || "");
     payload["email"] = answers["email"] || "";
     payload["location"] = answers["location"] || "";
     payload["scm_training"] = answers["scm_training"] || "";
@@ -697,11 +707,19 @@ function initConversationalForm() {
         validateSingleInput(this, true); // force show error if invalid on blur
       });
     });
+
+    const select = document.getElementById("country-code");
+    if (select) {
+      answers["country_code"] = select.value;
+      select.addEventListener("change", function() {
+        answers["country_code"] = this.value;
+      });
+    }
   }
 
   function validateSingleInput(input, showIfInvalid) {
     const val = input.value.trim();
-    const errorMsg = input.parentNode.querySelector(".input-error-msg");
+    const errorMsg = input.closest(".form-group").querySelector(".input-error-msg");
     if (!errorMsg) return true;
     
     let isValid = true;
@@ -713,7 +731,7 @@ function initConversationalForm() {
     
     // Phone pattern check
     if (isValid && input.type === "tel") {
-      const phoneRegex = /^[0-9]{10}$/;
+      const phoneRegex = /^[0-9]{7,15}$/;
       if (!phoneRegex.test(val)) {
         isValid = false;
       }
@@ -728,6 +746,13 @@ function initConversationalForm() {
     }
     
     input.setAttribute("aria-invalid", String(!isValid));
+
+    if (input.type === "tel") {
+      const wrapper = input.closest(".phone-input-wrapper");
+      if (wrapper) {
+        wrapper.setAttribute("aria-invalid", String(!isValid));
+      }
+    }
 
     if (isValid) {
       errorMsg.classList.remove("visible");
