@@ -250,6 +250,15 @@ function initConversationalForm() {
 
     currentStepId = targetStepId;
 
+    const trustPanel = document.querySelector(".trust-panel");
+    if (trustPanel) {
+      if (targetStepId === "1") {
+        trustPanel.style.display = "grid";
+      } else {
+        trustPanel.style.display = "none";
+      }
+    }
+
     const focusTarget = targetCard.querySelector(".conversational-input, .option-card, .btn");
     if (focusTarget) {
       setTimeout(() => focusTarget.focus(), 150);
