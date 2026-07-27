@@ -124,7 +124,7 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
     $utm_content = sanitize_text_field($params['utm_content'] ?? '');
     $referrer = sanitize_text_field($params['referrer'] ?? '');
 
-    if (empty($name) || !preg_match('/^[0-9]{10}$/', $phone)) {
+    if (empty($name) || !preg_match('/^\+?[0-9]{7,15}$/', $phone)) {
         return new WP_REST_Response(array('success' => false, 'message' => 'Invalid validation requirements.'), 400);
     }
 
