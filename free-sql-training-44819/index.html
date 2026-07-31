@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free SQL Training Registration | Beginning to Advanced</title>
+  <meta name="description" content="Register for our Free SQL Training Program (Beginning to Advanced) starting on August 5th. Secure your spot in 2 minutes.">
+  
+  <!-- Inter and Montserrat fonts for premium typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="index.css">
+  
+  <!-- JavaScript Logic -->
+  <script src="index.js" defer></script>
+</head>
+<body>
+
+  <!-- Clean minimalist header with brand and course label -->
+  <header class="form-header">
+    <div class="logo-wrapper">
+      <img src="logo-light.png" alt="Tech Leads IT Logo" class="brand-logo">
+      <span class="logo-divider">|</span>
+      <span class="logo-brand-name">SQL Masterclass</span>
+    </div>
+  </header>
+
+  <!-- Progress Bar Container -->
+  <div class="progress-bar-wrapper" id="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-describedby="progress-label">
+    <div class="progress-bar-fill" id="progress-fill" style="width: 0%;"></div>
+    <span class="progress-text" id="progress-label" aria-live="polite">0% completed</span>
+  </div>
+
+  <!-- Main Conversational Form Container -->
+  <main class="form-card-container">
+    <!-- Trust badges for high registration rates -->
+    <section class="trust-panel" aria-label="Registration Info">
+      <span class="trust-pill">⚡ Free SQL Training</span>
+      <span class="trust-pill">📅 Starts August 5th</span>
+      <span class="trust-pill">🕒 2 Min Registration</span>
+    </section>
+
+    <form id="conversational-lead-form" novalidate>
+      
+      <!-- STEP 1: Contact Details -->
+      <div class="step-card active" data-step="1" data-type="input" aria-live="polite">
+        <div class="step-badge">Step 01 → Basic Details</div>
+        <h1 class="step-question">Welcome! Let's get started with your <span class="text-indigo">contact information</span>.</h1>
+        <p class="step-description">Enter your name, WhatsApp number, and email address to secure your training spot.</p>
+        
+        <div class="form-group">
+          <label for="user-name" class="conversational-label">Full Name</label>
+          <input type="text" id="user-name" name="name" class="conversational-input" placeholder="Type your full name here..." autocomplete="name" aria-describedby="name-error" aria-invalid="false" required autofocus>
+          <div class="input-error-msg" role="alert" id="name-error">Please enter your name.</div>
+        </div>
+
+        <div class="form-group">
+          <label for="user-phone" class="conversational-label">WhatsApp Number</label>
+          <div class="phone-input-wrapper">
+            <select id="country-code" name="country_code" class="country-select-dropdown" required>
+              <option value="+91" selected>🇮🇳 +91</option>
+              <option value="+1">🇺🇸 +1</option>
+              <option value="+44">🇬🇧 +44</option>
+              <option value="+971">🇦🇪 +971</option>
+              <option value="+966">🇸🇦 +966</option>
+              <option value="+65">🇸🇬 +65</option>
+              <option value="+61">🇦🇺 +61</option>
+              <option value="+1">🇨🇦 +1</option>
+              <option value="+60">🇲🇾 +60</option>
+              <option value="+968">🇴🇲 +968</option>
+              <option value="+973">🇧🇭 +973</option>
+              <option value="+974">🇶🇦 +974</option>
+              <option value="+965">🇰🇼 +965</option>
+            </select>
+            <input type="tel" id="user-phone" name="phone" class="conversational-input" placeholder="WhatsApp mobile number..." pattern="[0-9]{7,15}" autocomplete="tel" aria-describedby="phone-error" aria-invalid="false" required>
+          </div>
+          <div class="input-error-msg" role="alert" id="phone-error">Please enter a valid WhatsApp number.</div>
+        </div>
+
+        <div class="form-group">
+          <label for="user-email" class="conversational-label">Email Address</label>
+          <input type="email" id="user-email" name="email" class="conversational-input" placeholder="name@example.com" autocomplete="email" aria-describedby="email-error" aria-invalid="false" required>
+          <div class="input-error-msg" role="alert" id="email-error">Please enter a valid email address.</div>
+        </div>
+
+        <div class="step-actions">
+          <button type="button" class="btn btn-primary btn-next">Continue <span class="kbd-hint">↵</span></button>
+        </div>
+      </div>
+
+      <!-- STEP 2: Professional Status -->
+      <div class="step-card" data-step="2" data-type="select" aria-live="polite">
+        <div class="step-badge">Step 02 → Professional Status</div>
+        <h1 class="step-question">What describes your current <span class="text-indigo">professional status</span>, <span class="dynamic-name">there</span>?</h1>
+        <p class="step-description">Select the option that matches you best. Click an option or press the letter key.</p>
+        
+        <div class="options-grid" role="group">
+          <button type="button" class="option-card" aria-pressed="false" data-value="Working Professional">
+            <span class="option-key">A</span>
+            <span class="option-text">Working Professional</span>
+          </button>
+          <button type="button" class="option-card" aria-pressed="false" data-value="College Student / Graduate">
+            <span class="option-key">B</span>
+            <span class="option-text">College Student / Graduate</span>
+          </button>
+          <button type="button" class="option-card" aria-pressed="false" data-value="Actively looking for jobs">
+            <span class="option-key">C</span>
+            <span class="option-text">Actively looking for jobs</span>
+          </button>
+          <button type="button" class="option-card" aria-pressed="false" data-value="Other">
+            <span class="option-key">D</span>
+            <span class="option-text">Other</span>
+          </button>
+        </div>
+        
+        <input type="hidden" id="user-status" name="status" required>
+        <div class="input-error-msg" role="alert" id="status-error" style="text-align: center; margin-top: 15px;">Please select one option to proceed.</div>
+        
+        <div class="step-actions">
+          <button type="button" class="btn btn-outline btn-back">Back</button>
+        </div>
+      </div>
+
+      <!-- STEP 3: SQL Knowledge Level -->
+      <div class="step-card" data-step="3" data-type="select" aria-live="polite">
+        <div class="step-badge">Step 03 → Experience Level</div>
+        <h1 class="step-question">How would you rate your experience with <span class="text-indigo">SQL / Databases</span>?</h1>
+        <p class="step-description">Don't worry! This training covers everything from Beginning to Advanced levels.</p>
+        
+        <div class="options-grid" role="group">
+          <button type="button" class="option-card" aria-pressed="false" data-value="Absolute Beginner (Never coded)">
+            <span class="option-key">A</span>
+            <span class="option-text">Absolute Beginner (Never coded)</span>
+          </button>
+          <button type="button" class="option-card" aria-pressed="false" data-value="Basic (Know SELECT & simple filtering)">
+            <span class="option-key">B</span>
+            <span class="option-text">Basic (Know SELECT & simple filtering)</span>
+          </button>
+          <button type="button" class="option-card" aria-pressed="false" data-value="Intermediate (Know JOINs, GROUP BY, subqueries)">
+            <span class="option-key">C</span>
+            <span class="option-text">Intermediate (Know JOINs, GROUP BY, subqueries)</span>
+          </button>
+        </div>
+        
+        <input type="hidden" id="user-experience" name="experience" required>
+        <div class="input-error-msg" role="alert" id="experience-error" style="text-align: center; margin-top: 15px;">Please select one option to proceed.</div>
+        
+        <div class="step-actions">
+          <button type="button" class="btn btn-outline btn-back">Back</button>
+        </div>
+      </div>
+
+      <!-- STEP 4: Primary Goal -->
+      <div class="step-card" data-step="4" data-type="select" aria-live="polite">
+        <div class="step-badge">Step 04 → Learning Goal</div>
+        <h1 class="step-question">What is your primary goal for attending this <span class="text-indigo">SQL Training</span>?</h1>
+        <p class="step-description">We will tailor the real-world project scenarios based on class goals.</p>
+        
+        <div class="options-grid" role="group">
+          <button type="button" class="option-card" aria-pressed="false" data-value="Transition to a Data Analytics career">
+            <span class="option-key">A</span>
+            <span class="option-text">Transition to a Data Analytics career</span>
+          </button>
+          <button type="button" class="option-card" aria-pressed="false" data-value="Upskill for my current role">
+            <span class="option-key">B</span>
+            <span class="option-text">Upskill for my current role</span>
+          </button>
+          <button type="button" class="option-card" aria-pressed="false" data-value="College / Placement preparation">
+            <span class="option-key">C</span>
+            <span class="option-text">College / Placement preparation</span>
+          </button>
+          <button type="button" class="option-card" aria-pressed="false" data-value="General upskilling">
+            <span class="option-key">D</span>
+            <span class="option-text">General upskilling</span>
+          </button>
+        </div>
+        
+        <input type="hidden" id="user-goal" name="goal" required>
+        <div class="input-error-msg" role="alert" id="goal-error" style="text-align: center; margin-top: 15px;">Please select one option to proceed.</div>
+        
+        <div class="step-actions">
+          <button type="button" class="btn btn-outline btn-back">Back</button>
+          <button type="button" class="btn btn-primary btn-submit-form" style="display: none;">Submit Registration</button>
+        </div>
+      </div>
+
+      <!-- Submitting State Indicator -->
+      <div class="form-submitting-state" aria-live="polite" style="display: none;">
+        <div class="spinner-box">
+          <div class="double-bounce1"></div>
+          <div class="double-bounce2"></div>
+        </div>
+        <h3>Securing your training spot...</h3>
+        <p>Saving details and generating your WhatsApp onboarding links.</p>
+      </div>
+
+      <!-- Global Submission Error Message -->
+      <div id="submission-error" class="global-error-banner" role="alert" tabindex="-1" hidden>
+        ⚠️ Something went wrong while submitting your registration. Please check your internet connection and try again.
+      </div>
+
+      <!-- Marketing & CRM Tracking Hidden Input Parameters -->
+      <input type="hidden" name="utm_source" id="track-utm-source" value="">
+      <input type="hidden" name="utm_medium" id="track-utm-medium" value="">
+      <input type="hidden" name="utm_campaign" id="track-utm-campaign" value="">
+      <input type="hidden" name="utm_adgroup" id="track-utm-adgroup" value="">
+      <input type="hidden" name="utm_term" id="track-utm-term" value="">
+      <input type="hidden" name="utm_content" id="track-utm-content" value="">
+      <input type="hidden" name="gclid" id="track-gclid" value="">
+      <input type="hidden" name="gbraid" id="track-gbraid" value="">
+      <input type="hidden" name="wbraid" id="track-wbraid" value="">
+      <input type="hidden" name="fbclid" id="track-fbclid" value="">
+      <input type="hidden" name="fbp" id="track-fbp" value="">
+      <input type="hidden" name="fbc" id="track-fbc" value="">
+      <input type="hidden" name="ga_client_id" id="track-ga-client-id" value="">
+      <input type="hidden" name="session_id" id="track-session-id" value="">
+      <input type="hidden" name="landing_page" id="track-landing-page" value="">
+      <input type="hidden" name="referrer" id="track-referrer" value="">
+
+    </form>
+  </main>
+
+  <footer class="form-footer">
+    <div class="footer-help">Press <span class="kbd">Enter</span> or click options to progress. Use <span class="kbd">Tab</span> to navigate.</div>
+  </footer>
+
+</body>
+</html>

@@ -25,6 +25,7 @@ function techleadsit_route_landing_pages() {
         'rise-v2' => 'rise-v2/index.html',
         'oracle-fusion-scm-training' => 'oracle-fusion-scm-training/index.html',
         'rise-form-16465496' => 'rise-form-16465496/index.html',
+        'free-sql-training-44819' => 'free-sql-training-44819/index.html',
         // You can add more pages here in the future! E.g. 'scm-offer' => 'scm-offer/index.html'
     );
 
@@ -95,7 +96,8 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
     if (!empty($landing_page) && (
         strpos($landing_page, 'oracle-fusion-scm-training') !== false || 
         strpos($landing_page, 'scm-training') !== false ||
-        strpos($landing_page, 'rise-form-16465496') !== false
+        strpos($landing_page, 'rise-form-16465496') !== false ||
+        strpos($landing_page, 'free-sql-training-44819') !== false
     )) {
         $bypass_otp = true;
     }
