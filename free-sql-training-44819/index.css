@@ -68,7 +68,7 @@ body {
   align-items: center;
   justify-content: center;
   position: relative;
-  padding: 6.5rem 0 5rem;
+  padding: 4.5rem 0;
 }
 
 /* Background animated glowing blobs (Clean, subtle pastel glows) */
@@ -111,9 +111,9 @@ body {
 
 /* Header Branding */
 .form-header {
-  position: absolute;
-  top: 2.25rem;
-  left: 5%;
+  width: 90%;
+  max-width: 620px;
+  margin-bottom: 2rem;
   z-index: 10;
 }
 
@@ -840,7 +840,7 @@ body {
 /* Desktop styles tweaks */
 @media (min-width: 769px) {
   body {
-    padding: 0;
+    padding: 4.5rem 0;
   }
 }
 
