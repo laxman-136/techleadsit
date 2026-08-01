@@ -6,7 +6,7 @@
 const GOOGLE_SHEET_WEBAPP_URL = "https://script.google.com/macros/s/AKfycby75dxSQ7n7ewyuvkYaP3Im5JM329fpnX_6xKCR6VGGFTGK2VGnuWmK3oi7Hn5C7N9SCQ/exec"; 
 
 // Paste your WhatsApp Training Group Link here (for the success page button)
-const WHATSAPP_GROUP_LINK = "https://chat.whatsapp.com/L1h2e3s4o5n6S7Q8L9T0r1"; 
+const WHATSAPP_GROUP_LINK = "https://chat.whatsapp.com/FLeuyl1mT477nn4itQYI7T?s=cl&p=a&ilr=4"; 
 
 document.addEventListener("DOMContentLoaded", () => {
   initConversationalForm();
