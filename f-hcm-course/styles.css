@@ -2507,6 +2507,14 @@ a {
     width: 35%;
 }
 
+.comparison-table td.other-val {
+    background-color: rgba(239, 68, 68, 0.015);
+}
+
+.comparison-table tr:hover td.other-val {
+    background-color: rgba(239, 68, 68, 0.03);
+}
+
 /* Checkmarks inside values can be styled */
 .techleads-val::before {
     content: '✓ ';
@@ -3131,8 +3139,13 @@ a {
         color: var(--color-accent);
     }
     
+    .comparison-table td:nth-of-type(3) {
+        background-color: rgba(239, 68, 68, 0.02);
+    }
+    
     .comparison-table td:nth-of-type(3)::before {
         content: "Other Institutes:";
+        color: #EF4444;
     }
 
     .criteria-name,
