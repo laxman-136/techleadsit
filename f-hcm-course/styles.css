@@ -3156,13 +3156,46 @@ a {
         border-right: none !important;
     }
     
+    .details-table, 
+    .details-table tbody, 
+    .details-table tr, 
     .details-table td {
-        padding: 0.85rem 0.5rem;
-        font-size: 0.875rem;
+        display: block;
+        width: 100% !important;
     }
-    
+
+    .details-table tr {
+        border-bottom: 1px solid var(--color-border);
+        padding: 1rem 0;
+    }
+
+    .details-table tr:last-child {
+        border-bottom: none;
+    }
+
+    .details-table td {
+        padding: 0 !important;
+        border: none !important;
+    }
+
     .details-table td:first-child {
-        width: 40%;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--color-text-secondary);
+        margin-bottom: 0.25rem;
+    }
+
+    .details-table td:last-child {
+        font-size: 0.9rem;
+        color: var(--color-text-primary);
+        line-height: 1.4;
+    }
+
+    .details-table .fee-tag {
+        display: inline-block;
+        margin-top: 0.4rem;
+        margin-left: 0;
     }
 
     .whatsapp-float-widget {
