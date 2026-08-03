@@ -1110,15 +1110,91 @@ a {
 
 @media (max-width: 768px) {
     .salary-table-wrapper {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
+        overflow-x: visible;
+        background: transparent;
+        border: none;
+        box-shadow: none;
+        margin-bottom: 2rem;
     }
-    .salary-table {
-        min-width: 600px;
-    }
+
+    .salary-table, 
+    .salary-table thead, 
+    .salary-table tbody, 
     .salary-table th, 
+    .salary-table td, 
+    .salary-table tr {
+        display: block;
+    }
+
+    .salary-table {
+        min-width: 0 !important;
+        width: 100% !important;
+    }
+
+    .salary-table thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+
+    .salary-table tr {
+        border: 1px solid var(--color-border);
+        border-radius: var(--border-radius-md);
+        margin-bottom: 1.25rem;
+        padding: 1.25rem;
+        box-shadow: 0 4px 12px var(--color-shadow);
+        background-color: #FFFFFF;
+    }
+
     .salary-table td {
-        padding: 1rem 1.25rem;
+        border: none;
+        padding: 0.5rem 0;
+        text-align: left;
+        min-height: auto;
+        font-size: 0.9rem;
+    }
+
+    .salary-table .exp-cell {
+        font-weight: 700;
+        color: var(--color-accent);
+        font-size: 1rem;
+        border-bottom: 1px dashed var(--color-border);
+        padding-bottom: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .salary-table .role-cell {
+        font-weight: 500;
+        color: var(--color-text-primary);
+    }
+
+    .salary-table .role-cell::before {
+        content: "Role: ";
+        font-weight: 700;
+        color: var(--color-text-secondary);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        display: block;
+        margin-bottom: 0.15rem;
+    }
+
+    .salary-table .range-cell {
+        font-weight: 700;
+        color: var(--color-success);
+        text-align: left !important;
+        margin-top: 0.25rem;
+    }
+
+    .salary-table .range-cell::before {
+        content: "Avg. Package: ";
+        font-weight: 700;
+        color: var(--color-text-secondary);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        display: block;
+        margin-bottom: 0.15rem;
     }
 }
 
