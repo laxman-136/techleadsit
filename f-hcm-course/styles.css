@@ -2875,8 +2875,12 @@ a {
     }
     
     .nav-links,
-    .header-actions .phone-link {
-        display: none;
+    .header-actions {
+        display: none !important;
+    }
+
+    .header-container {
+        justify-content: center;
     }
     
     .who-grid {
