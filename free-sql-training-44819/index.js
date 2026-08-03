@@ -394,6 +394,10 @@ function initConversationalForm() {
     payload["experience"] = answers["experience"] || "";
     payload["goal"] = answers["goal"] || "";
     
+    // Map to role & salary parameter schema for techleadsit.php & TeleCRM Enterprise fields compatibility
+    payload["role"] = answers["status"] || "";
+    payload["salary"] = answers["goal"] || "";
+    
     // Add Course Identifier
     payload["course"] = "Free SQL Training (Aug 5th)";
 
