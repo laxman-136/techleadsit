@@ -3085,11 +3085,13 @@ a {
         border: none;
         border-bottom: 1px solid var(--color-border);
         position: relative;
-        padding-left: 45%;
-        padding-top: 0.75rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        padding-top: 1.85rem;
         padding-bottom: 0.75rem;
-        min-height: 44px;
+        min-height: auto;
         font-size: 0.875rem;
+        text-align: left;
     }
     
     .comparison-table td:last-child {
@@ -3098,13 +3100,13 @@ a {
     
     .comparison-table td::before {
         position: absolute;
-        top: 0.75rem;
+        top: 0.5rem;
         left: 1rem;
-        width: 35%;
-        padding-right: 10px;
-        white-space: nowrap;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
         font-weight: 700;
-        color: var(--color-text-primary);
+        color: var(--color-text-muted);
     }
     
     .comparison-table td:nth-of-type(1) {
@@ -3112,7 +3114,8 @@ a {
         font-weight: 700;
         background-color: var(--color-bg-canvas);
         border-radius: 4px;
-        padding-left: 1rem;
+        padding-top: 0.75rem;
+        padding-bottom: 0.75rem;
     }
     
     .comparison-table td:nth-of-type(1)::before {
@@ -3125,10 +3128,11 @@ a {
     
     .comparison-table td:nth-of-type(2)::before {
         content: "Tech Leads IT:";
+        color: var(--color-accent);
     }
     
     .comparison-table td:nth-of-type(3)::before {
-        content: "Others:";
+        content: "Other Institutes:";
     }
     
     .details-table td {
