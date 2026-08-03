@@ -1656,12 +1656,19 @@ function initFomoToasts() {
         index = (index + 1) % fomoData.length;
     }
 
+    function scheduleNextToast() {
+        // Calculate random delay greater than 10 seconds (between 10 and 22 seconds)
+        const delay = 10000 + Math.random() * 12000;
+        cycleInterval = setTimeout(() => {
+            triggerToast();
+            scheduleNextToast();
+        }, delay);
+    }
+
     // Delay the first popup trigger by 5 seconds on page load
     setTimeout(() => {
         triggerToast();
-        
-        // Start running every 10 seconds thereafter
-        cycleInterval = setInterval(triggerToast, 10000);
+        scheduleNextToast();
     }, 5000);
 
     // Stop and clear notifications if closed manually by the visitor
@@ -1669,7 +1676,7 @@ function initFomoToasts() {
         closeBtn.addEventListener('click', () => {
             toast.classList.remove('show');
             clearTimeout(toastTimeout);
-            clearInterval(cycleInterval);
+            clearTimeout(cycleInterval);
         });
     }
 }

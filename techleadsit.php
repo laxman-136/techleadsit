@@ -47,8 +47,8 @@ function techleadsit_route_landing_pages() {
                 $plugin_url = plugin_dir_url(__FILE__) . $folder_path;
                 $html_content = str_replace('href="index.css"', 'href="' . $plugin_url . 'index.css"', $html_content);
                 $html_content = str_replace('src="index.js"', 'src="' . $plugin_url . 'index.js"', $html_content);
-                $html_content = str_replace('href="styles.css"', 'href="' . $plugin_url . 'styles.css?v=4.4"', $html_content);
-                $html_content = str_replace('src="script.js"', 'src="' . $plugin_url . 'script.js?v=4.4"', $html_content);
+                $html_content = str_replace('href="styles.css"', 'href="' . $plugin_url . 'styles.css?v=4.5"', $html_content);
+                $html_content = str_replace('src="script.js"', 'src="' . $plugin_url . 'script.js?v=4.5"', $html_content);
                 $html_content = str_replace('src="logo-dark.png"', 'src="' . $plugin_url . 'logo-dark.png"', $html_content);
                 $html_content = str_replace('src="logo-light.png"', 'src="' . $plugin_url . 'logo-light.png"', $html_content);
                 $html_content = str_replace('src="images/', 'src="' . $plugin_url . 'images/', $html_content);
