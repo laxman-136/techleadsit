@@ -3395,3 +3395,75 @@ a {
     justify-content: center;
     text-decoration: none;
 }
+
+/* ==========================================================================
+   Returning Visitor Personalized Lead Modal Styles
+   ========================================================================== */
+.returning-dialog {
+    max-width: 480px;
+    border-top: 5px solid var(--color-accent);
+}
+
+.returning-box {
+    padding: 2.5rem 2rem;
+}
+
+.returning-eyebrow {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--color-accent);
+    letter-spacing: 0.15em;
+    display: block;
+    margin-bottom: 0.5rem;
+    font-family: var(--font-display);
+}
+
+.returning-title {
+    font-family: var(--font-display);
+    font-size: 1.55rem;
+    font-weight: 800;
+    color: var(--color-text-primary);
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+}
+
+.returning-desc {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+    margin-bottom: 1.75rem;
+}
+
+.returning-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: center;
+    width: 100%;
+}
+
+.returning-actions .btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.returning-dismiss {
+    background: transparent;
+    border: none;
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    transition: var(--transition-fast);
+    padding: 0.5rem 1rem;
+}
+
+.returning-dismiss:hover {
+    color: var(--color-text-primary);
+    text-decoration: underline;
+}

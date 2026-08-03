@@ -41,8 +41,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // 11. Exit Intent Modal Trigger
     initExitIntent();
 
-    // 12. Live Activity FOMO Toasts (every 15s)
+    // 12. Live Activity FOMO Toasts (every 10s)
     initFomoToasts();
+
+    // 13. Returning Visitor Personalized Popup
+    initReturningVisitorPopup();
 });
 
 /* ==========================================================================
@@ -944,6 +947,15 @@ function initFormValidation() {
             gclid: trackingData.gclid
         });
 
+        // Push returning visitor submit event to GTM dataLayer if returning visitor
+        if (localStorage.getItem('eduVisitorFirstVisit') !== null) {
+            window.dataLayer.push({
+                event: 'returning_visitor_lead_submit',
+                visitor_type: 'returning',
+                timestamp: Date.now()
+            });
+        }
+
         // 2. Fetch submission
         fetch('/wp-json/techleadsit/v1/submit-lead', {
             method: 'POST',
@@ -1030,6 +1042,15 @@ function initFormValidation() {
             gclid: trackingData.gclid
         });
 
+        // Push returning visitor submit event to GTM dataLayer if returning visitor
+        if (localStorage.getItem('eduVisitorFirstVisit') !== null) {
+            window.dataLayer.push({
+                event: 'returning_visitor_lead_submit',
+                visitor_type: 'returning',
+                timestamp: Date.now()
+            });
+        }
+
         // 2. Fetch submission
         fetch('/wp-json/techleadsit/v1/submit-lead', {
             method: 'POST',
@@ -1070,6 +1091,209 @@ function initFormValidation() {
         setTimeout(() => {
             formConfig.directLink.click();
         }, 800);
+    }
+}
+
+/* ==========================================================================
+   13. Returning Visitor Personalized Popup logic
+   ========================================================================== */
+function initReturningVisitorPopup() {
+    const modal = document.getElementById('returningVisitorModal');
+    const closeBtn = document.getElementById('returningCloseBtn');
+    const demoBtn = document.getElementById('returningActionDemoBtn');
+    const waLink = document.getElementById('returningActionWaBtn');
+    const dismissBtn = document.getElementById('returningDismissBtn');
+    const leadModal = document.getElementById('leadModal');
+
+    if (!modal) return;
+
+    // 1. Page path exclusions (universal check for thank-you, privacy-policy, login, confirmation pages)
+    const currentPath = window.location.pathname.toLowerCase();
+    const exclusions = ['thank-you', 'privacy-policy', 'login', 'confirmation'];
+    const isExcludedPage = exclusions.some(path => currentPath.includes(path));
+    if (isExcludedPage) return;
+
+    // Distinguish page refreshes from a genuinely new browsing session using sessionStorage
+    const isNewSession = sessionStorage.getItem('eduSessionActive') === null;
+    if (isNewSession) {
+        sessionStorage.setItem('eduSessionActive', 'true');
+    }
+
+    // Identify returning visitors using localStorage
+    const firstVisitTime = localStorage.getItem('eduVisitorFirstVisit');
+    if (!firstVisitTime) {
+        // On a visitor's first visit: Store the visit timestamp and do NOT display the popup
+        localStorage.setItem('eduVisitorFirstVisit', Date.now().toString());
+        return;
+    }
+
+    // 2. Display Rules Check
+    // Show only on a future visit in a new session (not page refreshes)
+    if (!isNewSession) return;
+
+    // Frequency cap: Do not show more than once every 7 days (604800000 milliseconds)
+    const sevenDaysInMs = 7 * 24 * 60 * 60 * 1000;
+    const lastShownTime = localStorage.getItem('eduVisitorLastPopupShown');
+    if (lastShownTime && (Date.now() - Number(lastShownTime) < sevenDaysInMs)) {
+        return;
+    }
+
+    // Do not show again after the visitor submits any lead form
+    if (localStorage.getItem('hcm_lead_submitted') === 'true') return;
+
+    let hasTriggered = false;
+    let previousActiveElement = null;
+
+    // Helper: Push GTM tracking events
+    function pushEvent(eventName) {
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({
+            event: eventName,
+            visitor_type: 'returning',
+            timestamp: Date.now()
+        });
+    }
+
+    // Helper: Open the popup with full accessibility compliance
+    function showPopup() {
+        if (hasTriggered) return;
+
+        // Do not show if another modal overlay or lightbox is currently active
+        const activeModal = document.querySelector('.modal-overlay.open') || document.querySelector('.lightbox-overlay.open');
+        if (activeModal) return;
+
+        hasTriggered = true;
+
+        // Store non-sensitive popup state in localStorage (last shown timestamp)
+        localStorage.setItem('eduVisitorLastPopupShown', Date.now().toString());
+
+        // Keep track of the previously focused element to return focus later
+        previousActiveElement = document.activeElement;
+
+        // Display popup
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden'; // Lock background scrolling
+
+        // Push analytic event
+        pushEvent('returning_visitor_popup_view');
+
+        // Move keyboard focus into the popup primary button
+        if (demoBtn) {
+            setTimeout(() => demoBtn.focus(), 100);
+        }
+    }
+
+    // Helper: Close the popup restoring accessibility state
+    function hidePopup() {
+        modal.classList.remove('open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = ''; // Restore background scroll
+
+        // Return focus to previous active element
+        if (previousActiveElement && typeof previousActiveElement.focus === 'function') {
+            previousActiveElement.focus();
+        }
+    }
+
+    // 3. Register Scroll/Timer triggers (8 seconds OR 25% scroll depth)
+    // Trigger A: 8-second timer
+    const timerId = setTimeout(showPopup, 8000);
+
+    // Trigger B: 25% Scroll Depth
+    function scrollListener() {
+        const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+        if (totalHeight <= 0) return;
+
+        const scrollPercent = (window.scrollY / totalHeight) * 100;
+        if (scrollPercent >= 25) {
+            showPopup();
+            window.removeEventListener('scroll', scrollListener);
+            clearTimeout(timerId); // Cancel timer if scroll triggers first
+        }
+    }
+    window.addEventListener('scroll', scrollListener);
+
+    // 4. Click & Key Events
+    // Dismiss options
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+            hidePopup();
+            pushEvent('returning_visitor_popup_close');
+        });
+    }
+
+    if (dismissBtn) {
+        dismissBtn.addEventListener('click', () => {
+            hidePopup();
+            pushEvent('returning_visitor_popup_close');
+        });
+    }
+
+    // Modal background overlay click closer
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            hidePopup();
+            pushEvent('returning_visitor_popup_close');
+        }
+    });
+
+    // Close on Escape key press
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('open')) {
+            hidePopup();
+            pushEvent('returning_visitor_popup_close');
+        }
+    });
+
+    // Trap focus inside modal while open (Accessibility)
+    modal.addEventListener('keydown', (e) => {
+        if (e.key === 'Tab' && modal.classList.contains('open')) {
+            const focusableElements = modal.querySelectorAll('button, a, [tabindex="0"]');
+            if (focusableElements.length === 0) return;
+
+            const firstEl = focusableElements[0];
+            const lastEl = focusableElements[focusableElements.length - 1];
+
+            if (e.shiftKey) { // Shift + Tab
+                if (document.activeElement === firstEl) {
+                    lastEl.focus();
+                    e.preventDefault();
+                }
+            } else { // Tab
+                if (document.activeElement === lastEl) {
+                    firstEl.focus();
+                    e.preventDefault();
+                }
+            }
+        }
+    });
+
+    // CTA 1: Reserve Free Demo (reuses the existing conversational lead modal)
+    if (demoBtn && leadModal) {
+        demoBtn.addEventListener('click', () => {
+            hidePopup();
+            pushEvent('returning_visitor_demo_click');
+
+            // Open the demo modal after a brief delay
+            setTimeout(() => {
+                if (typeof openModal === 'function') {
+                    openModal(leadModal);
+                } else {
+                    leadModal.classList.add('open');
+                    leadModal.setAttribute('aria-hidden', 'false');
+                    document.body.style.overflow = 'hidden';
+                }
+            }, 300);
+        });
+    }
+
+    // CTA 2: WhatsApp link redirection
+    if (waLink) {
+        waLink.addEventListener('click', () => {
+            pushEvent('returning_visitor_whatsapp_click');
+            hidePopup();
+        });
     }
 }
 
