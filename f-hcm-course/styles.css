@@ -3304,6 +3304,32 @@ a {
         font-weight: 500;
         text-align: left;
     }
+
+    .mobile-sticky-cta-bar {
+        display: block;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: #FFFFFF;
+        padding: 0.75rem 1rem;
+        box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.08);
+        z-index: 998;
+        border-top: 1px solid var(--color-border);
+    }
+
+    .mobile-sticky-cta-btn {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-weight: 700;
+        font-size: 0.95rem;
+        padding: 0.85rem 1.5rem !important;
+        border-radius: var(--border-radius-md);
+        box-shadow: 0 4px 12px rgba(0, 118, 190, 0.2);
+    }
 }
 
 /* Support for very small viewports like iPhone SE (320px-375px) */
@@ -3567,9 +3593,14 @@ a {
     color: var(--color-text-primary);
 }
 
+/* Sticky Bottom CTA Bar for Mobile */
+.mobile-sticky-cta-bar {
+    display: none;
+}
+
 @media (max-width: 576px) {
     .fomo-toast {
-        bottom: 1.5rem;
+        bottom: 5.5rem; /* Shuffled up to avoid overlapping with bottom fixed CTA bar */
         left: 1.5rem;
         right: 1.5rem;
         max-width: none;
