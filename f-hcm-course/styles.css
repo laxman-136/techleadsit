@@ -3085,6 +3085,22 @@ a {
         font-size: 0.8rem;
         padding: 0.15rem 0.5rem;
     }
+
+    .hero-actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1.25rem;
+    }
+
+    .hero-actions .btn {
+        width: 100%;
+        text-align: center;
+    }
+
+    .hero-actions .text-link {
+        justify-content: center;
+        text-align: center;
+    }
 }
 
 /* Support for very small viewports like iPhone SE (320px-375px) */
@@ -3095,20 +3111,6 @@ a {
     
     .hero-title {
         font-size: 1.85rem;
-    }
-    
-    .hero-actions {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 1rem;
-    }
-    
-    .hero-actions .btn {
-        width: 100%;
-    }
-    
-    .hero-actions .text-link {
-        justify-content: center;
     }
     
     .lead-form-box {
