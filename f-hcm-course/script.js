@@ -1474,16 +1474,6 @@ function initExitIntent() {
             }
         });
     }
-
-    // Trigger browser leave-page confirm dialog when trying to close the tab/window
-    window.addEventListener('beforeunload', (e) => {
-        // Skip warning if user has already completed/submitted the enquiry form
-        if (localStorage.getItem('hcm_lead_submitted') === 'true') return;
-
-        // Cancel the event and show the warning dialog
-        e.preventDefault();
-        e.returnValue = ''; // Required for Chrome and other modern browsers
-    });
 }
 
 function initFomoToasts() {
