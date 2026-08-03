@@ -26,6 +26,8 @@ function techleadsit_route_landing_pages() {
         'oracle-fusion-scm-training' => 'oracle-fusion-scm-training/index.html',
         'rise-form-16465496' => 'rise-form-16465496/index.html',
         'free-sql-training-44819' => 'free-sql-training-44819/index.html',
+        'oracle-fusion-hcm-training' => 'f-hcm-course/index.html',
+        'f-hcm-course' => 'f-hcm-course/index.html',
         // You can add more pages here in the future! E.g. 'scm-offer' => 'scm-offer/index.html'
     );
 
@@ -45,10 +47,38 @@ function techleadsit_route_landing_pages() {
                 $plugin_url = plugin_dir_url(__FILE__) . $folder_path;
                 $html_content = str_replace('href="index.css"', 'href="' . $plugin_url . 'index.css"', $html_content);
                 $html_content = str_replace('src="index.js"', 'src="' . $plugin_url . 'index.js"', $html_content);
+                $html_content = str_replace('href="styles.css"', 'href="' . $plugin_url . 'styles.css"', $html_content);
+                $html_content = str_replace('src="script.js"', 'src="' . $plugin_url . 'script.js"', $html_content);
                 $html_content = str_replace('src="logo-dark.png"', 'src="' . $plugin_url . 'logo-dark.png"', $html_content);
                 $html_content = str_replace('src="logo-light.png"', 'src="' . $plugin_url . 'logo-light.png"', $html_content);
                 $html_content = str_replace('src="images/', 'src="' . $plugin_url . 'images/', $html_content);
                 
+                // Dynamically inject GTM Container code if GTM4WP is active and configured
+                $gtm4wp_options = get_option('gtm4wp-options');
+                if (is_array($gtm4wp_options) && !empty($gtm4wp_options['gtm-code'])) {
+                    $gtm_code = sanitize_text_field($gtm4wp_options['gtm-code']);
+                    
+                    // Head Script
+                    $gtm_head = "\n<!-- Google Tag Manager (Injected by TechLeadsIT Plugin via GTM4WP) -->\n" .
+                                "<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':\n" .
+                                "new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],\n" .
+                                "j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=\n" .
+                                "'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);\n" .
+                                "})(window,document,'script','dataLayer','" . $gtm_code . "');</script>\n" .
+                                "<!-- End Google Tag Manager -->\n";
+                    
+                    // Body Script (noscript)
+                    $gtm_body = "\n<!-- Google Tag Manager (noscript) (Injected by TechLeadsIT Plugin via GTM4WP) -->\n" .
+                                '<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=' . $gtm_code . '"' . "\n" .
+                                'height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>' . "\n" .
+                                "<!-- End Google Tag Manager (noscript) -->\n";
+
+                    // Insert head script right after <head>
+                    $html_content = str_replace('<head>', '<head>' . $gtm_head, $html_content);
+                    // Insert body script right after <body>
+                    $html_content = str_replace('<body>', '<body>' . $gtm_body, $html_content);
+                }
+
                 // Output headers and HTML content
                 header('Content-Type: text/html; charset=utf-8');
                 echo $html_content;
@@ -97,7 +127,9 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
         strpos($landing_page, 'oracle-fusion-scm-training') !== false || 
         strpos($landing_page, 'scm-training') !== false ||
         strpos($landing_page, 'rise-form-16465496') !== false ||
-        strpos($landing_page, 'free-sql-training-44819') !== false
+        strpos($landing_page, 'free-sql-training-44819') !== false ||
+        strpos($landing_page, 'oracle-fusion-hcm-training') !== false ||
+        strpos($landing_page, 'f-hcm-course') !== false
     )) {
         $bypass_otp = true;
     }
