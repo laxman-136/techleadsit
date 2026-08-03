@@ -1197,8 +1197,8 @@ function initReturningVisitorPopup() {
     }
 
     // 3. Register Scroll/Timer triggers (8 seconds OR 25% scroll depth)
-    // Trigger A: 8-second timer
-    const timerId = setTimeout(showPopup, 8000);
+    // Trigger A: 2-second timer
+    const timerId = setTimeout(showPopup, 2000);
 
     // Trigger B: 25% Scroll Depth
     function scrollListener() {
