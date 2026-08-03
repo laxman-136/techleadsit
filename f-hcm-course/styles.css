@@ -3064,6 +3064,27 @@ a {
     .whatsapp-float-widget {
         display: none !important;
     }
+
+    .countdown-bar {
+        height: auto;
+        padding: 0.6rem 0;
+    }
+
+    .countdown-container {
+        flex-direction: column;
+        gap: 0.4rem;
+        text-align: center;
+    }
+
+    .countdown-text {
+        font-size: 0.8rem;
+        line-height: 1.3;
+    }
+
+    .timer {
+        font-size: 0.8rem;
+        padding: 0.15rem 0.5rem;
+    }
 }
 
 /* Support for very small viewports like iPhone SE (320px-375px) */
