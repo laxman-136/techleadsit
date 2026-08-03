@@ -59,27 +59,51 @@ function initCountdown(daysSpan) {
     
     if (!dEl || !hEl || !mEl || !sEl) return;
 
-    // Retrieve end date from localStorage or create a new one
-    let targetTime = localStorage.getItem('hcm_countdown_target');
-    const now = new Date().getTime();
-
-    if (!targetTime || parseInt(targetTime) < now) {
-        // Create target time: target days in the future
-        targetTime = now + (daysSpan * 24 * 60 * 60 * 1000);
-        localStorage.setItem('hcm_countdown_target', targetTime.toString());
+    // Helper to calculate the next target date: targets next Wednesday or Sunday at 6 PM
+    function getNextTargetDate() {
+        const now = new Date();
+        const currentDay = now.getDay();
+        const currentHour = now.getHours();
+        
+        let target = new Date();
+        target.setHours(18, 0, 0, 0); // Target 6:00 PM
+        
+        if (currentDay === 0) { // Sunday
+            if (currentHour >= 18) {
+                target.setDate(now.getDate() + 3); // target Wednesday
+            }
+        } else if (currentDay === 1) { // Monday
+            target.setDate(now.getDate() + 2); // target Wednesday
+        } else if (currentDay === 2) { // Tuesday
+            target.setDate(now.getDate() + 1); // target Wednesday
+        } else if (currentDay === 3) { // Wednesday
+            if (currentHour >= 18) {
+                target.setDate(now.getDate() + 4); // target Sunday
+            }
+        } else if (currentDay === 4) { // Thursday
+            target.setDate(now.getDate() + 3); // target Sunday
+        } else if (currentDay === 5) { // Friday
+            target.setDate(now.getDate() + 2); // target Sunday
+        } else if (currentDay === 6) { // Saturday
+            target.setDate(now.getDate() + 1); // target Sunday
+        }
+        
+        return target.getTime();
     }
 
-    const targetDate = new Date(parseInt(targetTime));
+    const targetTime = getNextTargetDate();
+    const targetDate = new Date(targetTime);
 
     function updateTimer() {
         const currentTime = new Date().getTime();
         const difference = targetDate - currentTime;
 
         if (difference <= 0) {
-            // Timer expired, reset target to another daysSpan
-            const newTarget = currentTime + (daysSpan * 24 * 60 * 60 * 1000);
-            localStorage.setItem('hcm_countdown_target', newTarget.toString());
-            location.reload(); // Refresh to start countdown over
+            // Recalculate target when expired
+            dEl.textContent = "00";
+            hEl.textContent = "00";
+            mEl.textContent = "00";
+            sEl.textContent = "00";
             return;
         }
 
@@ -1567,8 +1591,27 @@ function initFomoToasts() {
     }
 
     const seatsCounterEl = document.getElementById('seats-left-counter');
-    // Start with 70 seats left and decrease dynamically from there
+    // Retrieve persisted seats left count from localStorage or default to 70
     let seatsLeft = 70;
+    const storedSeats = localStorage.getItem('hcm_seats_left');
+    const lastReset = localStorage.getItem('hcm_seats_last_reset');
+    const nowTime = Date.now();
+
+    if (storedSeats && lastReset) {
+        // Expire seats counter cache after 12 hours to restart the funnel realistically
+        if (nowTime - parseInt(lastReset) > 12 * 60 * 60 * 1000) {
+            localStorage.setItem('hcm_seats_left', '70');
+            localStorage.setItem('hcm_seats_last_reset', nowTime.toString());
+            seatsLeft = 70;
+        } else {
+            seatsLeft = parseInt(storedSeats);
+        }
+    } else {
+        localStorage.setItem('hcm_seats_left', '70');
+        localStorage.setItem('hcm_seats_last_reset', nowTime.toString());
+        seatsLeft = 70;
+    }
+
     if (seatsCounterEl) {
         seatsCounterEl.textContent = seatsLeft;
     }
@@ -1593,6 +1636,7 @@ function initFomoToasts() {
         // Dynamic seats reduction to synchronize with FOMO alerts
         if (seatsLeft > 2) {
             seatsLeft--;
+            localStorage.setItem('hcm_seats_left', seatsLeft.toString());
             if (seatsCounterEl) {
                 // Animate text fade for realism
                 seatsCounterEl.style.opacity = 0;
