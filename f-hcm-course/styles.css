@@ -3134,6 +3134,14 @@ a {
     .comparison-table td:nth-of-type(3)::before {
         content: "Other Institutes:";
     }
+
+    .criteria-name,
+    .techleads-val,
+    .other-val {
+        width: 100% !important;
+        border-left: none !important;
+        border-right: none !important;
+    }
     
     .details-table td {
         padding: 0.85rem 0.5rem;
