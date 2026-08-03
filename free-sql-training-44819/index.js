@@ -401,27 +401,7 @@ function initConversationalForm() {
     // Add Course Identifier
     payload["course"] = "Free SQL Training (Aug 5th)";
 
-    // 1. Submit to WordPress CRM Endpoint (if available)
-    const crmSubmitPromise = fetch('/wp-json/techleadsit/v1/submit-lead', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('CRM offline or returned error');
-      }
-      return response.json();
-    })
-    .catch(err => {
-      console.warn("WordPress CRM bypass/not available:", err);
-      // Fallback response for offline/separate hosting environments
-      return { success: true };
-    });
-
-    // 2. Submit to Google Sheet Apps Script Web App
+    // 1. Submit to Google Sheet Apps Script Web App (TeleCRM is bypassed for this page)
     let sheetSubmitPromise = Promise.resolve({ success: true });
     if (GOOGLE_SHEET_WEBAPP_URL && GOOGLE_SHEET_WEBAPP_URL.startsWith("http")) {
       sheetSubmitPromise = fetch(GOOGLE_SHEET_WEBAPP_URL, {
@@ -435,11 +415,11 @@ function initConversationalForm() {
       })
       .catch(err => {
         console.error("Google Sheet submission failed:", err);
-        return { success: false, error: err };
+        return Promise.reject(err);
       });
     }
 
-    Promise.all([crmSubmitPromise, sheetSubmitPromise])
+    sheetSubmitPromise
     .then(() => {
       submittingState.style.display = "none";
       progressFill.style.width = `100%`;
