@@ -3056,6 +3056,10 @@ a {
     .details-table td:first-child {
         width: 40%;
     }
+
+    .whatsapp-float-widget {
+        display: none !important;
+    }
 }
 
 /* Support for very small viewports like iPhone SE (320px-375px) */
