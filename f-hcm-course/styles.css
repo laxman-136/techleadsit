@@ -1334,7 +1334,7 @@ a {
 
 .snapshot-title {
     font-family: var(--font-display);
-    font-size: 1.75rem;
+    font-size: var(--font-2xl);
     font-weight: 700;
     margin-bottom: 2.25rem;
     letter-spacing: -0.03em;
@@ -3180,6 +3180,30 @@ a {
     .hero-actions .text-link {
         justify-content: center;
         text-align: center;
+    }
+
+    .snapshot-section {
+        padding: 3rem 0;
+    }
+
+    .snapshot-chips {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+        max-width: 100%;
+        padding: 0 1rem;
+    }
+
+    .chip {
+        text-align: center;
+        font-size: 0.85rem;
+        padding: 0.75rem 0.5rem;
+        border-radius: var(--border-radius-md);
+        background-color: rgba(255, 255, 255, 0.05);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 48px;
     }
 }
 
