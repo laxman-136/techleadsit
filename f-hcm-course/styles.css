@@ -3205,6 +3205,38 @@ a {
         justify-content: center;
         min-height: 48px;
     }
+
+    .mobile-topics-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+        padding: 0.5rem 0;
+    }
+
+    .mobile-topic-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.65rem;
+        background-color: var(--color-bg-canvas);
+        border: 1px solid var(--color-border);
+        border-radius: var(--border-radius-sm);
+        padding: 0.75rem 0.95rem;
+    }
+
+    .mobile-topic-check {
+        color: var(--color-accent);
+        font-weight: 700;
+        font-size: 1rem;
+        line-height: 1.2;
+    }
+
+    .mobile-topic-text {
+        font-size: 0.85rem;
+        color: var(--color-text-primary);
+        line-height: 1.35;
+        font-weight: 500;
+        text-align: left;
+    }
 }
 
 /* Support for very small viewports like iPhone SE (320px-375px) */

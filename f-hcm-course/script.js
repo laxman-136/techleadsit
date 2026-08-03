@@ -501,6 +501,31 @@ function initCurriculumExplorer() {
 function initMobileCurriculumAccordion() {
     const items = document.querySelectorAll('#curriculumAccordion .accordion-item');
 
+    // Format plain text into high-fidelity bullet checklists on load
+    const contentEls = document.querySelectorAll('#curriculumAccordion .accordion-content');
+    contentEls.forEach(el => {
+        const rawText = el.textContent.trim();
+        if (!rawText) return;
+        
+        // Handle split by bullet dot
+        const topics = rawText.split(/ · | • |  /);
+        if (topics.length <= 1) return;
+        
+        let html = '<div class="mobile-topics-list">';
+        topics.forEach(topic => {
+            const cleanTopic = topic.trim();
+            if (!cleanTopic) return;
+            html += `
+                <div class="mobile-topic-item">
+                    <span class="mobile-topic-check">✓</span>
+                    <span class="mobile-topic-text">${cleanTopic}</span>
+                </div>
+            `;
+        });
+        html += '</div>';
+        el.innerHTML = html;
+    });
+
     items.forEach(item => {
         const header = item.querySelector('.accordion-header');
         
