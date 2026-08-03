@@ -2978,6 +2978,11 @@ a {
         display: block;
     }
     
+    .comparison-table {
+        min-width: 0 !important;
+        width: 100% !important;
+    }
+    
     .comparison-table thead tr {
         position: absolute;
         top: -9999px;
