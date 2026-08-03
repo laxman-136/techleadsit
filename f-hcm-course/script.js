@@ -1515,8 +1515,7 @@ function initFomoToasts() {
     ];
 
     const times = [
-        "2 minutes ago", "5 minutes ago", "8 minutes ago", "12 minutes ago", "15 minutes ago", 
-        "22 minutes ago", "28 minutes ago", "35 minutes ago", "42 minutes ago", "50 minutes ago"
+        "just now", "live", "15 seconds ago", "30 seconds ago", "just now", "live"
     ];
 
     const fomoData = [];
@@ -1543,8 +1542,8 @@ function initFomoToasts() {
     }
 
     const seatsCounterEl = document.getElementById('seats-left-counter');
-    // Start with a random number of seats left between 6 and 9
-    let seatsLeft = Math.floor(Math.random() * 4) + 6;
+    // Start with 70 seats left and decrease dynamically from there
+    let seatsLeft = 70;
     if (seatsCounterEl) {
         seatsCounterEl.textContent = seatsLeft;
     }
