@@ -3306,7 +3306,7 @@ a {
     }
 
     .mobile-sticky-cta-bar {
-        display: block;
+        display: block !important;
         position: fixed;
         bottom: 0;
         left: 0;
