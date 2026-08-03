@@ -35,6 +35,18 @@
     --border-radius-lg: 20px;
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-fast: all 0.15s ease-out;
+
+    /* Liquid Typescale (Fluid Typography) */
+    --font-xs: clamp(0.7rem, 0.65rem + 0.25vw, 0.8125rem);
+    --font-sm: clamp(0.8rem, 0.75rem + 0.25vw, 0.875rem);
+    --font-base: clamp(0.9rem, 0.85rem + 0.25vw, 0.95rem);
+    --font-md: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+    --font-lg: clamp(1.15rem, 1.1rem + 0.25vw, 1.25rem);
+    --font-xl: clamp(1.3rem, 1.2rem + 0.5vw, 1.55rem);
+    --font-2xl: clamp(1.5rem, 1.35rem + 0.75vw, 2rem);
+    --font-3xl: clamp(1.85rem, 1.6rem + 1.25vw, 2.5rem);
+    --font-4xl: clamp(2rem, 1.7rem + 1.5vw, 2.75rem);
+    --font-5xl: clamp(2.25rem, 1.85rem + 2vw, 3.5rem);
 }
 
 /* ==========================================================================
@@ -107,7 +119,7 @@ a {
 
 .section-title {
     font-family: var(--font-display);
-    font-size: 2.25rem;
+    font-size: var(--font-3xl);
     font-weight: 700;
     letter-spacing: -0.03em;
     color: var(--color-text-primary);
@@ -116,7 +128,7 @@ a {
 }
 
 .section-subtitle {
-    font-size: 1.125rem;
+    font-size: var(--font-md);
     color: var(--color-text-secondary);
 }
 
@@ -357,7 +369,7 @@ a {
 
 .hero-title {
     font-family: var(--font-display);
-    font-size: 3rem;
+    font-size: var(--font-5xl);
     font-weight: 800;
     line-height: 1.15;
     letter-spacing: -0.04em;
@@ -394,7 +406,7 @@ a {
 }
 
 .hero-subtitle {
-    font-size: 1.125rem;
+    font-size: var(--font-md);
     color: var(--color-text-secondary);
     margin-bottom: 2rem;
     max-width: 620px;
@@ -2866,14 +2878,6 @@ a {
 
 /* Small Tablets / Mobiles */
 @media (max-width: 768px) {
-    .section-title {
-        font-size: 1.875rem;
-    }
-    
-    .hero-title {
-        font-size: 2.25rem;
-    }
-    
     .nav-links,
     .header-actions {
         display: none !important;
@@ -3107,10 +3111,6 @@ a {
 @media (max-width: 375px) {
     .container {
         padding: 0 1rem;
-    }
-    
-    .hero-title {
-        font-size: 1.85rem;
     }
     
     .lead-form-box {
