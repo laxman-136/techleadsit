@@ -3579,3 +3579,8 @@ a {
     color: var(--color-text-primary);
     text-decoration: underline;
 }
+
+#seats-left-counter {
+    transition: opacity 0.2s ease-in-out;
+    display: inline-block;
+}

@@ -1542,6 +1542,13 @@ function initFomoToasts() {
         [fomoData[i], fomoData[j]] = [fomoData[j], fomoData[i]];
     }
 
+    const seatsCounterEl = document.getElementById('seats-left-counter');
+    // Start with a random number of seats left between 6 and 9
+    let seatsLeft = Math.floor(Math.random() * 4) + 6;
+    if (seatsCounterEl) {
+        seatsCounterEl.textContent = seatsLeft;
+    }
+
     let index = 0;
     let toastTimeout;
     let cycleInterval;
@@ -1558,6 +1565,19 @@ function initFomoToasts() {
 
         // Slide the toast in
         toast.classList.add('show');
+
+        // Dynamic seats reduction to synchronize with FOMO alerts
+        if (seatsLeft > 2) {
+            seatsLeft--;
+            if (seatsCounterEl) {
+                // Animate text fade for realism
+                seatsCounterEl.style.opacity = 0;
+                setTimeout(() => {
+                    seatsCounterEl.textContent = seatsLeft;
+                    seatsCounterEl.style.opacity = 1;
+                }, 200);
+            }
+        }
 
         // Slide out and hide after 4.5 seconds
         toastTimeout = setTimeout(() => {
