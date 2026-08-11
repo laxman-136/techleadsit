@@ -1248,6 +1248,20 @@ function initFormValidation() {
 
     // Auto-populate hidden tracking inputs on load
     populateHiddenTrackingInputs();
+
+    // Additional listeners to capture delayed cookies (e.g. written late by asynchronous GTM/FB Pixel scripts)
+    window.addEventListener('load', populateHiddenTrackingInputs);
+    setTimeout(populateHiddenTrackingInputs, 2000);
+    setTimeout(populateHiddenTrackingInputs, 5000);
+
+    // Capture immediately when user starts interacting with any form
+    ['heroLeadForm', 'modalLeadForm', 'downloadGateForm'].forEach(id => {
+        const formEl = document.getElementById(id);
+        if (formEl) {
+            formEl.addEventListener('focusin', populateHiddenTrackingInputs, { once: true });
+            formEl.addEventListener('click', populateHiddenTrackingInputs, { once: true });
+        }
+    });
 }
 
 /* ==========================================================================
