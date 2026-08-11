@@ -833,19 +833,17 @@ a {
     width: auto;
     max-width: 135px;
     object-fit: contain;
-    opacity: 0.55;
+    opacity: 0.75;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    filter: brightness(0.1) contrast(1.2); /* Unified dark charcoal layout */
     user-select: none;
 }
 
 .logo-marquee-track:hover .logo-img-item {
-    opacity: 0.35;
+    opacity: 0.45;
 }
 
 .logo-marquee-track .logo-img-item:hover {
     opacity: 1;
-    filter: none;
     transform: translateY(-2px);
 }
 
