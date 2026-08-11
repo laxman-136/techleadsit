@@ -28,7 +28,7 @@ function techleadsit_route_landing_pages() {
         'free-sql-training-44819' => 'free-sql-training-44819/index.html',
         'oracle-fusion-hcm-training' => 'f-hcm-course/index.html',
         'f-hcm-course' => 'f-hcm-course/index.html',
-        'mb-hr-to' => 'mb-hr-to/index.html',
+        'mb-hr-to' => 'f-hcm-course/index.html',
         // You can add more pages here in the future! E.g. 'scm-offer' => 'scm-offer/index.html'
     );
 
@@ -79,6 +79,10 @@ function techleadsit_route_landing_pages() {
                     // Insert body script right after <body>
                     $html_content = str_replace('<body>', '<body>' . $gtm_body, $html_content);
                 }
+
+                // Dynamically inject the active slug variable to window.pageSlug context
+                $slug_inject = "\n<script>window.pageSlug = '" . esc_js($slug) . "';</script>\n";
+                $html_content = str_replace('<head>', '<head>' . $slug_inject, $html_content);
 
                 // Output headers and HTML content
                 header('Content-Type: text/html; charset=utf-8');

@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="From Trained to Project-Ready in 45 Days. A structured daily-discipline program that turns Oracle Fusion SCM trainees into confident, interview-ready consultants.">
+  <title>RISE — Real-Time Interview Skills Enhancement | Tech Leads IT</title>
+  <link rel="stylesheet" href="index.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="index.js" defer></script>
+</head>
+<body>
+
+  <!-- Editorial Dot Grid Background Effect -->
+  <div class="dot-grid-overlay"></div>
+
+  <!-- Header / Navigation -->
+  <header class="header">
+    <div class="header-container">
+      <div class="logo-area">
+        <img src="logo-light.png" alt="Tech Leads IT Logo" class="logo">
+      </div>
+      <div class="header-badge-wrap">
+        <span class="pulse-dot"></span>
+        <span class="badge-text">Next cohort starts: <strong id="header-date-badge">June 20</strong></span>
+      </div>
+      <div class="header-cta">
+        <a href="#eligibility-form-section" class="btn btn-outline btn-sm">Check Eligibility</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- 1. Hero Section -->
+  <section class="hero-section">
+    <!-- Glow Effects -->
+    <div class="hero-glow-left" aria-hidden="true"></div>
+    <div class="hero-glow-right" aria-hidden="true"></div>
+
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-content">
+          <div class="eyebrow-container gsap-hero-anim">
+            <span class="eyebrow">AN INITIATIVE BY TECH LEADS IT</span>
+          </div>
+          
+          <h1 class="hero-title gsap-hero-anim">
+            From Trained to <span class="text-amber">Project-Ready</span> in <span class="text-amber">45 Days.</span>
+          </h1>
+          
+          <p class="hero-subtitle gsap-hero-anim">
+            A structured, daily-discipline program that turns Oracle Fusion SCM trainees into confident, interview-ready consultants — through real project simulation, scenario-based practice, and conditioned interview performance.
+          </p>
+
+          <div class="hero-cta-group gsap-hero-anim">
+            <a href="#eligibility-form-section" class="btn btn-filled hero-primary-cta" id="hero-cta-btn">Check My Eligibility →</a>
+            <a href="https://wa.me/918125323232?text=Hi,%20I'm%20interested%20in%20the%20RISE%20program.%20Can%20we%20connect?" target="_blank" class="btn btn-ghost hero-secondary-cta">
+              <svg class="cta-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984a9.96 9.96 0 0 0 1.333 4.982L2 22l5.202-1.362a9.92 9.92 0 0 0 4.808 1.237h.005c5.507 0 9.99-4.478 9.99-9.985 0-2.67-1.037-5.18-2.92-7.065A9.925 9.925 0 0 0 12.012 2zm5.72 14.12c-.25.706-1.464 1.32-2.014 1.402-.5.074-1.15.132-3.35-.776-2.813-1.158-4.63-4.02-4.77-4.208-.14-.189-1.147-1.528-1.147-2.914 0-1.386.726-2.067 1.012-2.35.286-.282.643-.353.857-.353.214 0 .428.005.62.015.2.01.469-.077.733.555.268.643.914 2.227.994 2.39.08.162.133.353.027.565-.107.214-.16.347-.32.535-.16.189-.336.422-.48.567-.16.16-.33.33-.14.656.19.324.846 1.396 1.81 2.257.962.861 1.77 1.13 2.093 1.293.324.162.512.136.706-.08.194-.22.83-1.018 1.053-1.368.223-.35.446-.29.75-.176.304.115 1.93.91 2.26 1.074.33.164.55.242.63.38.08.136.08.79-.17 1.496z"/></svg>
+              Talk to Placement Counsellor
+            </a>
+          </div>
+
+          <p class="micro-trust-line gsap-hero-anim">
+            <span>✔ Oracle Fusion SCM</span>
+            <span>✔ Real Project Simulation</span>
+            <span>✔ Written Placement Guarantee</span>
+          </p>
+        </div>
+
+        <div class="hero-visual-area gsap-hero-visual">
+          <div class="video-container-wrapper">
+            <div class="video-frame-glow"></div>
+            <!-- Mock visual representation of mock interview / sync -->
+            <div class="mock-video-player">
+              <div class="visual-header">
+                <span class="visual-dot red"></span>
+                <span class="visual-dot yellow"></span>
+                <span class="visual-dot green"></span>
+                <span class="visual-title">RISE Articulation Simulator</span>
+              </div>
+              <div class="visual-screen-split">
+                <!-- Video feeds -->
+                <div class="video-feeds-col">
+                  <div class="video-user active">
+                    <div class="video-placeholder-avatar">M</div>
+                    <span class="user-name-tag">Mentor (SCM Consultant)</span>
+                    <div class="waveform">
+                      <span></span><span></span><span></span><span></span>
+                    </div>
+                  </div>
+                  <div class="video-user">
+                    <div class="video-placeholder-avatar">S</div>
+                    <span class="user-name-tag">Candidate (You)</span>
+                  </div>
+                </div>
+                <!-- Articulation Scorecard -->
+                <div class="scorecard-col">
+                  <span class="panel-tag">LIVE FEEDBACK</span>
+                  <h4 class="panel-title">MOCK CONTEXT SCORE</h4>
+                  
+                  <div class="score-display">
+                    <span class="score-num">92%</span>
+                    <span class="score-status">Excellent</span>
+                  </div>
+                  
+                  <div class="keywords-list">
+                    <div class="keyword-item matched">
+                      <span class="check-icon">✓</span>
+                      <span>FBDI Data Load</span>
+                    </div>
+                    <div class="keyword-item matched">
+                      <span class="check-icon">✓</span>
+                      <span>BPM Rules</span>
+                    </div>
+                    <div class="keyword-item matched">
+                      <span class="check-icon">✓</span>
+                      <span>BU Setup</span>
+                    </div>
+                    <div class="keyword-item pending">
+                      <span class="check-icon">⋯</span>
+                      <span>Holds Debug</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="screen-overlay-prompt">
+                <div class="prompt-badge">SCENARIO CHALLENGE</div>
+                <p>"Explain how you configured the back-to-back order flow when the supplier encounters a constraint. Walk me through the logs."</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stat Strip Moved Below Grid -->
+      <div class="hero-stat-strip gsap-hero-anim">
+        <div class="stat-item">
+          <span class="stat-num">45</span>
+          <span class="stat-label">Days of Practice</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">4 Hrs</span>
+          <span class="stat-label">Daily Commitment</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">4</span>
+          <span class="stat-label">Structured Phases</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">3–6 M</span>
+          <span class="stat-label">On-the-job Support</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Trust Bar -->
+  <section class="trust-bar-section">
+    <div class="container trust-bar-grid">
+      <div class="trust-stat">
+        <span class="trust-num">23,000+</span>
+        <span class="trust-txt">Trained by Tech Leads IT</span>
+      </div>
+      <div class="trust-stat">
+        <span class="trust-num">600+</span>
+        <span class="trust-txt">Interview Scenario Q&As</span>
+      </div>
+      <div class="trust-stat">
+        <span class="trust-num">Guest Faculty</span>
+        <span class="trust-txt">Working SCM Consultants</span>
+      </div>
+      <div class="trust-stat">
+        <span class="trust-num">Written</span>
+        <span class="trust-txt">10-Interview Guarantee</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. The Gap (Problem Section) -->
+  <section class="gap-section section-padding">
+    <div class="container text-center max-w-3xl">
+      <span class="section-tag">THE COLD TRUTH</span>
+      <h2 class="section-title">Training Gets You Knowledge.<br>It Doesn't Get You Chosen.</h2>
+      <p class="section-lead">
+        You've done the Oracle Fusion SCM training. You know the modules. And yet the interviews keep ending in <em>"we'll get back to you."</em> That's not a knowledge gap — it's a project-story gap, an articulation gap, and a nobody's-marketing-my-profile gap. 
+      </p>
+      <p class="section-body-text">
+        Concepts fade within weeks of finishing training. Without structured daily practice, real business scenarios to anchor the theory to, and absolute accountability, you freeze under pressure. RISE exists for exactly this 45-day gap.
+      </p>
+    </div>
+  </section>
+
+  <!-- 4. What Is RISE -->
+  <section class="rise-acronym-section section-padding alt-bg">
+    <div class="container">
+      <div class="text-center max-w-3xl">
+        <span class="section-tag">THE SYSTEM</span>
+        <h2 class="section-title">An Acronym. And a Method.</h2>
+        <p class="section-lead">Each letter names a discipline the program enforces every single day — not a marketing tagline.</p>
+      </div>
+
+      <div class="acronym-grid">
+        <div class="acronym-card">
+          <div class="acronym-letter-box">R</div>
+          <h3 class="acronym-title">Real-Time Project Exposure</h3>
+          <p class="acronym-desc">Live experience of how Fusion SCM projects actually execute. You touch the real configurations, files, and flowcharts.</p>
+        </div>
+        <div class="acronym-card">
+          <div class="acronym-letter-box">I</div>
+          <h3 class="acronym-title">Interview Readiness</h3>
+          <p class="acronym-desc">Daily mocks, articulation drills, panel rounds. We condition you to explain complex setups under live interview pressure.</p>
+        </div>
+        <div class="acronym-card">
+          <div class="acronym-letter-box">S</div>
+          <h3 class="acronym-title">Scenario-Based Learning</h3>
+          <p class="acronym-desc">No textbook answers. Every concept is tied to a real business situation, so you sound like an experienced consultant.</p>
+        </div>
+        <div class="acronym-card">
+          <div class="acronym-letter-box">E</div>
+          <h3 class="acronym-title">Employment & Execution</h3>
+          <p class="acronym-desc">Profile marketing, arranged interviews, and 3-6 months of on-the-job mentor support to make sure you succeed after landing the role.</p>
+        </div>
+      </div>
+
+      <div class="acronym-footer text-center">
+        <p><strong>The goal:</strong> Turn trained candidates into job-ready consultants who can execute independently from day one — and articulate that capability under pressure.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Before → After -->
+  <section class="before-after-section section-padding">
+    <div class="container">
+      <div class="text-center max-w-3xl">
+        <span class="section-tag">TRANSFORMATION</span>
+        <h2 class="section-title">Same Person. Two Outcomes.<br>45 Days in Between.</h2>
+        <p class="section-lead">Loss-aversion is real: every day you spend without project conviction is a day of lost salary.</p>
+      </div>
+
+      <div class="comparison-table-wrapper">
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Before RISE</th>
+              <th>After RISE</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div class="comparison-cell cell-before">
+                  <span class="cell-icon">✗</span>
+                  <p>Freezes during project-specific cross-examination</p>
+                </div>
+              </td>
+              <td>
+                <div class="comparison-cell cell-after">
+                  <span class="cell-icon">✓</span>
+                  <p>Enters every interview calm, structured, and fully prepared</p>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="comparison-cell cell-before">
+                  <span class="cell-icon">✗</span>
+                  <p>No real project story to tell, relying on generic slides</p>
+                </div>
+              </td>
+              <td>
+                <div class="comparison-cell cell-after">
+                  <span class="cell-icon">✓</span>
+                  <p>Walks through a full project lifecycle with confidence</p>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="comparison-cell cell-before">
+                  <span class="cell-icon">✗</span>
+                  <p>Struggles to write a resume or market a profile effectively</p>
+                </div>
+              </td>
+              <td>
+                <div class="comparison-cell cell-after">
+                  <span class="cell-icon">✓</span>
+                  <p>Builds a recruiter-magnet resume and optimized LinkedIn profile</p>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="comparison-cell cell-before">
+                  <span class="cell-icon">✗</span>
+                  <p>No mentor, no network, no direction after basic training</p>
+                </div>
+              </td>
+              <td>
+                <div class="comparison-cell cell-after">
+                  <span class="cell-icon">✓</span>
+                  <p>Dedicated Placement Officer actively pushing your profile to recruiters</p>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="comparison-cell cell-before">
+                  <span class="cell-icon">✗</span>
+                  <p>Can't explain configurations under cross-questioning</p>
+                </div>
+              </td>
+              <td>
+                <div class="comparison-cell cell-after">
+                  <span class="cell-icon">✓</span>
+                  <p>Independently prepares BRD, config docs, test cases, and solutions</p>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="comparison-cell cell-before">
+                  <span class="cell-icon">✗</span>
+                  <p>LinkedIn profile incomplete and invisible to hiring managers</p>
+                </div>
+              </td>
+              <td>
+                <div class="comparison-cell cell-after">
+                  <span class="cell-icon">✓</span>
+                  <p>Handles clients and project work without constant hand-holding</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="text-center section-cta-btn">
+        <a href="#eligibility-form-section" class="btn btn-filled">See If You Qualify for RISE →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Who This Is For -->
+  <section class="personas-section section-padding alt-bg">
+    <div class="container">
+      <div class="text-center max-w-3xl">
+        <span class="section-tag">SELF-SELECTION</span>
+        <h2 class="section-title">Three Career Situations.<br>One Acceleration Path.</h2>
+        <p class="section-lead">RISE is built for trained Oracle Fusion SCM aspirants stuck between knowing the modules and being chosen for the role.</p>
+      </div>
+
+      <div class="personas-grid">
+        <div class="persona-card" onclick="document.querySelector('#user-role').value = 'Fresher'; document.getElementById('eligibility-form-section').scrollIntoView({behavior: 'smooth'});">
+          <div class="persona-icon-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/></svg>
+          </div>
+          <h3 class="persona-title">Fresher from Oracle Fusion SCM Training</h3>
+          <p class="persona-desc">You have classroom concepts, not project conviction. Interviews keep ending in "we'll get back to you." RISE gives you a credible project story and the confidence to perform at the level employers expect from experienced hires.</p>
+          <span class="persona-action">Select this situation →</span>
+        </div>
+
+        <div class="persona-card" onclick="document.querySelector('#user-role').value = 'Working Professional'; document.getElementById('eligibility-form-section').scrollIntoView({behavior: 'smooth'});">
+          <div class="persona-icon-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          </div>
+          <h3 class="persona-title">Working Professional Switching to Fusion SCM</h3>
+          <p class="persona-desc">Your prior domain doesn't speak Fusion's language yet, and you have no real exposure to how project teams operate. RISE re-anchors your career history specifically for Fusion interviews.</p>
+          <span class="persona-action">Select this situation →</span>
+        </div>
+
+        <div class="persona-card" onclick="document.querySelector('#user-role').value = 'EBS Migrant'; document.getElementById('eligibility-form-section').scrollIntoView({behavior: 'smooth'});">
+          <div class="persona-icon-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 2.1l4 4-4 4M3 22v-6c0-3.3 2.7-6 6-6h10"/></svg>
+          </div>
+          <h3 class="persona-title">EBS Consultant Migrating to Fusion</h3>
+          <p class="persona-desc">Deep EBS experience, Fusion uncertainty — Redwood UX, AI features, modern lifecycle. RISE helps you confidently map your EBS expertise into Fusion terminology in any interview.</p>
+          <span class="persona-action">Select this situation →</span>
+        </div>
+      </div>
+
+      <div class="text-center acronym-footer">
+        <p>Same finish line. Three different starting points. The 45-day rhythm absorbs all three.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. Are You Eligible -->
+  <section class="eligibility-checklist-section section-padding">
+    <div class="container eligibility-grid-layout">
+      <div class="eligibility-content">
+        <span class="section-tag">REQUIREMENTS</span>
+        <h2 class="section-title">Is RISE Right for You?</h2>
+        <p class="section-lead">RISE is selective — not because we want to be exclusive, but because the 45-day rhythm only works when every participant is genuinely ready to commit.</p>
+        <p class="eligibility-notice">We weight attitude and commitment over credentials. Here is who we are looking for:</p>
+        
+        <div class="cta-assessment-box">
+          <p class="cta-assess-txt">Not sure if you qualify? Get an honest assessment from our team.</p>
+          <a href="tel:+918125323232" class="btn btn-outline">+91 81253 23232</a>
+        </div>
+      </div>
+
+      <div class="eligibility-checklist-card">
+        <h3 class="checklist-card-title">You're a fit for RISE if:</h3>
+        <ul class="checklist-items">
+          <li>
+            <span class="chk-icon">✓</span>
+            <span class="chk-text">You've completed Oracle Fusion SCM training (or have equivalent working knowledge)</span>
+          </li>
+          <li>
+            <span class="chk-icon">✓</span>
+            <span class="chk-text">You have familiarity with at least one core SCM module (OM, Procurement, Inventory, or Planning)</span>
+          </li>
+          <li>
+            <span class="chk-icon">✓</span>
+            <span class="chk-text">You have good communication skills and a genuine desire to build a consulting career</span>
+          </li>
+          <li>
+            <span class="chk-icon">✓</span>
+            <span class="chk-text">You can commit <strong>4 hours daily for 45 days</strong>, without compromise</span>
+          </li>
+          <li>
+            <span class="chk-icon">✓</span>
+            <span class="chk-text">You're open to relocating or working from any project location across India</span>
+          </li>
+          <li>
+            <span class="chk-icon">✓</span>
+            <span class="chk-text">You're willing to explore all engagement types — C2C, C2H, or Full-Time</span>
+          </li>
+          <li>
+            <span class="chk-icon">✓</span>
+            <span class="chk-text">You're willing to apply for every role and attend every interview arranged for you</span>
+          </li>
+        </ul>
+        <div class="checklist-footer-line">
+          Selective by intent. We require cameras on and active engagement in every session.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. What RISE Delivers (Six Pillars) -->
+  <section class="pillars-section section-padding alt-bg">
+    <div class="container">
+      <div class="text-center max-w-3xl">
+        <span class="section-tag">THE PILLARS</span>
+        <h2 class="section-title">Six Disciplines. One Outcome.</h2>
+        <p class="section-lead">Everything we deliver is optimized to get you hired and settled into your new role.</p>
+      </div>
+
+      <div class="pillars-grid">
+        <div class="pillar-card">
+          <div class="pillar-num">01</div>
+          <h3 class="pillar-title">Real-Time Project Simulation</h3>
+          <p class="pillar-desc">Walk through the end-to-end implementation lifecycle using OUM methodology. Experience support, rollout, and enhancement project types.</p>
+        </div>
+
+        <div class="pillar-card">
+          <div class="pillar-num">02</div>
+          <h3 class="pillar-title">Interview Conditioning</h3>
+          <p class="pillar-desc">Daily 1:1 and panel mock interviews. Scenario-based questioning under pressure to build articulation structure and confidence.</p>
+        </div>
+
+        <div class="pillar-card">
+          <div class="pillar-num">03</div>
+          <h3 class="pillar-title">Resume & Profile Building</h3>
+          <p class="pillar-desc">Transform your profile with project-based storytelling and professional experience framing that attracts recruiter searches.</p>
+        </div>
+
+        <div class="pillar-card">
+          <div class="pillar-num">04</div>
+          <h3 class="pillar-title">Advanced Functional Coverage</h3>
+          <p class="pillar-desc">Learn the latest Oracle Fusion SCM capabilities, including Redwood UX, AI-powered features, and Oracle AI Agents.</p>
+        </div>
+
+        <div class="pillar-card">
+          <div class="pillar-num">05</div>
+          <h3 class="pillar-title">Interview Q&A Toolkit</h3>
+          <p class="pillar-desc">Get access to a pre-built library of 600+ structured Q&A templates spanning functional, integration, and scenario topics.</p>
+        </div>
+
+        <div class="pillar-card">
+          <div class="pillar-num">06</div>
+          <h3 class="pillar-title">Placement & Post-Job Support</h3>
+          <p class="pillar-desc">A dedicated Placement Officer markets your profile and schedules interviews. Plus, 3–6 months of post-job mentor support to protect your role.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. Your 45-Day Journey (Timeline) -->
+  <section class="timeline-section section-padding">
+    <div class="container">
+      <div class="text-center max-w-3xl">
+        <span class="section-tag">THE PATHWAY</span>
+        <h2 class="section-title">Your 45-Day Journey</h2>
+        <p class="section-lead">Each phase builds on the last. You don't move to interview conditioning until the project simulation is in your bones.</p>
+      </div>
+
+      <div class="timeline-wrapper">
+        <div class="timeline-line"></div>
+        
+        <!-- Phase 1 -->
+        <div class="timeline-item">
+          <div class="timeline-badge">01</div>
+          <div class="timeline-panel">
+            <span class="phase-days">Day 1 – 14</span>
+            <h3 class="phase-title">Foundation & Practice Discipline</h3>
+            <p class="phase-desc">Module-wise revision across all core SCM modules with daily scenario-based drills. You leave this phase able to navigate Oracle Fusion confidently, perform setups independently, and execute end-to-end business transactions.</p>
+          </div>
+        </div>
+
+        <!-- Phase 2 -->
+        <div class="timeline-item">
+          <div class="timeline-badge">02</div>
+          <div class="timeline-panel">
+            <span class="phase-days">Day 15 – 30</span>
+            <h3 class="phase-title">Real-Time Project Simulation</h3>
+            <p class="phase-desc">Own real project documents (BRD, config docs, test cases, solution designs) through a simulated implementation lifecycle: Requirements → Design → Config → Test → Go-Live. Includes live support ticket ticketing flows and pressure testing with guest consultants.</p>
+          </div>
+        </div>
+
+        <!-- Phase 3 -->
+        <div class="timeline-item">
+          <div class="timeline-badge">03</div>
+          <div class="timeline-panel">
+            <span class="phase-days">Day 31 – 40</span>
+            <h3 class="phase-title">Interview Conditioning</h3>
+            <p class="phase-desc">Daily 1:1 and panel mock interviews with no textbook answers accepted. We condition you in four pillars: Clarity, Structure, Confidence, and Recovery under cross-questioning. At Day 41, a dedicated Placement Officer takes over your profile.</p>
+          </div>
+        </div>
+
+        <!-- Phase 4 -->
+        <div class="timeline-item">
+          <div class="timeline-badge">04</div>
+          <div class="timeline-panel">
+            <span class="phase-days">Day 41 – 45 & Beyond</span>
+            <h3 class="phase-title">Placement & Market Readiness</h3>
+            <p class="phase-desc">Resume finalization, LinkedIn optimization, and release to the market for interviews. Once placed, get 3–6 months of on-the-job mentor support to help with client communication and technical challenges in your new role.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-footer-strip">
+        <span><strong>45</strong> Days</span>
+        <span><strong>4 Hrs</strong> Daily Commitment</span>
+        <span><strong>600+</strong> Scenario Q&As</span>
+        <span><strong>3–6 Months</strong> Job Support</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10. Guest Faculty -->
+  <section class="guest-faculty-section section-padding alt-bg">
+    <div class="container guest-grid">
+      <div class="guest-info">
+        <span class="section-tag">AUTHORITY</span>
+        <h2 class="section-title">Learn From People Who Live This Work</h2>
+        <p class="section-lead text-left">Not a lecture. Not a panel. Pressure-testing by people who live this work.</p>
+        <p class="section-body-text">
+          Every RISE cohort includes sessions with real Oracle Fusion SCM consultants currently working on live projects — not just trainers teaching slides. They bring real-time project war stories, live cross-questioning from an interviewer's perspective, and honest insight into what separates placed consultants from those who aren't.
+        </p>
+      </div>
+      
+      <div class="guest-quote-card">
+        <div class="quote-icon">“</div>
+        <blockquote class="guest-quote">
+          "The guest session was more valuable than two weeks of training. He asked me questions I had never even considered — and made me realize exactly where I would have lost the interview."
+        </blockquote>
+        <div class="quote-author">
+          <span class="author-name">RISE Participant</span>
+          <span class="author-label">Placed Oracle SCM Consultant</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11. Real Student Voices (Testimonial Slot) -->
+  <section class="testimonial-section section-padding">
+    <div class="container">
+      <div class="text-center max-w-3xl">
+        <span class="section-tag">PROOF</span>
+        <h2 class="section-title">Hear It From Someone Who Sat Where You're Sitting</h2>
+        <p class="section-lead">One real RISE story, in their own words.</p>
+      </div>
+
+      <div class="testimonial-grid-card">
+        <div class="testimonial-video-box">
+          <!-- Premium Video Player Placeholder (CSS/SVG Rendered) -->
+          <div class="video-placeholder-wrapper">
+            <div class="video-overlay-gradient"></div>
+            <!-- Dynamic placeholder graphic representing the student video -->
+            <div class="video-student-graphic">
+              <svg viewBox="0 0 100 100" class="student-avatar-svg">
+                <circle cx="50" cy="40" r="25" fill="#f1b61a" opacity="0.15"/>
+                <path d="M50 15a15 15 0 1 0 15 15 15 15 0 0 0-15-15zm-25 50c0-10 12-15 25-15s25 5 25 15v8H25z" fill="#f1b61a"/>
+              </svg>
+              <div class="video-play-btn-circle">
+                <svg viewBox="0 0 24 24" fill="currentColor" class="video-play-icon"><path d="M8 5v14l11-7z"/></svg>
+              </div>
+            </div>
+            <div class="video-caption-bar">
+              <span class="student-name">Ananya R.</span>
+              <span class="student-status">Placed via RISE • Oracle Fusion SCM Consultant</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-details-box">
+          <div class="quote-icon-small">“</div>
+          <h3 class="testimonial-pull-quote">"I used to freeze when interviewers asked about real integration failures. RISE gave me a project story I own completely."</h3>
+          <p class="testimonial-narrative">
+            "Before joining RISE, I finished SCM training but couldn't explain the business logic behind setups. During Phase 2 project simulation, I configured live configurations myself. By the time I sat in interviews, my project story felt natural because I had actually built it."
+          </p>
+          
+          <div class="student-fact-row">
+            <div class="fact-box">
+              <span class="fact-label">Persona:</span>
+              <span class="fact-val">SCM Fresher</span>
+            </div>
+            <div class="fact-box">
+              <span class="fact-label">Interviews Arranged:</span>
+              <span class="fact-val">4 scheduled by week 2</span>
+            </div>
+            <div class="fact-box">
+              <span class="fact-label">Placed In:</span>
+              <span class="fact-val">28 Days post-release</span>
+            </div>
+          </div>
+
+          <div class="testimonial-cta">
+            <a href="tel:+918125323232" class="btn btn-outline btn-full-mobile">Talk to a RISE Graduate — Book a Call</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12. See It For Yourself (WhatsApp Proof Wall) -->
+  <section class="whatsapp-proof-section section-padding alt-bg">
+    <div class="container">
+      <div class="text-center max-w-3xl">
+        <span class="section-tag">AVAILABILITY HEURISTIC</span>
+        <h2 class="section-title">Real Enrollments. Real Conversations.</h2>
+        <p class="section-lead">These aren't stock testimonials — they're actual WhatsApp updates from students who enrolled, showed up, and got placed.</p>
+      </div>
+
+      <!-- Carousel Container -->
+      <div class="carousel-container">
+        <!-- Carousel Track Wrapper -->
+        <div class="carousel-track-wrapper">
+          <div class="carousel-track" id="carousel-track">
+            
+            <!-- WhatsApp Chat Card 1 -->
+            <div class="carousel-slide">
+              <div class="whatsapp-chat-card">
+                <div class="chat-header">
+                  <div class="chat-avatar">R</div>
+                  <div class="chat-contact-info">
+                    <span class="chat-name">Rohit K. (SCM Fresher)</span>
+                    <span class="chat-status">Online</span>
+                  </div>
+                  <div class="chat-whatsapp-icon">💬</div>
+                </div>
+                <div class="chat-body">
+                  <div class="message bubble-received">
+                    <p>Sir, just cleared the technical round! The interviewer asked about the OUM design document we prepared in Phase 2. I explained it exactly how we did in the mock.</p>
+                    <span class="msg-time">11:42 AM</span>
+                  </div>
+                  <div class="message bubble-sent">
+                    <p>Awesome work Rohit! Proud of you. Keep the same structure for the panel round tomorrow. You got this!</p>
+                    <span class="msg-time">11:45 AM</span>
+                  </div>
+                  <div class="message bubble-received">
+                    <p>Yes sir, revision checklist is open now. Thank you so much!</p>
+                    <span class="msg-time">11:46 AM</span>
+                  </div>
+                </div>
+                <div class="chat-footer-label">Message from Day 22</div>
+              </div>
+            </div>
+
+            <!-- WhatsApp Chat Card 2 -->
+            <div class="carousel-slide">
+              <div class="whatsapp-chat-card">
+                <div class="chat-header">
+                  <div class="chat-avatar">P</div>
+                  <div class="chat-contact-info">
+                    <span class="chat-name">Pooja M. (Switcher)</span>
+                    <span class="chat-status">Online</span>
+                  </div>
+                  <div class="chat-whatsapp-icon">💬</div>
+                </div>
+                <div class="chat-body">
+                  <div class="message bubble-received">
+                    <p>Placement Officer just arranged my 3rd interview. This one is with an Oracle Gold Partner. Salary package is 7.5LPA.</p>
+                    <span class="msg-time">3:15 PM</span>
+                  </div>
+                  <div class="message bubble-sent">
+                    <p>Brilliant, Pooja! That's exactly in your target range. How is the confidence level for the integration scenarios?</p>
+                    <span class="msg-time">3:18 PM</span>
+                  </div>
+                  <div class="message bubble-received">
+                    <p>Very clear sir, the 600+ Q&A library covers almost everything they asked in the previous rounds.</p>
+                    <span class="msg-time">3:20 PM</span>
+                  </div>
+                </div>
+                <div class="chat-footer-label">Message from Day 42</div>
+              </div>
+            </div>
+
+            <!-- WhatsApp Chat Card 3 -->
+            <div class="carousel-slide">
+              <div class="whatsapp-chat-card">
+                <div class="chat-header">
+                  <div class="chat-avatar">D</div>
+                  <div class="chat-contact-info">
+                    <span class="chat-name">Deepak S. (EBS Migrant)</span>
+                    <span class="chat-status">Online</span>
+                  </div>
+                  <div class="chat-whatsapp-icon">💬</div>
+                </div>
+                <div class="chat-body">
+                  <div class="message bubble-received">
+                    <p>Hi Team, I received the official offer letter today! SCM Consultant role. Joining next Monday.</p>
+                    <span class="msg-time">6:02 PM</span>
+                  </div>
+                  <div class="message bubble-sent">
+                    <p>Congratulations Deepak! 🍾 That's a huge milestone. We will assign your on-the-job mentor by Friday to support your onboarding.</p>
+                    <span class="msg-time">6:10 PM</span>
+                  </div>
+                  <div class="message bubble-received">
+                    <p>Thank you! That post-placement support gives me peace of mind for the first project.</p>
+                    <span class="msg-time">6:12 PM</span>
+                  </div>
+                </div>
+                <div class="chat-footer-label">Message from Day 45</div>
+              </div>
+            </div>
+
+            <!-- WhatsApp Chat Card 4 -->
+            <div class="carousel-slide">
+              <div class="whatsapp-chat-card">
+                <div class="chat-header">
+                  <div class="chat-avatar">S</div>
+                  <div class="chat-contact-info">
+                    <span class="chat-name">Sandeep V. (SCM Fresher)</span>
+                    <span class="chat-status">Online</span>
+                  </div>
+                  <div class="chat-whatsapp-icon">💬</div>
+                </div>
+                <div class="chat-body">
+                  <div class="message bubble-received">
+                    <p>Just finished the mock session. The peer review feedback was detailed. I need to work on my recovery structure for procurement configurations.</p>
+                    <span class="msg-time">1:10 PM</span>
+                  </div>
+                  <div class="message bubble-sent">
+                    <p>Good self-assessment Sandeep. Re-read section 4 of the configuration workbook today. We will run it again tomorrow.</p>
+                    <span class="msg-time">1:15 PM</span>
+                  </div>
+                  <div class="message bubble-received">
+                    <p>On it. Understood!</p>
+                    <span class="msg-time">1:16 PM</span>
+                  </div>
+                </div>
+                <div class="chat-footer-label">Message from Day 18</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Carousel Navigation -->
+        <div class="carousel-nav">
+          <button class="carousel-btn btn-prev" id="carousel-prev" aria-label="Previous slide">←</button>
+          <div class="carousel-dots">
+            <span class="dot active"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+          <button class="carousel-btn btn-next" id="carousel-next" aria-label="Next slide">→</button>
+        </div>
+      </div>
+
+      <div class="text-center section-cta-btn">
+        <a href="https://wa.me/918125323232?text=Hi,%20I'd%20like%20to%20see%20more%20student%20placement%20chats%20and%20details." target="_blank" class="btn btn-outline btn-full-mobile">
+          Message Us on WhatsApp — See More Conversations →
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 13. Why RISE Is Different -->
+  <section class="why-different-section section-padding">
+    <div class="container">
+      <div class="text-center max-w-3xl">
+        <span class="section-tag">DIFFERENTIATION</span>
+        <h2 class="section-title">What Makes RISE Different</h2>
+        <p class="section-lead">The market is full of module training. RISE is built for the part of the journey that training programs treat as someone else's problem.</p>
+      </div>
+
+      <div class="differentiation-grid">
+        <div class="diff-card text-left">
+          <h3 class="diff-title">Standard Training Courses</h3>
+          <ul class="diff-list negative-list">
+            <li>
+              <span class="diff-list-icon">✗</span>
+              <span class="diff-list-txt"><strong>Passive Slideware:</strong> Click-by-click demos without business scenarios.</span>
+            </li>
+            <li>
+              <span class="diff-list-icon">✗</span>
+              <span class="diff-list-txt"><strong>Conceptual Mocks:</strong> Basic interview tips rather than live conditioning under pressure.</span>
+            </li>
+            <li>
+              <span class="diff-list-icon">✗</span>
+              <span class="diff-list-txt"><strong>Portal Submissions:</strong> Uploading your resume to an inactive portal.</span>
+            </li>
+            <li>
+              <span class="diff-list-icon">✗</span>
+              <span class="diff-list-txt"><strong>Outdated Syllabus:</strong> Teaching old screens, omitting Redwood UX and AI features.</span>
+            </li>
+            <li>
+              <span class="diff-list-icon">✗</span>
+              <span class="diff-list-txt"><strong>No Post-Job Help:</strong> Left to fend for yourself once you clear the interview.</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="diff-card featured-diff text-left">
+          <h3 class="diff-title">Tech Leads IT — RISE</h3>
+          <ul class="diff-list positive-list">
+            <li>
+              <span class="diff-list-icon">✓</span>
+              <span class="diff-list-txt"><strong>Real Project Simulation:</strong> Own real OUM documents, BRDs, setups, and Jira tickets.</span>
+            </li>
+            <li>
+              <span class="diff-list-icon">✓</span>
+              <span class="diff-list-txt"><strong>Conditioned Performance:</strong> Daily mock panels that train articulation, recovery, and clarity.</span>
+            </li>
+            <li>
+              <span class="diff-list-icon">✓</span>
+              <span class="diff-list-txt"><strong>Placement Officer:</strong> Active marketing of your profile directly to hiring pipelines.</span>
+            </li>
+            <li>
+              <span class="diff-list-icon">✓</span>
+              <span class="diff-list-txt"><strong>Modern Fusion Focus:</strong> Deep dive into Redwood UX, Oracle AI Agents, and standard integrations.</span>
+            </li>
+            <li>
+              <span class="diff-list-icon">✓</span>
+              <span class="diff-list-txt"><strong>Post-Job Support:</strong> 3-6 months of on-the-job mentor backing to protect your role.</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="text-center acronym-footer">
+        <p>We replace passive study with active, consultant-grade performance.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 14. Investment & What's Included (Interactive Registration Form) -->
+  <section class="investment-section section-padding alt-bg" id="eligibility-form-section">
+    <div class="container investment-grid-layout">
+      
+      <!-- Left side: Price & Info -->
+      <div class="investment-info">
+        <span class="section-tag">INVESTMENT</span>
+        <h2 class="section-title">One Enrollment.<br>Everything Included.</h2>
+        <p class="section-lead text-left">No hidden charges. A transparent pricing model built around your placement outcomes.</p>
+        
+        <div class="price-box">
+          <span class="price-val">₹1,49,999</span>
+          <span class="price-tax">Per candidate • All-inclusive</span>
+          <span class="price-financing">EMI / Financing options available (Starting at ₹12,500/mo)</span>
+        </div>
+
+        <div class="reframe-line">
+          That's roughly ₹3,300 a day across the intensive program — less than a day's lost income once you factor in the interviews and placement pipeline that come with it.
+        </div>
+
+        <h4 class="included-title">What's Included:</h4>
+        <ul class="included-items-list">
+          <li>✔ 45-Day Project Simulation (OUM Docs & setups)</li>
+          <li>✔ 600+ Q&A Scenario-Based Toolkit</li>
+          <li>✔ Dedicated Placement Officer (Marketing your profile)</li>
+          <li>✔ 3–6 Months On-the-Job Mentor Support</li>
+          <li>✔ All Study Material & Lifetime Alumni Network</li>
+        </ul>
+      </div>
+
+      <!-- Right side: Form Wrapper -->
+      <div class="form-wrapper-outer">
+        <div class="form-wrapper">
+          <h3 class="form-title">Reserve Your Seat & Check Eligibility</h3>
+          <p class="form-subtitle">Complete the fields below to start your application. Verification code will be sent to your email.</p>
+          
+          <form id="lead-capture-form" novalidate>
+            <!-- Hidden inputs dynamically added by JS for tracking (utm_source, etc.) -->
+            
+            <div class="form-group">
+              <label for="user-name">Full Name <span class="required">*</span></label>
+              <input type="text" id="user-name" name="name" placeholder="Enter your full name" required>
+            </div>
+
+            <div class="form-group">
+              <label for="user-phone">WhatsApp Number <span class="required">*</span></label>
+              <div class="phone-input-wrapper">
+                <span class="country-code">+91</span>
+                <input type="tel" id="user-phone" name="phone" placeholder="10-digit mobile number" maxlength="10" required>
+              </div>
+              <span class="input-helper">Verification link/updates will be shared here</span>
+            </div>
+
+            <div class="form-group">
+              <label for="user-email">Email Address <span class="required">*</span></label>
+              <div class="email-otp-row">
+                <input type="email" id="user-email" name="email" placeholder="name@domain.com" required>
+                <button type="button" id="send-otp-btn" class="btn btn-outline btn-sm">Send OTP</button>
+              </div>
+              <div id="email-otp-status" class="otp-status-message"></div>
+            </div>
+
+            <!-- OTP Code input (Initially Hidden) -->
+            <div class="form-group" id="otp-input-group" style="display: none;">
+              <label for="user-otp">Enter 6-Digit OTP <span class="required">*</span></label>
+              <div class="email-otp-row">
+                <input type="text" id="user-otp" placeholder="Enter OTP code" maxlength="6">
+                <button type="button" id="verify-otp-btn" class="btn btn-filled btn-sm">Verify Code</button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="user-role">Current Career Situation <span class="required">*</span></label>
+              <select id="user-role" name="role" required>
+                <option value="" disabled selected>Select your situation...</option>
+                <option value="Fresher">Fresher from Oracle Fusion SCM Training</option>
+                <option value="Working Professional">Working Professional Switching to Fusion SCM</option>
+                <option value="EBS Migrant">EBS Consultant Migrating to Fusion</option>
+              </select>
+            </div>
+
+            <div class="grid-form-row">
+              <div class="form-group">
+                <label for="user-experience">Experience Level <span class="required">*</span></label>
+                <select id="user-experience" name="experience" required>
+                  <option value="" disabled selected>Select...</option>
+                  <option value="0-2 Years">0 - 2 Years</option>
+                  <option value="2-5 Years">2 - 5 Years</option>
+                  <option value="5+ Years">5+ Years</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="user-salary">Current CTC / Salary <span class="required">*</span></label>
+                <select id="user-salary" name="salary" required>
+                  <option value="" disabled selected>Select...</option>
+                  <option value="0-3 LPA">0 - 3 LPA</option>
+                  <option value="3-6 LPA">3 - 6 LPA</option>
+                  <option value="6-10 LPA">6 - 10 LPA</option>
+                  <option value="10+ LPA">10+ LPA</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-requirements-notice">
+              By submitting, you agree you can commit 4 hours daily, keep your camera on, and attend all interviews arranged for you.
+            </div>
+
+            <!-- Submit Button (Disabled until Email verified) -->
+            <button type="submit" id="submit-booking-btn" class="btn btn-filled btn-full" disabled style="opacity: 0.55; cursor: not-allowed;">
+              Verify Email with OTP to Unlock Registration
+            </button>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 15. The Guarantee, In Writing -->
+  <section class="guarantee-section section-padding">
+    <div class="container text-center max-w-4xl">
+      <div class="guarantee-badge">
+        <svg viewBox="0 0 24 24" class="guarantee-badge-icon" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+        <span>WRITTEN OUTCOME GUARANTEE</span>
+      </div>
+      
+      <h2 class="section-title">We Put Our Outcome in Writing.</h2>
+      <p class="section-lead">Minimum 10 verified interview opportunities within 90 days of program completion.</p>
+
+      <div class="guarantee-points-grid">
+        <div class="guarantee-point-card">
+          <div class="guarantee-point-num">01</div>
+          <h3 class="guarantee-point-title">Written Commitment</h3>
+          <p class="guarantee-point-desc">Your placement guarantee is issued in writing upon enrollment, formally locking in our commitment to deliver 10 SCM interviews.</p>
+        </div>
+        
+        <div class="guarantee-point-card">
+          <div class="guarantee-point-num">02</div>
+          <h3 class="guarantee-point-title">Audit & Transparency</h3>
+          <p class="guarantee-point-desc">Every scheduled interview is logged, verified, and audited with documented feedback from hiring managers.</p>
+        </div>
+
+        <div class="guarantee-point-card">
+          <div class="guarantee-point-num">03</div>
+          <h3 class="guarantee-point-title">No-Hassle Refund</h3>
+          <p class="guarantee-point-desc">If we fall short of 10 opportunities within 90 days of Phase 4 release, your 50% refund is initiated immediately. No negotiations.</p>
+        </div>
+      </div>
+
+      <div class="guarantee-closer max-w-3xl">
+        <p>A guarantee is built on mutual commitment. This refund clause stands so you can invest in your career transition with absolute confidence. <span class="fine-print">(Subject to attendance and participation criteria — visible in our formal terms sheet)</span></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 16. FAQ -->
+  <section class="faq-section section-padding alt-bg">
+    <div class="container">
+      <div class="text-center max-w-3xl">
+        <span class="section-tag">OBJECTION HANDLING</span>
+        <h2 class="section-title">Frequently Asked Questions</h2>
+        <p class="section-lead">Have questions? We have direct answers.</p>
+      </div>
+
+      <div class="faq-list max-w-3xl">
+        
+        <div class="faq-item">
+          <button class="faq-trigger">
+            <span>What if I don't get placed within 90 days?</span>
+            <span class="faq-icon-arrow">+</span>
+          </button>
+          <div class="faq-content">
+            <p>You get 50% of your program fee refunded automatically — no negotiation, as outlined in the written guarantee document you sign at enrollment.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-trigger">
+            <span>I already did SCM training elsewhere. Can I still join?</span>
+            <span class="faq-icon-arrow">+</span>
+          </button>
+          <div class="faq-content">
+            <p>Yes. RISE is specifically built for anyone with completed Oracle Fusion SCM training or equivalent working knowledge, regardless of where you originally trained.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-trigger">
+            <span>What if I have zero real project experience?</span>
+            <span class="faq-icon-arrow">+</span>
+          </button>
+          <div class="faq-content">
+            <p>That's exactly the gap RISE closes. Phase 2 puts you through a full simulated implementation lifecycle using OUM methodology so you have a real, credible project story before you enter the market.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-trigger">
+            <span>Is this only for freshers, or can working professionals join?</span>
+            <span class="faq-icon-arrow">+</span>
+          </button>
+          <div class="faq-content">
+            <p>Both, plus EBS consultants migrating to Fusion. The program is adapted to support three core personas. We help freshers build project stories, switchers re-align their past experience, and EBS migrants master Fusion terminologies.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-trigger">
+            <span>What happens after I get placed?</span>
+            <span class="faq-icon-arrow">+</span>
+          </button>
+          <div class="faq-content">
+            <p>You get 3–6 months of on-the-job mentor support. If you face any roadblock in your live project, or need help with client communications, you can connect with your assigned mentor for structured guidance.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-trigger">
+            <span>Can I pay in installments?</span>
+            <span class="faq-icon-arrow">+</span>
+          </button>
+          <div class="faq-content">
+            <p>Yes, EMI and financing options are available starting at ₹12,500/month. Speak with our placement counsellor to find a plan that works for you.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-trigger">
+            <span>How much time does this actually take per day?</span>
+            <span class="faq-icon-arrow">+</span>
+          </button>
+          <div class="faq-content">
+            <p>The commitment is 4 hours daily, camera-on. This is non-negotiable. The daily discipline and continuous mock rounds are what make the transition successful.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 17. Final CTA -->
+  <section class="final-cta-section section-padding">
+    <div class="container text-center max-w-3xl">
+      <span class="section-tag">GET STARTED</span>
+      <h2 class="section-title">Stop Being Trained.<br>Start Being Chosen.</h2>
+      <p class="section-lead">Enrollment for the next RISE cohort is open. Seats are strictly capped to preserve the depth of the mentor work and cohort discipline.</p>
+
+      <div class="final-cta-buttons">
+        <a href="#eligibility-form-section" class="btn btn-filled btn-lg" id="final-cta-btn">Enroll & Reserve Your Seat →</a>
+        <div class="final-secondary-row">
+          <a href="https://wa.me/918125323232?text=Hi,%20I'm%20ready%20to%20apply%20for%20RISE." target="_blank" class="btn btn-outline">WhatsApp Us</a>
+          <a href="tel:+918125323232" class="btn btn-outline">Call +91 81253 23232</a>
+        </div>
+      </div>
+
+      <div class="final-trust-recap">
+        <span>✔ 10 interviews guaranteed</span>
+        <span>✔ 50% refund if we don't deliver</span>
+        <span>✔ Dedicated Placement Officer</span>
+        <span>✔ 3–6 month post-placement support</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <img src="logo-light.png" alt="Tech Leads IT Logo" class="footer-logo">
+        <p>An Initiative by Tech Leads IT. Bridging the gap between SCM training and SCM hiring.</p>
+      </div>
+      <div class="footer-contact">
+        <h4>Contact Us</h4>
+        <p>Email: <a href="mailto:info@techleadsit.com">info@techleadsit.com</a></p>
+        <p>Phone: <a href="tel:+918125323232">+91 81253 23232</a></p>
+        <p>Website: <a href="https://www.techleadsit.com" target="_blank">www.techleadsit.com</a></p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container footer-bottom-flex">
+        <p>&copy; 2026 Tech Leads IT. All rights reserved.</p>
+        <p>Terms of Service • Placement Policy • Refund Policy</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 18. Sticky Mobile CTA Bar -->
+  <div class="sticky-mobile-bar">
+    <a href="#eligibility-form-section" class="mobile-sticky-btn primary-btn">Check Eligibility</a>
+    <a href="tel:+918125323232" class="mobile-sticky-btn icon-btn" aria-label="Call Us">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 0 0-1.01.24l-2.2 2.2a15.045 15.045 0 0 1-6.59-6.59l2.2-2.2c.28-.28.36-.67.25-1.02A11.36 11.36 0 0 1 8.5 4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.5c0-.55-.45-1-1-1z"/></svg>
+      <span>Call</span>
+    </a>
+    <a href="https://wa.me/918125323232?text=Hi,%20I'm%20interested%20in%20RISE.%20Can%20we%20chat?" target="_blank" class="mobile-sticky-btn icon-btn" aria-label="WhatsApp Us">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984a9.96 9.96 0 0 0 1.333 4.982L2 22l5.202-1.362a9.92 9.92 0 0 0 4.808 1.237h.005c5.507 0 9.99-4.478 9.99-9.985 0-2.67-1.037-5.18-2.92-7.065A9.925 9.925 0 0 0 12.012 2zm5.72 14.12c-.25.706-1.464 1.32-2.014 1.402-.5.074-1.15.132-3.35-.776-2.813-1.158-4.63-4.02-4.77-4.208-.14-.189-1.147-1.528-1.147-2.914 0-1.386.726-2.067 1.012-2.35.286-.282.643-.353.857-.353.214 0 .428.005.62.015.2.01.469-.077.733.555.268.643.914 2.227.994 2.39.08.162.133.353.027.565-.107.214-.16.347-.32.535-.16.189-.336.422-.48.567-.16.16-.33.33-.14.656.19.324.846 1.396 1.81 2.257.962.861 1.77 1.13 2.093 1.293.324.162.512.136.706-.08.194-.22.83-1.018 1.053-1.368.223-.35.446-.29.75-.176.304.115 1.93.91 2.26 1.074.33.164.55.242.63.38.08.136.08.79-.17 1.496z"/></svg>
+      <span>WhatsApp</span>
+    </a>
+  </div>
+
+</body>
+</html>

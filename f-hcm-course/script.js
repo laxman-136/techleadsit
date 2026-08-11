@@ -178,10 +178,11 @@ function initHeadlineSwapping() {
     
     if (!headlineEl || !selector) return;
 
+    const isHrVariant = (window.pageSlug === 'mb-hr-to' || window.location.pathname.includes('mb-hr-to'));
     const headlines = {
-        A: "Go From Learning Oracle Fusion HCM to Implementing It — In 2.5 Months",
-        B: "The Oracle Fusion HCM Course 5,000+ Learners Used to Change Careers",
-        C: "Oracle Fusion HCM Training Built for Real Implementation Work, Not Just Theory"
+        A: isHrVariant ? "Your HR Degree Got You In the Room. Oracle Fusion HCM Keeps You There." : "Go From Learning Oracle Fusion HCM to Implementing It — In 2.5 Months",
+        B: isHrVariant ? "Your HR Degree Got You In the Room. Oracle Fusion HCM Keeps You There." : "The Oracle Fusion HCM Course 5,000+ Learners Used to Change Careers",
+        C: isHrVariant ? "Your HR Degree Got You In the Room. Oracle Fusion HCM Keeps You There." : "Oracle Fusion HCM Training Built for Real Implementation Work, Not Just Theory"
     };
 
     selector.addEventListener('click', (e) => {
@@ -1057,6 +1058,35 @@ function initFormValidation() {
         });
     }
 
+    // Apply copywriting variations based on active URL slug
+    function applySlugCopyVariants() {
+        const slug = window.pageSlug || window.location.pathname.replace(/^\/|\/$/g, '').split('/').pop();
+        if (!slug) return;
+
+        const variants = {
+            'mb-hr-to': {
+                '#hero-headline': "Your HR Degree Got You In the Room. Oracle Fusion HCM Keeps You There.",
+                '.who-section .section-title': "Is This the Skill Gap Holding Your HR Career Back?",
+                '.features-section .section-title': "What Sets Fusion-Certified HR Professionals Apart",
+                '.salary-section .section-title': "What HR Roles Pay Once You Add Fusion HCM",
+                '.snapshot-section .snapshot-title': "The Fusion HCM Modules Every HR Leader Should Know",
+                '.comparison-section .section-title': "Why HR Professionals Choose Tech Leads IT Over Generic IT Institutes",
+                '.final-cta-section .final-title': "Ready to Be the HR Person Who Actually Understands the System?"
+            }
+        };
+
+        const copy = variants[slug];
+        if (!copy) return;
+
+        // Apply all text substitutions
+        for (const selector in copy) {
+            const el = document.querySelector(selector);
+            if (el) {
+                el.textContent = copy[selector];
+            }
+        }
+    }
+
     // Secure submit via WordPress template-redirect REST endpoint & GTM push
     function submitLead(type, formConfig) {
         const submitBtn = formConfig.form.querySelector('button[type="submit"]');
@@ -1262,6 +1292,9 @@ function initFormValidation() {
             formEl.addEventListener('click', populateHiddenTrackingInputs, { once: true });
         }
     });
+
+    // Apply copywriting variations based on active URL slug
+    applySlugCopyVariants();
 }
 
 /* ==========================================================================

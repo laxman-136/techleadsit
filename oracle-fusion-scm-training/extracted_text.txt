@@ -1,0 +1,232 @@
+Oracle Fusion SCM Training That Prepares You for Real Oracle Cloud Projects 
+Subheadline:Live online training led by a trainer with 20+ years of Oracle SCM experience. Hands-on practice, real-time scenarios, and career support — built for working professionals and freshers alike.
+
+Primary CTA Button
+Secondary CTA Button
+ Book My Free Demo
+Talk to a Course Advisor
+
+Trust strip (below CTA):
+
+ ✔ No advance payment to attend demo
+✔ Live sessions, not pre-recorded 
+✔ Batch starts soon 
+
+seats limited
+
+SECTION 2 — TRUST-BUILDING INTRO
+H2: Trusted by Professionals Across India
+Tech Leads IT has been training Oracle Fusion professionals since over a decade. Our students include ERP users, supply chain executives, fresh graduates, and career switchers — all of whom came in looking for a clear, structured path into Oracle Cloud.
+We do not run mass batches. We keep groups small, trainers experienced, and training practical. Every module you learn here is connected to how Oracle SCM actually works in a live business environment.
+📅 10+ Years Training Oracle Professionals
+👨‍🏫 20+ Years Trainer Experience
+🎓 Thousands of Learners Trained
+🏆 Globally Recognised Certification
+SECTION 3 — WHO THIS COURSE IS FOR
+H2: Who Is This Training For?
+This training is designed for people who are serious about building a career in Oracle Fusion Supply Chain Management. If you fit any of the profiles below, this course is relevant for you.
+Display as cards or a checklist:
+✅ ERP / Oracle EBS Users
+
+You work in Oracle EBS or a legacy ERP system and want to move to Oracle Cloud SCM. This training maps your existing knowledge to Oracle Fusion and fills in the gaps. 
+✅ Supply Chain Professionals
+
+You work in procurement, inventory, logistics, or planning and want to add Oracle Fusion as a technical skill to your profile. 
+✅ Fresher Graduates
+
+You are an engineering, commerce, or MBA graduate with no prior Oracle experience but want to enter the Oracle Cloud job market with a job-ready skillset. 
+✅ ERP Consultants and Analysts
+
+You are already in the IT industry in a support or functional role and want to move into Oracle SCM consulting or implementation. 
+✅ Career Switchers
+
+You are switching from a non-Oracle background and want to build foundational Oracle Fusion SCM skills that make you hireable. 
+Not sure if this is right for you? Attend the free demo first and decide. 
+SECTION 3B — PAIN POINTS / PROBLEMS THEY ARE FACING
+H2: Do Any of These Sound Familiar?
+If you are considering Oracle Fusion SCM training, there is a good chance you are dealing with at least one of these.
+
+✅ "My company is migrating to Oracle Cloud and I do not know the new system." You have spent years on Oracle EBS or another ERP. Suddenly the platform is changing and you feel behind. You do not want to start from scratch but you do not know what transfers across.
+✅ "I have supply chain experience but no Oracle Cloud skills on my resume." You know procurement, inventory, or logistics inside out. But every job posting asks for Oracle Fusion experience and you keep getting filtered out at the resume stage.
+✅ "I have been watching YouTube videos but I cannot make sense of how everything connects." You have tried learning on your own. You understand individual topics in isolation but cannot see the full picture — how procurement links to inventory, how orders flow through to shipping, how it all fits in a live business.
+✅ "I am a fresher and I do not know which ERP to learn or where to start." There are too many options — SAP, Oracle, Dynamics. You are not sure which one gives you the best chance of getting hired and you do not want to invest time and money in the wrong one.
+✅ "I have been in a support role for years and I am stuck. I want to move into implementation." You raise tickets, troubleshoot issues, and understand the system. But you have never had proper training on configuration or business flows. You feel like you are at a ceiling and cannot move up without structured learning.
+✅ "I attended another training but it was all slides and theory. I never actually used the system." You paid for a course, sat through hours of presentations, and left without ever logging into Oracle. The training sounded good but did not prepare you for anything real.
+✅ "I cleared a few interviews but kept getting rejected when they asked practical questions." You know the theory. But interviewers ask you to walk through a procure-to-pay cycle, explain how a planning run works, or describe how you have configured inventory — and you freeze because you have never actually done it.
+✅ "I live outside Hyderabad and there is no good Oracle SCM training near me." All the decent training institutes are in metro cities. You are in a smaller city or town and your options are either poor-quality local coaching or self-study that goes nowhere.
+
+This training exists to solve exactly these problems.
+You will learn Oracle Fusion SCM in a structured, hands-on format — starting from the basics, moving through real business scenarios, and finishing with interview preparation built into the curriculum.
+[Book My Free Demo — See If This Is the Right Fit for You →]
+SECTION 4 — WHAT IS ORACLE FUSION SCM
+H2: What Is Oracle Fusion SCM?
+Oracle Fusion SCM (Supply Chain Management) is Oracle's cloud-based suite for managing the full flow of goods, services, and information — from raw material procurement to final delivery to the customer.
+It includes tools for:
+Procurement — Managing suppliers, purchase orders, and sourcing
+Inventory Management — Tracking stock across warehouses and locations
+Order Management — Processing and fulfilling customer orders
+Supply Chain Planning — Forecasting demand and planning production
+Manufacturing — Managing production work orders and shop-floor operations
+Costing — Calculating the actual cost of items and processes
+Quality Management — Enforcing inspection and quality standards
+Reporting and Analytics — Monitoring supply chain performance with dashboards
+Companies across industries — manufacturing, retail, logistics, pharma, oil and gas — run their supply chain on Oracle Fusion. Oracle-certified professionals who understand these modules are consistently in demand.
+
+SECTION 5 — WHY LEARN ORACLE FUSION SCM NOW
+H2: Why Oracle Fusion SCM Is the Right Skill to Learn Now
+Point 1 — Oracle EBS is being phased out Oracle's support for EBS (E-Business Suite) is on a fixed timeline. Companies are migrating to Oracle Cloud. EBS professionals who do not upgrade their skills risk being left behind. Oracle Fusion SCM is the natural next step.
+Point 2 — Demand for Oracle Cloud professionals is growing As more companies move to Oracle Cloud, the need for trained functional consultants is rising — especially for SCM modules like Procurement, Inventory, and Planning.
+Point 3 — Oracle SCM knowledge is transferable across industries Unlike niche tools, Oracle Fusion SCM is used across manufacturing, retail, logistics, pharma, and public sector. Once trained, you can apply for roles across industries and geographies.
+Point 4 — Freshers can get in now Oracle Fusion is a skill gap market. Companies are not just hiring experienced consultants — they are open to freshers and junior professionals who have proper training and hands-on exposure.
+Point 5 — Certification adds weight to your profile Completing structured Oracle Fusion SCM training and earning a recognised course certificate gives your resume a credibility boost that self-study on YouTube simply does not.
+
+SECTION 6 — MODULES COVERED
+H2: What You Will Learn — Full Module Breakdown
+This is a complete Oracle Fusion SCM training program. You will learn every major module, starting from foundational concepts and progressing to real-world business scenarios.
+
+📦 Module 1 — Procurement Supplier management, purchase requisitions, purchase orders, supplier negotiations, blanket agreements, approved supplier lists, invoice matching, and procurement business flows.
+📦 Module 2 — Inventory Management Item setup, sub-inventory and locators, material transactions, inventory adjustments, cycle counting, physical inventory, FIFO and LIFO costing basics, and inter-org transfers.
+📦 Module 3 — Order Management Sales order creation, order types, holds, scheduling, shipping, invoicing, returns (RMA), and end-to-end order-to-cash flow.
+📦 Module 4 — Supply Chain Planning Demand management, supply planning, collaborative planning, constrained planning, plan runs, and exception management.
+📦 Module 5 — Manufacturing Basics Work order creation, discrete manufacturing overview, shop-floor operations, and production completion flows.
+📦 Module 6 — Quality Management Inspection plans, quality results, quality actions, and quality integration with inventory and procurement.
+📦 Module 7 — Costing Cost organisation setup, standard costing, actual costing, cost elements, and cost accounting basics.
+📦 Module 8 — Reporting Basics OTBI (Oracle Transactional Business Intelligence), subject areas for SCM, creating and running reports, and reading supply chain dashboards.
+Curriculum is regularly updated to reflect Oracle Cloud quarterly releases.
+
+SECTION 7 — OUTCOMES / WHAT YOU WILL BE ABLE TO DO
+H2: What You Will Be Able to Do After Training
+By the time you finish this training, you will be able to:
+Set up and configure Oracle Fusion SCM modules from scratch
+Map your organisation's supply chain business processes to Oracle Cloud
+Execute end-to-end business flows: procure-to-pay, order-to-cash, plan-to-produce
+Troubleshoot common functional issues in Oracle SCM
+Create basic OTBI reports and explain supply chain dashboards to stakeholders
+Speak confidently about Oracle SCM implementation methodology in interviews
+Support or lead Oracle Cloud SCM implementations at a functional level
+These are not theoretical goals. Every outcome is tied to what you practice inside the Oracle instance during training.
+
+SECTION 8 — REAL-TIME PROJECTS AND SCENARIO-BASED LEARNING
+H2: Real-Time Projects and Scenario-Based Learning
+Reading about Oracle SCM is not the same as using it.
+In this training, you will work through real business scenarios built from actual Oracle SCM implementations. You will set up supply chain processes, run transactions, simulate issues, and understand how to resolve them — exactly as you would in a real project.
+What this looks like in practice:
+🔄 You receive a business requirement — the way a client gives it to a consultant
+⚙️ You configure the Oracle system to meet that requirement
+✅ You test the outcome and document what you did
+💬 The trainer reviews your work and explains gaps or improvements
+This approach prepares you to speak about Oracle SCM using real scenarios — not just theory. That is the difference between someone who took a course and someone who is actually ready for a project.
+You get access to a dedicated Oracle Fusion practice instance throughout the training.
+
+SECTION 9 — LIVE ONLINE TRAINING BENEFITS
+H2: Why Live Online Training Works Better for Working Professionals
+Most Oracle training videos online teach you what the software does. This training teaches you how to use it to solve real business problems — and there is a trainer available to answer your questions in real time.
+Here is what you get with live trainer-led sessions:
+🎙️ Ask questions as they come up No waiting. No forums. If you do not understand something, you ask the trainer directly in the session.
+📅 Structured learning, not random watching Sessions follow a curriculum. You progress from foundational concepts to advanced scenarios in a logical order.
+🤝 Learn from other learners When your classmates ask questions, you benefit from those answers too. Live group learning surfaces doubts you may not have thought to ask.
+⏰ Accountability Scheduled sessions keep you on track. Self-paced courses often sit untouched for months.
+🌐 Learn from anywhere Sessions are fully online. You can attend from Hyderabad, Bangalore, Chennai, Dubai, or anywhere with a stable internet connection.
+
+SECTION 10 — LMS / RESOURCES / ACCESS BENEFITS
+H2: Your Learning Resources — All in One Place
+When you enrol, you get more than just live classes.
+Resource
+What It Means for You
+📹 Session Recordings
+Missed a class or need to revisit a topic? Every session is recorded and available to you.
+📋 Module Notes
+Structured notes for every module so you do not have to take everything down during class.
+💻 Oracle Practice Instance
+Hands-on access to an Oracle Fusion instance for exercises and practice.
+📁 Use-Case Materials
+Real business scenarios and use cases mapped to each module.
+📱 Mobile Access
+Access recordings and materials from your phone — useful for revision during your commute.
+💬 Batch Group Access
+A dedicated group for your batch where you can ask questions between sessions.
+Everything is there when you need it. You are not dependent on a single live session to absorb everything.
+
+SECTION 11 — FREE DEMO SECTION
+H2: Attend a Free Demo Before You Decide
+Before you commit to anything, attend a free demo session.
+In the demo, you will:
+See how the live sessions are conducted
+Get a walkthrough of the Oracle Fusion SCM course curriculum
+Understand the batch schedule and learning approach
+Ask the trainer direct questions about the course
+There is no payment required to attend. No sales pressure. The demo exists so you can make an informed decision.
+[Book My Free Demo Session →]
+Demo seats are limited per batch. Reserve yours now.
+
+SECTION 12 — COURSE CURRICULUM OVERVIEW
+H2: Course Curriculum at a Glance
+Module
+Topics Covered
+SCM Foundations
+Oracle Cloud overview, SCM architecture, navigation
+Procurement
+Suppliers, POs, requisitions, agreements, receiving
+Inventory
+Item setup, transactions, sub-inventories, counting
+Order Management
+Sales orders, holds, shipping, invoicing, RMA
+Planning
+Demand plans, supply plans, plan execution
+Manufacturing
+Work orders, production, discrete manufacturing basics
+Quality
+Inspection plans, results, actions
+Costing
+Cost elements, costing methods, accounting basics
+Reporting
+OTBI reports, subject areas, dashboards
+Interview Preparation
+Real-time Q&A, resume review, scenario practice
+Full curriculum document shared with enrolled students.
+
+SECTION 13 — CAREER SUPPORT AND INTERVIEW PREPARATION
+H2: Career Support and Interview Preparation
+Getting trained is step one. Being interview-ready is step two. Tech Leads IT supports you through both.
+What career support includes:
+📄 Resume Review and Guidance Your trainer and team help you present your Oracle SCM skills clearly on your resume — whether you have prior experience or are building your profile from scratch.
+🗣️ Mock Interview Practice You will go through common Oracle SCM interview questions with real-time answers, corrections, and feedback — so you are not caught off guard in actual interviews.
+📌 Interview Q&A Bank A curated set of Oracle Fusion SCM interview questions with detailed answers, mapped to the modules you learned.
+🔗 Job Referral Support (for eligible students) High-performing students are referred to hiring companies through our network. This is not a guarantee, but it is a real advantage.
+🎓 Course Completion Certificate After completing the training, you receive a Tech Leads IT course certificate that you can add to your LinkedIn profile and resume.
+Career support eligibility is based on course completion and participation. Details are shared during enrollment.
+
+SECTION 14 — FAQ
+H2: Frequently Asked Questions
+Q: I have no prior Oracle experience. Can I join this training? Yes. The course starts from the basics. Many of our students come with no prior Oracle exposure. What you need is a willingness to learn and consistent attendance.
+Q: I am an Oracle EBS professional. Is this course relevant for me? Absolutely. If you are on EBS and looking to transition to Oracle Cloud SCM, this training will help you map what you already know to Oracle Fusion and fill in the gaps specific to the cloud platform.
+Q: Are sessions live or pre-recorded? Sessions are live and conducted online by an experienced trainer. Recordings are provided after each session so you can revise at your own pace.
+Q: What is the duration and timing of the training? Duration and batch timing are shared during the free demo. Batches are scheduled keeping working professionals in mind — typically on weekday evenings or weekends. Contact us to know the next available batch.
+Q: Will I get access to an Oracle system to practice? Yes. You will get dedicated Oracle Fusion instance access for hands-on practice throughout the course.
+Q: What kind of job roles can I target after this training? Common roles include Oracle SCM Functional Consultant, Oracle Cloud SCM Analyst, Supply Chain Analyst (Oracle), Procurement Consultant, Inventory Analyst, and Oracle Cloud Implementation Support. The roles you are eligible for depend on your prior background and the depth of your practice.
+Q: Is placement guaranteed? No. We do not promise job placements. What we provide is placement support — resume guidance, interview preparation, and referrals for eligible students. Your job search outcome depends on several factors, including your preparation, experience, and market conditions.
+Q: What is the fee for this course? Course fee details are shared directly with interested candidates. Please attend the free demo or contact us to get full details.
+Q: Can I attend the demo and then decide? Yes. That is exactly what the demo is for. No commitment required to attend.
+
+SECTION 15 — FINAL CTA
+H2: Ready to Take the Next Step in Your Oracle Career?
+You have read through what this training covers, who it is for, and how it works. The next step is simple: attend a free demo and see it for yourself.
+You will get one live session, a full curriculum walkthrough, and direct access to the trainer — before you commit to anything.
+[Book My Free Demo Session →]
+or
+[Talk to a Course Advisor →] — We will call you back and answer your questions directly.
+
+Have questions before booking? Call us: +91 8125323232 Or WhatsApp us at the same number. We respond fast.
+
+SECTION 16 — FORM COPY
+Form Headline: Book Your Free Oracle Fusion SCM Demo
+Form Subheadline / Microcopy (below headline, above fields): Fill in your details. We will send you the demo session link and reach out to confirm your slot.
+Field Labels:
+Full Name
+Mobile Number
+Email Address
+Current Profession (dropdown: Working Professional / Fresher / ERP/EBS User / Other)
+Preferred Batch (dropdown: Weekday Evening / Weekend / Flexible)
+Submit Button Text: Reserve My Free Demo Seat
+Below-button trust note: 🔒 Your details are not shared. No spam. No pressure calls.
+Field microcopy (below mobile number field): We will use this number to send your demo link on WhatsApp.

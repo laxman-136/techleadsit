@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="en" style="color-scheme: light; scroll-behavior: smooth;">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RISE — Real-Time Interview Skills Enhancement | Tech Leads IT</title>
+  <meta name="description" content="From Trained to Project-Ready in 45 Days. A structured daily-discipline program that turns Oracle Fusion SCM trainees into confident, interview-ready consultants.">
+  
+  <!-- Font Imports -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="index.css">
+  <script src="index.js" defer></script>
+  
+  <style>
+    :root {
+      --primary: 202 83% 37%; /* #1073ad */
+      --color-primary: #1073ad;
+      --color-accent: #38bdf8;
+      --font-display: 'Montserrat', sans-serif;
+      --font-sans: 'Inter', sans-serif;
+    }
+    .font-display {
+      font-family: 'Montserrat', sans-serif !important;
+    }
+    body, .font-sans {
+      font-family: 'Inter', sans-serif !important;
+    }
+    .text-gradient-primary {
+      background: linear-gradient(135deg, #1073ad, #38bdf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    /* Simple fallback for styling Tailwind classes since we downloaded Vercel CSS */
+    .bg-primary {
+      background-color: #1073ad !important;
+    }
+    .text-primary {
+      color: #1073ad !important;
+    }
+    .border-primary {
+      border-color: #1073ad !important;
+    }
+    .bg-primary\/5 {
+      background-color: rgba(16, 115, 173, 0.05) !important;
+    }
+    .bg-primary\/10 {
+      background-color: rgba(16, 115, 173, 0.1) !important;
+    }
+    .bg-primary\/15 {
+      background-color: rgba(16, 115, 173, 0.15) !important;
+    }
+    .text-gradient-primary {
+      background: linear-gradient(135deg, #1073ad, #38bdf8) !important;
+      -webkit-background-clip: text !important;
+      -webkit-text-fill-color: transparent !important;
+    }
+    
+    /* Layout fix for stepper content height */
+    .tab-content-panel {
+      display: none;
+    }
+    .tab-content-panel.active {
+      display: block;
+    }
+    
+    /* Accordion transitions */
+    .faq-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .faq-item.active .faq-content {
+      margin-top: 12px;
+    }
+    .faq-item.active .faq-arrow {
+      transform: rotate(180deg);
+    }
+    
+    /* WhatsApp proof wall carousel styling */
+    .carousel-container {
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+    }
+    .carousel-track {
+      display: flex;
+      gap: 24px;
+      transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .carousel-slide {
+      flex: 0 0 calc(33.333% - 16px);
+      min-width: 280px;
+    }
+    @media (max-width: 1024px) {
+      .carousel-slide {
+        flex: 0 0 calc(50% - 12px);
+      }
+    }
+    @media (max-width: 640px) {
+      .carousel-slide {
+        flex: 0 0 100%;
+      }
+    }
+  </style>
+</head>
+<body class="antialiased text-neutral-800 bg-white font-sans">
+
+  <div class="flex min-h-screen flex-col">
+    <!-- Header / Navigation -->
+    <header role="banner" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 h-16 bg-white/95 backdrop-blur-xl shadow-md border-b border-neutral-100">
+      <nav aria-label="Main navigation" class="container mx-auto h-full flex items-center justify-between px-6 max-w-7xl">
+        <a class="flex items-center gap-3 group" aria-label="Tech Leads IT home" href="#">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-[hsl(178,64%,42%)] flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-300">
+            <span class="text-lg font-bold text-white font-display" aria-hidden="true">TL</span>
+          </div>
+          <span class="font-display font-bold text-xl block">Tech Leads IT</span>
+        </a>
+        <div class="flex items-center gap-3">
+          <a class="inline-flex items-center gap-2 bg-[#1073ad] hover:opacity-90 text-white font-bold px-5 py-2.5 rounded-xl shadow-sm transition-all duration-300 text-sm" href="#registration">
+            Check Eligibility
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right w-4 h-4"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7\"></path></svg>
+          </a>
+        </div>
+      </nav>
+    </header>
+
+    <main class="flex-1">
+      <div class="bg-neutral-50 text-neutral-800 font-sans transition-colors duration-300">
+        
+        <!-- 1. HERO SECTION -->
+        <section class="relative pt-32 pb-24 overflow-hidden bg-white border-b border-neutral-100">
+          <div class="absolute inset-0 opacity-[0.03] pointer-events-none" style="background-image:radial-gradient(circle, #000 1px, transparent 1px);background-size:32px 32px"></div>
+          <div class="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-b from-primary/5 to-transparent pointer-events-none filter blur-3xl"></div>
+          <div class="absolute top-1/3 right-0 w-[600px] h-[600px] bg-sky-400/5 rounded-full pointer-events-none filter blur-3xl translate-x-1/3"></div>
+          
+          <div class="container mx-auto max-w-7xl px-6 relative z-10">
+            <nav aria-label="Breadcrumb" class="mb-8">
+              <ol class="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-neutral-400">
+                <li><a class="hover:text-primary transition-colors" href="#">Home</a></li>
+                <li aria-hidden="true" class="text-neutral-300">/</li>
+                <li><a class="hover:text-primary transition-colors" href="#">Programs</a></li>
+                <li aria-hidden="true" class="text-neutral-300">/</li>
+                <li class="text-neutral-700 truncate max-w-[200px]" aria-current="page">RISE Career Bootcamp</li>
+              </ol>
+            </nav>
+            
+            <div class="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+              <div class="lg:col-span-7 space-y-8">
+                <div class="flex flex-wrap gap-2 items-center">
+                  <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-neutral-900 text-white uppercase tracking-widest text-[10px]">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-zap w-3 h-3 text-amber-400"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"></path></svg>
+                    45-Day Bootcamp
+                  </span>
+                  <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">✦ PLACEMENT GUARANTEE</span>
+                </div>
+                
+                <div class="space-y-4">
+                  <h1 class="text-4xl md:text-5xl lg:text-7xl font-display font-black text-neutral-900 leading-[1.05] tracking-tight uppercase">
+                    From Trained <br><span class="text-gradient-primary">to Project-Ready</span> <br>in 45 Days
+                  </h1>
+                  <p class="text-base md:text-lg text-neutral-500 font-medium leading-relaxed max-w-xl">
+                    A structured, daily-discipline program that turns Oracle Fusion SCM trainees into confident, interview-ready consultants — through real project simulation and conditioned performance.
+                  </p>
+                </div>
+                
+                <div class="flex items-start gap-4 p-5 rounded-2xl bg-neutral-50 border border-neutral-150 max-w-xl">
+                  <div class="w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-activity w-5 h-5"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"></path></svg>
+                  </div>
+                  <div class="space-y-1">
+                    <h4 class="text-xs font-bold text-neutral-900 uppercase tracking-wider">Real-Time Project Simulation</h4>
+                    <p class="text-xs text-neutral-500 leading-relaxed">
+                      This is not a slide presentation. You will interact with a live Oracle Cloud environment, configure approval rules, and build project conviction under ex-consultant guidance.
+                    </p>
+                  </div>
+                </div>
+                
+                <div class="flex flex-wrap gap-4 items-center">
+                  <a href="#registration" class="inline-flex items-center gap-2 bg-[#1073ad] hover:opacity-90 text-white font-bold px-8 py-4 rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 text-sm" id="hero-cta-btn">
+                    Check My Eligibility — June 20 Batch →
+                  </a>
+                  <a class="inline-flex items-center gap-2 border border-neutral-250 hover:border-neutral-300 text-neutral-700 font-semibold px-6 py-4 rounded-xl hover:bg-neutral-50 transition-all duration-300 text-sm" href="https://wa.me/918125323232?text=Hi,%20I'm%20interested%20in%20the%20RISE%20program.%20Can%20we%20connect?" target="_blank">
+                    Message Admissions on WhatsApp
+                  </a>
+                </div>
+              </div>
+              
+              <!-- Hero Classroom Board -->
+              <div class="lg:col-span-5 relative">
+                <div class="absolute inset-0 bg-primary/10 rounded-3xl pointer-events-none filter blur-2xl transform scale-110"></div>
+                <div class="relative rounded-3xl bg-white border border-neutral-200 shadow-xl overflow-hidden">
+                  <div class="bg-neutral-50 px-5 py-4 border-b border-neutral-100 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                      <span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
+                      <span class="text-[10px] font-bold uppercase tracking-widest text-neutral-400">Classroom Board</span>
+                    </div>
+                    <span class="px-2.5 py-0.5 rounded-full text-[9px] font-bold bg-primary/15 text-primary">Next Batch: June 20</span>
+                  </div>
+                  
+                  <!-- Tab Triggers -->
+                  <div class="flex border-b border-neutral-100 text-[10px] font-bold">
+                    <button id="hero-tab-deliverables-btn" class="hero-tab-btn flex-1 py-3 text-center border-b-2 flex items-center justify-center gap-1.5 transition-all border-primary text-primary bg-neutral-50/40">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layers w-3.5 h-3.5"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"></path><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"></path><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"></path></svg>
+                      <span>Deliverables</span>
+                    </button>
+                    <button id="hero-tab-syllabus-btn" class="hero-tab-btn flex-1 py-3 text-center border-b-2 flex items-center justify-center gap-1.5 transition-all border-transparent text-neutral-400 hover:text-neutral-600">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-laptop w-3.5 h-3.5"><path d="M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0 1.28 2.55a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45L4 16"></path></svg>
+                      <span>Syllabus Preview</span>
+                    </button>
+                    <button id="hero-tab-schedule-btn" class="hero-tab-btn flex-1 py-3 text-center border-b-2 flex items-center justify-center gap-1.5 transition-all border-transparent text-neutral-400 hover:text-neutral-600">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar w-3.5 h-3.5"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect width="18" height="18" x="3" y="4" rx="2"></rect><path d="M3 10h18"></path></svg>
+                      <span>Schedule</span>
+                    </button>
+                  </div>
+                  
+                  <!-- Tab Contents -->
+                  <div class="p-6 min-h-[260px] flex flex-col justify-between">
+                    
+                    <!-- Content 1: Deliverables (Default Active) -->
+                    <div id="hero-tab-deliverables" class="hero-tab-content active space-y-3">
+                      <span class="text-[9px] font-bold text-neutral-400 uppercase tracking-wider block">Deliverables Included:</span>
+                      <div class="grid grid-cols-2 gap-3 text-xs">
+                        <div class="p-3 rounded-xl bg-neutral-50 border border-neutral-100">
+                          <span class="text-[9px] text-neutral-400 block uppercase">Conditioning</span>
+                          <span class="font-bold text-primary block">Daily Mock Drills</span>
+                          <span class="text-[9px] text-neutral-400 block mt-0.5">Explaining setups live</span>
+                        </div>
+                        <div class="p-3 rounded-xl bg-neutral-50 border border-neutral-100">
+                          <span class="text-[9px] text-neutral-400 block uppercase">Sandbox</span>
+                          <span class="font-bold text-primary block">45-Day Instance</span>
+                          <span class="text-[9px] text-neutral-400 block mt-0.5">Live Oracle SCM Access</span>
+                        </div>
+                        <div class="p-3 rounded-xl bg-neutral-50 border border-neutral-100">
+                          <span class="text-[9px] text-neutral-400 block uppercase">Blueprints</span>
+                          <span class="font-bold text-primary block">Config Checklists</span>
+                          <span class="text-[9px] text-neutral-400 block mt-0.5">Step-by-step guides</span>
+                        </div>
+                        <div class="p-3 rounded-xl bg-neutral-50 border border-neutral-100">
+                          <span class="text-[9px] text-neutral-400 block uppercase">Placement</span>
+                          <span class="font-bold text-primary block">Arranged Drives</span>
+                          <span class="text-[9px] text-neutral-400 block mt-0.5">10 Guaranteed interviews</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Content 2: Syllabus Preview -->
+                    <div id="hero-tab-syllabus" class="hero-tab-content hidden space-y-3">
+                      <span class="text-[9px] font-bold text-neutral-400 uppercase tracking-wider block">Syllabus Overview:</span>
+                      <div class="space-y-2 text-xs">
+                        <div class="flex items-center justify-between p-2 rounded bg-neutral-50">
+                          <span class="font-semibold text-neutral-800">Phase 1: Real-Time SCM Simulation</span>
+                          <span class="text-[10px] text-primary bg-primary/10 px-2 py-0.5 rounded font-mono">15 Days</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 rounded bg-neutral-50">
+                          <span class="font-semibold text-neutral-800">Phase 2: Scenario Articulation & Mock Drills</span>
+                          <span class="text-[10px] text-primary bg-primary/10 px-2 py-0.5 rounded font-mono">15 Days</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 rounded bg-neutral-50">
+                          <span class="font-semibold text-neutral-800">Phase 3: Resume Building & profile Lock</span>
+                          <span class="text-[10px] text-primary bg-primary/10 px-2 py-0.5 rounded font-mono">7 Days</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 rounded bg-neutral-50">
+                          <span class="font-semibold text-neutral-800">Phase 4: MNC Placement Drives (10 Mocks)</span>
+                          <span class="text-[10px] text-primary bg-primary/10 px-2 py-0.5 rounded font-mono">8 Days</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Content 3: Schedule -->
+                    <div id="hero-tab-schedule" class="hero-tab-content hidden space-y-3">
+                      <span class="text-[9px] font-bold text-neutral-400 uppercase tracking-wider block">Cohort Access Schedule:</span>
+                      <div class="p-4 rounded-xl bg-neutral-900 text-neutral-300 space-y-2 font-mono text-xs">
+                        <div class="flex justify-between items-center">
+                          <span class="text-neutral-500">Next Batch:</span>
+                          <span class="text-neutral-200 font-bold" id="classroom-date-badge">June 20</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                          <span class="text-neutral-500">Live Mocks:</span>
+                          <span class="text-neutral-200 font-bold">8:00 PM IST (Daily)</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                          <span class="text-neutral-500">Daily Commit:</span>
+                          <span class="text-neutral-200 font-bold">4 Hours Practice</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                          <span class="text-neutral-500">Support Window:</span>
+                          <span class="text-emerald-400 font-bold">6 Months Active</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Progress bar -->
+                    <div class="pt-4 border-t border-neutral-100 space-y-2.5">
+                      <div class="flex items-center justify-between text-[10px]">
+                        <div class="flex items-center gap-1.5">
+                          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                          <span class="font-bold text-neutral-600">Cohort Seats Filling: 88%</span>
+                        </div>
+                        <span class="font-mono text-neutral-400 font-bold">12 Spots Left</span>
+                      </div>
+                      <div class="h-1.5 w-full bg-neutral-100 rounded-full overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-primary to-[hsl(178,64%,42%)]" style="width: 88%;"></div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- 2. QUICK CONSULTATION / DEMO FORM -->
+        <section class="py-12 bg-white border-y border-neutral-100" aria-label="Request free demo">
+          <div class="container mx-auto px-6 max-w-7xl">
+            <div class="relative p-8 rounded-3xl bg-neutral-50 border border-neutral-150 overflow-hidden shadow-sm">
+              <div class="absolute top-0 right-0 w-[400px] h-[400px] bg-primary/5 rounded-full pointer-events-none filter blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+              <div class="relative z-10 grid lg:grid-cols-3 gap-8 items-center">
+                <div class="space-y-3">
+                  <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles w-3.5 h-3.5"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path><path d="M20 3v4"></path><path d="M22 5h-4"></path><path d="M4 17v2"></path><path d="M5 18H3"></path></svg>
+                    1-on-1 Guidance
+                  </span>
+                  <h2 class="text-2xl md:text-3xl font-display font-bold text-neutral-900 tracking-tight">Request Profile Evaluation</h2>
+                  <p class="text-sm text-neutral-500 leading-relaxed max-w-md">Want a custom walkthrough of RISE setup modules? Schedule a free 15-minute call with our team.</p>
+                </div>
+                <div class="lg:col-span-2">
+                  <form class="grid sm:grid-cols-4 gap-4 items-end" action="#registration">
+                    <div class="sm:col-span-1 space-y-1">
+                      <label for="qdemo-name" class="text-xs font-bold text-neutral-600 block ml-0.5">Your Name *</label>
+                      <input id="qdemo-name" type="text" placeholder="Name" required class="w-full px-4 py-2.5 rounded-xl bg-white border border-neutral-200 text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-300 text-sm shadow-sm hover:border-neutral-300" name="name">
+                    </div>
+                    <div class="sm:col-span-1 space-y-1">
+                      <label for="qdemo-email" class="text-xs font-bold text-neutral-600 block ml-0.5">Email Address *</label>
+                      <input id="qdemo-email" type="email" placeholder="Email" required class="w-full px-4 py-2.5 rounded-xl bg-white border border-neutral-200 text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-300 text-sm shadow-sm hover:border-neutral-300" name="email">
+                    </div>
+                    <div class="sm:col-span-1 space-y-1">
+                      <label for="qdemo-phone" class="text-xs font-bold text-neutral-600 block ml-0.5">Phone Number *</label>
+                      <input id="qdemo-phone" type="tel" placeholder="Phone" required class="w-full px-4 py-2.5 rounded-xl bg-white border border-neutral-200 text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-300 text-sm shadow-sm hover:border-neutral-300" name="phone">
+                    </div>
+                    <button type="submit" class="relative group overflow-hidden w-full inline-flex items-center justify-center gap-2 bg-[#171717] hover:bg-neutral-800 text-white font-bold rounded-xl py-3 transition-all duration-300 shadow-md text-sm sm:self-end h-11">
+                      <span>Counselling Call</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right w-4 h-4 transition-transform group-hover:translate-x-1"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3. INTERACTIVE CHAT ARTICULATION CONSOLE -->
+        <section class="py-24 bg-white border-b border-neutral-100">
+          <div class="container mx-auto max-w-6xl px-6">
+            <div class="text-center max-w-2xl mx-auto mb-14 space-y-3">
+              <span class="text-xs font-bold uppercase tracking-wider text-primary">SCM Project Articulation Sandbox</span>
+              <h2 class="text-3xl md:text-4xl font-display font-black text-neutral-900 tracking-tight uppercase">RISE Articulation Simulator</h2>
+              <p class="text-sm text-neutral-500">Interact with the stepper below to test how to articulate complex Oracle Cloud setups in real MNC job interviews.</p>
+            </div>
+            
+            <!-- Stepper Timeline -->
+            <div class="relative mb-12 max-w-5xl mx-auto">
+              <div class="absolute top-[22px] left-[6%] right-[6%] h-0.5 bg-neutral-100 -translate-y-1/2 pointer-events-none hidden md:block"></div>
+              <div id="console-progress" class="absolute top-[22px] left-[6%] h-0.5 bg-primary -translate-y-1/2 pointer-events-none hidden md:block transition-all duration-500" style="width: 0%;"></div>
+              
+              <div class="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6">
+                <!-- Step 01 -->
+                <button onclick="setConsoleStep(1)" id="step-btn-1" class="step-btn flex md:flex-col items-center gap-3 md:gap-2 focus:outline-none transition-all duration-300 w-full md:w-auto scale-105">
+                  <div class="step-circle w-11 h-11 rounded-full flex items-center justify-center font-mono font-bold text-xs border-2 transition-all duration-300 relative z-10 bg-primary text-white border-primary shadow-[0_0_15px_rgba(16,115,173,0.4)]">01</div>
+                  <div class="text-left md:text-center transition-opacity duration-300 opacity-100">
+                    <p class="step-title text-xs font-bold text-primary">Core Config</p>
+                    <p class="text-[9px] text-neutral-400 uppercase tracking-widest hidden md:block">Structure setups</p>
+                  </div>
+                </button>
+                <!-- Step 02 -->
+                <button onclick="setConsoleStep(2)" id="step-btn-2" class="step-btn flex md:flex-col items-center gap-3 md:gap-2 focus:outline-none transition-all duration-300 w-full md:w-auto hover:opacity-90">
+                  <div class="step-circle w-11 h-11 rounded-full flex items-center justify-center font-mono font-bold text-xs border-2 transition-all duration-300 relative z-10 bg-white text-neutral-500 border-neutral-250">02</div>
+                  <div class="text-left md:text-center transition-opacity duration-300 opacity-60">
+                    <p class="step-title text-xs font-bold text-neutral-700">BPM Approvals</p>
+                    <p class="text-[9px] text-neutral-400 uppercase tracking-widest hidden md:block">Workflow routing</p>
+                  </div>
+                </button>
+                <!-- Step 03 -->
+                <button onclick="setConsoleStep(3)" id="step-btn-3" class="step-btn flex md:flex-col items-center gap-3 md:gap-2 focus:outline-none transition-all duration-300 w-full md:w-auto hover:opacity-90">
+                  <div class="step-circle w-11 h-11 rounded-full flex items-center justify-center font-mono font-bold text-xs border-2 transition-all duration-300 relative z-10 bg-white text-neutral-500 border-neutral-250">03</div>
+                  <div class="text-left md:text-center transition-opacity duration-300 opacity-60">
+                    <p class="step-title text-xs font-bold text-neutral-700">Drop Ship</p>
+                    <p class="text-[9px] text-neutral-400 uppercase tracking-widest hidden md:block">Triple-leg logic</p>
+                  </div>
+                </button>
+                <!-- Step 04 -->
+                <button onclick="setConsoleStep(4)" id="step-btn-4" class="step-btn flex md:flex-col items-center gap-3 md:gap-2 focus:outline-none transition-all duration-300 w-full md:w-auto hover:opacity-90">
+                  <div class="step-circle w-11 h-11 rounded-full flex items-center justify-center font-mono font-bold text-xs border-2 transition-all duration-300 relative z-10 bg-white text-neutral-500 border-neutral-250">04</div>
+                  <div class="text-left md:text-center transition-opacity duration-300 opacity-60">
+                    <p class="step-title text-xs font-bold text-neutral-700">Internal Transfer</p>
+                    <p class="text-[9px] text-neutral-400 uppercase tracking-widest hidden md:block">Inventory routing</p>
+                  </div>
+                </button>
+                <!-- Step 05 -->
+                <button onclick="setConsoleStep(5)" id="step-btn-5" class="step-btn flex md:flex-col items-center gap-3 md:gap-2 focus:outline-none transition-all duration-300 w-full md:w-auto hover:opacity-90">
+                  <div class="step-circle w-11 h-11 rounded-full flex items-center justify-center font-mono font-bold text-xs border-2 transition-all duration-300 relative z-10 bg-white text-neutral-500 border-neutral-250">05</div>
+                  <div class="text-left md:text-center transition-opacity duration-300 opacity-60">
+                    <p class="step-title text-xs font-bold text-neutral-700">Troubleshoot</p>
+                    <p class="text-[9px] text-neutral-400 uppercase tracking-widest hidden md:block">Resolving Holds</p>
+                  </div>
+                </button>
+              </div>
+            </div>
+            
+            <!-- Stepper Interactive Content -->
+            <div class="grid lg:grid-cols-12 gap-8 items-stretch">
+              <!-- Left Console Panel -->
+              <div class="lg:col-span-5 p-6 md:p-8 rounded-3xl bg-neutral-50 border border-neutral-150 flex flex-col justify-between">
+                <div class="space-y-6">
+                  <div class="space-y-1">
+                    <span class="text-[9px] font-bold uppercase tracking-widest text-primary font-mono">RISE Articulation Engine</span>
+                    <h3 class="text-xl font-display font-bold text-neutral-900 uppercase">Interactive Interview Mock</h3>
+                    <p id="console-left-desc" class="text-xs text-neutral-500">Configure your answer strategy for the SCM scenario below:</p>
+                  </div>
+                  <div class="h-px bg-neutral-200"></div>
+                  
+                  <div class="min-h-[180px] flex flex-col justify-center">
+                    <!-- Dynamic Interactive Form depending on Step -->
+                    <div id="console-question-wrapper" class="space-y-4">
+                      <!-- Loaded via JS -->
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="p-4 rounded-2xl bg-white border border-neutral-150 mt-6 space-y-1 shadow-sm">
+                  <span class="text-[9px] font-bold text-neutral-400 uppercase block tracking-wider">RISE Articulation Target</span>
+                  <p id="console-goal-desc" class="text-xs text-neutral-700 font-semibold leading-relaxed">Demonstrate setup mapping and BU relationships clearly.</p>
+                </div>
+              </div>
+              
+              <!-- Right Terminal Output -->
+              <div class="lg:col-span-7 p-6 md:p-8 rounded-3xl bg-neutral-900 text-neutral-200 border border-neutral-800 flex flex-col justify-between relative overflow-hidden min-h-[380px]">
+                <div class="flex items-center justify-between pb-3 border-b border-neutral-800 relative z-10">
+                  <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span class="text-[10px] font-mono text-neutral-400 font-bold uppercase tracking-wider">Articulation Scorecard</span>
+                  </div>
+                  <span id="console-instance" class="text-[9px] font-mono text-neutral-500">Instance: MOCK_DRIVE_01</span>
+                </div>
+                
+                <div class="flex-1 flex flex-col justify-center py-6 relative z-10 min-h-[220px]">
+                  <div id="console-terminal-text" class="space-y-4 font-mono text-xs text-left">
+                    <!-- Dynamic logs loaded via JS -->
+                  </div>
+                </div>
+                
+                <div class="pt-4 border-t border-neutral-800 font-mono text-[9px] text-neutral-500">
+                  <p>&gt; System matched: OK | Latency: 0.8s | Keywords Evaluated: Yes</p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- 4. RISE CAREER ROADMAP -->
+        <section class="py-24 bg-neutral-50 border-b border-neutral-100 overflow-hidden">
+          <div class="container mx-auto max-w-7xl px-6">
+            <div class="text-center max-w-2xl mx-auto mb-16 space-y-3">
+              <span class="text-xs font-bold uppercase tracking-wider text-primary">SCM Competency Transition</span>
+              <h2 class="text-3xl md:text-4xl font-display font-black text-neutral-900 tracking-tight uppercase">RISE Career Acceleration Roadmap</h2>
+              <p class="text-sm text-neutral-500">A visual schematic of the transformation steps from trained status to a high-paying Oracle Fusion SCM consulting role.</p>
+            </div>
+            
+            <div class="grid lg:grid-cols-12 gap-8 items-stretch">
+              <!-- Left Roadmap triggers -->
+              <div class="lg:col-span-5 flex flex-col gap-4 justify-between">
+                <button onclick="setRoadmapStep(1)" id="roadmap-btn-1" class="roadmap-btn text-left p-5 rounded-2xl border transition-all duration-300 flex items-start gap-4 bg-white border-primary shadow-lg scale-[1.01]">
+                  <div class="roadmap-num w-9 h-9 rounded-lg flex items-center justify-center font-mono font-bold text-xs flex-shrink-0 bg-primary text-white">01</div>
+                  <div class="space-y-1">
+                    <div class="flex items-center gap-2">
+                      <span class="roadmap-badge text-[9px] font-mono font-bold tracking-wider px-1.5 py-0.2 rounded bg-primary/10 text-primary">CORE ASSESSMENT</span>
+                      <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+                    </div>
+                    <h4 class="text-sm font-bold text-neutral-800">Profile Assessment & Intake</h4>
+                    <p class="text-[10px] text-neutral-400 leading-normal">Evaluate SCM background and map specific transition routes in Oracle SCM.</p>
+                  </div>
+                </button>
+                <button onclick="setRoadmapStep(2)" id="roadmap-btn-2" class="roadmap-btn text-left p-5 rounded-2xl border transition-all duration-300 flex items-start gap-4 bg-white border-neutral-200 opacity-80">
+                  <div class="roadmap-num w-9 h-9 rounded-lg flex items-center justify-center font-mono font-bold text-xs flex-shrink-0 bg-neutral-100 text-neutral-500">02</div>
+                  <div class="space-y-1">
+                    <div class="flex items-center gap-2">
+                      <span class="roadmap-badge text-[9px] font-mono font-bold tracking-wider px-1.5 py-0.2 rounded bg-neutral-100 text-neutral-400">PRACTICE SIMULATION</span>
+                    </div>
+                    <h4 class="text-sm font-bold text-neutral-800">Real Project Simulation</h4>
+                    <p class="text-[10px] text-neutral-400 leading-normal">Hands-on configuration of complete flows (P2P, O2C, Inventory) on live instances.</p>
+                  </div>
+                </button>
+                <button onclick="setRoadmapStep(3)" id="roadmap-btn-3" class="roadmap-btn text-left p-5 rounded-2xl border transition-all duration-300 flex items-start gap-4 bg-white border-neutral-200 opacity-80">
+                  <div class="roadmap-num w-9 h-9 rounded-lg flex items-center justify-center font-mono font-bold text-xs flex-shrink-0 bg-neutral-100 text-neutral-500">03</div>
+                  <div class="space-y-1">
+                    <div class="flex items-center gap-2">
+                      <span class="roadmap-badge text-[9px] font-mono font-bold tracking-wider px-1.5 py-0.2 rounded bg-neutral-100 text-neutral-400">CONDITIONING MOCKS</span>
+                    </div>
+                    <h4 class="text-sm font-bold text-neutral-800">Scenario Articulation & Mocks</h4>
+                    <p class="text-[10px] text-neutral-400 leading-normal">Structured daily mock drill rounds where candidates explain setups under stress.</p>
+                  </div>
+                </button>
+                <button onclick="setRoadmapStep(4)" id="roadmap-btn-4" class="roadmap-btn text-left p-5 rounded-2xl border transition-all duration-300 flex items-start gap-4 bg-white border-neutral-200 opacity-80">
+                  <div class="roadmap-num w-9 h-9 rounded-lg flex items-center justify-center font-mono font-bold text-xs flex-shrink-0 bg-neutral-100 text-neutral-500">04</div>
+                  <div class="space-y-1">
+                    <div class="flex items-center gap-2">
+                      <span class="roadmap-badge text-[9px] font-mono font-bold tracking-wider px-1.5 py-0.2 rounded bg-neutral-100 text-neutral-400">PLACEMENT DRIVE</span>
+                    </div>
+                    <h4 class="text-sm font-bold text-neutral-800">10 MNC Arranged Mocks</h4>
+                    <p class="text-[10px] text-neutral-400 leading-normal">Written guarantee of 10 interviews with tier-1 MNC partners and support.</p>
+                  </div>
+                </button>
+              </div>
+              
+              <!-- Right Roadmap panel -->
+              <div class="lg:col-span-7 p-8 rounded-3xl bg-neutral-900 text-neutral-300 border border-neutral-800 shadow-xl flex flex-col justify-between relative overflow-hidden min-h-[440px]">
+                <div class="absolute inset-0 opacity-[0.02] pointer-events-none" style="background-image:linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px);background-size:20px 20px"></div>
+                <div class="flex items-center justify-between pb-4 border-b border-neutral-800 relative z-10 font-mono text-[10px] text-neutral-400">
+                  <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
+                    <span>CAREER_TRANSFORMATION_FLOW</span>
+                  </div>
+                  <span id="roadmap-active-layer">ACTIVE_LAYER: 01</span>
+                </div>
+                
+                <div class="flex-1 flex flex-col justify-center py-8 relative z-10">
+                  <div id="roadmap-display-content" class="space-y-6 flex flex-col items-center">
+                    <!-- Dynamically populated via JS -->
+                  </div>
+                </div>
+                
+                <div class="pt-4 border-t border-neutral-800 flex items-center justify-between font-mono text-[9px] text-neutral-500 relative z-10">
+                  <span>System: validated</span>
+                  <span>Oracle Cloud SCM Placement Pathway</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- 5. CURRICULUM ARCHITECTURE (4 PHASES) -->
+        <section class="py-24 bg-white border-y border-neutral-100 relative overflow-hidden">
+          <div class="absolute top-1/2 left-3/4 w-[400px] h-[400px] bg-primary/5 rounded-full filter blur-3xl pointer-events-none -translate-y-1/2"></div>
+          <div class="container mx-auto max-w-7xl px-6 relative z-10">
+            <div class="grid lg:grid-cols-12 gap-12 items-start">
+              
+              <!-- Left Module list -->
+              <div class="lg:col-span-5 space-y-6">
+                <div class="space-y-2">
+                  <span class="text-[10px] font-mono font-bold uppercase tracking-widest text-primary bg-primary/5 px-2.5 py-1 rounded-full">Bootcamp Syllabus</span>
+                  <h2 class="text-3xl md:text-4xl font-display font-black text-neutral-900 tracking-tight leading-[1.1] uppercase">RISE Curriculum</h2>
+                  <p class="text-xs text-neutral-500 leading-relaxed pt-1">Select a phase from the catalog below to explore active setup scopes, custom integration targets, database logs, and project deliverables.</p>
+                </div>
+                
+                <div class="flex flex-col gap-3 pt-2">
+                  <button onclick="setCurriculumPhase(1)" id="curr-btn-1" class="curr-btn text-left p-4 rounded-2xl border transition-all flex items-start gap-4 group relative bg-white border-primary shadow-md scale-[1.02]">
+                    <div class="curr-num w-8 h-8 rounded-xl flex items-center justify-center font-mono font-bold text-xs shrink-0 transition-all bg-primary text-white">01</div>
+                    <div class="space-y-1.5 flex-1 min-w-0">
+                      <span class="text-[9px] font-bold uppercase tracking-wider block text-primary">PHASE 1</span>
+                      <h3 class="text-xs font-bold leading-snug truncate text-neutral-900">Real-Time SCM Project Simulation</h3>
+                      <div class="flex items-center gap-2 text-[9px] text-neutral-400 font-mono"><span>15 Days</span><span>•</span><span>Live Instance</span></div>
+                    </div>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-primary shrink-0"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg>
+                  </button>
+                  
+                  <button onclick="setCurriculumPhase(2)" id="curr-btn-2" class="curr-btn text-left p-4 rounded-2xl border transition-all flex items-start gap-4 group relative bg-neutral-50 border-neutral-100 text-neutral-700 hover:bg-neutral-50/80">
+                    <div class="curr-num w-8 h-8 rounded-xl flex items-center justify-center font-mono font-bold text-xs shrink-0 transition-all bg-white border border-neutral-200 text-neutral-400">02</div>
+                    <div class="space-y-1.5 flex-1 min-w-0">
+                      <span class="text-[9px] font-bold uppercase tracking-wider block text-neutral-400">PHASE 2</span>
+                      <h3 class="text-xs font-bold leading-snug truncate text-neutral-700">Scenario Articulation & Mocks</h3>
+                      <div class="flex items-center gap-2 text-[9px] text-neutral-400 font-mono"><span>15 Days</span><span>•</span><span>Live Mocks</span></div>
+                    </div>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-neutral-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg>
+                  </button>
+                  
+                  <button onclick="setCurriculumPhase(3)" id="curr-btn-3" class="curr-btn text-left p-4 rounded-2xl border transition-all flex items-start gap-4 group relative bg-neutral-50 border-neutral-100 text-neutral-700 hover:bg-neutral-50/80">
+                    <div class="curr-num w-8 h-8 rounded-xl flex items-center justify-center font-mono font-bold text-xs shrink-0 transition-all bg-white border border-neutral-200 text-neutral-400">03</div>
+                    <div class="space-y-1.5 flex-1 min-w-0">
+                      <span class="text-[9px] font-bold uppercase tracking-wider block text-neutral-400">PHASE 3</span>
+                      <h3 class="text-xs font-bold leading-snug truncate text-neutral-700">Resume Building & TeleCRM Lock</h3>
+                      <div class="flex items-center gap-2 text-[9px] text-neutral-400 font-mono"><span>7 Days</span><span>•</span><span>Profile Sync</span></div>
+                    </div>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-neutral-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg>
+                  </button>
+                  
+                  <button onclick="setCurriculumPhase(4)" id="curr-btn-4" class="curr-btn text-left p-4 rounded-2xl border transition-all flex items-start gap-4 group relative bg-neutral-50 border-neutral-100 text-neutral-700 hover:bg-neutral-50/80">
+                    <div class="curr-num w-8 h-8 rounded-xl flex items-center justify-center font-mono font-bold text-xs shrink-0 transition-all bg-white border border-neutral-200 text-neutral-400">04</div>
+                    <div class="space-y-1.5 flex-1 min-w-0">
+                      <span class="text-[9px] font-bold uppercase tracking-wider block text-neutral-400">PHASE 4</span>
+                      <h3 class="text-xs font-bold leading-snug truncate text-neutral-700">MNC Placement Drives & Mocks</h3>
+                      <div class="flex items-center gap-2 text-[9px] text-neutral-400 font-mono"><span>8 Days</span><span>•</span><span>Job Placement</span></div>
+                    </div>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-neutral-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg>
+                  </button>
+                </div>
+              </div>
+              
+              <!-- Right Module Detail Panel -->
+              <div class="lg:col-span-7">
+                <div class="rounded-3xl border border-neutral-150 bg-white shadow-xl overflow-hidden">
+                  <div class="flex items-center justify-between p-4 bg-neutral-50 border-b border-neutral-150">
+                    <div class="flex items-center gap-2">
+                      <span class="w-2.5 h-2.5 rounded-full bg-neutral-300"></span>
+                      <span id="curr-cat-id" class="text-[10px] font-mono text-neutral-400 font-bold uppercase tracking-wider">PHASE_ID: RISE_P01</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-[9px] font-bold text-neutral-400 font-mono">
+                      <span class="px-2 py-0.5 bg-emerald-500/10 text-emerald-500 rounded">Simulation Active</span>
+                    </div>
+                  </div>
+                  
+                  <div class="grid grid-cols-3 border-b border-neutral-150">
+                    <button onclick="setCurrSubTab(1)" id="curr-subtab-btn-1" class="curr-subtab-btn py-3 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-wider border-b-2 transition-all border-primary text-primary bg-primary/[0.01]">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layers w-3.5 h-3.5"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"></path><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"></path><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"></path></svg>
+                      <span>Syllabus Map</span>
+                    </button>
+                    <button onclick="setCurrSubTab(2)" id="curr-subtab-btn-2" class="curr-subtab-btn py-3 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-wider border-b-2 transition-all border-transparent text-neutral-500 hover:text-neutral-800">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-database w-3.5 h-3.5"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M3 5V19A9 3 0 0 0 21 19V5\"></path><path d="M3 12A9 3 0 0 0 21 12"></path></svg>
+                      <span>Scenario Focus</span>
+                    </button>
+                    <button onclick="setCurrSubTab(3)" id="curr-subtab-btn-3" class="curr-subtab-btn py-3 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-wider border-b-2 transition-all border-transparent text-neutral-500 hover:text-neutral-800">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-award w-3.5 h-3.5"><path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"></path><circle cx="12" cy="8" r="6"></circle></svg>
+                      <span>Practice Lab</span>
+                    </button>
+                  </div>
+                  
+                  <div class="p-6 md:p-8 min-h-[300px]">
+                    <div id="curr-detail-content" class="space-y-6 text-left">
+                      <!-- Loaded dynamically via JS -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <!-- 6. PARTICIPANT SCOPE (WHO THIS IS FOR) -->
+        <section class="py-24 bg-neutral-50">
+          <div class="container mx-auto max-w-7xl px-6">
+            <div class="text-center max-w-2xl mx-auto mb-16 space-y-3">
+              <span class="text-xs font-bold uppercase tracking-wider text-primary">Student Profiles</span>
+              <h2 class="text-3xl md:text-4xl font-display font-black text-neutral-900 tracking-tight uppercase">Who is this program for?</h2>
+              <p class="text-sm text-neutral-500 font-medium">Select your current career situation to see how RISE helps you bridge the gap.</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-6">
+              <!-- Card 1 -->
+              <div class="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm flex flex-col justify-between hover:shadow-md transition-all duration-300">
+                <div class="space-y-4">
+                  <div class="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                  </div>
+                  <h3 class="text-lg font-display font-bold uppercase text-neutral-900">SCM Domain Professionals</h3>
+                  <p class="text-xs text-neutral-500 leading-relaxed font-medium">For professionals working in Logistics, Purchasing, Warehousing, or Inventory who have completed Fusion training but freeze explaining business process setups.</p>
+                  <ul class="text-xs text-neutral-500 space-y-1.5 font-medium">
+                    <li class="flex items-start gap-2"><span class="text-primary font-bold">•</span> Build project-configuration conviction</li>
+                    <li class="flex items-start gap-2"><span class="text-primary font-bold">•</span> Link domain background to Cloud parameters</li>
+                    <li class="flex items-start gap-2"><span class="text-primary font-bold">•</span> Master standard interview setup answers</li>
+                  </ul>
+                </div>
+              </div>
+              
+              <!-- Card 2 -->
+              <div class="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm flex flex-col justify-between hover:shadow-md transition-all duration-300">
+                <div class="space-y-4">
+                  <div class="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"></path><path d="M6 6h10"></path><path d="M6 10h10"></path></svg>
+                  </div>
+                  <h3 class="text-lg font-display font-bold uppercase text-neutral-900">EBS / Legacy Migrants</h3>
+                  <p class="text-xs text-neutral-500 leading-relaxed font-medium">For EBS, PeopleSoft, or SAP SCM consultants who understand legacy systems but fail to explain Fusion Cloud setup differences, REST payloads, and BPM routers.</p>
+                  <ul class="text-xs text-neutral-500 space-y-1.5 font-medium">
+                    <li class="flex items-start gap-2"><span class="text-primary font-bold">•</span> Re-map legacy setups to Fusion equivalents</li>
+                    <li class="flex items-start gap-2"><span class="text-primary font-bold">•</span> Master FBDI, REST API, and data loaders</li>
+                    <li class="flex items-start gap-2"><span class="text-primary font-bold">•</span> Transition profiles to target high-paying roles</li>
+                  </ul>
+                </div>
+              </div>
+              
+              <!-- Card 3 -->
+              <div class="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm flex flex-col justify-between hover:shadow-md transition-all duration-300">
+                <div class="space-y-4">
+                  <div class="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"></path></svg>
+                  </div>
+                  <h3 class="text-lg font-display font-bold uppercase text-neutral-900">SCM / MBA Freshers</h3>
+                  <p class="text-xs text-neutral-500 leading-relaxed font-medium">For SCM graduates or beginners who want a project-ready consulting resume and require intensive, arranged mock panels to clear SCM hiring criteria.</p>
+                  <ul class="text-xs text-neutral-500 space-y-1.5 font-medium">
+                    <li class="flex items-start gap-2"><span class="text-primary font-bold">•</span> Fast-track SCM project lifecycle details</li>
+                    <li class="flex items-start gap-2"><span class="text-primary font-bold">•</span> Learn typical consultant mock scenarios</li>
+                    <li class="flex items-start gap-2"><span class="text-primary font-bold">•</span> Access arranged MNC drives under guarantee</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 7. INSTRUCTOR SECTION -->
+        <section class="py-24 bg-white border-t border-neutral-100">
+          <div class="container mx-auto max-w-6xl px-6">
+            <div class="text-center max-w-2xl mx-auto mb-16 space-y-3">
+              <span class="text-xs font-bold uppercase tracking-wider text-primary">Enterprise Trainer</span>
+              <h2 class="text-3xl md:text-4xl font-display font-black text-neutral-900 tracking-tight uppercase">Meet the Instructor</h2>
+            </div>
+            
+            <div class="max-w-4xl mx-auto rounded-3xl border border-neutral-200 overflow-hidden bg-neutral-50/50 shadow-md">
+              <div class="grid md:grid-cols-5 gap-0">
+                <div class="md:col-span-2 relative min-h-[380px] bg-neutral-100">
+                  <img src="images/krishna-v-speaker.png" alt="Sudheer V — Oracle SCM Consultant" class="object-cover object-top absolute h-full w-full left-0 top-0">
+                </div>
+                <div class="md:col-span-3 p-8 space-y-6">
+                  <div>
+                    <h3 class="text-2xl font-display font-bold text-neutral-900 uppercase">Sudheer V (Krishna Vidiyala)</h3>
+                    <p class="text-xs font-bold text-primary uppercase tracking-widest mt-1">Oracle Fusion SCM Advisor | 20+ Years Enterprise Consulting</p>
+                  </div>
+                  
+                  <div class="grid grid-cols-3 gap-3">
+                    <div class="p-3 rounded-2xl bg-white border border-neutral-150 text-center">
+                      <p class="text-base font-black text-primary">20+</p>
+                      <p class="text-[9px] text-neutral-400 font-bold uppercase tracking-wider">Years Exp.</p>
+                    </div>
+                    <div class="p-3 rounded-2xl bg-white border border-neutral-150 text-center">
+                      <p class="text-base font-black text-primary">5K+</p>
+                      <p class="text-[9px] text-neutral-400 font-bold uppercase tracking-wider">Pros Trained</p>
+                    </div>
+                    <div class="p-3 rounded-2xl bg-white border border-neutral-150 text-center">
+                      <p class="text-base font-black text-primary">100+</p>
+                      <p class="text-[9px] text-neutral-400 font-bold uppercase tracking-wider">Projects Done</p>
+                    </div>
+                  </div>
+                  
+                  <p class="text-xs text-neutral-500 leading-relaxed font-medium">
+                    Sudheer V is a premium ERP advisor and corporate trainer. Over his 20+ years consulting career, he has successfully delivered, audited, and configured end-to-end Procurement and Supply Chain transformations for Fortune 500 organizations globally.
+                  </p>
+                  
+                  <div class="flex flex-wrap gap-1.5">
+                    <span class="px-2.5 py-1 rounded-md text-[9px] font-bold bg-neutral-200 text-neutral-600 uppercase tracking-wider">Oracle Cloud SCM</span>
+                    <span class="px-2.5 py-1 rounded-md text-[9px] font-bold bg-neutral-200 text-neutral-600 uppercase tracking-wider">Procurement Setup</span>
+                    <span class="px-2.5 py-1 rounded-md text-[9px] font-bold bg-neutral-200 text-neutral-600 uppercase tracking-wider">BPM Automation</span>
+                    <span class="px-2.5 py-1 rounded-md text-[9px] font-bold bg-neutral-200 text-neutral-600 uppercase tracking-wider">Enterprise Consulting</span>
+                  </div>
+                  
+                  <div class="pt-2">
+                    <a href="https://www.linkedin.com/in/sudheervofficial" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-xs font-bold text-primary border border-primary/30 hover:border-primary px-5 py-2.5 rounded-xl transition-colors">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-primary"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect width="4" height="12" x="2" y="9"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+                      <span>Connect on LinkedIn</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 8. VERIFIED STUDENT FEEDBACK -->
+        <section class="py-24 bg-neutral-50">
+          <div class="container mx-auto max-w-7xl px-6">
+            <div class="text-center max-w-2xl mx-auto mb-16 space-y-3">
+              <span class="text-xs font-bold uppercase tracking-wider text-primary">Student Reviews</span>
+              <h2 class="text-3xl md:text-4xl font-display font-black text-neutral-900 tracking-tight uppercase">Verified Student Feedback</h2>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-6">
+              <!-- Review 1 -->
+              <div class="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm flex flex-col justify-between hover:shadow-md transition-all duration-300">
+                <div class="space-y-4">
+                  <div class="flex gap-1">
+                    <!-- Rating Stars -->
+                    <span class="text-amber-400 font-bold text-xs">★★★★★</span>
+                  </div>
+                  <p class="text-xs text-neutral-500 leading-relaxed font-medium">
+                    "I had legacy SCM experience, but struggled explaining the Fusion-specific setups in interviews. The 45-day simulation program gave me the exact vocabulary I needed. Cleared my interview at Accenture."
+                  </p>
+                </div>
+                <div class="mt-4 pt-4 border-t border-neutral-100 flex items-center justify-between text-[11px]">
+                  <span class="font-bold text-neutral-800">Rahul M.</span>
+                  <span class="text-neutral-400 font-mono">Accenture</span>
+                </div>
+              </div>
+              
+              <!-- Review 2 -->
+              <div class="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm flex flex-col justify-between hover:shadow-md transition-all duration-300">
+                <div class="space-y-4">
+                  <div class="flex gap-1">
+                    <span class="text-amber-400 font-bold text-xs">★★★★★</span>
+                  </div>
+                  <p class="text-xs text-neutral-500 leading-relaxed font-medium">
+                    "The mock drills were tough, but they conditioned me to handle pressure. In the final interviews, I could answer scenario questions on Drop Ships and BU relationships without hesitating."
+                  </p>
+                </div>
+                <div class="mt-4 pt-4 border-t border-neutral-100 flex items-center justify-between text-[11px]">
+                  <span class="font-bold text-neutral-800">Siddharth K.</span>
+                  <span class="text-neutral-400 font-mono">Deloitte</span>
+                </div>
+              </div>
+              
+              <!-- Review 3 -->
+              <div class="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm flex flex-col justify-between hover:shadow-md transition-all duration-300">
+                <div class="space-y-4">
+                  <div class="flex gap-1">
+                    <span class="text-amber-400 font-bold text-xs">★★★★★</span>
+                  </div>
+                  <p class="text-xs text-neutral-500 leading-relaxed font-medium">
+                    "The TeleCRM integration made my profile visible to multiple MNCs. I got three offers within 3 weeks of finishing the program. Best career decision."
+                  </p>
+                </div>
+                <div class="mt-4 pt-4 border-t border-neutral-100 flex items-center justify-between text-[11px]">
+                  <span class="font-bold text-neutral-800">Priya Sharma</span>
+                  <span class="text-neutral-400 font-mono">Wipro</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 9. HIGHLIGHTS FROM PAST CLASSES -->
+        <section class="py-24 bg-white border-t border-neutral-100">
+          <div class="container mx-auto max-w-7xl px-6">
+            <div class="text-center max-w-2xl mx-auto mb-16 space-y-3">
+              <span class="text-xs font-bold uppercase tracking-wider text-primary">Classroom Gallery</span>
+              <h2 class="text-3xl md:text-4xl font-display font-black text-neutral-900 tracking-tight uppercase">Highlights from Past Classes</h2>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-6">
+              <div class="rounded-2xl overflow-hidden border border-neutral-200 shadow-sm bg-neutral-100 relative min-h-[220px]">
+                <img src="images/past-webinar-1.jpg" alt="Sudheer V explaining Oracle SCM process during live session" class="object-cover absolute h-full w-full left-0 top-0">
+              </div>
+              <div class="rounded-2xl overflow-hidden border border-neutral-200 shadow-sm bg-neutral-100 relative min-h-[220px]">
+                <img src="images/past-webinar-2.jpg" alt="Interactive Q&A webinar screenshot" class="object-cover absolute h-full w-full left-0 top-0">
+              </div>
+              <div class="rounded-2xl overflow-hidden border border-neutral-200 shadow-sm bg-neutral-100 relative min-h-[220px]">
+                <img src="images/past-webinar-3.jpg" alt="Team discussion with attendees" class="object-cover absolute h-full w-full left-0 top-0">
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 10. FREQUENTLY ASKED QUESTIONS -->
+        <section class="py-24 bg-neutral-50">
+          <div class="container mx-auto max-w-4xl px-6">
+            <div class="text-center max-w-2xl mx-auto mb-16 space-y-3">
+              <span class="text-xs font-bold uppercase tracking-wider text-primary">Got Questions?</span>
+              <h2 class="text-3xl md:text-4xl font-display font-black text-neutral-900 tracking-tight uppercase">Frequently Asked Questions</h2>
+            </div>
+            
+            <div class="space-y-4">
+              <!-- FAQ 1 -->
+              <div class="faq-item bg-white rounded-2xl border border-neutral-200 p-5 shadow-sm transition-all duration-300">
+                <button class="faq-trigger w-full flex items-center justify-between text-left focus:outline-none">
+                  <div class="flex items-center gap-3">
+                    <span class="text-xs font-mono font-bold text-primary">01</span>
+                    <span class="text-sm font-bold text-neutral-800 font-display">Who is eligible for the RISE program?</span>
+                  </div>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="faq-arrow w-4 h-4 text-neutral-400 transition-transform"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </button>
+                <div class="faq-content">
+                  <p class="text-xs text-neutral-500 leading-relaxed font-medium pl-8">
+                    Any candidate who has completed Oracle Fusion SCM training, or has legacy SCM experience (EBS, SAP, JD Edwards) or working domain experience (logistics, purchasing, warehousing) and wants to transition to Oracle Fusion SCM consulting is eligible.
+                  </p>
+                </div>
+              </div>
+              
+              <!-- FAQ 2 -->
+              <div class="faq-item bg-white rounded-2xl border border-neutral-200 p-5 shadow-sm transition-all duration-300">
+                <button class="faq-trigger w-full flex items-center justify-between text-left focus:outline-none">
+                  <div class="flex items-center gap-3">
+                    <span class="text-xs font-mono font-bold text-primary">02</span>
+                    <span class="text-sm font-bold text-neutral-800 font-display">What does the 45-day syllabus cover?</span>
+                  </div>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="faq-arrow w-4 h-4 text-neutral-400 transition-transform"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </button>
+                <div class="faq-content">
+                  <p class="text-xs text-neutral-500 leading-relaxed font-medium pl-8">
+                    It covers real-world setup configurations, end-to-end integration flows, structured mock drills where candidates explain their configurations under stress, resume writing, profile lock, and 10 arranged MNC placement drives.
+                  </p>
+                </div>
+              </div>
+              
+              <!-- FAQ 3 -->
+              <div class="faq-item bg-white rounded-2xl border border-neutral-200 p-5 shadow-sm transition-all duration-300">
+                <button class="faq-trigger w-full flex items-center justify-between text-left focus:outline-none">
+                  <div class="flex items-center gap-3">
+                    <span class="text-xs font-mono font-bold text-primary">03</span>
+                    <span class="text-sm font-bold text-neutral-800 font-display">Is there a placement guarantee?</span>
+                  </div>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="faq-arrow w-4 h-4 text-neutral-400 transition-transform"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </button>
+                <div class="faq-content">
+                  <p class="text-xs text-neutral-500 leading-relaxed font-medium pl-8">
+                    Yes. We provide a written guarantee of 10 interviews arranged with tier-1 MNC partners. In addition, we provide 3 to 6 months of on-the-job support to ensure you succeed in your role after landing.
+                  </p>
+                </div>
+              </div>
+
+              <!-- FAQ 4 -->
+              <div class="faq-item bg-white rounded-2xl border border-neutral-200 p-5 shadow-sm transition-all duration-300">
+                <button class="faq-trigger w-full flex items-center justify-between text-left focus:outline-none">
+                  <div class="flex items-center gap-3">
+                    <span class="text-xs font-mono font-bold text-primary">04</span>
+                    <span class="text-sm font-bold text-neutral-800 font-display">What is the daily time commitment?</span>
+                  </div>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="faq-arrow w-4 h-4 text-neutral-400 transition-transform"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </button>
+                <div class="faq-content">
+                  <p class="text-xs text-neutral-500 leading-relaxed font-medium pl-8">
+                    The program requires 4 hours of daily commitment (practice on live instances, attending mocks, analyzing business cases) to achieve the desired transformation in 45 days.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 11. REGISTRATION FORM / ELIGIBILITY LOCK -->
+        <section id="registration" class="py-24 bg-white border-t border-neutral-100">
+          <div class="container mx-auto max-w-6xl px-6">
+            <div class="text-center max-w-2xl mx-auto mb-16 space-y-3">
+              <span class="text-xs font-bold uppercase tracking-wider text-primary">Intake Registration</span>
+              <h2 class="text-3xl md:text-4xl font-display font-black text-neutral-900 tracking-tight uppercase">Reserve Your Live Spot</h2>
+              <p class="text-sm text-neutral-500">Join upcoming ERP professionals advancing SCM automation. Check your calendar for this session.</p>
+            </div>
+            
+            <div class="grid lg:grid-cols-12 gap-8 items-stretch max-w-5xl mx-auto">
+              <!-- Left Info Box -->
+              <div class="lg:col-span-5 p-6 md:p-8 rounded-3xl bg-neutral-900 text-neutral-350 border border-neutral-800 flex flex-col justify-between">
+                <div class="space-y-6">
+                  <div>
+                    <h4 class="text-lg font-display font-bold text-white uppercase">Register for this Session</h4>
+                    <p class="text-xs text-neutral-500">Free registration — seats are limited.</p>
+                  </div>
+                  
+                  <div class="h-px bg-neutral-800"></div>
+                  
+                  <div class="space-y-4 font-mono text-xs">
+                    <div class="flex justify-between items-center">
+                      <span class="text-neutral-500">Batch Date:</span>
+                      <span class="text-neutral-200 font-bold" id="form-date-badge">June 20</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                      <span class="text-neutral-500">Intake Size:</span>
+                      <span class="text-neutral-200 font-bold">12 seats available</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                      <span class="text-neutral-500">Pricing Plan:</span>
+                      <span class="text-neutral-200 font-bold">Free Eligibility Check</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="p-4 rounded-2xl bg-neutral-950 border border-neutral-800 mt-6 space-y-2">
+                  <span class="text-[9px] font-bold text-neutral-500 uppercase block tracking-wider font-mono">Admissions Note</span>
+                  <p class="text-[10px] text-neutral-400 leading-relaxed font-mono">
+                    All candidates must verify their email with an OTP code. Verified profiles are automatically processed for 1:1 project simulation criteria check.
+                  </p>
+                </div>
+              </div>
+              
+              <!-- Right Form Wrapper -->
+              <div class="lg:col-span-7 p-6 md:p-8 rounded-3xl bg-white border border-neutral-200 shadow-xl flex flex-col justify-between">
+                <div class="form-wrapper">
+                  <form id="lead-capture-form" class="space-y-4">
+                    <!-- Name Input -->
+                    <div class="space-y-1">
+                      <label for="user-name" class="text-xs font-bold text-neutral-600 block ml-0.5">Your Full Name *</label>
+                      <input id="user-name" type="text" placeholder="Name" required class="w-full px-4 py-2.5 rounded-xl bg-white border border-neutral-200 text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-300 text-sm shadow-sm" name="name">
+                    </div>
+                    
+                    <!-- Email and Send OTP row -->
+                    <div class="space-y-1">
+                      <label for="user-email" class="text-xs font-bold text-neutral-600 block ml-0.5">Work / Personal Email *</label>
+                      <div class="flex gap-2">
+                        <input id="user-email" type="email" placeholder="Email" required class="flex-1 px-4 py-2.5 rounded-xl bg-white border border-neutral-200 text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-300 text-sm shadow-sm" name="email">
+                        <button type="button" id="send-otp-btn" class="px-4 py-2.5 bg-neutral-900 hover:bg-neutral-800 text-white font-bold rounded-xl transition-all duration-300 text-xs shrink-0">Send OTP</button>
+                      </div>
+                      <span id="email-otp-status" class="text-[10px] block mt-1"></span>
+                    </div>
+
+                    <!-- OTP Input Box (Hidden initially) -->
+                    <div id="otp-input-group" class="space-y-1" style="display: none;">
+                      <label for="user-otp" class="text-xs font-bold text-neutral-600 block ml-0.5">Enter 6-Digit OTP *</label>
+                      <div class="flex gap-2">
+                        <input id="user-otp" type="text" placeholder="6-Digit Code" class="flex-1 px-4 py-2.5 rounded-xl bg-white border border-neutral-200 text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-300 text-sm shadow-sm font-mono text-center tracking-widest" maxLength="6">
+                        <button type="button" id="verify-otp-btn" class="px-4 py-2.5 bg-primary text-white font-bold rounded-xl transition-all duration-300 text-xs shrink-0">Verify Code</button>
+                      </div>
+                    </div>
+                    
+                    <!-- Phone Input -->
+                    <div class="space-y-1">
+                      <label for="user-phone" class="text-xs font-bold text-neutral-600 block ml-0.5">WhatsApp Mobile Number *</label>
+                      <input id="user-phone" type="tel" placeholder="10-Digit Phone" required class="w-full px-4 py-2.5 rounded-xl bg-white border border-neutral-200 text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-300 text-sm shadow-sm" name="phone">
+                    </div>
+
+                    <!-- Role Dropdown -->
+                    <div class="space-y-1">
+                      <label for="user-role" class="text-xs font-bold text-neutral-600 block ml-0.5">Select SCM Background Category *</label>
+                      <select id="user-role" required class="w-full px-4 py-2.5 rounded-xl bg-white border border-neutral-200 text-neutral-900 focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-300 text-sm shadow-sm" name="role">
+                        <option value="">-- Choose Background --</option>
+                        <option value="SCM Domain Professional">SCM Domain Professional (Warehouse, Logistics, Purchase)</option>
+                        <option value="Legacy SCM Consultant">Legacy SCM Consultant (EBS, PeopleSoft, SAP)</option>
+                        <option value="SCM or MBA Fresher">SCM or MBA Fresher / Beginner</option>
+                      </select>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                      <!-- Experience Dropdown -->
+                      <div class="space-y-1">
+                        <label for="user-experience" class="text-xs font-bold text-neutral-600 block ml-0.5">SCM Experience *</label>
+                        <select id="user-experience" required class="w-full px-4 py-2.5 rounded-xl bg-white border border-neutral-200 text-neutral-900 focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-300 text-sm shadow-sm" name="experience">
+                          <option value="">-- Select --</option>
+                          <option value="0-2 Years">0-2 Years</option>
+                          <option value="2-5 Years">2-5 Years</option>
+                          <option value="5-8 Years">5-8 Years</option>
+                          <option value="8+ Years">8+ Years</option>
+                        </select>
+                      </div>
+
+                      <!-- Current CTC Dropdown -->
+                      <div class="space-y-1">
+                        <label for="user-salary" class="text-xs font-bold text-neutral-600 block ml-0.5">Current Annual CTC (INR) *</label>
+                        <select id="user-salary" required class="w-full px-4 py-2.5 rounded-xl bg-white border border-neutral-200 text-neutral-900 focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-300 text-sm shadow-sm" name="salary">
+                          <option value="">-- Select --</option>
+                          <option value="Under ₹3 Lakhs">Under ₹3 Lakhs</option>
+                          <option value="₹3 - ₹6 Lakhs">₹3 - ₹6 Lakhs</option>
+                          <option value="₹6 - ₹10 Lakhs">₹6 - ₹10 Lakhs</option>
+                          <option value="₹10+ Lakhs">₹10+ Lakhs</option>
+                        </select>
+                      </div>
+                    </div>
+                    
+                    <!-- Submit Button -->
+                    <button type="submit" id="submit-booking-btn" disabled style="opacity:0.6; cursor:not-allowed;" class="relative group overflow-hidden w-full inline-flex items-center justify-center gap-2 bg-[#1073ad] text-white font-bold rounded-xl py-3.5 transition-all duration-300 shadow-md text-sm mt-4">
+                      <span>Please Verify Email First</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-neutral-950 border-t border-neutral-900 py-16 text-white">
+      <div class="container mx-auto px-6 max-w-7xl">
+        <div class="grid md:grid-cols-4 gap-8">
+          <div class="space-y-4">
+            <h5 class="text-sm font-bold uppercase tracking-wider font-display">Tech Leads IT</h5>
+            <p class="text-xs text-neutral-400 leading-relaxed font-medium">Oracle SCM transition platform. From concepts to MNC job readiness under certified advisory mentorship.</p>
+          </div>
+          <div class="space-y-4">
+            <h5 class="text-sm font-bold uppercase tracking-wider font-display">Quick Links</h5>
+            <ul class="text-xs text-neutral-400 space-y-2 font-medium">
+              <li><a href="#" class="hover:text-primary transition-colors">Home</a></li>
+              <li><a href="#" class="hover:text-primary transition-colors">About Us</a></li>
+              <li><a href="#" class="hover:text-primary transition-colors">Corporate Programs</a></li>
+              <li><a href="#" class="hover:text-primary transition-colors">Contact Support</a></li>
+            </ul>
+          </div>
+          <div class="space-y-4">
+            <h5 class="text-sm font-bold uppercase tracking-wider font-display">Syllabus</h5>
+            <ul class="text-xs text-neutral-400 space-y-2 font-medium">
+              <li><a href="#" class="hover:text-primary transition-colors">P2P Setup Modules</a></li>
+              <li><a href="#" class="hover:text-primary transition-colors">O2C Setup Modules</a></li>
+              <li><a href="#" class="hover:text-primary transition-colors">BPM Workflow Setup</a></li>
+              <li><a href="#" class="hover:text-primary transition-colors">FBDI Data Loading</a></li>
+            </ul>
+          </div>
+          <div class="space-y-4">
+            <h5 class="text-sm font-bold uppercase tracking-wider font-display">Legal</h5>
+            <p class="text-xs text-neutral-400 leading-relaxed font-medium">© 2026 Tech Leads IT. All Rights Reserved. Guarantee subject to terms and criteria validation.</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+</body>
+</html>

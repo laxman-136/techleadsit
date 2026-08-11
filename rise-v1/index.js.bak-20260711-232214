@@ -1,0 +1,654 @@
+// index.js - Interactive Script for RISE Landing Page
+// Handles Dynamic Dates, FAQ Accordions, Testimonial Carousels, OTP verification, and Form Submission.
+
+document.addEventListener("DOMContentLoaded", () => {
+  initDynamicDates();
+  initFaqAccordion();
+  initTestimonialCarousel();
+  initOtpVerification();
+  initFormSubmit();
+  injectTrackingFieldsToAllForms();
+  initHeroAnimations();
+});
+
+// 1. DYNAMIC DATE LOGIC (Computes upcoming batch target date)
+let formattedDemoDate = "";
+let formattedDemoYear = "";
+
+function initDynamicDates() {
+  const now = new Date();
+  const currentDay = now.getDay(); // 0: Sun, 1: Mon, 2: Tue, etc.
+  
+  // Create target date copy
+  const target = new Date(now.getTime());
+  target.setHours(8, 0, 0, 0); // 8:00 AM IST
+  
+  // Schedule: Thursday or Saturday
+  if (currentDay >= 0 && currentDay <= 2) {
+    // Sun, Mon, Tue -> Target next Thursday (day 4)
+    const daysToAdd = 4 - currentDay;
+    target.setDate(now.getDate() + daysToAdd);
+  } else if (currentDay >= 3 && currentDay <= 4) {
+    // Wed, Thu -> Target next Saturday (day 6)
+    const daysToAdd = 6 - currentDay;
+    target.setDate(now.getDate() + daysToAdd);
+  } else {
+    // Fri, Sat -> Target next Thursday of the following week
+    const daysToAdd = (currentDay === 5) ? 6 : 5;
+    target.setDate(now.getDate() + daysToAdd);
+  }
+
+  const options = { month: 'long', day: 'numeric' };
+  formattedDemoDate = target.toLocaleDateString('en-US', options); // e.g. "June 20"
+  formattedDemoYear = target.getFullYear(); // e.g. "2026"
+
+  // Fallback if formatting fails
+  if (!formattedDemoDate) {
+    formattedDemoDate = "June 20";
+    formattedDemoYear = "2026";
+  }
+
+  updateDynamicDateTexts();
+}
+
+function updateDynamicDateTexts() {
+  // Update header badge date
+  const headerDateBadge = document.querySelector("#header-date-badge");
+  if (headerDateBadge) {
+    headerDateBadge.textContent = formattedDemoDate;
+  }
+
+  // Update Hero CTA Button text
+  const heroCtaBtn = document.querySelector("#hero-cta-btn");
+  if (heroCtaBtn) {
+    heroCtaBtn.textContent = `Check My Eligibility — ${formattedDemoDate} Batch →`;
+  }
+
+  // Update Final CTA Button text
+  const finalCtaBtn = document.querySelector("#final-cta-btn");
+  if (finalCtaBtn) {
+    finalCtaBtn.textContent = `Enroll & Reserve Your Seat — ${formattedDemoDate} Batch →`;
+  }
+}
+
+// 2. SECURE MARKETING & SESSION TRACKING CAPTURE ENGINE
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+  return '';
+}
+
+function getGaClientId() {
+  const gaCookie = getCookie('_ga');
+  if (gaCookie) {
+    const parts = gaCookie.split('.');
+    if (parts.length >= 4) {
+      return parts.slice(-2).join('.');
+    }
+    return gaCookie;
+  }
+  return '';
+}
+
+function getSessionId() {
+  let sessId = sessionStorage.getItem('techleads_session_id');
+  if (!sessId) {
+    sessId = 's' + Date.now() + '$r' + Math.floor(Math.random() * 1000000);
+    sessionStorage.setItem('techleads_session_id', sessId);
+  }
+  return sessId;
+}
+
+function getTrackingData() {
+  const data = {};
+  const urlParams = new URLSearchParams(window.location.search);
+  
+  // 1. URL params with session persistence
+  const queryParams = [
+    'utm_source', 'utm_medium', 'utm_campaign', 'utm_adgroup', 'utm_term', 'utm_content',
+    'gclid', 'gbraid', 'wbraid', 'fbclid'
+  ];
+  
+  queryParams.forEach(param => {
+    let val = urlParams.get(param);
+    if (val) {
+      sessionStorage.setItem('techleads_' + param, val);
+    } else {
+      val = sessionStorage.getItem('techleads_' + param) || '';
+    }
+    data[param] = val;
+  });
+  
+  // 2. Cookie params
+  data['fbp'] = getCookie('_fbp') || '';
+  
+  // fbc can be cookie-based or fallback to fbclid URL parameter
+  let fbc = getCookie('_fbc') || '';
+  if (!fbc && data['fbclid']) {
+    fbc = `fb.1.${Date.now()}.${data['fbclid']}`;
+  }
+  data['fbc'] = fbc;
+  
+  data['ga_client_id'] = getGaClientId();
+  
+  // 3. Session / Metadata
+  data['session_id'] = getSessionId();
+  data['landing_page'] = window.location.origin + window.location.pathname;
+  
+  let ref = sessionStorage.getItem('techleads_referrer');
+  if (!ref) {
+    ref = document.referrer || 'direct';
+    sessionStorage.setItem('techleads_referrer', ref);
+  }
+  data['referrer'] = ref;
+  
+  return data;
+}
+
+function injectTrackingFieldsToAllForms() {
+  const trackingData = getTrackingData();
+  const forms = document.querySelectorAll('form');
+  
+  forms.forEach(form => {
+    for (const [key, value] of Object.entries(trackingData)) {
+      let input = form.querySelector(`input[name="${key}"]`);
+      if (!input) {
+        input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        form.appendChild(input);
+      }
+      input.value = value;
+    }
+  });
+}
+
+// 3. FAQ ACCORDION TOGGLING
+function initFaqAccordion() {
+  const triggers = document.querySelectorAll(".faq-trigger");
+  
+  triggers.forEach(trigger => {
+    trigger.addEventListener("click", () => {
+      const item = trigger.parentNode;
+      const content = item.querySelector(".faq-content");
+      const isActive = item.classList.contains("active");
+      
+      // Close all other open items
+      document.querySelectorAll(".faq-item").forEach(faq => {
+        faq.classList.remove("active");
+        faq.querySelector(".faq-content").style.maxHeight = null;
+      });
+      
+      // If the clicked item wasn't open, open it
+      if (!isActive) {
+        item.classList.add("active");
+        content.style.maxHeight = content.scrollHeight + "px";
+      }
+    });
+  });
+}
+
+// 4. TESTIMONIAL CAROUSEL NAVIGATION ENGINE (Continuous Auto-Play)
+function initTestimonialCarousel() {
+  const track = document.getElementById("carousel-track");
+  const slides = Array.from(document.querySelectorAll(".carousel-slide"));
+  const prevBtn = document.getElementById("carousel-prev");
+  const nextBtn = document.getElementById("carousel-next");
+  const dots = Array.from(document.querySelectorAll(".carousel-dots .dot"));
+  const container = document.querySelector(".carousel-container");
+
+  if (!track || slides.length === 0 || !prevBtn || !nextBtn) return;
+
+  let currentIndex = 0;
+  let autoPlayTimer = null;
+  const autoPlayDelay = 4000; // 4 seconds auto-play interval
+
+  // Calculate items visible per page based on viewport width
+  function getItemsPerPage() {
+    const width = window.innerWidth;
+    if (width > 1024) return 3; // Desktop
+    if (width > 640) return 2;  // Tablet
+    return 1;                  // Mobile
+  }
+
+  function getSlideWidth() {
+    const item = slides[0];
+    const rect = item.getBoundingClientRect();
+    return rect.width;
+  }
+
+  function updateCarousel() {
+    const itemsPerPage = getItemsPerPage();
+    const maxIndex = slides.length - itemsPerPage;
+    
+    // Bounds check
+    if (currentIndex > maxIndex) {
+      currentIndex = maxIndex;
+    }
+    if (currentIndex < 0) {
+      currentIndex = 0;
+    }
+
+    const slideWidth = getSlideWidth();
+    const gap = 24; // Gap between cards in CSS (matches index.css)
+    const translateAmount = -currentIndex * (slideWidth + gap);
+    
+    track.style.transform = `translateX(${translateAmount}px)`;
+    
+    // Update active dot indicator and dynamically hide extra dots
+    dots.forEach((dot, index) => {
+      if (index <= maxIndex) {
+        dot.style.display = "inline-block";
+        if (index === currentIndex) {
+          dot.classList.add("active");
+        } else {
+          dot.classList.remove("active");
+        }
+      } else {
+        dot.style.display = "none";
+      }
+    });
+
+    prevBtn.style.opacity = "1";
+    prevBtn.style.cursor = "pointer";
+    nextBtn.style.opacity = "1";
+    nextBtn.style.cursor = "pointer";
+  }
+
+  function nextSlide() {
+    const itemsPerPage = getItemsPerPage();
+    const maxIndex = slides.length - itemsPerPage;
+    if (currentIndex >= maxIndex) {
+      currentIndex = 0; // Continuous wrap around to first slide
+    } else {
+      currentIndex++;
+    }
+    updateCarousel();
+  }
+
+  function prevSlide() {
+    const itemsPerPage = getItemsPerPage();
+    const maxIndex = slides.length - itemsPerPage;
+    if (currentIndex <= 0) {
+      currentIndex = maxIndex; // Continuous wrap around to last possible view
+    } else {
+      currentIndex--;
+    }
+    updateCarousel();
+  }
+
+  // Next Slide Trigger
+  nextBtn.addEventListener("click", () => {
+    nextSlide();
+    resetAutoPlay();
+  });
+
+  // Previous Slide Trigger
+  prevBtn.addEventListener("click", () => {
+    prevSlide();
+    resetAutoPlay();
+  });
+
+  // Dots Pagination Click Events
+  dots.forEach((dot, index) => {
+    dot.addEventListener("click", () => {
+      const itemsPerPage = getItemsPerPage();
+      const maxIndex = slides.length - itemsPerPage;
+      if (index <= maxIndex) {
+        currentIndex = index;
+        updateCarousel();
+        resetAutoPlay();
+      }
+    });
+  });
+
+  // Auto-play control functions
+  function startAutoPlay() {
+    if (!autoPlayTimer) {
+      autoPlayTimer = setInterval(nextSlide, autoPlayDelay);
+    }
+  }
+
+  function stopAutoPlay() {
+    if (autoPlayTimer) {
+      clearInterval(autoPlayTimer);
+      autoPlayTimer = null;
+    }
+  }
+
+  function resetAutoPlay() {
+    stopAutoPlay();
+    startAutoPlay();
+  }
+
+  // Auto-play state listeners (Pause on hover or touch)
+  if (container) {
+    container.addEventListener("mouseenter", stopAutoPlay);
+    container.addEventListener("mouseleave", startAutoPlay);
+    container.addEventListener("touchstart", stopAutoPlay, { passive: true });
+    container.addEventListener("touchend", startAutoPlay, { passive: true });
+  }
+
+  // Synchronize on Window Resize
+  window.addEventListener("resize", () => {
+    // Disable slide animation during resize to prevent visual lag
+    track.style.transition = "none";
+    updateCarousel();
+    
+    // Re-enable smooth transition after resize completes
+    setTimeout(() => {
+      track.style.transition = "transform 0.55s cubic-bezier(0.16, 1, 0.3, 1)";
+    }, 50);
+  });
+
+  // Handle onload layout shifts
+  window.addEventListener("load", () => {
+    updateCarousel();
+  });
+
+  // Initialize Rendering & Auto-Play
+  updateCarousel();
+  startAutoPlay();
+}
+
+// 5. OTP VERIFICATION LOGIC (Email verification via WordPress endpoints)
+function initOtpVerification() {
+  const emailInput = document.getElementById("user-email");
+  const sendOtpBtn = document.getElementById("send-otp-btn");
+  const otpStatus = document.getElementById("email-otp-status");
+  const otpInputGroup = document.getElementById("otp-input-group");
+  const otpInput = document.getElementById("user-otp");
+  const verifyOtpBtn = document.getElementById("verify-otp-btn");
+  const submitBtn = document.getElementById("submit-booking-btn");
+
+  if (!sendOtpBtn || !verifyOtpBtn) return;
+
+  sendOtpBtn.addEventListener("click", () => {
+    const email = emailInput.value.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRegex.test(email)) {
+      alert("Please enter a valid email address first.");
+      return;
+    }
+
+    sendOtpBtn.textContent = "Sending...";
+    sendOtpBtn.disabled = true;
+    otpStatus.textContent = "Sending verification code...";
+    otpStatus.style.color = "#9ca3af"; // Gray
+
+    fetch('/wp-json/techleadsit/v1/send-otp', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email })
+    })
+    .then(response => {
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.indexOf("application/json") !== -1) {
+        return response.json().then(data => ({ status: response.status, body: data }));
+      } else {
+        return { status: response.status, body: { success: false, message: `Server error (${response.status})` } };
+      }
+    })
+    .then(res => {
+      if (res.status === 200 && res.body.success) {
+        otpStatus.textContent = "OTP sent! Please check your inbox (and spam folder).";
+        otpStatus.style.color = "#27b376"; // Green
+        otpInputGroup.style.display = "block"; // Show OTP input field
+        sendOtpBtn.textContent = "Resend OTP";
+        sendOtpBtn.disabled = false;
+      } else {
+        throw new Error(res.body.message || "Failed to send OTP.");
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      otpStatus.textContent = err.message || "Error sending code. Try again.";
+      otpStatus.style.color = "#d41816"; // Red
+      sendOtpBtn.textContent = "Send OTP";
+      sendOtpBtn.disabled = false;
+    });
+  });
+
+  verifyOtpBtn.addEventListener("click", () => {
+    const email = emailInput.value.trim();
+    const otp = otpInput.value.trim();
+
+    if (!otp || otp.length !== 6 || isNaN(otp)) {
+      alert("Please enter a valid 6-digit OTP code.");
+      return;
+    }
+
+    verifyOtpBtn.textContent = "Verifying...";
+    verifyOtpBtn.disabled = true;
+
+    fetch('/wp-json/techleadsit/v1/verify-otp', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, otp })
+    })
+    .then(response => {
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.indexOf("application/json") !== -1) {
+        return response.json().then(data => ({ status: response.status, body: data }));
+      } else {
+        return { status: response.status, body: { success: false, message: `Server error (${response.status})` } };
+      }
+    })
+    .then(res => {
+      if (res.status === 200 && res.body.success) {
+        otpStatus.textContent = "Email verified successfully!";
+        otpStatus.style.color = "#27b376"; // Green
+        otpInputGroup.style.display = "none"; // Hide OTP input once verified
+        sendOtpBtn.style.display = "none"; // Hide send OTP button once verified
+        emailInput.readOnly = true; // Lock email field once verified
+        
+        // Enable submit button
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = "1";
+        submitBtn.style.cursor = "pointer";
+        submitBtn.textContent = "Submit Application & Check Eligibility →";
+      } else {
+        throw new Error(res.body.message || "Invalid OTP code.");
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      alert(err.message || "Verification failed. Please try again.");
+      verifyOtpBtn.textContent = "Verify Code";
+      verifyOtpBtn.disabled = false;
+    });
+  });
+}
+
+// 6. FORM SUBMIT HANDLER & SUCCESS STATE (CRM Endpoint Integration)
+function initFormSubmit() {
+  const form = document.getElementById("lead-capture-form");
+  if (!form) return;
+  
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    
+    // Ensure all tracking fields are injected and populated before submission
+    injectTrackingFieldsToAllForms();
+
+    // Read input fields
+    const name = document.getElementById("user-name").value.trim();
+    const email = document.getElementById("user-email").value.trim();
+    const phone = document.getElementById("user-phone").value.trim();
+    const role = document.getElementById("user-role").value;
+    const salary = document.getElementById("user-salary").value;
+    const experience = document.getElementById("user-experience").value;
+    
+    // Validate inputs
+    if (!name) {
+      alert("Please enter your name.");
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      alert("Please enter a valid email address.");
+      return;
+    }
+
+    const phoneRegex = /^[0-9]{10}$/;
+    if (!phoneRegex.test(phone)) {
+      alert("Please enter a valid 10-digit WhatsApp mobile number.");
+      return;
+    }
+
+    if (!role) {
+      alert("Please select your current career situation.");
+      return;
+    }
+    if (!experience) {
+      alert("Please select your experience level.");
+      return;
+    }
+    if (!salary) {
+      alert("Please select your current CTC.");
+      return;
+    }
+
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn.textContent;
+    submitBtn.textContent = "Submitting Application...";
+    submitBtn.disabled = true;
+
+    // Compile payload from form fields (including hidden tracking inputs)
+    const formData = new FormData(form);
+    const payload = {
+      name,
+      email,
+      phone,
+      role,
+      salary,
+      experience
+    };
+    formData.forEach((value, key) => {
+      payload[key] = value;
+    });
+
+    // Send payload to custom WP secure lead routing endpoint
+    fetch('/wp-json/techleadsit/v1/submit-lead', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    })
+    .then(response => {
+      if (!response.ok) {
+        return response.json().then(errData => {
+          throw new Error(errData.message || 'Server returned error status');
+        }).catch(() => {
+          throw new Error('Server returned error status');
+        });
+      }
+      return response.json();
+    })
+    .then(data => {
+      if (data.success) {
+        renderSuccessCard(name, phone, role);
+      } else {
+        alert("Registration failed: " + (data.message || "Please check your details."));
+        submitBtn.textContent = originalBtnText;
+        submitBtn.disabled = false;
+      }
+    })
+    .catch(error => {
+      console.error("Error submitting lead:", error);
+      alert("Unable to register: " + error.message);
+      submitBtn.textContent = originalBtnText;
+      submitBtn.disabled = false;
+    });
+  });
+
+  function renderSuccessCard(name, phone, role) {
+    const formWrapper = document.querySelector(".form-wrapper");
+    if (formWrapper) {
+      formWrapper.innerHTML = `
+        <div class="form-success-card">
+          <div class="success-icon-box">
+            <svg class="success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+          
+          <h3 class="success-title">Application Submitted!</h3>
+          <p>We've registered your eligibility profile for the RISE program.</p>
+          
+          <div class="success-details-box">
+            <div class="success-item">
+              <span>Applicant Name</span>
+              <span>${name}</span>
+            </div>
+            <div class="success-item">
+              <span>WhatsApp Number</span>
+              <span>+91 ${phone}</span>
+            </div>
+            <div class="success-item">
+              <span>Profile Category</span>
+              <span>${role}</span>
+            </div>
+          </div>
+          
+          <div class="success-zoom-box">
+            <h4>Admissions Office Assessment</h4>
+            <p>Our Admissions Officer will review your eligibility profile and contact you on WhatsApp within 24 hours to schedule your 1:1 project simulation assessment round.</p>
+            <p style="margin-top: 12px; font-weight: bold; font-size:13px;">To accelerate your review, you can contact us directly:</p>
+            <a href="https://wa.me/918125323232?text=Hi,%20I%20have%20submitted%20my%20eligibility%20form%20for%20RISE.%20My%20name%20is%20${encodeURIComponent(name)}." target="_blank" class="success-zoom-link" style="display:inline-block; margin-top:6px;">Message Admissions Team on WhatsApp →</a>
+          </div>
+        </div>
+      `;
+      
+      // Auto smooth scroll to top of success card
+      formWrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+}
+
+// 9. GSAP HERO ANIMATIONS ENGINE
+function initHeroAnimations() {
+  if (typeof gsap === "undefined") {
+    console.warn("GSAP is not loaded. Skipping animations.");
+    return;
+  }
+
+  // Create loading timeline
+  const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+
+  // Initial state setup to prevent jumping
+  gsap.set(".gsap-hero-anim", { opacity: 0, y: 30 });
+  gsap.set(".gsap-hero-visual", { opacity: 0, scale: 0.95 });
+
+  // Play animation sequence
+  tl.to(".gsap-hero-anim", {
+    opacity: 1,
+    y: 0,
+    duration: 0.8,
+    stagger: 0.15,
+    clearProps: "transform"
+  })
+  .to(".gsap-hero-visual", {
+    opacity: 1,
+    scale: 1,
+    duration: 1,
+    ease: "back.out(1.2)"
+  }, "-=0.6");
+
+  // Floating breathing loop animation for visual mockup
+  gsap.to(".gsap-hero-visual", {
+    y: -8,
+    duration: 4,
+    repeat: -1,
+    yoyo: true,
+    ease: "sine.inOut"
+  });
+}
+

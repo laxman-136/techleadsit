@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Oracle Fusion SCM Training | TechLeadsY</title>
+  <meta name="description" content="Live online Oracle Fusion SCM training led by a trainer with 20+ years of experience. Hands-on practice, real business scenarios, and mock interviews.">
+  
+  <!-- Font imports done in CSS but preconnect here for speed -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="index.css">
+  
+  <!-- JavaScript -->
+  <script src="index.js" defer></script>
+</head>
+<body>
+
+  <!-- Header / Navigation -->
+  <header class="site-header">
+    <div class="container header-container">
+      <a href="#" class="brand-logo" aria-label="TechLeadsY home">
+        <img src="logo-light.png" alt="TechLeads Logo" style="height: 36px; display: block; object-fit: contain;">
+      </a>
+      <div style="display: flex; gap: 15px; align-items: center;">
+        <div class="header-badge" id="batch-header-badge">
+          <span class="pulse-dot"></span>
+          Next Demo: <strong>July 23</strong>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="openBookingModal()" style="border-radius: 8px;">Book Free Seat</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container grid-2">
+      <div class="hero-content">
+        <div class="hero-eyebrow">
+          <span class="eyebrow-dot"></span>
+          <span class="eyebrow-text">Interactive Live Bootcamps</span>
+        </div>
+        <h1 class="hero-title">Oracle Fusion SCM Training That Prepares You for <br><span class="hero-gradient-text">Real Cloud Projects</span></h1>
+        <p class="hero-desc">
+          Live online training led by a trainer with 20+ years of Oracle SCM experience. Hands-on practice, real-time scenarios, and career support — built for working professionals and freshers alike.
+        </p>
+        <div class="hero-ctas">
+          <button class="btn btn-primary btn-lg btn-animate-arrow btn-shine" onclick="openBookingModal()">
+            <span>Book My Free Demo</span>
+            <svg class="btn-arrow-svg" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </button>
+          <a href="https://wa.me/918125323232?text=Hi,%20I'm%20interested%20in%20the%20Oracle%20Fusion%20SCM%20Training." class="btn btn-secondary-outline btn-lg" target="_blank" rel="noopener noreferrer">
+            Talk to a Course Advisor
+          </a>
+        </div>
+        <div class="hero-trust-row">
+          <div class="trust-pill">
+            <span class="trust-check-icon">✓</span>
+            <span>No advance payment for demo</span>
+          </div>
+          <div class="trust-pill">
+            <span class="trust-check-icon">✓</span>
+            <span>Live sessions, not pre-recorded</span>
+          </div>
+          <div class="trust-pill">
+            <span class="trust-check-icon">✓</span>
+            <span>Batch starts soon</span>
+          </div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="trainer-card">
+          <div class="trainer-image-container">
+            <img src="images/trainer.png" alt="Krishna V - Lead SCM Trainer" class="trainer-image">
+            <span class="trainer-badge">LEAD TRAINER</span>
+          </div>
+          <div class="trainer-info">
+            <div class="trainer-name">Krishna V</div>
+            <div class="trainer-title">Lead Oracle Cloud SCM Architect & Advisor</div>
+            <div class="trainer-meta">
+              <div class="trainer-meta-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                20+ Yrs Exp
+              </div>
+              <div class="trainer-meta-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"></path></svg>
+                MNC Implementation Leader
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 2: Trust Stats Strip -->
+  <section class="stats-section">
+    <div class="container">
+      <div class="stats-grid">
+        
+        <div class="stat-card">
+          <div class="stat-icon-wrapper">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+          </div>
+          <div class="stat-number-wrapper">
+            <span class="stat-count" data-target="10">0</span><span class="stat-suffix">+ Yrs</span>
+          </div>
+          <div class="stat-label">Training Oracle Professionals</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon-wrapper">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          </div>
+          <div class="stat-number-wrapper">
+            <span class="stat-count" data-target="20">0</span><span class="stat-suffix">+ Yrs</span>
+          </div>
+          <div class="stat-label">Trainer SCM Industry Experience</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon-wrapper">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          </div>
+          <div class="stat-number-wrapper">
+            <span class="stat-count" data-target="6789">0</span><span class="stat-suffix">+</span>
+          </div>
+          <div class="stat-label">Successful Learners Trained</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon-wrapper">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          </div>
+          <div class="stat-number-wrapper">
+            <span class="stat-count" data-target="100">0</span><span class="stat-suffix">%</span>
+          </div>
+          <div class="stat-label">Globally Recognized Certification</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Section 3: Who This Course Is For -->
+  <section class="bg-secondary">
+    <div class="container">
+      <div class="text-center" style="margin-bottom: var(--spacing-xl);">
+        <h2>Who Is This SCM Training For?</h2>
+        <p style="max-width: 650px; margin: 10px auto 0 auto;">This bootcamp is specifically designed for people serious about building a high-paying career in Oracle Fusion Supply Chain Management.</p>
+      </div>
+      
+      <div class="grid-3">
+        <div class="card profile-card">
+          <div class="profile-icon">⚙️</div>
+          <h3>ERP & EBS Users</h3>
+          <p>You work in Oracle EBS, SAP, or a legacy ERP and want to upgrade to Oracle Cloud SCM. This training maps your existing knowledge directly to Fusion.</p>
+        </div>
+        <div class="card profile-card">
+          <div class="profile-icon">📦</div>
+          <h3>Supply Chain Professionals</h3>
+          <p>You work in procurement, inventory, logistics, or planning and want to add Oracle Cloud Functional skills to command higher salaries.</p>
+        </div>
+        <div class="card profile-card">
+          <div class="profile-icon">🎓</div>
+          <h3>Fresh Graduates</h3>
+          <p>You are an MBA, engineering, or commerce graduate looking to bypass junior operational roles and enter the IT market with a job-ready tech skillset.</p>
+        </div>
+        <div class="card profile-card">
+          <div class="profile-icon">📊</div>
+          <h3>ERP Consultants & Analysts</h3>
+          <p>You are already in IT support or functional roles and want to transition to Oracle SCM consulting, implementation, or solution architecture.</p>
+        </div>
+        <div class="card profile-card">
+          <div class="profile-icon">🔄</div>
+          <h3>Career Switchers</h3>
+          <p>You are switching from a non-ERP background and want structured, step-by-step training to build hireable skills from the absolute ground up.</p>
+        </div>
+        <div class="card profile-card" style="border-color: var(--color-secondary); background-color: rgba(212, 24, 22, 0.02);">
+          <div class="profile-icon" style="color: var(--color-secondary);">❓</div>
+          <h3>Not Sure If It's For You?</h3>
+          <p style="margin-bottom: 20px;">Attend our upcoming free demo. Interact directly with our lead trainer, explore the practice environment, and make a confident decision.</p>
+          <button class="btn btn-primary btn-sm btn-shine" onclick="openBookingModal()" style="width: 100%;">Attend Demo Session</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Student Testimonials Section -->
+  <section class="testimonials-section">
+    <div class="container">
+      <div class="text-center" style="margin-bottom: var(--spacing-xl);">
+        <span class="hero-eyebrow" style="margin-bottom: 10px; background-color: rgba(241, 182, 26, 0.1); border-color: rgba(241, 182, 26, 0.3);">
+          <span class="eyebrow-dot" style="background-color: var(--color-primary);"></span>
+          <span class="eyebrow-text" style="color: var(--color-text);">Alumni Video Reviews</span>
+        </span>
+        <h2>Real Students. Their Own Words. Unscripted.</h2>
+        <p style="max-width: 800px; margin: 15px auto 0 auto; line-height: 1.6; font-size: 1.1rem; color: var(--color-text-secondary);">
+          We did not ask anyone to read from a script. These are short clips from students who went through this training — working professionals, freshers, and EBS users — talking about what changed for them and what they wish they had known before they started. <br><strong>Watch one. Watch all of them. Then decide.</strong>
+        </p>
+      </div>
+
+      <!-- Video Testimonials Row (Reels Format: 9:16 Aspect Ratio) -->
+      <div class="video-testimonials-grid vertical-reels-grid" style="margin-bottom: var(--spacing-xl);">
+        <div class="video-card reel-card">
+          <div class="video-player-placeholder reel-player">
+            <div class="video-overlay-tint"></div>
+            <div class="video-student-name">Amit Sharma</div>
+            <div class="video-student-role">EBS ➔ Cloud Consultant</div>
+            <button class="video-play-btn" aria-label="Play video testimonial">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            </button>
+          </div>
+          <div class="video-card-quote">
+            "Before the course, I only knew EBS. Within 3 months, I configured SCM Cloud and landed an MNC role."
+          </div>
+        </div>
+
+        <div class="video-card reel-card">
+          <div class="video-player-placeholder reel-player">
+            <div class="video-overlay-tint"></div>
+            <div class="video-student-name">Priya Patel</div>
+            <div class="video-student-role">Analyst ➔ Lead Consultant</div>
+            <button class="video-play-btn" aria-label="Play video testimonial">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            </button>
+          </div>
+          <div class="video-card-quote">
+            "The live project configuration was the turning point. Explaining flows in interviews was easy."
+          </div>
+        </div>
+
+        <div class="video-card reel-card">
+          <div class="video-player-placeholder reel-player">
+            <div class="video-overlay-tint"></div>
+            <div class="video-student-name">Rahul Verma</div>
+            <div class="video-student-role">Operations ➔ Functional Consultant</div>
+            <button class="video-play-btn" aria-label="Play video testimonial">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            </button>
+          </div>
+          <div class="video-card-quote">
+            "Getting hands-on SCM Cloud system access to configure setups was extremely helpful."
+          </div>
+        </div>
+      </div>
+
+      <!-- Written Reviews Grid -->
+      <div class="grid-3" style="margin-bottom: var(--spacing-xl);">
+        <div class="card review-card">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">"TechLeadsY provided the exact hands-on training I needed. The trainer explained complex concepts like Supply Planning and Inventory transactions in a very simple, enterprise-focused way."</p>
+          <div class="review-author">
+            <div class="author-avatar">R</div>
+            <div class="author-info">
+              <div class="author-name">Rohan Gupta</div>
+              <div class="author-title">Procurement Lead, Tech Mahindra</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card review-card">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">"Unlike other online classes that only show presentations, we spent 90% of our time configuring SCM rules in the live system. It's the most practical training available in India."</p>
+          <div class="review-author">
+            <div class="author-avatar">S</div>
+            <div class="author-info">
+              <div class="author-name">Suresh Kumar</div>
+              <div class="author-title">SCM Consultant, Accenture</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card review-card">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">"As a fresher, SCM was completely new. Thanks to Krishna sir's mock interviews and project explanations, I was able to clear interviews with MNCs and secure my first job."</p>
+          <div class="review-author">
+            <div class="author-avatar">M</div>
+            <div class="author-info">
+              <div class="author-name">Megha Nair</div>
+              <div class="author-title">Associate Consultant, PwC</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section Closing Line and CTA Button -->
+      <div class="text-center" style="margin-top: var(--spacing-xl); max-width: 700px; margin-left: auto; margin-right: auto; padding-top: var(--spacing-md);">
+        <p style="font-size: 1.15rem; font-weight: 600; margin-bottom: 20px; color: var(--color-text); line-height: 1.5;">
+          These students were once exactly where you are now. The only difference is they took the first step.
+        </p>
+        <button class="btn btn-primary btn-lg btn-animate-arrow btn-shine" onclick="openBookingModal()">
+          <span>Book My Free Demo</span>
+          <svg class="btn-arrow-svg" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 3B: Pain Points Accordion Grid -->
+  <section>
+    <div class="container">
+      <div class="text-center" style="margin-bottom: var(--spacing-xl);">
+        <h2>Do Any of These Sound Familiar?</h2>
+        <p style="max-width: 650px; margin: 10px auto 0 auto;">If you are considering Oracle Cloud SCM training, there's a strong chance you are dealing with one of these hurdles.</p>
+      </div>
+      
+      <div class="grid-2">
+        <div class="pain-card">
+          <div class="pain-icon">✗</div>
+          <div class="pain-text">
+            <h4>"My company is migrating to Oracle Cloud"</h4>
+            <p>You have spent years on EBS or legacy ERP. Suddenly the platform is changing, you feel behind, and you don't know what skills transfer across.</p>
+          </div>
+        </div>
+        <div class="pain-card">
+          <div class="pain-icon">✗</div>
+          <div class="pain-text">
+            <h4>"No Oracle Cloud skills on my resume"</h4>
+            <p>You know procurement, inventory, or logistics inside out. But every job posting asks for Oracle Cloud experience, and you keep getting filtered out.</p>
+          </div>
+        </div>
+        <div class="pain-card">
+          <div class="pain-icon">✗</div>
+          <div class="pain-text">
+            <h4>"YouTube videos are too fragmented"</h4>
+            <p>You've tried learning on your own, but you can't see the full end-to-end flow of how procurement links to inventory or how orders flow to shipping.</p>
+          </div>
+        </div>
+        <div class="pain-card">
+          <div class="pain-icon">✗</div>
+          <div class="pain-text">
+            <h4>"I don't know where to start as a fresher"</h4>
+            <p>There are too many ERP options (SAP, Oracle, Dynamics). You are not sure which one has the best demand and hiring success rate.</p>
+          </div>
+        </div>
+        <div class="pain-card">
+          <div class="pain-icon">✗</div>
+          <div class="pain-text">
+            <h4>"Stuck in a support role ceiling"</h4>
+            <p>You raise tickets and troubleshoot, but you've never configured a business flow from scratch. You feel stuck without structured implementation training.</p>
+          </div>
+        </div>
+        <div class="pain-card">
+          <div class="pain-icon">✗</div>
+          <div class="pain-text">
+            <h4>"Other training was all slides, no practice"</h4>
+            <p>You paid for a course, sat through hours of presentations, and left without ever logging into an active Oracle Cloud SCM environment.</p>
+          </div>
+        </div>
+        <div class="pain-card">
+          <div class="pain-icon">✗</div>
+          <div class="pain-text">
+            <h4>"Rejected when asked practical questions"</h4>
+            <p>You know the theory, but interviewers ask you to walk through a real procure-to-pay configuration or planning exceptions run, and you freeze.</p>
+          </div>
+        </div>
+        <div class="pain-card">
+          <div class="pain-icon">✗</div>
+          <div class="pain-text">
+            <h4>"No good offline training near me"</h4>
+            <p>Decent institutes are in metro hubs. Your options are poor local coaching or self-study that leads to zero placement support.</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="text-center" style="margin-top: var(--spacing-xl);">
+        <p style="font-weight: 600; margin-bottom: 20px;">This bootcamp exists to solve exactly these problems with structured, hands-on, live training.</p>
+        <button class="btn btn-primary btn-lg" onclick="openBookingModal()">Book My Free Demo Session</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 4: What is Oracle Fusion SCM -->
+  <section class="bg-secondary">
+    <div class="container grid-2">
+      <div>
+        <h2>What is Oracle Fusion SCM?</h2>
+        <p style="margin-top: 15px;">Oracle Fusion SCM (Supply Chain Management) is Oracle's next-generation, cloud-based enterprise suite that manages the entire lifecycle of goods, services, and information — from raw material sourcing to final delivery.</p>
+        <p>Instead of disconnected legacy software, Fusion SCM integrates all modules into a single, unified database in the cloud, giving businesses real-time visibility into their global supply chains.</p>
+        <div style="margin-top: 20px;">
+          <h4 style="margin-bottom: 10px; color: var(--color-info);">Core Pillars Governed:</h4>
+          <ul class="check-list">
+            <li><strong>Procurement</strong> — Sourcing, supplier contracts, and PO processing.</li>
+            <li><strong>Inventory Management</strong> — Multi-org stock levels, adjustments, and counting.</li>
+            <li><strong>Order Management</strong> — Sales order entry, scheduling, shipping, and RMA.</li>
+            <li><strong>Supply Chain Planning</strong> — Demand forecasting, supply planning, and plan runs.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="card" style="border-left: 5px solid var(--color-secondary);">
+        <h3 style="color: var(--color-secondary); margin-bottom: 15px;">Who Uses Oracle SCM?</h3>
+        <p>Global corporations in manufacturing, retail, pharmaceuticals, oil & gas, logistics, and the public sector run their entire supply chains on Oracle Cloud.</p>
+        <p>Because these systems are highly critical, MNCs consistently pay premium salaries to functional experts who know how to set up, configure, and maintain them.</p>
+        <div style="background-color: var(--color-bg-secondary); padding: 15px; border-radius: var(--radius-subtle); margin-top: 15px; border: 1px solid var(--color-border);">
+          <strong style="color: var(--color-text);">Oracle Cloud Certification:</strong> Completing this training equips you with the exact knowledge required to clear the Oracle SCM Cloud Implementation Specialist Certifications.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 5: Why Learn SCM Now -->
+  <section>
+    <div class="container">
+      <div class="text-center" style="margin-bottom: var(--spacing-xl);">
+        <h2>Why Oracle Fusion SCM Is the Right Skill to Learn Now</h2>
+      </div>
+      
+      <div class="grid-3">
+        <div class="card">
+          <h3 style="color: var(--color-info);">1. Oracle EBS Support Timeline</h3>
+          <p>Oracle's support for on-premise EBS is limited. Hundreds of enterprises globally are migrating to Oracle Cloud. EBS professionals who do not upgrade to Fusion risk being sidelined in the job market.</p>
+        </div>
+        <div class="card">
+          <h3 style="color: var(--color-info);">2. Rising Cloud Talent Gap</h3>
+          <p>As migration waves accelerate, the demand for trained Oracle SCM Functional Consultants is far outstripping the supply. SCM is a highly specialized skill domain with huge consulting opportunities.</p>
+        </div>
+        <div class="card">
+          <h3 style="color: var(--color-info);">3. Industry-Wide Transferability</h3>
+          <p>Unlike niche industry tools, Oracle SCM is globally utilized across retail, logistics, manufacturing, and pharma. Your SCM cloud skills remain valuable across any industry sector.</p>
+        </div>
+        <div class="card">
+          <h3 style="color: var(--color-info);">4. Fresher-Friendly Entry Market</h3>
+          <p>Because there is a massive talent gap, companies are hiring trained freshers and junior consultants who have practical hands-on system exposure over raw experience.</p>
+        </div>
+        <div class="card">
+          <h3 style="color: var(--color-info);">5. Structured Career Progression</h3>
+          <p>Moving from an operations executive (inventory, purchasing, stores) to a Functional IT Consultant shifts you from an administrative cost-center to a highly valued consultant role.</p>
+        </div>
+        <div class="card" style="background-color: var(--color-bg-secondary); display: flex; align-items: center; justify-content: center; text-align: center;">
+          <div>
+            <h4 style="margin-bottom: 10px;">Upgrade Your Profile</h4>
+            <p style="font-size: 0.95rem;">Join the ranks of high-income consultants. Reserve your free demo seat now.</p>
+            <button class="btn btn-primary" onclick="openBookingModal()">Book Free Seat</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 6: Modules Covered (Curriculum Accordion) -->
+  <section class="bg-secondary" id="curriculum">
+    <div class="container">
+      <div class="text-center" style="margin-bottom: var(--spacing-xl);">
+        <h2>What You Will Learn — Full Module Breakdown</h2>
+        <p style="max-width: 700px; margin: 10px auto 0 auto;">Our curriculum starts from SCM foundations and guides you systematically through the core configurations of every major Oracle Fusion SCM module.</p>
+      </div>
+      
+      <div class="curriculum-accordion">
+        
+        <!-- Accordion Item 1 -->
+        <div class="accordion-item active">
+          <button class="accordion-trigger">
+            <span class="accordion-title-left">
+              <span class="accordion-num">1</span>
+              📦 Module 1 — Procurement Cloud
+            </span>
+            <span class="accordion-icon">▼</span>
+          </button>
+          <div class="accordion-content" style="max-height: 500px;">
+            <div class="accordion-content-inner">
+              <p style="font-size: 1rem; margin-bottom: 15px;">Master the end-to-end purchasing configuration and supplier management setup within Oracle Cloud Procurement.</p>
+              <div class="accordion-topics">
+                <div class="accordion-topic-item">✓ Supplier Profiles & Registrations</div>
+                <div class="accordion-topic-item">✓ Purchase Requisition Processing</div>
+                <div class="accordion-topic-item">✓ Purchase Order Configuration</div>
+                <div class="accordion-topic-item">✓ Blanket Purchase Agreements</div>
+                <div class="accordion-topic-item">✓ Supplier Negotiations & Sourcing</div>
+                <div class="accordion-topic-item">✓ Invoice Matching & Receiving</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Accordion Item 2 -->
+        <div class="accordion-item">
+          <button class="accordion-trigger">
+            <span class="accordion-title-left">
+              <span class="accordion-num">2</span>
+              📦 Module 2 — Inventory Management Cloud
+            </span>
+            <span class="accordion-icon">▼</span>
+          </button>
+          <div class="accordion-content">
+            <div class="accordion-content-inner">
+              <p style="font-size: 1rem; margin-bottom: 15px;">Configure multi-tier inventory structures and handle complex warehouse transactions and costing basics.</p>
+              <div class="accordion-topics">
+                <div class="accordion-topic-item">✓ Inventory Org & Sub-inventory Setup</div>
+                <div class="accordion-topic-item">✓ Item Master & Attribute Configurations</div>
+                <div class="accordion-topic-item">✓ Material Transactions & Movements</div>
+                <div class="accordion-topic-item">✓ Cycle Counting & Physical Inventory</div>
+                <div class="accordion-topic-item">✓ Inter-Org & Intra-Org Material Transfers</div>
+                <div class="accordion-topic-item">✓ Min-Max & Reorder Point Planning</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Accordion Item 3 -->
+        <div class="accordion-item">
+          <button class="accordion-trigger">
+            <span class="accordion-title-left">
+              <span class="accordion-num">3</span>
+              📦 Module 3 — Order Management Cloud
+            </span>
+            <span class="accordion-icon">▼</span>
+          </button>
+          <div class="accordion-content">
+            <div class="accordion-content-inner">
+              <p style="font-size: 1rem; margin-bottom: 15px;">Configure sales orchestration, shipping parameters, and process customer orders through invoicing.</p>
+              <div class="accordion-topics">
+                <div class="accordion-topic-item">✓ Sales Order Creation & Management</div>
+                <div class="accordion-topic-item">✓ Order Promising (Global Order Promising)</div>
+                <div class="accordion-topic-item">✓ Shipping & Fulfillment Configurations</div>
+                <div class="accordion-topic-item">✓ Customer Returns (RMA Flows)</div>
+                <div class="accordion-topic-item">✓ Order Holds & Exception Rules</div>
+                <div class="accordion-topic-item">✓ Integration with Costing & Receivables</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Accordion Item 4 -->
+        <div class="accordion-item">
+          <button class="accordion-trigger">
+            <span class="accordion-title-left">
+              <span class="accordion-num">4</span>
+              📦 Module 4 — Supply Chain Planning
+            </span>
+            <span class="accordion-icon">▼</span>
+          </button>
+          <div class="accordion-content">
+            <div class="accordion-content-inner">
+              <p style="font-size: 1rem; margin-bottom: 15px;">Learn advanced forecasting, supply runs, and planning execution metrics in Oracle Cloud.</p>
+              <div class="accordion-topics">
+                <div class="accordion-topic-item">✓ Demand Forecasting & Management</div>
+                <div class="accordion-topic-item">✓ Supply Planning Parameters & Constrained Plans</div>
+                <div class="accordion-topic-item">✓ Supply Chain Collaboration Setup</div>
+                <div class="accordion-topic-item">✓ Plan Run Execution & Calculations</div>
+                <div class="accordion-topic-item">✓ Exception & Bottleneck Analysis</div>
+                <div class="accordion-topic-item">✓ Replenishment Planning Flows</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Accordion Item 5 -->
+        <div class="accordion-item">
+          <button class="accordion-trigger">
+            <span class="accordion-title-left">
+              <span class="accordion-num">5</span>
+              📦 Module 5 — Manufacturing Basics
+            </span>
+            <span class="accordion-icon">▼</span>
+          </button>
+          <div class="accordion-content">
+            <div class="accordion-content-inner">
+              <p style="font-size: 1rem; margin-bottom: 15px;">Understand how discrete manufacturing is configured and integrated with inventory and planning.</p>
+              <div class="accordion-topics">
+                <div class="accordion-topic-item">✓ Work Organization & Plant Setup</div>
+                <div class="accordion-topic-item">✓ Work Definition & Bill of Materials (BOM)</div>
+                <div class="accordion-topic-item">✓ Work Order Creation & Processing</div>
+                <div class="accordion-topic-item">✓ Shop-Floor Operations Tracking</div>
+                <div class="accordion-topic-item">✓ Discrete Manufacturing Completion</div>
+                <div class="accordion-topic-item">✓ Manufacturing Cost Organization Linking</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Accordion Item 6 -->
+        <div class="accordion-item">
+          <button class="accordion-trigger">
+            <span class="accordion-title-left">
+              <span class="accordion-num">6</span>
+              📦 Module 6 — Quality Management
+            </span>
+            <span class="accordion-icon">▼</span>
+          </button>
+          <div class="accordion-content">
+            <div class="accordion-content-inner">
+              <p style="font-size: 1rem; margin-bottom: 15px;">Set up inspections and trace quality issues across procurement, receiving, and inventory.</p>
+              <div class="accordion-topics">
+                <div class="accordion-topic-item">✓ Inspection Plans & Specification Setup</div>
+                <div class="accordion-topic-item">✓ Quality Results Data Entry & Collections</div>
+                <div class="accordion-topic-item">✓ Quality Actions & Corrective Action Plans</div>
+                <div class="accordion-topic-item">✓ Quality Integration with Receiving & Purchasing</div>
+                <div class="accordion-topic-item">✓ Non-Conformance Reporting Flows</div>
+                <div class="accordion-topic-item">✓ Quality Dashboard Analytics</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Accordion Item 7 -->
+        <div class="accordion-item">
+          <button class="accordion-trigger">
+            <span class="accordion-title-left">
+              <span class="accordion-num">7</span>
+              📦 Module 7 — Costing Cloud
+            </span>
+            <span class="accordion-icon">▼</span>
+          </button>
+          <div class="accordion-content">
+            <div class="accordion-content-inner">
+              <p style="font-size: 1rem; margin-bottom: 15px;">Learn cost organization setup, cost element categories, and basic cost accounting runs.</p>
+              <div class="accordion-topics">
+                <div class="accordion-topic-item">✓ Cost Organization & Cost Book Structures</div>
+                <div class="accordion-topic-item">✓ Standard Costing & Actual Costing Basics</div>
+                <div class="accordion-topic-item">✓ Cost Element & Cost Component Mapping</div>
+                <div class="accordion-topic-item">✓ Inventory Valuation & Cost Accounting Runs</div>
+                <div class="accordion-topic-item">✓ Cost Accounting Subledger Postings</div>
+                <div class="accordion-topic-item">✓ Costing Exception Analysis</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Accordion Item 8 -->
+        <div class="accordion-item">
+          <button class="accordion-trigger">
+            <span class="accordion-title-left">
+              <span class="accordion-num">8</span>
+              📦 Module 8 — Reporting & OTBI
+            </span>
+            <span class="accordion-icon">▼</span>
+          </button>
+          <div class="accordion-content">
+            <div class="accordion-content-inner">
+              <p style="font-size: 1rem; margin-bottom: 15px;">Create custom transactional dashboards and run SCM business intelligence queries.</p>
+              <div class="accordion-topics">
+                <div class="accordion-topic-item">✓ Oracle OTBI Architecture & Navigation</div>
+                <div class="accordion-topic-item">✓ Subject Areas for Procurement, Inventory & Orders</div>
+                <div class="accordion-topic-item">✓ Designing Custom OTBI Analysis Reports</div>
+                <div class="accordion-topic-item">✓ Building Interactive SCM KPI Dashboards</div>
+                <div class="accordion-topic-item">✓ Scheduling & Sharing Reports</div>
+                <div class="accordion-topic-item">✓ Data Export & Report Parameters</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 7: Outcomes -->
+  <section>
+    <div class="container grid-2">
+      <div>
+        <h2>What You Will Be Able to Do After Training</h2>
+        <p style="margin-top: 15px; margin-bottom: 25px;">This is a career-centric training program. By the time you complete your practice modules, you will have the confidence and skills to:</p>
+        <ul class="check-list" style="margin-bottom: 20px;">
+          <li>Configure Oracle SCM Cloud modules from scratch based on client specifications.</li>
+          <li>Set up enterprise structures, cost books, and inventory orgs.</li>
+          <li>Map complex legacy business flows to modern Oracle Cloud processes.</li>
+          <li>Orchestrate P2P (Procure-to-Pay) and O2C (Order-to-Cash) integrations.</li>
+          <li>Build custom OTBI reports and analyze supply chain exceptions.</li>
+          <li>Troubleshoot functional, transactional, and configuration issues.</li>
+          <li>Pass SCM Cloud certification exams and speak confidently in implementation interviews.</li>
+        </ul>
+        <button class="btn btn-primary btn-lg" onclick="openBookingModal()">Book Free Demo Seat</button>
+      </div>
+      <div style="background-color: var(--color-bg-secondary); padding: var(--spacing-xl); border-radius: var(--radius-large); border: 1px solid var(--color-border);">
+        <h3 style="color: var(--color-info); margin-bottom: 15px;">Real Practice Instances</h3>
+        <p>Unlike programs that use slides, you will get 24/7 dedicated access to an active Oracle Cloud SCM instance where you will practice every single module transaction.</p>
+        <div style="background-color: var(--color-bg); padding: 15px; border-radius: var(--radius-subtle); margin-top: 15px; box-shadow: var(--shadow-sm);">
+          <strong>Scenario-Based Homework:</strong> Every week, you will receive a mock business requirement sheet detailing a client's inventory or purchasing challenge. You will solve it inside the instance.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 8: Real-Time Projects and Scenario Learning -->
+  <section class="bg-secondary">
+    <div class="container text-center">
+      <h2>Real-Time Projects & Scenario-Based Learning</h2>
+      <p style="max-width: 700px; margin: 10px auto 40px auto;">Our training methodology simulates real implementation consulting. You learn how to configure the system to solve actual corporate supply chain bottlenecks.</p>
+      
+      <div class="flow-container">
+        <div class="flow-step">
+          <div class="flow-num">1</div>
+          <h4>Get Requirement</h4>
+          <p>You receive a business case detailing a client's specific supply chain challenge (e.g. multi-org min-max restocking loops).</p>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">2</div>
+          <h4>Configure System</h4>
+          <p>You log into the active Oracle practice instance and configure the inventory structures, attributes, and rules from scratch.</p>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">3</div>
+          <h4>Test Outcomes</h4>
+          <p>You execute transactions (requisitions, orders, material moves) to verify your configuration works correctly.</p>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">4</div>
+          <h4>Trainer Review</h4>
+          <p>The trainer reviews your configuration setup, highlights gaps, and optimizes your solution for project deployment.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WhatsApp Screenshots Section -->
+  <section class="whatsapp-reviews-section" style="background-color: var(--color-bg-secondary); border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border);">
+    <div class="container">
+      <div class="text-center" style="margin-bottom: var(--spacing-xl);">
+        <span class="hero-eyebrow" style="margin-bottom: 10px; background-color: rgba(37, 211, 102, 0.1); border-color: rgba(37, 211, 102, 0.3);">
+          <span class="eyebrow-dot" style="background-color: #25d366;"></span>
+          <span class="eyebrow-text" style="color: #128c7e;">WhatsApp Feedback</span>
+        </span>
+        <h2>What Students Sent Us — Straight from WhatsApp</h2>
+        <p style="max-width: 800px; margin: 15px auto 0 auto; line-height: 1.6; font-size: 1.1rem; color: var(--color-text-secondary);">
+          These are not reviews we collected through a feedback form. These are messages students sent on their own — in our batch groups and directly on WhatsApp — after a class, after an interview, or after getting a call from a recruiter. We have shared them here exactly as they were sent.
+        </p>
+      </div>
+
+      <div class="text-center" style="margin-bottom: var(--spacing-md);">
+        <span style="font-size: 0.9rem; font-weight: 600; color: var(--color-text-secondary); background-color: var(--color-bg); padding: 8px 20px; border-radius: 9999px; border: 1px solid var(--color-border);">
+          🔒 Screenshots shared with student permission. Names visible only where students have consented.
+        </span>
+      </div>
+
+      <!-- Screenshot Grid -->
+      <div class="whatsapp-screenshots-grid" style="margin-bottom: var(--spacing-xl);">
+        <div class="whatsapp-screenshot-card" onclick="openLightbox(this.querySelector('img').src)">
+          <div class="whatsapp-img-wrapper">
+            <img src="images/whatsapp-1.png" alt="WhatsApp Student Review 1" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22280%22 height=%22450%22 style=%22background:%23efeae2%22><rect x=%2210%22 y=%2220%22 width=%22200%22 height=%2270%22 rx=%228%22 fill=%22%23fff%22/><text x=%2220%22 y=%2250%22 font-family=%22sans-serif%22 font-size=%2212%22 fill=%22%23333%22 font-weight=%22bold%22>Amit (Working Professional)</text><text x=%2220%22 y=%2272%22 font-family=%22sans-serif%22 font-size=%2211%22 fill=%22%23666%22>Cleared the interview today!</text><rect x=%2270%22 y=%22110%22 width=%22200%22 height=%2290%22 rx=%228%22 fill=%22%23d9fdd3%22/><text x=%2280%22 y=%22135%22 font-family=%22sans-serif%22 font-size=%2211%22 fill=%22%23333%22 font-weight=%22bold%22>Trainer Krishna</text><text x=%2280%22 y=%22157%22 font-family=%22sans-serif%22 font-size=%2211%22 fill=%22%23555%22>Congrats! Excellent work on</text><text x=%2280%22 y=%22177%22 font-family=%22sans-serif%22 font-size=%2211%22 fill=%22%23555%22>the Costing config setups.</text><circle cx=%22140%22 cy=%22310%22 r=%2230%22 fill=%22%2325d366%22 opacity=%220.1%22/><text x=%22140%22 y=%22315%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2220%22 fill=%22%23128c7e%22>%20💬%20</text><text x=%2250%25%22 y=%22380%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2213%22 fill=%22%23888%22 font-weight=%22bold%22>Click to Zoom Screenshot</text></svg>'">
+            <div class="whatsapp-zoom-overlay">
+              <span class="whatsapp-zoom-icon">🔍 Zoom Chat</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="whatsapp-screenshot-card" onclick="openLightbox(this.querySelector('img').src)">
+          <div class="whatsapp-img-wrapper">
+            <img src="images/whatsapp-2.png" alt="WhatsApp Student Review 2" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22280%22 height=%22450%22 style=%22background:%23efeae2%22><rect x=%2270%22 y=%2220%22 width=%22200%22 height=%2290%22 rx=%228%22 fill=%22%23d9fdd3%22/><text x=%2280%22 y=%2245%22 font-family=%22sans-serif%22 font-size=%2212%22 fill=%22%23333%22 font-weight=%22bold%22>Priya (SCM Analyst)</text><text x=%2280%22 y=%2267%22 font-family=%22sans-serif%22 font-size=%2211%22 fill=%22%23444%22>Got offered SCM Lead role</text><text x=%2280%22 y=%2287%22 font-family=%22sans-serif%22 font-size=%2211%22 fill=%22%23444%22>with 70% hike. Thank you!</text><rect x=%2210%22 y=%22130%22 width=%22200%22 height=%2270%22 rx=%228%22 fill=%22%23fff%22/><text x=%2220%22 y=%22160%22 font-family=%22sans-serif%22 font-size=%2212%22 fill=%22%23333%22 font-weight=%22bold%22>Batch Group</text><text x=%2220%22 y=%22182%22 font-family=%22sans-serif%22 font-size=%2211%22 fill=%22%23666%22>Congrats Priya! Truly deserved.</text><circle cx=%22140%22 cy=%22310%22 r=%2230%22 fill=%22%2325d366%22 opacity=%220.1%22/><text x=%22140%22 y=%22315%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2220%22 fill=%22%23128c7e%22>%20💬%20</text><text x=%2250%25%22 y=%22380%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2213%22 fill=%22%23888%22 font-weight=%22bold%22>Click to Zoom Screenshot</text></svg>'">
+            <div class="whatsapp-zoom-overlay">
+              <span class="whatsapp-zoom-icon">🔍 Zoom Chat</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="whatsapp-screenshot-card" onclick="openLightbox(this.querySelector('img').src)">
+          <div class="whatsapp-img-wrapper">
+            <img src="images/whatsapp-3.png" alt="WhatsApp Student Review 3" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22280%22 height=%22450%22 style=%22background:%23efeae2%22><rect x=%2210%22 y=%2220%22 width=%22200%22 height=%2270%22 rx=%228%22 fill=%22%23fff%22/><text x=%2220%22 y=%2250%22 font-family=%22sans-serif%22 font-size=%2212%22 fill=%22%23333%22 font-weight=%22bold%22>Rahul (Fresher Graduate)</text><text x=%2220%22 y=%2272%22 font-family=%22sans-serif%22 font-size=%2211%22 fill=%22%23666%22>First MNC offer released!</text><rect x=%2270%22 y=%22110%22 width=%22200%22 height=%2290%22 rx=%228%22 fill=%22%23d9fdd3%22/><text x=%2280%22 y=%22135%22 font-family=%22sans-serif%22 font-size=%2211%22 fill=%22%23333%22 font-weight=%22bold%22>Trainer Krishna</text><text x=%2280%22 y=%22157%22 font-family=%22sans-serif%22 font-size=%2211%22 fill=%22%23555%22>Incredible entry into IT.</text><text x=%2280%22 y=%22177%22 font-family=%22sans-serif%22 font-size=%2211%22 fill=%22%23555%22>Proud of your consistency!</text><circle cx=%22140%22 cy=%22310%22 r=%2230%22 fill=%22%2325d366%22 opacity=%220.1%22/><text x=%22140%22 y=%22315%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2220%22 fill=%22%23128c7e%22>%20💬%20</text><text x=%2250%25%22 y=%22380%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2213%22 fill=%22%23888%22 font-weight=%22bold%22>Click to Zoom Screenshot</text></svg>'">
+            <div class="whatsapp-zoom-overlay">
+              <span class="whatsapp-zoom-icon">🔍 Zoom Chat</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="whatsapp-screenshot-card" onclick="openLightbox(this.querySelector('img').src)">
+          <div class="whatsapp-img-wrapper">
+            <img src="images/whatsapp-4.png" alt="WhatsApp Student Review 4" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22280%22 height=%22450%22 style=%22background:%23efeae2%22><rect x=%2270%22 y=%2220%22 width=%22200%22 height=%2290%22 rx=%228%22 fill=%22%23d9fdd3%22/><text x=%2280%22 y=%2245%22 font-family=%22sans-serif%22 font-size=%2212%22 fill=%22%23333%22 font-weight=%22bold%22>Suresh (ERP EBS User)</text><text x=%2280%22 y=%2267%22 font-family=%22sans-serif%22 font-size=%2211%22 fill=%22%23444%22>Able to explain complex</text><text x=%2280%22 y=%2287%22 font-family=%22sans-serif%22 font-size=%2211%22 fill=%22%23444%22>GOP configs in mock test!</text><rect x=%2210%22 y=%22130%22 width=%22200%22 height=%2270%22 rx=%228%22 fill=%22%23fff%22/><text x=%2220%22 y=%22160%22 font-family=%22sans-serif%22 font-size=%2212%22 fill=%22%23333%22 font-weight=%22bold%22>Batch Group</text><text x=%2220%22 y=%22182%22 font-family=%22sans-serif%22 font-size=%2211%22 fill=%22%23666%22>Excellent progress Suresh.</text><circle cx=%22140%22 cy=%22310%22 r=%2230%22 fill=%22%2325d366%22 opacity=%220.1%22/><text x=%22140%22 y=%22315%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2220%22 fill=%22%23128c7e%22>%20💬%20</text><text x=%2250%25%22 y=%22380%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2213%22 fill=%22%23888%22 font-weight=%22bold%22>Click to Zoom Screenshot</text></svg>'">
+            <div class="whatsapp-zoom-overlay">
+              <span class="whatsapp-zoom-icon">🔍 Zoom Chat</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section Closing Line and CTA Button -->
+      <div class="text-center" style="max-width: 700px; margin-left: auto; margin-right: auto; padding-top: var(--spacing-md);">
+        <p style="font-size: 1.15rem; font-weight: 600; margin-bottom: 20px; color: var(--color-text); line-height: 1.5;">
+          Nobody asked them to write these. That is exactly why we are showing them.
+        </p>
+        <button class="btn btn-primary btn-lg btn-animate-arrow btn-shine" onclick="openBookingModal()" style="margin-bottom: 10px;">
+          <span>Book My Free Demo</span>
+          <svg class="btn-arrow-svg" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </button>
+        <p style="font-size: 0.95rem; font-weight: 600; color: var(--color-text-secondary); margin-top: 10px;">
+          Join the batch they are talking about.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Section 8C: Google Reviews Section -->
+  <section class="google-reviews-section" style="background-color: var(--color-bg); padding: var(--spacing-xxl) 0;">
+    <div class="container">
+      <div class="text-center" style="margin-bottom: var(--spacing-xl);">
+        <div class="google-logo-wrapper" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 6.51l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+          </svg>
+          <span style="font-family: var(--font-heading); font-size: 1.5rem; font-weight: 800; color: var(--color-text);">Google Reviews</span>
+        </div>
+        <h2>What Our Learners Say on Google</h2>
+        <div class="google-rating-display" style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px;">
+          <span class="stars" style="color: #FBBC05; font-size: 1.3rem;">★★★★★</span>
+          <span style="font-weight: 700; font-size: 1.1rem; color: var(--color-text);">4.8 / 5.0</span>
+          <span style="color: var(--color-text-secondary); font-size: 0.95rem;">(Based on 250+ Verified Student Reviews)</span>
+        </div>
+      </div>
+
+      <!-- Google Reviews Cards Grid (Only 4 & 5 Stars) -->
+      <div class="google-reviews-grid" style="margin-bottom: var(--spacing-xl);">
+        
+        <div class="card google-review-card">
+          <div class="google-review-header">
+            <img class="reviewer-img" src="data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22 style=%22background:%234285F4;border-radius:50%25%22><text x=%2250%25%22 y=%2255%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2218%22 fill=%22%23fff%22 font-weight=%22bold%22>N</text></svg>" alt="Narendra G.">
+            <div class="reviewer-meta">
+              <div class="reviewer-name">Narendra Gogulagunta <span class="verified-badge">✓</span></div>
+              <div class="review-date">2 reviews • 5 months ago</div>
+            </div>
+            <div class="google-g-logo">
+              <svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 6.51l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+            </div>
+          </div>
+          <div class="review-stars-row">
+            <span class="star-rating">★★★★★</span>
+            <span class="stars-val">5.0</span>
+          </div>
+          <p class="review-content">"I had a great learning experience with the Oracle Fusion SCM training. The sessions covered core SCM modules in detail, including real-time examples and practical use cases. The trainer was knowledgeable, patient, and always open to clear doubts."</p>
+        </div>
+
+        <div class="card google-review-card">
+          <div class="google-review-header">
+            <img class="reviewer-img" src="data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22 style=%22background:%2334A853;border-radius:50%25%22><text x=%2250%25%22 y=%2255%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2218%22 fill=%22%23fff%22 font-weight=%22bold%22>B</text></svg>" alt="Bikki M.">
+            <div class="reviewer-meta">
+              <div class="reviewer-name">Bikki Manohar <span class="verified-badge">✓</span></div>
+              <div class="review-date">2 reviews • 5 months ago</div>
+            </div>
+            <div class="google-g-logo">
+              <svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 6.51l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+            </div>
+          </div>
+          <div class="review-stars-row">
+            <span class="star-rating">★★★★★</span>
+            <span class="stars-val">5.0</span>
+          </div>
+          <p class="review-content">"I joined Tech Leads IT for SCM training as a fresher. The trainer has very good expertise in SCM and explains concepts clearly. They provide a good LMS portal and a mobile app, which makes learning easy and flexible. Overall, it's a good place to learn SCM and build a strong foundation."</p>
+        </div>
+
+        <div class="card google-review-card">
+          <div class="google-review-header">
+            <img class="reviewer-img" src="data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22 style=%22background:%23FBBC05;border-radius:50%25%22><text x=%2250%25%22 y=%2255%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2218%22 fill=%22%23fff%22 font-weight=%22bold%22>S</text></svg>" alt="Simran S.">
+            <div class="reviewer-meta">
+              <div class="reviewer-name">Simran Singh <span class="verified-badge">✓</span></div>
+              <div class="review-date">7 reviews • a year ago</div>
+            </div>
+            <div class="google-g-logo">
+              <svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 6.51l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+            </div>
+          </div>
+          <div class="review-stars-row">
+            <span class="star-rating">★★★★★</span>
+            <span class="stars-val">5.0</span>
+          </div>
+          <p class="review-content">"Krishna sir is the best teacher for Oracle SCM Fusion. Even as a fresher to this field I am able to understand everything because of his teaching method and the vast course he covers. I have enquired at various other coaching institutes but Tech Leads IT is the best."</p>
+        </div>
+
+        <div class="card google-review-card">
+          <div class="google-review-header">
+            <img class="reviewer-img" src="data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22 style=%22background:%23EA4335;border-radius:50%25%22><text x=%2250%25%22 y=%2255%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2218%22 fill=%22%23fff%22 font-weight=%22bold%22>A</text></svg>" alt="M Aruna">
+            <div class="reviewer-meta">
+              <div class="reviewer-name">M Aruna <span class="verified-badge">✓</span></div>
+              <div class="review-date">5 reviews • 8 months ago</div>
+            </div>
+            <div class="google-g-logo">
+              <svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 6.51l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+            </div>
+          </div>
+          <div class="review-stars-row">
+            <span class="star-rating">★★★★★</span>
+            <span class="stars-val">5.0</span>
+          </div>
+          <p class="review-content">"I highly recommend Fusion SCM training at Tech Leads IT. The training was excellent, and Krishna Sir’s extensive knowledge, along with his clear explanations of real-time business scenarios, made the learning experience truly valuable."</p>
+        </div>
+
+      </div>
+
+      <div class="text-center" style="margin-top: var(--spacing-lg);">
+        <a href="https://www.google.com/search?q=Tech+Leads+IT+Hyderabad+Reviews" class="btn btn-secondary-outline btn-sm btn-shine" target="_blank" rel="noopener noreferrer" style="border-radius: 8px; font-weight: 700; gap: 8px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" style="color: #4285F4; fill: currentColor;"><path d="M21.9 2.19c-.43-.43-1.01-.69-1.65-.69H3.75c-1.28 0-2.31 1.03-2.31 2.31v12c0 1.28 1.03 2.31 2.31 2.31h11.45l4.33 4.33c.31.31.73.49 1.18.49.92 0 1.67-.75 1.67-1.67V3.84c0-.64-.26-1.22-.69-1.65zm-5.73 9.47L12 9.24l-4.17 2.42.8-4.63-3.37-3.28 4.65-.68L12 1.83l2.09 4.24 4.65.68-3.37 3.28.8 4.63z"/></svg>
+          Verify on Google Maps
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Section 9 & 10: Format, LMS, Resources -->
+  <section>
+    <div class="container">
+      <div class="text-center" style="margin-bottom: var(--spacing-xl);">
+        <h2>All Your Learning Resources in One Place</h2>
+        <p style="max-width: 650px; margin: 10px auto 0 auto;">Your enrollment includes lifetime access to our Learning Management System (LMS) and student support portal.</p>
+      </div>
+      
+      <div class="resource-table-container">
+        <table class="resource-table">
+          <thead>
+            <tr>
+              <th>Resource Provided</th>
+              <th>What It Means for You</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>📹 Session Recordings</strong></td>
+              <td>Missed a live session? Every class is uploaded to the LMS within 2 hours. Rewatch and revise at your own pace anytime.</td>
+            </tr>
+            <tr>
+              <td><strong>📋 Detailed Module Notes</strong></td>
+              <td>Comprehensive configuration steps, navigation paths, and setup sheets so you don't have to scramble to take notes during class.</td>
+            </tr>
+            <tr>
+              <td><strong>💻 Oracle Practice Instance</strong></td>
+              <td>Dedicated login credentials to a fully active Oracle Fusion SCM instance for mock configurations and exercises.</td>
+            </tr>
+            <tr>
+              <td><strong>Folder Use-Case Materials</strong></td>
+              <td>Step-by-step business case studies, parameter templates, and configuration manuals matching active project standards.</td>
+            </tr>
+            <tr>
+              <td><strong>📱 Mobile App Access</strong></td>
+              <td>Study on the go. Access recordings, notes, and dashboards directly from your iOS or Android smartphone.</td>
+            </tr>
+            <tr>
+              <td><strong>💬 Batch Group Access</strong></td>
+              <td>A dedicated discussion forum and messaging channel for your batch. Interact directly with peers and trainers between classes.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 11 & 12: Attend Free Demo & Curriculum Glance -->
+  <section class="bg-secondary">
+    <div class="container grid-2">
+      <div>
+        <h2>Attend a Free Demo Session Before You Enrol</h2>
+        <p style="margin-top: 15px;">The demo session is designed to give you a clear, pressure-free look at the Oracle job market and our training style.</p>
+        <div style="margin: 20px 0;">
+          <h4 style="margin-bottom: 10px; color: var(--color-secondary);">What We Cover in the Demo:</h4>
+          <ul class="check-list">
+            <li><strong>Oracle SCM Market Scope</strong> — Current salaries, consultant shortages, and hiring trends.</li>
+            <li><strong>Curriculum Walkthrough</strong> — Detailed look at the modules, timeline, and batch schedules.</li>
+            <li><strong>Instance Live Tour</strong> — Log in live and see the practice environment you'll be using.</li>
+            <li><strong>Trainer Q&A</strong> — Ask the lead trainer questions about your career transition and background.</li>
+          </ul>
+        </div>
+        <p style="font-weight: 500; font-size: 0.95rem;">Attendance is completely free. No advance card details required.</p>
+        <button class="btn btn-primary btn-lg" onclick="openBookingModal()" style="margin-top: 10px;">Register for Free Demo</button>
+      </div>
+      <div>
+        <div class="card" style="padding: 0; overflow: hidden; border: 1px solid var(--color-border); box-shadow: var(--shadow-sm);">
+          <div style="background-color: var(--color-primary); color: #000; padding: 20px; font-weight: bold; font-size: 1.15rem; font-family: var(--font-heading);">
+            Course Curriculum Glance
+          </div>
+          <div style="padding: 20px;">
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--color-border); padding: 12px 0;">
+              <strong>SCM Foundations</strong>
+              <span style="color: var(--color-text-secondary);">Enterprise Structure, Navigation</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--color-border); padding: 12px 0;">
+              <strong>Procurement Cloud</strong>
+              <span style="color: var(--color-text-secondary);">Suppliers, Requisitions, POs, BPAs</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--color-border); padding: 12px 0;">
+              <strong>Inventory Cloud</strong>
+              <span style="color: var(--color-text-secondary);">Orgs, Items, Counting, Transfers</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--color-border); padding: 12px 0;">
+              <strong>Order Management</strong>
+              <span style="color: var(--color-text-secondary);">Sales Orders, Shipping, RMA Flow</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--color-border); padding: 12px 0;">
+              <strong>Planning Cloud</strong>
+              <span style="color: var(--color-text-secondary);">Demand/Supply Forecasting, Plan Runs</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 12px 0;">
+              <strong>Career Prep</strong>
+              <span style="color: var(--color-text-secondary);">Mock Interviews, Resume Sprints</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 13: Career Support & Interviews -->
+  <section>
+    <div class="container grid-2">
+      <div style="background-color: var(--color-bg-secondary); padding: var(--spacing-xl); border-radius: var(--radius-large); border: 1px solid var(--color-border);">
+        <h3 style="color: var(--color-secondary); margin-bottom: 15px;">Interview Readiness Metrics</h3>
+        <p>Passing interviews requires more than theoretical slides. You must be able to describe how you configured setups and solved functional errors in a project environment.</p>
+        <p>Our career support team conducts weekly mock interview sessions replicating the interview flows of firms like Accenture, Capgemini, Infosys, and Deloitte.</p>
+        <div style="background-color: var(--color-bg); padding: 15px; border-radius: var(--radius-subtle); margin-top: 20px; box-shadow: var(--shadow-sm);">
+          <strong>Referral Pipeline:</strong> We refer high-performing students who clear our internal mock evaluations directly to hiring partners across consulting firms.
+        </div>
+      </div>
+      <div>
+        <h2>Career Support & Interview Preparation</h2>
+        <p style="margin-top: 15px; margin-bottom: 25px;">Getting trained is step one. Passing consulting interviews and landing your target role is step two. We support you through both with specialized resources:</p>
+        <ul class="check-list" style="margin-bottom: 20px;">
+          <li><strong>Resume Review & Optimization</strong> — Reformat your resume to highlight your SCM domain background and new Oracle certifications.</li>
+          <li><strong>Mock Interview Exercises</strong> — Interactive mock interviews with active MNC consulting managers, including direct feedback and corrections.</li>
+          <li><strong>Comprehensive Q&A Bank</strong> — Access a curated database of 250+ real Oracle Fusion SCM interview questions and configuration scenarios.</li>
+          <li><strong>Course Completion Certificate</strong> — Receive a verified training completion certificate from TechLeadsY to add weight to your LinkedIn profile.</li>
+        </ul>
+        <button class="btn btn-primary btn-lg" onclick="openBookingModal()">Attend Free Demo Session</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 14: FAQ -->
+  <section class="bg-secondary" id="faq">
+    <div class="container">
+      <div class="text-center" style="margin-bottom: var(--spacing-xl);">
+        <h2>Frequently Asked Questions</h2>
+        <p style="max-width: 650px; margin: 10px auto 0 auto;">Everything you need to know about the Oracle Fusion SCM bootcamp program.</p>
+      </div>
+      
+      <div class="faq-accordion">
+        
+        <div class="faq-item">
+          <button class="faq-trigger">
+            <span>Q: I have no prior Oracle experience. Can I join this training?</span>
+            <span class="faq-icon-cross"></span>
+          </button>
+          <div class="faq-content">
+            <p>Yes. The course starts from SCM and ERP foundations before moving to system setups. If you have basic supply chain domain knowledge or a willing mind to learn, you can easily grasp this training.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-trigger">
+            <span>Q: I am an Oracle EBS professional. Is this course relevant for me?</span>
+            <span class="faq-icon-cross"></span>
+          </button>
+          <div class="faq-content">
+            <p>Absolutely. With EBS support timelines winding down, companies are moving rapidly to the cloud. This training maps your existing EBS configurations directly to Oracle Cloud Fusion parameters, ensuring a smooth transition.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-trigger">
+            <span>Q: Are sessions live or pre-recorded?</span>
+            <span class="faq-icon-cross"></span>
+          </button>
+          <div class="faq-content">
+            <p>Every session is conducted 100% live online by our experienced trainer. You can unmute and ask questions in real time. We record every session and upload it to the LMS for your revision.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-trigger">
+            <span>Q: What is the duration and timing of the training?</span>
+            <span class="faq-icon-cross"></span>
+          </button>
+          <div class="faq-content">
+            <p>The complete training and practice timeline spans approximately 10 to 12 weeks. Class timings are scheduled keeping working professionals in mind, typically on weekday evenings or weekend mornings. Exact times are shared during the free demo.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-trigger">
+            <span>Q: Will I get access to an Oracle system to practice?</span>
+            <span class="faq-icon-cross"></span>
+          </button>
+          <div class="faq-content">
+            <p>Yes, every enrolled student receives individual login credentials to a dedicated, active Oracle Fusion SCM Cloud practice environment. You will have 24/7 access throughout the training.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-trigger">
+            <span>Q: What roles can I apply for after this training?</span>
+            <span class="faq-icon-cross"></span>
+          </button>
+          <div class="faq-content">
+            <p>Common roles include Oracle SCM Functional Consultant, Oracle Cloud SCM Consultant, Supply Chain Functional Analyst, Procurement Cloud Consultant, and Oracle ERP Consultant. SCM is in high demand across IT consulting firms.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-trigger">
+            <span>Q: Is placement guaranteed?</span>
+            <span class="faq-icon-cross"></span>
+          </button>
+          <div class="faq-content">
+            <p>We do not offer artificial "placement guarantees." Instead, we provide verified placement support — resume optimization, intensive mock interviews, Q&A databases, and direct internal referrals for students who clear our internal evaluations.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-trigger">
+            <span>Q: What is the fee for this course?</span>
+            <span class="faq-icon-cross"></span>
+          </button>
+          <div class="faq-content">
+            <p>Course fee breakdowns, payment options, and early-bird discounts are shared transparently with all candidates during the live demo session. Attend the demo first to see the value and then decide.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-trigger">
+            <span>Q: Can I attend the demo and then decide?</span>
+            <span class="faq-icon-cross"></span>
+          </button>
+          <div class="faq-content">
+            <p>Yes, that is exactly what the free demo is for. There is no payment or commitment required to attend. It's a risk-free chance to evaluate our syllabus, trainer, and learning portal.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 15: Final CTA -->
+  <section class="text-center" style="background: radial-gradient(circle, rgba(241, 182, 26, 0.15), transparent 60%); padding: var(--spacing-xxl) 0;">
+    <div class="container" style="max-width: 800px;">
+      <h2 class="text-gradient">Ready to Upgrade Your SCM Career to the Cloud?</h2>
+      <p style="margin-top: 15px; margin-bottom: 30px;">Don't let legacy systems or operational ceilings hold your earnings back. Join the upcoming demo, explore the practice environment, and see how you can pivot to high-income IT consulting.</p>
+      
+      <div style="display: flex; gap: var(--spacing-md); justify-content: center; flex-wrap: wrap; margin-bottom: 30px;">
+        <button class="btn btn-primary btn-lg" onclick="openBookingModal()">Book My Free Demo Seat</button>
+        <a href="https://wa.me/918125323232?text=Hi,%20I'm%20interested%20in%20speaking%20to%20a%20course%20advisor." class="btn btn-whatsapp btn-lg" target="_blank" rel="noopener noreferrer">
+          Talk to a Course Advisor
+        </a>
+      </div>
+      
+      <p style="font-size: 0.95rem; font-weight: 500; color: var(--color-text-secondary);">
+        Or connect directly: Call us at <a href="tel:+918125323232" style="color: var(--color-text); font-weight: 700; text-decoration: none;">+91 8125323232</a> or WhatsApp us at the same number. We respond fast.
+      </p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-container">
+      <div class="footer-brand">
+        <a href="#" class="brand-logo" style="margin-bottom: 15px;">
+          <img src="logo-light.png" alt="TechLeads Logo" style="height: 36px; display: block; object-fit: contain;">
+        </a>
+        <p>Empowering SCM professionals and graduates to bridge the gap to high-income Oracle Cloud consulting careers.</p>
+      </div>
+      <div class="footer-links">
+        <span class="footer-title">Contact & Support</span>
+        <a href="mailto:support@techleadsit.com">support@techleadsit.com</a>
+        <a href="tel:+918125323232">+91 8125323232</a>
+        <a href="#faq">Frequently Asked Questions</a>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <p>&copy; 2026 TechLeadsY. All rights reserved. Disclaimer: Oracle, Oracle Fusion, and SCM Cloud are registered trademarks of Oracle Corporation. TechLeadsY is an independent professional training provider.</p>
+    </div>
+  </footer>
+
+  <!-- Booking Modal (Dialog with Conversational Form) -->
+  <dialog id="booking-modal" class="modal-dialog">
+    <div class="modal-content card">
+      <button class="modal-close-btn" onclick="closeBookingModal()" aria-label="Close modal">✕</button>
+      
+      <!-- Conversational Form State -->
+      <div id="modal-form-state">
+        <h3 class="modal-title">Book Your Free SCM Demo</h3>
+        <p class="modal-subtitle">July 23 Live Demo Batch • Only <span id="modal-seats-count">3</span> Seats Left Today</p>
+        
+        <!-- Progress Bar -->
+        <div class="form-progress-bar-container">
+          <div class="form-progress-bar"></div>
+        </div>
+
+        <form id="booking-form" onsubmit="event.preventDefault();">
+          
+          <!-- Step 1: Full Name -->
+          <div class="form-step step-1 active">
+            <div class="step-label">Step 1 of 5</div>
+            <div class="step-question">What is your full name?</div>
+            <div class="form-group">
+              <input type="text" id="conv-name" required placeholder="e.g., Amit Kumar" class="form-control">
+            </div>
+            <span class="form-help">Enter your name as you'd like it to appear on certifications.</span>
+          </div>
+
+          <!-- Step 2: Email -->
+          <div class="form-step step-2">
+            <div class="step-label">Step 2 of 5</div>
+            <div class="step-question">What is your primary email?</div>
+            <div class="form-group">
+              <input type="email" id="conv-email" required placeholder="e.g., amit@example.com" class="form-control">
+            </div>
+            <span class="form-help">We will send your Zoom link and calendar invite to this address.</span>
+          </div>
+
+          <!-- Step 3: Phone -->
+          <div class="form-step step-3">
+            <div class="step-label">Step 3 of 5</div>
+            <div class="step-question">What is your WhatsApp mobile number?</div>
+            <div class="form-group">
+              <input type="tel" id="conv-phone" required pattern="[0-9]{10}" placeholder="e.g., 9876543210" class="form-control">
+            </div>
+            <span class="form-help">We will use this number to send your demo link on WhatsApp. No spam.</span>
+          </div>
+
+          <!-- Step 4: Current Profession (Select card list) -->
+          <div class="form-step step-4">
+            <div class="step-label">Step 4 of 5</div>
+            <div class="step-question">What is your current professional profile?</div>
+            <div class="dropdown-options">
+              <div class="dropdown-option-card" data-value="Working Professional">
+                <span>Working Professional</span>
+                <span class="option-check"></span>
+              </div>
+              <div class="dropdown-option-card" data-value="Fresher">
+                <span>Fresher / Graduate</span>
+                <span class="option-check"></span>
+              </div>
+              <div class="dropdown-option-card" data-value="ERP/EBS User">
+                <span>ERP / Oracle EBS User</span>
+                <span class="option-check"></span>
+              </div>
+              <div class="dropdown-option-card" data-value="Other">
+                <span>Other Profession</span>
+                <span class="option-check"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 5: Preferred Batch (Select card list) -->
+          <div class="form-step step-5">
+            <div class="step-label">Step 5 of 5</div>
+            <div class="step-question">Which batch timing do you prefer?</div>
+            <div class="dropdown-options">
+              <div class="dropdown-option-card" data-value="Weekday Evening">
+                <span>Weekday Evening Batch</span>
+                <span class="option-check"></span>
+              </div>
+              <div class="dropdown-option-card" data-value="Weekend">
+                <span>Weekend Batch</span>
+                <span class="option-check"></span>
+              </div>
+              <div class="dropdown-option-card" data-value="Flexible">
+                <span>Flexible / Open to Both</span>
+                <span class="option-check"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Form Navigation Controls -->
+          <div class="form-navigation">
+            <button type="button" id="conv-back-btn" class="btn btn-secondary btn-sm" onclick="prevStep()">Back</button>
+            <button type="button" id="conv-next-btn" class="btn btn-primary btn-sm" onclick="nextStep()">Continue</button>
+          </div>
+
+          <p class="form-secure-note">
+            🔒 Your details are not shared. No spam. No pressure calls.
+          </p>
+        </form>
+      </div>
+
+      <!-- Success State -->
+      <div id="modal-success-state" class="hidden text-center-wrapper">
+        <div class="success-icon-box">
+          <svg class="success-icon" viewBox="0 0 24 24" fill="none" stroke="#27b376" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        </div>
+        <h3 class="modal-title text-success">Seat Reserved Successfully!</h3>
+        <p class="modal-success-desc">We have sent a confirmation email & calendar invite to <strong id="success-email"></strong>.</p>
+        
+        <div class="zoom-access-box">
+          <div class="zoom-label">📅 July 23 Batch • Zoom Live</div>
+          <div class="zoom-time">Time: 7:00 PM IST (2 Hours)</div>
+          <p class="zoom-details">A WhatsApp message and calendar notification containing the Zoom login details has been sent to your registered number <strong id="success-phone"></strong>.</p>
+        </div>
+
+        <button class="btn btn-secondary" onclick="closeBookingModal()" style="width: 100%;">Done</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Lightbox Modal for WhatsApp Screenshots -->
+  <div id="whatsapp-lightbox" class="lightbox-modal" onclick="closeLightbox()">
+    <span class="lightbox-close">&times;</span>
+    <img class="lightbox-content" id="lightbox-img" alt="Enlarged WhatsApp Screenshot">
+  </div>
+
+</body>
+</html>
