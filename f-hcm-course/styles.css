@@ -773,7 +773,7 @@ a {
     background-color: #FFFFFF;
     border-top: 1px solid var(--color-border);
     border-bottom: 1px solid var(--color-border);
-    padding: 2.25rem 0;
+    padding: 3.5rem 0;
     overflow: hidden;
 }
 
@@ -819,7 +819,7 @@ a {
 
 .logo-marquee-track {
     display: flex;
-    gap: 2rem;
+    gap: 4.5rem;
     width: max-content;
     animation: marqueeScroll 25s linear infinite;
 }
@@ -2045,12 +2045,12 @@ a {
 .highlights-stats-bar {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 1.5rem;
+    gap: 2.25rem;
     background: transparent;
     padding: 0;
     border-radius: 0;
     box-shadow: none;
-    margin-bottom: 4rem;
+    margin-bottom: 4.5rem;
     text-align: center;
     border: none;
 }
