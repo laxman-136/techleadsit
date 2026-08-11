@@ -1079,7 +1079,7 @@ function initFormValidation() {
             experience: data.background || 'Not Provided',
             salary: data.motivation || 'Not Provided',
             location: 'Hyderabad',
-            scm_year: 'HCM Course',
+            scm_year: 'Oracle Fusion HCM',
             ...trackingData
         };
 
@@ -1174,7 +1174,7 @@ function initFormValidation() {
             experience: 'HCM Curriculum Download',
             salary: 'Not Provided',
             location: 'Hyderabad',
-            scm_year: 'HCM Syllabus Download',
+            scm_year: 'Oracle Fusion HCM Syllabus Download',
             ...trackingData
         };
 

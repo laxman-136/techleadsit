@@ -48,8 +48,8 @@ function techleadsit_route_landing_pages() {
                 $plugin_url = plugin_dir_url(__FILE__) . $folder_path;
                 $html_content = str_replace('href="index.css"', 'href="' . $plugin_url . 'index.css"', $html_content);
                 $html_content = str_replace('src="index.js"', 'src="' . $plugin_url . 'index.js"', $html_content);
-                $html_content = str_replace('href="styles.css"', 'href="' . $plugin_url . 'styles.css?v=5.9"', $html_content);
-                $html_content = str_replace('src="script.js"', 'src="' . $plugin_url . 'script.js?v=5.9"', $html_content);
+                $html_content = str_replace('href="styles.css"', 'href="' . $plugin_url . 'styles.css?v=6.0"', $html_content);
+                $html_content = str_replace('src="script.js"', 'src="' . $plugin_url . 'script.js?v=6.0"', $html_content);
                 $html_content = str_replace('src="logo-dark.png"', 'src="' . $plugin_url . 'logo-dark.png"', $html_content);
                 $html_content = str_replace('src="logo-light.png"', 'src="' . $plugin_url . 'logo-light.png"', $html_content);
                 $html_content = str_replace('src="images/', 'src="' . $plugin_url . 'images/', $html_content);
@@ -160,6 +160,35 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
     $utm_content = sanitize_text_field($params['utm_content'] ?? '');
     $referrer = sanitize_text_field($params['referrer'] ?? '');
 
+    // If it's one of the two HCM landing pages, customize and normalize course name and source
+    if (!empty($landing_page) && (
+        strpos($landing_page, 'f-hcm-course') !== false ||
+        strpos($landing_page, 'mb-hr-to') !== false ||
+        strpos($landing_page, 'oracle-fusion-hcm-training') !== false
+    )) {
+        $scm_year = 'Oracle Fusion HCM';
+        
+        $normalized_source = 'Direct';
+        if (!empty($utm_source) && strtolower($utm_source) !== 'direct') {
+            if (stripos($utm_source, 'google') !== false) {
+                $normalized_source = 'Google Ads';
+            } elseif (stripos($utm_source, 'facebook') !== false || stripos($utm_source, 'fb') !== false || stripos($utm_source, 'ig') !== false || stripos($utm_source, 'instagram') !== false) {
+                $normalized_source = 'Facebook Ads';
+            } else {
+                $normalized_source = $utm_source;
+            }
+        } else {
+            if (!empty($gclid) || !empty($gbraid) || !empty($wbraid)) {
+                $normalized_source = 'Google Ads';
+            } elseif (!empty($fbclid)) {
+                $normalized_source = 'Facebook Ads';
+            } elseif (!empty($referrer) && $referrer !== 'direct') {
+                $normalized_source = $referrer;
+            }
+        }
+        $utm_source = $normalized_source;
+    }
+
     if (empty($name) || !preg_match('/^\+?[0-9]{7,15}$/', $phone)) {
         return new WP_REST_Response(array('success' => false, 'message' => 'Invalid validation requirements.'), 400);
     }
@@ -175,6 +204,10 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
     // define('TELECRM_API_KEY', 'your-actual-api-key-here');
     $api_key = defined('TELECRM_API_KEY') ? TELECRM_API_KEY : ''; 
     $telecrm_api_url = 'https://app.telecrm.in/api/b1/enterprise/' . $api_key . '/autoupdatelead'; 
+
+    // Get current date/time in Indian Standard Time (IST)
+    $date_ist = new DateTime("now", new DateTimeZone("Asia/Kolkata"));
+    $lead_date = $date_ist->format("Y-m-d H:i:s");
 
     // Build the payload matching TeleCRM API specification
     $payload = array(
@@ -205,6 +238,8 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
             'utm_content' => $utm_content,
             'landing_page' => $landing_page,
             'referrer' => $referrer,
+            'leaddate' => $lead_date,
+            'date' => $lead_date,
             // Custom fields without underscores (matching your TeleCRM account fields)
             'utmsource' => $utm_source,
             'utmmedium' => $utm_medium,
@@ -214,13 +249,16 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
             'utmcontent' => $utm_content,
             'landingpage' => $landing_page,
             'location' => $location,
-            'scmyear' => $scm_year
+            'scmyear' => $scm_year,
+            'date' => $lead_date,
+            'leaddate' => $lead_date
         ),
         'actions' => array(
             array(
                 'type' => 'SYSTEM_NOTE',
                 'text' => "Location: " . $location . "\n" .
-                          "SCM Training Year: " . $scm_year . "\n\n" .
+                          "SCM Training Year: " . $scm_year . "\n" .
+                          "Lead Date: " . $lead_date . "\n\n" .
                           "Marketing Tracking Details:\n" .
                           "- Source: " . $utm_source . "\n" .
                           "- Medium: " . $utm_medium . "\n" .
