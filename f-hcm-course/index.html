@@ -672,76 +672,165 @@
         <!-- Full Curriculum Section -->
         <section class="curriculum-section section-padding" id="curriculum">
             <div class="container">
-                <div class="section-header text-center">
-                    <h2 class="section-title">What You'll Learn — Module by Module</h2>
-                    <p class="section-subtitle">Click on a module to explore details. Optimized with a visual progress path.</p>
+                <div class="curriculum-header-flex">
+                    <div class="section-header">
+                        <h2 class="section-title">Oracle Fusion HCM Course Curriculum</h2>
+                        <p class="section-subtitle">A detailed overview of our Oracle Fusion HCM training course, including all modules, technical concepts, and more.</p>
+                    </div>
+                    <div class="curriculum-header-action">
+                        <button class="btn btn-outline gate-download-btn">Download Curriculum <span class="btn-arrow">↓</span></button>
+                    </div>
+                </div>
+
+                <!-- Key Curriculum Metrics Bar -->
+                <div class="curriculum-metrics-bar">
+                    <div class="curr-metric-item">
+                        <div class="curr-metric-label">Milestone</div>
+                        <div class="curr-metric-val-wrap">
+                            <span class="curr-metric-icon">📚</span>
+                            <span class="curr-metric-value">11 Modules</span>
+                        </div>
+                    </div>
+                    <div class="curr-metric-item">
+                        <div class="curr-metric-label">Duration</div>
+                        <div class="curr-metric-val-wrap">
+                            <span class="curr-metric-icon">📅</span>
+                            <span class="curr-metric-value">2.5 Months</span>
+                        </div>
+                    </div>
+                    <div class="curr-metric-item">
+                        <div class="curr-metric-label">Mode</div>
+                        <div class="curr-metric-val-wrap">
+                            <span class="curr-metric-icon">💻</span>
+                            <span class="curr-metric-value">Online Live</span>
+                        </div>
+                    </div>
+                    <div class="curr-metric-item">
+                        <div class="curr-metric-label">Live Sessions</div>
+                        <div class="curr-metric-val-wrap">
+                            <span class="curr-metric-icon">⏱️</span>
+                            <span class="curr-metric-value">60+ Hours</span>
+                        </div>
+                    </div>
+                    <div class="curr-metric-item">
+                        <div class="curr-metric-label">Practice</div>
+                        <div class="curr-metric-val-wrap">
+                            <span class="curr-metric-icon">💼</span>
+                            <span class="curr-metric-value">Real-time Project</span>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Signature Interactive Element: Vertical Path Explorer (Desktop) / Accordion (Mobile fallback) -->
                 <div class="curriculum-explorer-wrapper">
                     <!-- Left Timeline Navigation for Desktop -->
                     <div class="path-navigation" id="curriculumTimeline">
-                        <div class="timeline-line">
-                            <div class="timeline-progress" id="timelineProgress"></div>
-                        </div>
+                        <!-- Hidden progress element to maintain script compatibility -->
+                        <div style="display: none;" id="timelineProgress"></div>
                         
                         <!-- Timeline Buttons -->
                         <button class="timeline-node active" data-index="1">
-                            <span class="node-number">01</span>
+                            <span class="node-meta">Module 1</span>
                             <span class="node-title">Functional Setup Manager</span>
                         </button>
                         <button class="timeline-node" data-index="2">
-                            <span class="node-number">02</span>
+                            <span class="node-meta">Module 2</span>
                             <span class="node-title">Core HR</span>
                         </button>
                         <button class="timeline-node" data-index="3">
-                            <span class="node-number">03</span>
+                            <span class="node-meta">Module 3</span>
                             <span class="node-title">Global Payroll</span>
                         </button>
                         <button class="timeline-node" data-index="4">
-                            <span class="node-number">04</span>
+                            <span class="node-meta">Module 4</span>
                             <span class="node-title">Profile & Performance</span>
                         </button>
                         <button class="timeline-node" data-index="5">
-                            <span class="node-number">05</span>
+                            <span class="node-meta">Module 5</span>
                             <span class="node-title">Compensation</span>
                         </button>
                         <button class="timeline-node" data-index="6">
-                            <span class="node-number">06</span>
+                            <span class="node-meta">Module 6</span>
                             <span class="node-title">Talent Management</span>
                         </button>
                         <button class="timeline-node" data-index="7">
-                            <span class="node-number">07</span>
+                            <span class="node-meta">Module 7</span>
                             <span class="node-title">Goal Management</span>
                         </button>
                         <button class="timeline-node" data-index="8">
-                            <span class="node-number">08</span>
+                            <span class="node-meta">Module 8</span>
                             <span class="node-title">HCM Communicate</span>
                         </button>
                         <button class="timeline-node" data-index="9">
-                            <span class="node-number">09</span>
+                            <span class="node-meta">Module 9</span>
                             <span class="node-title">Absence Management</span>
                         </button>
                         <button class="timeline-node" data-index="10">
-                            <span class="node-number">10</span>
+                            <span class="node-meta">Module 10</span>
                             <span class="node-title">Time and Labour</span>
                         </button>
                         <button class="timeline-node" data-index="11">
-                            <span class="node-number">11</span>
+                            <span class="node-meta">Module 11</span>
                             <span class="node-title">Technical Concepts</span>
                         </button>
                     </div>
 
                     <!-- Right Content Area for Selected Module (Desktop View) -->
                     <div class="module-content-pane" id="curriculumContentPane">
-                        <!-- Content gets dynamically inserted here on desktop, fallback HTML included below for Mobile Accordion -->
                         <div class="active-module-display">
-                            <div class="module-header-meta">
-                                <span class="module-counter-badge" id="paneModuleNumber">Module 1</span>
-                                <h3 id="paneModuleName">Functional Setup Manager</h3>
+                            <div class="module-card-header-flex">
+                                <div class="module-header-meta">
+                                    <span class="module-counter-badge" id="paneModuleNumber">Module 1</span>
+                                    <h3 id="paneModuleName">Functional Setup Manager</h3>
+                                </div>
+                                <div class="module-duration-tag">
+                                    <span class="dur-icon">📅</span>
+                                    <span id="paneModuleDuration">Duration: 1 Week</span>
+                                </div>
                             </div>
+                            
+                            <!-- Badges row under header -->
+                            <div class="module-pills-row" id="paneModulePills">
+                                <span class="badge-pill pill-live">🎥 Live Training</span>
+                                <span class="badge-pill pill-practice">🛠️ Hands-on Lab</span>
+                                <span class="badge-pill pill-project">📊 Real Case Study</span>
+                                <span class="badge-pill pill-qa">💬 Q&A Support</span>
+                            </div>
+
+                            <!-- Divider line -->
+                            <div class="module-divider"></div>
+
+                            <!-- Topics Dual Column Area -->
                             <div class="module-topics-list" id="paneModuleContent">
-                                <!-- Dynamic topics will load here -->
+                                <!-- Dynamic dual columns of topics will load here -->
+                            </div>
+
+                            <!-- Divider line -->
+                            <div class="module-divider"></div>
+
+                            <!-- Case Studies Section inside Card Footer -->
+                            <div class="module-case-studies-section">
+                                <h4 class="case-studies-title">Real-World HCM Implementation Case Studies</h4>
+                                <div class="case-studies-grid">
+                                    <div class="case-study-card">
+                                        <div class="cs-logo-wrapper">
+                                            <span class="cs-logo oracle-logo">Oracle Cloud</span>
+                                        </div>
+                                        <div class="cs-content">
+                                            <span class="cs-badge">Case Study 1</span>
+                                            <p class="cs-desc" id="csDesc1">Analyze how a global logistics enterprise rolled out legal structures for 8,000+ employees.</p>
+                                        </div>
+                                    </div>
+                                    <div class="case-study-card">
+                                        <div class="cs-logo-wrapper">
+                                            <span class="cs-logo partner-logo">Implementation</span>
+                                        </div>
+                                        <div class="cs-content">
+                                            <span class="cs-badge">Case Study 2</span>
+                                            <p class="cs-desc" id="csDesc2">Step-by-step security role mapping and business unit configurations for complex MNC projects.</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -398,6 +398,9 @@ function initCurriculumExplorer() {
     const paneNum = document.getElementById('paneModuleNumber');
     const paneName = document.getElementById('paneModuleName');
     const paneContent = document.getElementById('paneModuleContent');
+    const paneDuration = document.getElementById('paneModuleDuration');
+    const csDesc1 = document.getElementById('csDesc1');
+    const csDesc2 = document.getElementById('csDesc2');
 
     if (!timeline || nodes.length === 0) return;
 
@@ -406,56 +409,89 @@ function initCurriculumExplorer() {
         1: {
             number: "Module 1",
             name: "Functional Setup Manager",
+            duration: "1 Week",
+            cs1: "Deploy a global Legal Entity structure & Business Units in a sandbox environment.",
+            cs2: "Configure functional security profiles and map implementation users in LDAP.",
             topics: "Getting started with Fusion Applications · Initial activities for Oracle Fusion Implementation · Preparing Fusion Applications · User & Role Management · Creating Implementation Users via FA Super-User · Synchronizing Users and Roles in LDAP with Fusion HCM · Introduction to Functional Setup Manager · Creation of Implementation Project (Offerings, Options, Features) · Fusion HCM Business Process Overview"
         },
         2: {
             number: "Module 2",
             name: "Core HR",
+            duration: "1.5 Weeks",
+            cs1: "Define grades, grade ladders, and complex position hierarchies for a Retail chain.",
+            cs2: "Execute an employment model rollout (Two-Tier vs Three-Tier) for 5,000+ employees.",
             topics: "Implementation Tasks · Manage Geographies · Define Currencies & Locations · Manage Enterprise Creation, Structure & Components · Enterprise Divisions, Legal Entities, Business Units · Reference Data Sets · Manage Work Structures (Departments, Jobs, Positions, Grades & Grade Rates) · HCM Security Profiles · Role Mapping · Profile Options · Employment Model (Two-Tier & Three-Tier: Work Relationship, Employment Terms, Assignment)"
         },
         3: {
             number: "Module 3",
             name: "Global Payroll",
+            duration: "2 Weeks",
+            cs1: "Setup elements, calculation cards, and bank payment methods for monthly salaries.",
+            cs2: "Configure fast formulas to compute custom salary allowances and run payroll cycles.",
             topics: "Payroll Introduction · HCM Security · Common Application Configurations · Define Payroll Business Definitions, Pay Frequencies, Payroll Elements · Create Element Entries · Define Fast Formulas & Balance Definitions · Calculate & Run Payroll · Define Events, Payment Methods, Payroll Costing · Payroll Flexfields · Object Groups · Payroll Patterns & Security · Payslip Overview"
         },
         4: {
             number: "Module 4",
             name: "Profile & Performance Management",
+            duration: "1 Week",
+            cs1: "Design role-based performance templates and worker evaluation flows.",
+            cs2: "Manage talent content library and configure writing assistant components.",
             topics: "Introducing Oracle Fusion Talent Management · Main Business Activities · Security & Functional Setup Manager Overview · Role-Based Access Control Role Types · Talent Management Job Roles & Duties · Creating Implementation Projects and Assigning Tasks · Define Talent Profile Settings · Profile Management"
         },
         5: {
             number: "Module 5",
             name: "Compensation",
+            duration: "1.5 Weeks",
+            cs1: "Build individual salary allocation plans and manager budget worksheets.",
+            cs2: "Implement workforce compensation plans linked with performance rating scores.",
             topics: "Introduction to Compensation Management · Types of Compensation · Base Pay Configuration, Pay Levels & Ranges · Implementing a Compensation Program · Administering Pay Increases and Bonuses · Linking Compensation to Performance · Salary Basis & Salary Ranges · Grade Ladder with Progression Configuration · Individual & Workforce Compensation Plans"
         },
         6: {
             number: "Module 6",
             name: "Talent Management",
+            duration: "1 Week",
+            cs1: "Set up rating models, team talent cards, and review periods for MNC evaluations.",
+            cs2: "Configure writing assistant and content library components for employee profiles.",
             topics: "Integrations and Setup · Define Talent Profile Content · Content Library, Content Types & Items · Rating Models & Talent Profiles · Profile Types, Components & Instance Qualifiers · Writing Assistant · Manage Talent Profiles · Team Talent & Talent Profile Cards · Compare Items and Best Fit · Creating Review Periods · Managing Performance Document Types & Goal Library · Talent Management Notifications & Auditing"
         },
         7: {
             number: "Module 7",
             name: "Goal Management Concepts",
+            duration: "1 Week",
+            cs1: "Map goal library tasks and mass assign organizational objectives to departments.",
+            cs2: "Construct questionnaires and performance roles for matrix evaluations.",
             topics: "Goal Management Setup · Lookups, Flexfields & Profile Options · Managing & Creating Goal Plans and Plan Sets · Administering and Mass Assigning Goals · Managing Worker/Organization Goals & Approvals · Questionnaires (Concepts, Question Library, Response Types, Templates) · Understanding & Defining Worker Performance · Performance Management Overview · Performance Roles & Matrix Management · Eligibility Profiles & Process Flow Definitions · Performance Templates & Sections · Performance Documents and Worker Evaluations"
         },
         8: {
             number: "Module 8",
             name: "Oracle HCM Communicate",
+            duration: "0.5 Weeks",
+            cs1: "Roll out internal target messaging and custom newsletters for employee onboarding.",
+            cs2: "Track open rates, click rates, and filter audience lists dynamically.",
             topics: "Target Messaging · Newsletter Customization · Scheduling · Message Tracking · Collaboration · Audience Filtering & Creation"
         },
         9: {
             number: "Module 9",
             name: "Absence Management",
+            duration: "1.5 Weeks",
+            cs1: "Configure accrual plans, eligibility profiles, and term types for local leaves.",
+            cs2: "Implement sick leave absence categories and integrate approvals with Core HR.",
             topics: "Absence Management Setup & Supporting Components · Accrual Plan Attributes, Types & Participation · Eligibility Profiles · Defining Accrual Limits, Rates & Balances · Qualification Plans and Term Types · Fast Formulas in Absence Management · Absence Types, Reasons, Categories & Certifications · Scheduling and Maintaining Absences · Managing Absence Records, Entitlements & Approvals · Monitoring Absence Processes"
         },
         10: {
             number: "Module 10",
             name: "Time and Labour",
+            duration: "1 Week",
+            cs1: "Define repeating time periods, layouts, and worker time entry profiles.",
+            cs2: "Build calculation rules for overtime rates and load timecards to payroll.",
             topics: "Repeating Time Periods · Time Card Layout Components & Sets · Manage HCM Groups · Create Time Card Components · Time Card Calculation Rule Templates & Rules · Worker Time Entry Profile · Time Processing Profile · Loading of Timecards"
         },
         11: {
             number: "Module 11",
             name: "Technical Concepts",
+            duration: "1 Week",
+            cs1: "Construct custom OTBI and BI Publisher dashboards for client reporting.",
+            cs2: "Build and execute HCM Data Loader (HDL) templates for bulk migration.",
             topics: "OTBI Reports · BI Reports · FBL · Fast Formulas · HCM Data Loader · Spreadsheet Data Loader"
         }
     };
@@ -466,9 +502,11 @@ function initCurriculumExplorer() {
         const activeNode = timeline.querySelector(`.timeline-node[data-index="${index}"]`);
         if (activeNode) activeNode.classList.add('active');
 
-        // Draw progress line height
-        const percent = ((index - 1) / (nodes.length - 1)) * 100;
-        progressLine.style.height = `${percent}%`;
+        // Draw progress line height if element exists
+        if (progressLine) {
+            const percent = ((index - 1) / (nodes.length - 1)) * 100;
+            progressLine.style.height = `${percent}%`;
+        }
 
         // Load details to right content box with fade animation
         const moduleData = curriculumData[index];
@@ -476,33 +514,48 @@ function initCurriculumExplorer() {
             paneNum.style.opacity = 0;
             paneName.style.opacity = 0;
             paneContent.style.opacity = 0;
+            if (paneDuration) paneDuration.style.opacity = 0;
+            if (csDesc1) csDesc1.style.opacity = 0;
+            if (csDesc2) csDesc2.style.opacity = 0;
             
             setTimeout(() => {
                 paneNum.textContent = moduleData.number;
                 paneName.textContent = moduleData.name;
+                if (paneDuration) paneDuration.textContent = `Duration: ${moduleData.duration}`;
+                if (csDesc1) csDesc1.textContent = moduleData.cs1;
+                if (csDesc2) csDesc2.textContent = moduleData.cs2;
                 
-                // Format topics with high-fidelity block elements
+                // Format topics into two columns matching screenshots
                 const topicsArray = moduleData.topics.split(' · ');
-                let formattedHtml = '<div class="topics-grid-container">';
-                topicsArray.forEach(topic => {
-                    formattedHtml += `
-                        <div class="topic-block-card">
-                            <div class="topic-check-badge">
-                                <svg class="tick-icon" viewBox="0 0 24 24">
-                                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-                                </svg>
-                            </div>
-                            <span class="topic-block-text">${topic}</span>
+                const midIndex = Math.ceil(topicsArray.length / 2);
+                const col1Topics = topicsArray.slice(0, midIndex);
+                const col2Topics = topicsArray.slice(midIndex);
+
+                let formattedHtml = `
+                    <div class="topics-split-columns">
+                        <div class="topic-column">
+                            <span class="column-title">Part 1: Setup & Setup Config</span>
+                            <ul class="topic-bullet-list">
+                                ${col1Topics.map(t => `<li>${t}</li>`).join('')}
+                            </ul>
                         </div>
-                    `;
-                });
-                formattedHtml += '</div>';
+                        <div class="topic-column">
+                            <span class="column-title">Part 2: Transactions & Process Flows</span>
+                            <ul class="topic-bullet-list">
+                                ${col2Topics.map(t => `<li>${t}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                `;
                 
                 paneContent.innerHTML = formattedHtml;
                 
                 paneNum.style.opacity = 1;
                 paneName.style.opacity = 1;
                 paneContent.style.opacity = 1;
+                if (paneDuration) paneDuration.style.opacity = 1;
+                if (csDesc1) csDesc1.style.opacity = 1;
+                if (csDesc2) csDesc2.style.opacity = 1;
             }, 200);
         }
     }
