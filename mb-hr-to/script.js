@@ -3,8 +3,6 @@
 // ==========================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Populate hidden form elements with tracking data
-    populateHiddenTrackingInputs();
     
     // 1. Evergreen Countdown Timer
     initCountdown(3); // Start with a 3-day countdown, automatically loops when expired
@@ -1247,6 +1245,9 @@ function initFormValidation() {
             formConfig.directLink.click();
         }, 800);
     }
+
+    // Auto-populate hidden tracking inputs on load
+    populateHiddenTrackingInputs();
 }
 
 /* ==========================================================================
