@@ -2050,76 +2050,93 @@ a {
 .highlights-stats-bar {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 2rem;
-    background: linear-gradient(135deg, var(--color-text-primary) 0%, #111a24 100%);
-    color: #FFFFFF;
-    padding: 3rem 2rem;
-    border-radius: var(--border-radius-lg);
-    box-shadow: 0 20px 45px rgba(11, 18, 28, 0.18);
+    gap: 1.5rem;
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
     margin-bottom: 4rem;
     text-align: center;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: none;
 }
 
 .highlight-stat {
     position: relative;
+    background-color: #FFFFFF;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 20px;
+    padding: 2.25rem 1.5rem;
     display: flex;
     flex-direction: column;
     align-items: center;
-    transition: var(--transition-smooth);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.025);
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .highlight-stat:hover {
-    transform: translateY(-2px);
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(108, 93, 211, 0.08);
+    border-color: rgba(108, 93, 211, 0.15);
 }
 
 .h-stat-icon-wrapper {
-    font-size: 1.6rem;
-    margin-bottom: 0.85rem;
+    font-size: 1.5rem;
+    margin-bottom: 1.25rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 48px;
-    height: 48px;
-    background-color: rgba(255, 255, 255, 0.08);
-    border-radius: 50%;
-    transition: var(--transition-smooth);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Unique colorful accents for each card */
+.highlight-stat:nth-child(1) .h-stat-icon-wrapper {
+    background-color: #fff5e6;
+    color: #fc9c03;
+}
+.highlight-stat:nth-child(2) .h-stat-icon-wrapper {
+    background-color: #f4e5ff;
+    color: #9525f8;
+}
+.highlight-stat:nth-child(3) .h-stat-icon-wrapper {
+    background-color: #e5ffff;
+    color: #0d6efd;
+}
+.highlight-stat:nth-child(4) .h-stat-icon-wrapper {
+    background-color: #dbf5f0;
+    color: #059669;
 }
 
 .highlight-stat:hover .h-stat-icon-wrapper {
-    transform: scale(1.15) rotate(5deg);
-    background-color: rgba(0, 118, 190, 0.2);
-    border-color: rgba(0, 118, 190, 0.3);
-}
-
-.highlight-stat:not(:last-child)::after {
-    content: '';
-    position: absolute;
-    right: -1rem;
-    top: 15%;
-    height: 70%;
-    width: 1px;
-    background-color: rgba(255, 255, 255, 0.1);
+    transform: scale(1.1) rotate(6deg);
 }
 
 .h-stat-num {
     display: block;
-    font-family: var(--font-mono);
+    font-family: var(--font-display);
     font-size: 2.25rem;
     font-weight: 700;
-    color: var(--color-accent);
     line-height: 1.1;
-    margin-bottom: 0.45rem;
+    margin-bottom: 0.5rem;
+    color: #110626;
+    transition: color 0.3s ease;
 }
+
+/* Hover highlights */
+.highlight-stat:nth-child(1):hover .h-stat-num { color: #fc9c03; }
+.highlight-stat:nth-child(2):hover .h-stat-num { color: #9525f8; }
+.highlight-stat:nth-child(3):hover .h-stat-num { color: #0d6efd; }
+.highlight-stat:nth-child(4):hover .h-stat-num { color: #059669; }
 
 .h-stat-label {
     display: block;
-    font-size: 0.8125rem;
-    font-weight: 700;
+    font-size: 0.85rem;
+    font-weight: 600;
     text-transform: uppercase;
-    color: var(--color-text-muted);
-    letter-spacing: 0.03em;
+    color: #666666;
+    letter-spacing: 0.05em;
 }
 
 .highlights-grid {
@@ -3191,21 +3208,16 @@ a {
     
     .highlights-stats-bar {
         grid-template-columns: repeat(2, 1fr);
-        gap: 1.5rem;
-        padding: 2rem 1rem;
+        gap: 1rem;
+        padding: 0;
+        background: transparent;
+        box-shadow: none;
+        border: none;
     }
     
     .hero-trust-showcase {
         grid-template-columns: 1fr;
         gap: 0.75rem;
-    }
-    
-    .highlight-stat:nth-child(2)::after {
-        display: none;
-    }
-    
-    .highlight-stat::after {
-        display: none;
     }
     
     .highlights-grid {
@@ -3933,4 +3945,11 @@ a {
 #seats-left-counter {
     transition: opacity 0.2s ease-in-out;
     display: inline-block;
+}
+
+@media (max-width: 480px) {
+    .highlights-stats-bar {
+        grid-template-columns: 1fr !important;
+        gap: 1.25rem !important;
+    }
 }
