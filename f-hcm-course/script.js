@@ -3,6 +3,8 @@
 // ==========================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Populate hidden form elements with tracking data
+    populateHiddenTrackingInputs();
     
     // 1. Evergreen Countdown Timer
     initCountdown(3); // Start with a 3-day countdown, automatically loops when expired
@@ -1044,6 +1046,17 @@ function initFormValidation() {
         data['referrer'] = ref;
         
         return data;
+    }
+
+    // Auto-populate hidden tracking inputs in all forms
+    function populateHiddenTrackingInputs() {
+        const trackingData = getTrackingData();
+        document.querySelectorAll('input.all_params').forEach(input => {
+            const name = input.getAttribute('name');
+            if (name && trackingData[name] !== undefined) {
+                input.value = trackingData[name];
+            }
+        });
     }
 
     // Secure submit via WordPress template-redirect REST endpoint & GTM push
