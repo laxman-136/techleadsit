@@ -1,0 +1,1760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oracle Fusion HCM Training in Hyderabad | Certification + Placement | Tech Leads IT</title>
+    <meta name="description" content="Learn Oracle Fusion HCM from Oracle-certified trainers with 23+ years of real-time experience. 10+ modules, hands-on projects, 1-year portal access, and placement support. Batches forming in Ameerpet & SR Nagar.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Urgency Countdown & Sticky Header -->
+    <div class="countdown-bar" id="countdownBar">
+        <div class="container countdown-container">
+            <span class="countdown-text">⚡ Next Batch starts soon - Only <span id="seats-left-counter">70</span> seats left!</span>
+            <div class="timer" id="timer">
+                <span class="timer-unit" id="days">00</span>d : 
+                <span class="timer-unit" id="hours">00</span>h : 
+                <span class="timer-unit" id="minutes">00</span>m : 
+                <span class="timer-unit" id="seconds">00</span>s
+            </div>
+        </div>
+    </div>
+
+    <header class="main-header" id="mainHeader">
+        <div class="container header-container">
+            <a href="#" class="logo">
+                <img src="logo-light.png" alt="Tech Leads IT" class="logo-img">
+            </a>
+            <div class="header-actions">
+                <button class="btn btn-primary btn-sm cta-trigger">Book Free Demo</button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero-section" id="hero">
+            <div class="container hero-container">
+                <div class="hero-content">
+                    <span class="eyebrow">Certified Program | Online · Corporate Training · Self-Paced</span>
+                    
+                    <!-- Headline container supporting dynamic swaps -->
+                    <div class="headline-container">
+                        <h1 id="hero-headline" class="hero-title">Your HR Degree Got You In the Room. Oracle Fusion HCM Keeps You There.</h1>
+                    </div>
+
+                    <p class="hero-subtitle">
+                        Learn Core HR, Payroll, Absence, Talent, Compensation, and 5 more modules from an Oracle-certified consultant with 23+ years of real-time implementation experience - with hands-on projects, mock interviews, and placement support built in.
+                    </p>
+
+                    <div class="hero-actions">
+                        <button class="btn btn-primary btn-lg cta-trigger">Book Your Free Demo Class</button>
+                        <a href="https://wa.me/918125323232?text=Hi%20Tech%20Leads%20IT,%20I%20am%20interested%20in%20Oracle%20Fusion%20HCM%20training.%20Please%20guide%20me." target="_blank" class="text-link">Talk to a Counselor on WhatsApp →</a>
+                    </div>
+
+                    <!-- Highlighted Trust Signals Showcase -->
+                    <div class="hero-trust-showcase">
+                        <div class="trust-card">
+                            <div class="trust-card-icon google-color">G</div>
+                            <div class="trust-card-info">
+                                <div class="trust-rating">
+                                    <span class="stars">★★★★★</span>
+                                    <span class="score">4.8★</span>
+                                </div>
+                                <span class="label">Google (576 reviews)</span>
+                            </div>
+                        </div>
+
+                        <div class="trust-card">
+                            <div class="trust-card-icon justdial-color">JD</div>
+                            <div class="trust-card-info">
+                                <div class="trust-rating">
+                                    <span class="stars">★★★★★</span>
+                                    <span class="score">4.7★</span>
+                                </div>
+                                <span class="label">JustDial (700 reviews)</span>
+                            </div>
+                        </div>
+
+                        <div class="trust-card highlight-accent">
+                            <div class="trust-card-icon stat-icon">👤</div>
+                            <div class="trust-card-info">
+                                <span class="stat-value">30,000+</span>
+                                <span class="label">Students Trained</span>
+                            </div>
+                        </div>
+
+                        <div class="trust-card highlight-success">
+                            <div class="trust-card-icon stat-icon">💼</div>
+                            <div class="trust-card-info">
+                                <span class="stat-value">14,000+</span>
+                                <span class="label">Successful Placements</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Embedded Form in Hero -->
+                <div class="hero-form-wrapper" id="heroFormContainer">
+                    <div class="lead-form-box">
+                        <h3 class="form-title">Get Your Free Demo Class</h3>
+                        <p class="form-subtitle">Takes less than 30 seconds. We'll confirm your slot within 24 hours.</p>
+                        
+                        <form class="lead-capture-form conversational-form" id="heroLeadForm" novalidate>
+                            <!-- Progress Bar Tracker -->
+                            <div class="form-progress">
+                                <div class="progress-bar-track">
+                                    <div class="progress-bar-fill" id="hero-progress-fill" style="width: 25%;"></div>
+                                </div>
+                                <span class="progress-text" id="hero-progress-text">Step 1 of 4: Contact Details</span>
+                            </div>
+
+                            <!-- Step 1: Basic details -->
+                            <div class="form-step active" data-step="1">
+                                <div class="form-group">
+                                    <label for="hero-name">Full Name *</label>
+                                    <input type="text" id="hero-name" name="name" placeholder="John Doe" required>
+                                    <span class="error-msg" id="hero-name-error"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="hero-email">Email Address *</label>
+                                    <input type="email" id="hero-email" name="email" placeholder="john@example.com" required>
+                                    <span class="error-msg" id="hero-email-error"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="hero-phone">Phone Number *</label>
+                                    <div class="tel-input-wrapper">
+                                        <span class="phone-prefix">+91</span>
+                                        <input type="tel" id="hero-phone" name="phone" placeholder="9876543210" required>
+                                    </div>
+                                    <span class="error-msg" id="hero-phone-error"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="hero-lang">Preferred Batch Language *</label>
+                                    <select id="hero-lang" name="language" required>
+                                        <option value="" disabled selected>Select Language</option>
+                                        <option value="English">English</option>
+                                        <option value="Hindi">Hindi</option>
+                                        <option value="Telugu">Telugu</option>
+                                        <option value="Tamil">Tamil</option>
+                                    </select>
+                                    <span class="error-msg" id="hero-lang-error"></span>
+                                </div>
+                                <button type="button" class="btn btn-primary btn-block next-step-btn" data-form="hero" data-next="2">Continue →</button>
+                            </div>
+
+                            <!-- Step 2: Segment -->
+                            <div class="form-step" data-step="2" style="display: none;">
+                                <div class="form-group qualifier-group">
+                                    <p class="qualifier-question">Which fits you best? *</p>
+                                    <div class="radio-options">
+                                        <label class="radio-label">
+                                            <input type="radio" name="segment" value="fresher" required>
+                                            <span>🎓 Fresher/student - new to HR/IT</span>
+                                        </label>
+                                        <label class="radio-label">
+                                            <input type="radio" name="segment" value="pro">
+                                            <span>💼 IT/ERP professional - want to switch to Fusion HCM</span>
+                                        </label>
+                                        <label class="radio-label">
+                                            <input type="radio" name="segment" value="hr">
+                                            <span>📊 Already in HR - want to upskill</span>
+                                        </label>
+                                        <label class="radio-label">
+                                            <input type="radio" name="segment" value="owner">
+                                            <span>🏢 Business owner / hiring manager</span>
+                                        </label>
+                                    </div>
+                                    <span class="error-msg" id="hero-segment-error"></span>
+                                </div>
+                                <div class="step-nav-buttons">
+                                    <button type="button" class="btn btn-outline prev-step-btn" data-form="hero" data-prev="1">← Back</button>
+                                    <button type="button" class="btn btn-primary next-step-btn" data-form="hero" data-next="3">Next →</button>
+                                </div>
+                            </div>
+
+                            <!-- Step 3: Motivation -->
+                            <div class="form-step" data-step="3" style="display: none;">
+                                <div class="form-group qualifier-group">
+                                    <p class="qualifier-question">What's your main goal from this course? *</p>
+                                    <div class="radio-options">
+                                        <label class="radio-label">
+                                            <input type="radio" name="motivation" value="job" required>
+                                            <span>Land my first job in HCM</span>
+                                        </label>
+                                        <label class="radio-label">
+                                            <input type="radio" name="motivation" value="switch">
+                                            <span>Switch careers / get a higher package</span>
+                                        </label>
+                                        <label class="radio-label">
+                                            <input type="radio" name="motivation" value="cert">
+                                            <span>Get certified for my current role</span>
+                                        </label>
+                                        <label class="radio-label">
+                                            <input type="radio" name="motivation" value="team">
+                                            <span>Build my team's Oracle skill</span>
+                                        </label>
+                                    </div>
+                                    <span class="error-msg" id="hero-motivation-error"></span>
+                                </div>
+                                <div class="step-nav-buttons">
+                                    <button type="button" class="btn btn-outline prev-step-btn" data-form="hero" data-prev="2">← Back</button>
+                                    <button type="button" class="btn btn-primary next-step-btn" data-form="hero" data-next="4">Next →</button>
+                                </div>
+                            </div>
+
+                            <!-- Step 4: Background -->
+                            <div class="form-step" data-step="4" style="display: none;">
+                                <div class="form-group qualifier-group">
+                                    <p class="qualifier-question">Any Oracle / ERP / HR experience? *</p>
+                                    <div class="radio-options">
+                                        <label class="radio-label">
+                                            <input type="radio" name="background" value="none" required>
+                                            <span>None - starting fresh</span>
+                                        </label>
+                                        <label class="radio-label">
+                                            <input type="radio" name="background" value="hr_only">
+                                            <span>Some HR experience, no Oracle</span>
+                                        </label>
+                                        <label class="radio-label">
+                                            <input type="radio" name="background" value="ebs">
+                                            <span>Used Oracle EBS or another ERP</span>
+                                        </label>
+                                        <label class="radio-label">
+                                            <input type="radio" name="background" value="fusion">
+                                            <span>Already work on Fusion HCM</span>
+                                        </label>
+                                    </div>
+                                    <span class="error-msg" id="hero-background-error"></span>
+                                </div>
+                                <div class="step-nav-buttons">
+                                    <button type="button" class="btn btn-outline prev-step-btn" data-form="hero" data-prev="3">← Back</button>
+                                    <button type="submit" class="btn btn-primary">Get My Free Demo Class</button>
+                                </div>
+                            </div>
+                            <p class="form-footer-note">🔒 No spam. We'll call or WhatsApp you within 24 hrs to confirm your demo slot.</p>
+                        </form>
+                        
+                        <!-- Success View (hidden by default) -->
+                        <div class="form-success-state" id="heroFormSuccess" style="display: none;">
+                            <div class="success-icon">✓</div>
+                            <h3>Demo Slot Requested!</h3>
+                            <p>Thank you, <strong id="success-user-name">Guest</strong>.</p>
+                            <p>We've received your details and batch preferences. One of our senior counselors will call or WhatsApp you within 24 hours to confirm your free demo details.</p>
+                            <div class="success-actions">
+                                <a href="https://wa.me/918125323232" target="_blank" class="btn btn-success">WhatsApp Us Now</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Client Logo Strip -->
+        <section class="logo-strip-section">
+            <div class="container">
+                <p class="logo-strip-title">Our Trainees Now Work At</p>
+                <div class="logo-marquee-container">
+                    <div class="logo-marquee-track">
+                        <!-- Original set of logos -->
+                        <img src="images/logos/oracle.svg" alt="Oracle" class="logo-img-item">
+                        <img src="images/logos/accenture.svg" alt="Accenture" class="logo-img-item">
+                        <img src="images/logos/techmahindra.png" alt="Tech Mahindra" class="logo-img-item">
+                        <img src="images/logos/infosys.svg" alt="Infosys" class="logo-img-item">
+                        <img src="images/logos/cognizant.svg" alt="Cognizant" class="logo-img-item">
+                        <img src="images/logos/larsen-toubro.svg" alt="Larsen & Toubro" class="logo-img-item">
+                        <img src="images/logos/mphasis.png" alt="Mphasis" class="logo-img-item">
+                        <img src="images/logos/ces.png" alt="CES" class="logo-img-item">
+                        <img src="images/logos/genpact.svg" alt="Genpact" class="logo-img-item">
+                        <img src="images/logos/splashbi.png" alt="SplashBI" class="logo-img-item">
+                        <img src="images/logos/mouritech.png" alt="MouriTech" class="logo-img-item">
+                        <img src="images/logos/nttdata.svg" alt="NTT Data" class="logo-img-item">
+                        <!-- Duplicated set of logos for seamless scroll loop -->
+                        <img src="images/logos/oracle.svg" alt="Oracle" class="logo-img-item">
+                        <img src="images/logos/accenture.svg" alt="Accenture" class="logo-img-item">
+                        <img src="images/logos/techmahindra.png" alt="Tech Mahindra" class="logo-img-item">
+                        <img src="images/logos/infosys.svg" alt="Infosys" class="logo-img-item">
+                        <img src="images/logos/cognizant.svg" alt="Cognizant" class="logo-img-item">
+                        <img src="images/logos/larsen-toubro.svg" alt="Larsen & Toubro" class="logo-img-item">
+                        <img src="images/logos/mphasis.png" alt="Mphasis" class="logo-img-item">
+                        <img src="images/logos/ces.png" alt="CES" class="logo-img-item">
+                        <img src="images/logos/genpact.svg" alt="Genpact" class="logo-img-item">
+                        <img src="images/logos/splashbi.png" alt="SplashBI" class="logo-img-item">
+                        <img src="images/logos/mouritech.png" alt="MouriTech" class="logo-img-item">
+                        <img src="images/logos/nttdata.svg" alt="NTT Data" class="logo-img-item">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Who This Is For Section -->
+        <section class="who-section section-padding" id="who-is-it-for">
+            <div class="container">
+                <div class="section-header text-center">
+                    <h2 class="section-title">Is This the Skill Gap Holding Your HR Career Back?</h2>
+                    <p class="section-subtitle">Gain expertise in Human Capital Management with training designed for learners at every level - no prior Oracle experience required.</p>
+                </div>
+                
+                <div class="who-grid">
+                    <div class="who-column">
+                        <div class="who-header grad-header">
+                            <span class="who-icon">🎓</span>
+                            <h3>Students & Fresh Graduates</h3>
+                        </div>
+                        <ul class="who-list">
+                            <li>Final-year students or graduates from B.Tech, MBA, or related fields</li>
+                            <li>Anyone planning to start a career in Human Capital Management (HCM)</li>
+                            <li>Anyone interested in HR operations, payroll, talent management, or workforce planning using Oracle Fusion HCM</li>
+                            <li>Job seekers wanting to strengthen their resumes with in-demand HCM skills</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="who-column">
+                        <div class="who-header pro-header">
+                            <span class="who-icon">💼</span>
+                            <h3>Working Professionals</h3>
+                        </div>
+                        <ul class="who-list">
+                            <li>IT & ERP professionals transitioning from Oracle EBS or other ERP systems to Oracle Fusion HCM</li>
+                            <li>HR Managers, HR Analysts, and ERP Consultants seeking deeper module expertise</li>
+                            <li>Business owners or HR leaders aiming to streamline their workforce with Oracle HCM</li>
+                            <li>Professionals wanting to optimize HR operations using Oracle's advanced HCM cloud tools</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="reassurance-bar text-center">
+                    <p class="reassurance-text">💡 <strong>Reassurance:</strong> No prior Oracle experience needed. Any graduate is eligible.</p>
+                </div>
+
+                <div class="who-collaboration-img text-center">
+                    <img src="images/collaboration.jpg" alt="Learners collaborating on Oracle Fusion HCM tasks" class="responsive-img collaboration-img">
+                </div>
+            </div>
+        </section>
+
+        <!-- Key Features Section -->
+        <section class="features-section section-padding" id="features">
+            <div class="container">
+                <div class="section-header text-center">
+                    <h2 class="section-title">What Sets Fusion-Certified HR Professionals Apart</h2>
+                </div>
+
+                <div class="features-grid">
+                    <!-- Feature Card 1 -->
+                    <div class="feature-card">
+                        <div class="feature-header">
+                            <span class="feature-icon-box">📘</span>
+                            <h3>Comprehensive Module Coverage</h3>
+                        </div>
+                        <p class="feature-text">A complete Oracle Fusion HCM learning path covering Core HR, Payroll, Absence, OTL, and key functional modules - from fundamentals to advanced concepts.</p>
+                    </div>
+                    
+                    <!-- Feature Card 2 -->
+                    <div class="feature-card">
+                        <div class="feature-header">
+                            <span class="feature-icon-box">🎯</span>
+                            <h3>Expert-Level Implementation</h3>
+                        </div>
+                        <p class="feature-text">Work on real-time scenarios, configurations, integrations, and implementation workflows - guided with practical best-practice tips.</p>
+                    </div>
+
+                    <!-- Feature Card 3 -->
+                    <div class="feature-card">
+                        <div class="feature-header">
+                            <span class="feature-icon-box">👨‍🏫</span>
+                            <h3>Oracle Certified Trainers</h3>
+                        </div>
+                        <p class="feature-text">Learn from Oracle-certified HCM consultants with strong real-time implementation and project delivery experience.</p>
+                    </div>
+
+                    <!-- Feature Card 4 -->
+                    <div class="feature-card">
+                        <div class="feature-header">
+                            <span class="feature-icon-box">🛠</span>
+                            <h3>Hands-On Projects</h3>
+                        </div>
+                        <p class="feature-text">Hands-on Oracle Fusion HCM projects with real business use cases - ideal for freshers and professionals to gain practical implementation experience.</p>
+                    </div>
+
+                    <!-- Feature Card 5 -->
+                    <div class="feature-card">
+                        <div class="feature-header">
+                            <span class="feature-icon-box">🤝</span>
+                            <h3>Placement & Job Support</h3>
+                        </div>
+                        <p class="feature-text">Placement-oriented training with interview guidance, resume support, and job-readiness mentoring for eligible learners.</p>
+                    </div>
+
+                    <!-- Feature Card 6 -->
+                    <div class="feature-card">
+                        <div class="feature-header">
+                            <span class="feature-icon-box">📱</span>
+                            <h3>Mobile App Learning</h3>
+                        </div>
+                        <p class="feature-text">Access course recordings, materials, and practice resources on mobile - learn anytime, anywhere.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Salary & Career Growth Section -->
+        <section class="salary-section section-padding" id="salary-growth">
+            <div class="container">
+                <div class="section-header text-center">
+                    <h2 class="section-title">What HR Roles Pay Once You Add Fusion HCM</h2>
+                    <p class="section-subtitle">Oracle Fusion HCM careers pay for depth, not just a certificate. Here's how packages typically scale as you move from fresher to specialist.</p>
+                </div>
+
+                <div class="salary-table-wrapper">
+                    <table class="salary-table">
+                        <thead>
+                            <tr>
+                                <th>Experience</th>
+                                <th>Typical Role</th>
+                                <th class="text-right">Package Range (₹ LPA)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="exp-cell">0–1 yrs (Fresher)</td>
+                                <td class="role-cell">Oracle Fusion HCM Support Associate / Jr. Functional Consultant</td>
+                                <td class="range-cell text-right">2.4 – 5 LPA</td>
+                            </tr>
+                            <tr>
+                                <td class="exp-cell">1–3 yrs</td>
+                                <td class="role-cell">Fusion HCM Functional Consultant</td>
+                                <td class="range-cell text-right">5 – 10 LPA</td>
+                            </tr>
+                            <tr>
+                                <td class="exp-cell">3–6 yrs</td>
+                                <td class="role-cell">Senior Functional Consultant / Techno-Functional Consultant</td>
+                                <td class="range-cell text-right">10 – 18 LPA</td>
+                            </tr>
+                            <tr>
+                                <td class="exp-cell">6–10 yrs</td>
+                                <td class="role-cell">Lead Consultant / Solution Architect</td>
+                                <td class="range-cell text-right">18 – 25 LPA</td>
+                            </tr>
+                            <tr>
+                                <td class="exp-cell">10+ yrs</td>
+                                <td class="role-cell">Principal Consultant / Practice Lead</td>
+                                <td class="range-cell text-right">25 – 30 LPA</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <p class="salary-caption text-center">
+                    <span class="caption-icon">💡</span> Ranges are indicative, based on industry placement trends for Oracle Fusion HCM professionals in India, and vary by company, location, and module specialization (Payroll and Techno-Functional roles typically command a premium).
+                </p>
+
+                <div class="salary-cta text-center">
+                    <a href="#" class="btn btn-primary btn-lg cta-trigger">See Which Track Fits You - Book a Free Demo</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- What Oracle Fusion HCM Actually Pays Section (Proof Gallery) -->
+        <section class="proof-section section-padding" id="salary-proof">
+            <div class="container">
+                <div class="section-header text-center">
+                    <h2 class="section-title">Don't Just Take Our Word For It - Here's What the Market Says</h2>
+                    <p class="section-subtitle">We're showing you Hyderabad numbers because that's where our batches run. Outside Hyderabad, packages for the same role typically run higher.</p>
+                </div>
+
+                <!-- Proof Slider Viewport -->
+                <div class="proof-slider-container">
+                    <div class="proof-slider-wrapper" id="proofSlider">
+                        
+                        <!-- Slide 1 -->
+                        <div class="proof-slide">
+                            <div class="proof-card">
+                                <h4 class="proof-card-title">Market Overview - Oracle Fusion HCM Consultant Salary</h4>
+                                <div class="proof-image-wrapper">
+                                    <img src="images/media_1785747570995.png" alt="Market Overview - Oracle Fusion HCM Consultant Salary" class="proof-img">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Slide 2 -->
+                        <div class="proof-slide">
+                            <div class="proof-card">
+                                <h4 class="proof-card-title">Salary by Experience Level</h4>
+                                <div class="proof-image-wrapper">
+                                    <img src="images/media_1785747656492.png" alt="Salary by Experience Level" class="proof-img">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Slide 3 -->
+                        <div class="proof-slide">
+                            <div class="proof-card">
+                                <h4 class="proof-card-title">What Top Companies Pay in Hyderabad</h4>
+                                <div class="proof-image-wrapper">
+                                    <img src="images/media_1785748035162.png" alt="What Top Companies Pay in Hyderabad" class="proof-img">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Slide 4 -->
+                        <div class="proof-slide">
+                            <div class="proof-card">
+                                <h4 class="proof-card-title">Packages Outside Hyderabad Are Even Higher</h4>
+                                <div class="proof-image-wrapper">
+                                    <img src="images/media_1785748339440.png" alt="Packages Outside Hyderabad Are Even Higher" class="proof-img">
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Slider Controls -->
+                    <div class="proof-slider-controls">
+                        <button class="slider-arrow prev" id="proofPrev" aria-label="Previous Proof">←</button>
+                        <div class="proof-slider-dots" id="proofDots"></div>
+                        <button class="slider-arrow next" id="proofNext" aria-label="Next Proof">→</button>
+                    </div>
+                </div>
+
+                <p class="proof-caption text-center">
+                    Source: Google Search / AmbitionBox, Hyderabad - data as shown, updated 2026. Figures are third-party market estimates, not a guarantee of placement outcome.
+                </p>
+
+                <div class="proof-cta text-center">
+                    <a href="#" class="btn btn-primary btn-lg cta-trigger">See Which Track Fits You - Book a Free Demo</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tools & Modules Snapshot Section -->
+        <section class="snapshot-section">
+            <div class="container">
+                <h3 class="snapshot-title text-center">The Fusion HCM Modules Every HR Leader Should Know</h3>
+                <div class="snapshot-chips">
+                    <span class="chip">Core HR</span>
+                    <span class="chip">Absence Management</span>
+                    <span class="chip">Compensation</span>
+                    <span class="chip">Payroll</span>
+                    <span class="chip">Talent Management</span>
+                    <span class="chip">Goal Management</span>
+                    <span class="chip">Profile Management</span>
+                    <span class="chip">HCM Communicate</span>
+                    <span class="chip">Succession Planning</span>
+                    <span class="chip">Oracle ME</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Why Choose Us Section (Differentiators) -->
+        <section class="why-us-section section-padding" id="why-us">
+            <div class="container">
+                <div class="section-header text-center">
+                    <h2 class="section-title">Why 30,000+ Learners Chose Tech Leads IT</h2>
+                </div>
+
+                <div class="why-us-grid">
+                    <div class="why-us-content">
+                        <ul class="why-us-list">
+                            <li>
+                                <span class="list-bullet">✓</span>
+                                <div class="list-text">
+                                    <strong>12+ Years of Excellence</strong>
+                                    <p>12+ years of experience delivering Oracle Fusion ERP and HCM training.</p>
+                                </div>
+                            </li>
+                            <li>
+                                <span class="list-bullet">✓</span>
+                                <div class="list-text">
+                                    <strong>Real-Time Senior Faculty</strong>
+                                    <p>Senior faculty with strong hands-on implementation experience, not just classroom theory.</p>
+                                </div>
+                            </li>
+                            <li>
+                                <span class="list-bullet">✓</span>
+                                <div class="list-text">
+                                    <strong>5,000+ Career Transitions</strong>
+                                    <p>Over 5,000 learners trained and moved from learning to real-time expertise.</p>
+                                </div>
+                            </li>
+                            <li>
+                                <span class="list-bullet">✓</span>
+                                <div class="list-text">
+                                    <strong>Mobile App & Learning Portal</strong>
+                                    <p>Access learning materials, live classes, and hands-on labs anytime.</p>
+                                </div>
+                            </li>
+                            <li>
+                                <span class="list-bullet">✓</span>
+                                <div class="list-text">
+                                    <strong>Industry-Validated Curriculum</strong>
+                                    <p>Curriculum aligned with real-time projects, current industry needs, and Oracle standards.</p>
+                                </div>
+                            </li>
+                            <li>
+                                <span class="list-bullet">✓</span>
+                                <div class="list-text">
+                                    <strong>Placement-Focused Support</strong>
+                                    <p>Interview guidance, resume help, and career support built into the program.</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="stat-sidebar">
+                        <div class="stat-box-grid">
+                            <div class="stat-card">
+                                <span class="stat-number">30,000+</span>
+                                <span class="stat-label">Students Trained</span>
+                            </div>
+                            <div class="stat-card">
+                                <span class="stat-number">73</span>
+                                <span class="stat-label">HCM Batches Completed</span>
+                            </div>
+                            <div class="stat-card">
+                                <span class="stat-number">14,000+</span>
+                                <span class="stat-label">Successful Placements</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works Section -->
+        <section class="how-works-section section-padding" id="how-works">
+            <div class="container">
+                <div class="section-header text-center">
+                    <h2 class="section-title">How the Program Works</h2>
+                </div>
+
+                <div class="steps-grid">
+                    <!-- Step 1 -->
+                    <div class="step-card">
+                        <div class="step-badge">1</div>
+                        <h3>Book a free demo class</h3>
+                        <p>Sit in on a live session, ask questions, and meet the trainer before you commit.</p>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="step-card">
+                        <div class="step-badge">2</div>
+                        <h3>Enroll and get portal access</h3>
+                        <p>Unlock 1-year access to the learning portal, standard materials, and recorded sessions.</p>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="step-card">
+                        <div class="step-badge">3</div>
+                        <h3>Learn Mon–Sat, 1 hour a day</h3>
+                        <p>Follow a structured 2.5-month program including hands-on settings and a real-time project.</p>
+                    </div>
+
+                    <!-- Step 4 -->
+                    <div class="step-card">
+                        <div class="step-badge">4</div>
+                        <h3>Get certified & placement-ready</h3>
+                        <p>Receive mock interviews, resume templates, and curated interview Q&A before applying.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Full Curriculum Section -->
+        <section class="curriculum-section section-padding" id="curriculum">
+            <div class="container">
+                <div class="curriculum-header-flex">
+                    <div class="section-header">
+                        <h2 class="section-title">Oracle Fusion HCM Course Curriculum</h2>
+                        <p class="section-subtitle">A detailed overview of our Oracle Fusion HCM training course, including all modules, technical concepts, and more.</p>
+                    </div>
+                    <div class="curriculum-header-action">
+                        <button class="btn btn-outline gate-download-btn">Download Curriculum <span class="btn-arrow">↓</span></button>
+                    </div>
+                </div>
+
+                <!-- Key Curriculum Metrics Bar -->
+                <div class="curriculum-metrics-bar">
+                    <div class="curr-metric-item">
+                        <div class="curr-metric-label">Milestone</div>
+                        <div class="curr-metric-val-wrap">
+                            <span class="curr-metric-icon">📚</span>
+                            <span class="curr-metric-value">11 Modules</span>
+                        </div>
+                    </div>
+                    <div class="curr-metric-item">
+                        <div class="curr-metric-label">Duration</div>
+                        <div class="curr-metric-val-wrap">
+                            <span class="curr-metric-icon">📅</span>
+                            <span class="curr-metric-value">2.5 Months</span>
+                        </div>
+                    </div>
+                    <div class="curr-metric-item">
+                        <div class="curr-metric-label">Mode</div>
+                        <div class="curr-metric-val-wrap">
+                            <span class="curr-metric-icon">💻</span>
+                            <span class="curr-metric-value">Online Live</span>
+                        </div>
+                    </div>
+                    <div class="curr-metric-item">
+                        <div class="curr-metric-label">Live Sessions</div>
+                        <div class="curr-metric-val-wrap">
+                            <span class="curr-metric-icon">⏱️</span>
+                            <span class="curr-metric-value">60+ Hours</span>
+                        </div>
+                    </div>
+                    <div class="curr-metric-item">
+                        <div class="curr-metric-label">Practice</div>
+                        <div class="curr-metric-val-wrap">
+                            <span class="curr-metric-icon">💼</span>
+                            <span class="curr-metric-value">Real-time Project</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Signature Interactive Element: Vertical Path Explorer (Desktop) / Accordion (Mobile fallback) -->
+                <div class="curriculum-explorer-wrapper">
+                    <!-- Left Timeline Navigation for Desktop -->
+                    <div class="path-navigation" id="curriculumTimeline">
+                        <!-- Hidden progress element to maintain script compatibility -->
+                        <div style="display: none;" id="timelineProgress"></div>
+                        
+                        <!-- Timeline Buttons -->
+                        <button class="timeline-node active" data-index="1">
+                            <span class="node-meta">Module 1</span>
+                            <span class="node-title">Functional Setup Manager</span>
+                        </button>
+                        <button class="timeline-node" data-index="2">
+                            <span class="node-meta">Module 2</span>
+                            <span class="node-title">Core HR</span>
+                        </button>
+                        <button class="timeline-node" data-index="3">
+                            <span class="node-meta">Module 3</span>
+                            <span class="node-title">Global Payroll</span>
+                        </button>
+                        <button class="timeline-node" data-index="4">
+                            <span class="node-meta">Module 4</span>
+                            <span class="node-title">Profile & Performance</span>
+                        </button>
+                        <button class="timeline-node" data-index="5">
+                            <span class="node-meta">Module 5</span>
+                            <span class="node-title">Compensation</span>
+                        </button>
+                        <button class="timeline-node" data-index="6">
+                            <span class="node-meta">Module 6</span>
+                            <span class="node-title">Talent Management</span>
+                        </button>
+                        <button class="timeline-node" data-index="7">
+                            <span class="node-meta">Module 7</span>
+                            <span class="node-title">Goal Management</span>
+                        </button>
+                        <button class="timeline-node" data-index="8">
+                            <span class="node-meta">Module 8</span>
+                            <span class="node-title">HCM Communicate</span>
+                        </button>
+                        <button class="timeline-node" data-index="9">
+                            <span class="node-meta">Module 9</span>
+                            <span class="node-title">Absence Management</span>
+                        </button>
+                        <button class="timeline-node" data-index="10">
+                            <span class="node-meta">Module 10</span>
+                            <span class="node-title">Time and Labour</span>
+                        </button>
+                        <button class="timeline-node" data-index="11">
+                            <span class="node-meta">Module 11</span>
+                            <span class="node-title">Technical Concepts</span>
+                        </button>
+                    </div>
+
+                    <!-- Right Content Area for Selected Module (Desktop View) -->
+                    <div class="module-content-pane" id="curriculumContentPane">
+                        <div class="active-module-display">
+                            <div class="module-card-header-flex">
+                                <div class="module-header-meta">
+                                    <span class="module-counter-badge" id="paneModuleNumber">Module 1</span>
+                                    <h3 id="paneModuleName">Functional Setup Manager</h3>
+                                </div>
+                                <div class="module-duration-tag">
+                                    <span class="dur-icon">📅</span>
+                                    <span id="paneModuleDuration">Duration: 1 Week</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Badges row under header -->
+                            <div class="module-pills-row" id="paneModulePills">
+                                <span class="badge-pill pill-live">🎥 Live Training</span>
+                                <span class="badge-pill pill-practice">🛠️ Hands-on Lab</span>
+                                <span class="badge-pill pill-project">📊 Real Case Study</span>
+                                <span class="badge-pill pill-qa">💬 Q&A Support</span>
+                            </div>
+
+                            <!-- Divider line -->
+                            <div class="module-divider"></div>
+
+                            <!-- Topics Dual Column Area -->
+                            <div class="module-topics-list" id="paneModuleContent">
+                                <!-- Dynamic dual columns of topics will load here -->
+                            </div>
+
+                            <!-- Divider line -->
+                            <div class="module-divider"></div>
+
+                            <!-- Case Studies Section inside Card Footer -->
+                            <div class="module-case-studies-section">
+                                <h4 class="case-studies-title">Real-World HCM Implementation Case Studies</h4>
+                                <div class="case-studies-grid">
+                                    <div class="case-study-card">
+                                        <div class="cs-logo-wrapper">
+                                            <span class="cs-logo oracle-logo">Oracle Cloud</span>
+                                        </div>
+                                        <div class="cs-content">
+                                            <span class="cs-badge">Case Study 1</span>
+                                            <p class="cs-desc" id="csDesc1">Analyze how a global logistics enterprise rolled out legal structures for 8,000+ employees.</p>
+                                        </div>
+                                    </div>
+                                    <div class="case-study-card">
+                                        <div class="cs-logo-wrapper">
+                                            <span class="cs-logo partner-logo">Implementation</span>
+                                        </div>
+                                        <div class="cs-content">
+                                            <span class="cs-badge">Case Study 2</span>
+                                            <p class="cs-desc" id="csDesc2">Step-by-step security role mapping and business unit configurations for complex MNC projects.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Accordion Wrapper for Mobile Layout (CSS hides it on desktop, shows on mobile) -->
+                <div class="mobile-curriculum-accordion" id="curriculumAccordion">
+                    <!-- Module 1 Accordion Item -->
+                    <div class="accordion-item active">
+                        <button class="accordion-header" aria-expanded="true">
+                            <span class="acc-num">01</span>
+                            <span class="acc-title">Functional Setup Manager</span>
+                            <span class="acc-icon"></span>
+                        </button>
+                        <div class="accordion-body">
+                            <div class="accordion-content">
+                                Getting started with Fusion Applications · Initial activities for Oracle Fusion Implementation · Preparing Fusion Applications · User & Role Management · Creating Implementation Users via FA Super-User · Synchronizing Users and Roles in LDAP with Fusion HCM · Introduction to Functional Setup Manager · Creation of Implementation Project (Offerings, Options, Features) · Fusion HCM Business Process Overview
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Module 2 Accordion Item -->
+                    <div class="accordion-item">
+                        <button class="accordion-header" aria-expanded="false">
+                            <span class="acc-num">02</span>
+                            <span class="acc-title">Core HR</span>
+                            <span class="acc-icon"></span>
+                        </button>
+                        <div class="accordion-body">
+                            <div class="accordion-content">
+                                Implementation Tasks · Manage Geographies · Define Currencies & Locations · Manage Enterprise Creation, Structure & Components · Enterprise Divisions, Legal Entities, Business Units · Reference Data Sets · Manage Work Structures (Departments, Jobs, Positions, Grades & Grade Rates) · HCM Security Profiles · Role Mapping · Profile Options · Employment Model (Two-Tier & Three-Tier: Work Relationship, Employment Terms, Assignment)
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Module 3 Accordion Item -->
+                    <div class="accordion-item">
+                        <button class="accordion-header" aria-expanded="false">
+                            <span class="acc-num">03</span>
+                            <span class="acc-title">Global Payroll</span>
+                            <span class="acc-icon"></span>
+                        </button>
+                        <div class="accordion-body">
+                            <div class="accordion-content">
+                                Payroll Introduction · HCM Security · Common Application Configurations · Define Payroll Business Definitions, Pay Frequencies, Payroll Elements · Create Element Entries · Define Fast Formulas & Balance Definitions · Calculate & Run Payroll · Define Events, Payment Methods, Payroll Costing · Payroll Flexfields · Object Groups · Payroll Patterns & Security · Payslip Overview
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Module 4 Accordion Item -->
+                    <div class="accordion-item">
+                        <button class="accordion-header" aria-expanded="false">
+                            <span class="acc-num">04</span>
+                            <span class="acc-title">Profile & Performance Management</span>
+                            <span class="acc-icon"></span>
+                        </button>
+                        <div class="accordion-body">
+                            <div class="accordion-content">
+                                Introducing Oracle Fusion Talent Management · Main Business Activities · Security & Functional Setup Manager Overview · Role-Based Access Control Role Types · Talent Management Job Roles & Duties · Creating Implementation Projects and Assigning Tasks · Define Talent Profile Settings · Profile Management
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Module 5 Accordion Item -->
+                    <div class="accordion-item">
+                        <button class="accordion-header" aria-expanded="false">
+                            <span class="acc-num">05</span>
+                            <span class="acc-title">Compensation</span>
+                            <span class="acc-icon"></span>
+                        </button>
+                        <div class="accordion-body">
+                            <div class="accordion-content">
+                                Introduction to Compensation Management · Types of Compensation · Base Pay Configuration, Pay Levels & Ranges · Implementing a Compensation Program · Administering Pay Increases and Bonuses · Linking Compensation to Performance · Salary Basis & Salary Ranges · Grade Ladder with Progression Configuration · Individual & Workforce Compensation Plans
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Module 6 Accordion Item -->
+                    <div class="accordion-item">
+                        <button class="accordion-header" aria-expanded="false">
+                            <span class="acc-num">06</span>
+                            <span class="acc-title">Talent Management</span>
+                            <span class="acc-icon"></span>
+                        </button>
+                        <div class="accordion-body">
+                            <div class="accordion-content">
+                                Integrations and Setup · Define Talent Profile Content · Content Library, Content Types & Items · Rating Models & Talent Profiles · Profile Types, Components & Instance Qualifiers · Writing Assistant · Manage Talent Profiles · Team Talent & Talent Profile Cards · Compare Items and Best Fit · Creating Review Periods · Managing Performance Document Types & Goal Library · Talent Management Notifications & Auditing
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Module 7 Accordion Item -->
+                    <div class="accordion-item">
+                        <button class="accordion-header" aria-expanded="false">
+                            <span class="acc-num">07</span>
+                            <span class="acc-title">Goal Management Concepts</span>
+                            <span class="acc-icon"></span>
+                        </button>
+                        <div class="accordion-body">
+                            <div class="accordion-content">
+                                Goal Management Setup · Lookups, Flexfields & Profile Options · Managing & Creating Goal Plans and Plan Sets · Administering and Mass Assigning Goals · Managing Worker/Organization Goals & Approvals · Questionnaires (Concepts, Question Library, Response Types, Templates) · Understanding & Defining Worker Performance · Performance Management Overview · Performance Roles & Matrix Management · Eligibility Profiles & Process Flow Definitions · Performance Templates & Sections · Performance Documents and Worker Evaluations
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Module 8 Accordion Item -->
+                    <div class="accordion-item">
+                        <button class="accordion-header" aria-expanded="false">
+                            <span class="acc-num">08</span>
+                            <span class="acc-title">Oracle HCM Communicate</span>
+                            <span class="acc-icon"></span>
+                        </button>
+                        <div class="accordion-body">
+                            <div class="accordion-content">
+                                Target Messaging · Newsletter Customization · Scheduling · Message Tracking · Collaboration · Audience Filtering & Creation
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Module 9 Accordion Item -->
+                    <div class="accordion-item">
+                        <button class="accordion-header" aria-expanded="false">
+                            <span class="acc-num">09</span>
+                            <span class="acc-title">Absence Management</span>
+                            <span class="acc-icon"></span>
+                        </button>
+                        <div class="accordion-body">
+                            <div class="accordion-content">
+                                Absence Management Setup & Supporting Components · Accrual Plan Attributes, Types & Participation · Eligibility Profiles · Defining Accrual Limits, Rates & Balances · Qualification Plans and Term Types · Fast Formulas in Absence Management · Absence Types, Reasons, Categories & Certifications · Scheduling and Maintaining Absences · Managing Absence Records, Entitlements & Approvals · Monitoring Absence Processes
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Module 10 Accordion Item -->
+                    <div class="accordion-item">
+                        <button class="accordion-header" aria-expanded="false">
+                            <span class="acc-num">10</span>
+                            <span class="acc-title">Time and Labour</span>
+                            <span class="acc-icon"></span>
+                        </button>
+                        <div class="accordion-body">
+                            <div class="accordion-content">
+                                Repeating Time Periods · Time Card Layout Components & Sets · Manage HCM Groups · Create Time Card Components · Time Card Calculation Rule Templates & Rules · Worker Time Entry Profile · Time Processing Profile · Loading of Timecards
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Module 11 Accordion Item -->
+                    <div class="accordion-item">
+                        <button class="accordion-header" aria-expanded="false">
+                            <span class="acc-num">11</span>
+                            <span class="acc-title">Technical Concepts</span>
+                            <span class="acc-icon"></span>
+                        </button>
+                        <div class="accordion-body">
+                            <div class="accordion-content">
+                                OTBI Reports · BI Reports · FBL · Fast Formulas · HCM Data Loader · Spreadsheet Data Loader
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CTA below curriculum -->
+                <div class="curriculum-cta-box text-center">
+                    <button class="btn btn-outline btn-lg gate-download-btn">Download the Full Curriculum PDF →</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Key Highlights & Certificate Section -->
+        <section class="highlights-section section-padding" id="highlights">
+            <div class="container">
+                <div class="section-header text-center">
+                    <h2 class="section-title">Key Highlights</h2>
+                </div>
+
+                <div class="highlights-stats-bar">
+                    <div class="highlight-stat">
+                        <div class="h-stat-icon-wrapper">📚</div>
+                        <span class="h-stat-num">10+</span>
+                        <span class="h-stat-label">Modules</span>
+                    </div>
+                    <div class="highlight-stat">
+                        <div class="h-stat-icon-wrapper">⏱️</div>
+                        <span class="h-stat-num">60+</span>
+                        <span class="h-stat-label">Hours Training</span>
+                    </div>
+                    <div class="highlight-stat">
+                        <div class="h-stat-icon-wrapper">📝</div>
+                        <span class="h-stat-num">5+</span>
+                        <span class="h-stat-label">Assessments</span>
+                    </div>
+                    <div class="highlight-stat">
+                        <div class="h-stat-icon-wrapper">💬</div>
+                        <span class="h-stat-num">5+</span>
+                        <span class="h-stat-label">Mock Interviews</span>
+                    </div>
+                </div>
+
+                <div class="highlights-grid">
+                    <div class="highlights-list-card">
+                        <h3>What is included in the program:</h3>
+                        <ul class="highlights-checklist">
+                            <li>1-Year Membership Portal Access</li>
+                            <li>Official Materials, Case Studies & Practical Assignments</li>
+                            <li>Predefined Interview Q&A Bank</li>
+                            <li>Real-Time Practical Projects</li>
+                            <li>Recorded Video Access for Review</li>
+                            <li>Mock-Up Interview Training Sessions</li>
+                            <li>Official Course Completion Certificate from Tech Leads IT</li>
+                            <li>100% Dedicated Placement Support</li>
+                        </ul>
+                    </div>
+
+                    <div class="cert-callout-card">
+                        <div class="cert-badge-wrapper">
+                            <img src="images/certification-badge.jpg" alt="Oracle Certified professional badge" class="cert-badge-img">
+                        </div>
+                        <div class="cert-details">
+                            <span class="cert-tag">🏅 Certification Mapping</span>
+                            <h3>Prepare for Oracle Cloud Certification</h3>
+                            <p>This program fully maps to and prepares you for the following global credential exam:</p>
+                            <div class="exam-info">
+                                <span class="exam-name">Oracle Global Human Resources Cloud 2022 Implementation Professional</span>
+                                <span class="exam-number">Exam Code: 1Z0-1046-22</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Trainer Credibility Section -->
+        <section class="trainer-section section-padding" id="trainer">
+            <div class="container">
+                <div class="trainer-card-layout">
+                    <div class="trainer-image-area">
+                        <img src="images/trainer-avatar.jpg" alt="Trainer Sumesh portrait illustration" class="trainer-img">
+                    </div>
+                    <div class="trainer-info-area">
+                        <span class="trainer-eyebrow">Your Instructor</span>
+                        <h2 class="trainer-name">Sumesh</h2>
+                        <span class="trainer-title">Senior Real-Time Oracle HCM Consultant & Lead Faculty</span>
+                        <span class="trainer-exp">23+ Years of Real-Time Enterprise Experience</span>
+                        
+                        <div class="trainer-stats">
+                            <div class="t-stat">
+                                <span class="t-stat-num">50+</span>
+                                <span class="t-stat-lbl">Batches Completed</span>
+                            </div>
+                            <div class="t-stat">
+                                <span class="t-stat-num">100%</span>
+                                <span class="t-stat-lbl">Real-Time Projects</span>
+                            </div>
+                        </div>
+
+                        <p class="trainer-bio">
+                            Sumesh is a seasoned enterprise consultant who has successfully guided dozens of implementation projects globally. His training approach focuses entirely on practical application, taking you behind the scenes of actual setups.
+                        </p>
+                        <p class="trainer-bio-list-title">He covers both functional and technical modules in-depth:</p>
+                        <ul class="trainer-skills-list">
+                            <li><strong>Functional:</strong> Core HR, Payroll, Talent, Compensation, Absence, OTL, HCM Communicate</li>
+                            <li><strong>Technical:</strong> OTBI Reports, BI Reports, HCM Data Loader, Spreadsheet Data Loader, Fast Formulas, FBL</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials Section -->
+        <section class="testimonials-section section-padding" id="testimonials">
+            <div class="container">
+                <div class="section-header text-center">
+                    <h2 class="section-title">What Our Trainees Say</h2>
+                </div>
+
+                <!-- Dynamic Slider/Carousel -->
+                <div class="testimonial-slider-container">
+                    <div class="slider-wrapper" id="testimonialSlider">
+                        
+                        <!-- Testimonial 1 -->
+                        <div class="slide">
+                            <div class="testimonial-card">
+                                <div class="quote-icon">“</div>
+                                <div class="testimonial-stars">★★★★★</div>
+                                <p class="testimonial-text">
+                                    Tech Leads IT is the best Oracle Fusion HCM training institute. I completed my training in December - it's completely real-time, scenario-based training and I'm very satisfied. The trainer has great knowledge of Fusion HCM modules and explains clearly.
+                                </p>
+                                <div class="testimonial-author">
+                                    <div class="author-avatar">MN</div>
+                                    <div class="author-info">
+                                        <h4 class="author-name">Minal Nimbolkar</h4>
+                                        <span class="author-title">Oracle HCM Trainee</span>
+                                    </div>
+                                    <span class="verified-badge">✓ Verified Learner</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Testimonial 2 -->
+                        <div class="slide">
+                            <div class="testimonial-card">
+                                <div class="quote-icon">“</div>
+                                <div class="testimonial-stars">★★★★★</div>
+                                <p class="testimonial-text">
+                                    I took HCM training with Tech Leads. The trainer is well experienced and it's very helpful for gaining real-time knowledge. I'd recommend anyone looking for real-time training - they provide the best material and more application access time compared to other institutes.
+                                </p>
+                                <div class="testimonial-author">
+                                    <div class="author-avatar">SR</div>
+                                    <div class="author-info">
+                                        <h4 class="author-name">Sunanda Reddy</h4>
+                                        <span class="author-title">Oracle HCM Consultant</span>
+                                    </div>
+                                    <span class="verified-badge">✓ Verified Learner</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Testimonial 3 -->
+                        <div class="slide">
+                            <div class="testimonial-card">
+                                <div class="quote-icon">“</div>
+                                <div class="testimonial-stars">★★★★★</div>
+                                <p class="testimonial-text">
+                                    One of the best training institutes for Oracle Fusion HCM modules. The trainer has in-depth knowledge of Core HR, Payroll, Absence, Talent, and Compensation modules, with real-time examples throughout.
+                                </p>
+                                <div class="testimonial-author">
+                                    <div class="author-avatar">RR</div>
+                                    <div class="author-info">
+                                        <h4 class="author-name">Rakesh Reddy</h4>
+                                        <span class="author-title">HCM Associate</span>
+                                    </div>
+                                    <span class="verified-badge">✓ Verified Learner</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Testimonial 4 -->
+                        <div class="slide">
+                            <div class="testimonial-card">
+                                <div class="quote-icon">“</div>
+                                <div class="testimonial-stars">★★★★★</div>
+                                <p class="testimonial-text">
+                                    I joined Fusion HCM training at Tech Leads IT. The instructor is knowledgeable and real-time, explains concepts and real-life scenarios well for hands-on learning, and is very professional - answers all questions immediately.
+                                </p>
+                                <div class="testimonial-author">
+                                    <div class="author-avatar">YP</div>
+                                    <div class="author-info">
+                                        <h4 class="author-name">Yogeesh P</h4>
+                                        <span class="author-title">ERP Specialist</span>
+                                    </div>
+                                    <span class="verified-badge">✓ Verified Learner</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Slider controls -->
+                    <div class="slider-controls">
+                        <button class="slider-arrow prev" id="sliderPrev" aria-label="Previous Testimonial">←</button>
+                        <div class="slider-dots" id="sliderDots"></div>
+                        <button class="slider-arrow next" id="sliderNext" aria-label="Next Testimonial">→</button>
+                    </div>
+                </div>
+
+                <!-- Trust Signal Ratings Bar -->
+                <div class="ratings-bar" id="ratings">
+                    <div class="rating-item google-rate">
+                        <span class="logo-circle font-mono">G</span>
+                        <div class="rate-details">
+                            <span class="rate-stars">★★★★★</span>
+                            <span class="rate-score"><strong>4.8★</strong> (576 reviews)</span>
+                            <span class="rate-source">Google Reviews</span>
+                        </div>
+                    </div>
+                    
+                    <div class="rating-item sulekha-rate">
+                        <span class="logo-circle font-mono">S</span>
+                        <div class="rate-details">
+                            <span class="rate-stars">★★★★★</span>
+                            <span class="rate-score"><strong>4.5★</strong> (449 reviews)</span>
+                            <span class="rate-source">Sulekha Recommended</span>
+                        </div>
+                    </div>
+                    
+                    <div class="rating-item justdial-rate">
+                        <span class="logo-circle font-mono">JD</span>
+                        <div class="rate-details">
+                            <span class="rate-stars">★★★★★</span>
+                            <span class="rate-score"><strong>4.7★</strong> (700 reviews)</span>
+                            <span class="rate-source">JustDial Trust Verified</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Comparison Table Section -->
+        <section class="comparison-section section-padding" id="comparison">
+            <div class="container">
+                <div class="section-header text-center">
+                    <h2 class="section-title">Why HR Professionals Choose Tech Leads IT Over Generic IT Institutes</h2>
+                    <p class="section-subtitle">Most institutes teach you where the buttons are. We teach you how to think like an implementer - because that's what gets you hired.</p>
+                </div>
+
+                <!-- Responsive Comparison Table -->
+                <div class="table-responsive-wrapper">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Criteria</th>
+                                <th class="highlight-column">Tech Leads IT</th>
+                                <th>Typical Institutes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="criteria-name">Trainer experience</td>
+                                <td class="techleads-val">Oracle-certified consultant, 23+ years, 50+ Fusion batches delivered</td>
+                                <td class="other-val">Often recorded or junior trainers with limited real-time exposure</td>
+                            </tr>
+                            <tr>
+                                <td class="criteria-name">Curriculum depth</td>
+                                <td class="techleads-val">10+ full modules - Functional <em>and</em> Technical (OTBI, HCM Data Loader, Fast Formulas, FBL)</td>
+                                <td class="other-val">Usually functional-only, surface-level coverage</td>
+                            </tr>
+                            <tr>
+                                <td class="criteria-name">Learning approach</td>
+                                <td class="techleads-val">Real-time projects and business scenarios, not just navigation demos</td>
+                                <td class="other-val">Slide-driven theory with limited hands-on practice</td>
+                            </tr>
+                            <tr>
+                                <td class="criteria-name">Portal access</td>
+                                <td class="techleads-val">1 year - attend unlimited batches, replay any recorded session</td>
+                                <td class="other-val">Fixed batch window, no repeat access once it ends</td>
+                            </tr>
+                            <tr>
+                                <td class="criteria-name">Placement support</td>
+                                <td class="techleads-val">Resume help, predefined interview Q&A, 5+ mock interviews</td>
+                                <td class="other-val">Little to no structured placement support</td>
+                            </tr>
+                            <tr>
+                                <td class="criteria-name">Certification alignment</td>
+                                <td class="techleads-val">Mapped to Oracle Global HR Cloud 2022 Implementation Professional (1Z0-1046-22)</td>
+                                <td class="other-val">Often not aligned to a specific Oracle certification</td>
+                            </tr>
+                            <tr>
+                                <td class="criteria-name">Track record</td>
+                                <td class="techleads-val">25,000+ students, 200+ batches, 10,000+ placements across 2 countries</td>
+                                <td class="other-val">Limited or unverifiable outcomes</td>
+                            </tr>
+                            <tr>
+                                <td class="criteria-name">Ratings</td>
+                                <td class="techleads-val">4.8★ Google · 4.7★ JustDial · 4.5★ Sulekha</td>
+                                <td class="other-val">Mixed or unverified reviews</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- CTA below table -->
+                <div class="comparison-cta text-center">
+                    <button class="btn btn-primary btn-lg cta-trigger">See the Difference for Yourself - Book a Free Demo</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pricing & Program Details Section -->
+        <section class="pricing-section section-padding" id="pricing">
+            <div class="container">
+                <div class="section-header text-center">
+                    <h2 class="section-title">Program Details</h2>
+                </div>
+
+                <div class="pricing-layout-box">
+                    <div class="details-table-wrapper">
+                        <table class="details-table">
+                            <tbody>
+                                <tr>
+                                    <td><strong>Duration</strong></td>
+                                    <td>Mon–Sat, daily 1 hour + 2.5 months, including a real-time project</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Course Fee</strong></td>
+                                    <td class="fee-text">₹25,000/- INR <span class="fee-tag">Transparent Fee (No hidden charges)</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Certification</strong></td>
+                                    <td>Course completion certificate issued by Tech Leads IT</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Eligibility</strong></td>
+                                    <td>Any graduate</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Prerequisites</strong></td>
+                                    <td>None required to learn Oracle Fusion HCM</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Application Access</strong></td>
+                                    <td>5 months</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Learning Portal Access</strong></td>
+                                    <td>1 year - attend unlimited batches and access daily live class recordings</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Average Package</strong></td>
+                                    <td>₹2.4–5 LPA (Fresher) · ₹5–30 LPA (Experienced), varies by experience</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Placements</strong></td>
+                                    <td>Associated with large and small MNCs to place top-performing students</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Resume Help</strong></td>
+                                    <td>Sample resume templates and preparation support provided</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Interview Prep</strong></td>
+                                    <td>Predefined set of interview questions and answers</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="pricing-cta text-center">
+                    <button class="btn btn-primary btn-lg cta-trigger">See If You Qualify - Book a Free Demo</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="faq-section section-padding" id="faq">
+            <div class="container">
+                <div class="section-header text-center">
+                    <h2 class="section-title">Frequently Asked Questions</h2>
+                </div>
+
+                <div class="faq-accordion-wrapper">
+                    <!-- Q1 -->
+                    <div class="faq-item">
+                        <button class="faq-trigger" aria-expanded="false">
+                            <span class="faq-question">Do I need Oracle or HR experience to join?</span>
+                            <span class="faq-chevron"></span>
+                        </button>
+                        <div class="faq-body">
+                            <p class="faq-answer">
+                                No. There are no prerequisites - any graduate can join, whether you're a fresher or a working professional switching into HCM.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Q2 -->
+                    <div class="faq-item">
+                        <button class="faq-trigger" aria-expanded="false">
+                            <span class="faq-question">How much time do I need to commit?</span>
+                            <span class="faq-chevron"></span>
+                        </button>
+                        <div class="faq-body">
+                            <p class="faq-answer">
+                                About 1 hour a day, Monday–Saturday, over 2.5 months, including your real-time project implementation.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Q3 -->
+                    <div class="faq-item">
+                        <button class="faq-trigger" aria-expanded="false">
+                            <span class="faq-question">What if I miss a class?</span>
+                            <span class="faq-chevron"></span>
+                        </button>
+                        <div class="faq-body">
+                            <p class="faq-answer">
+                                You get 1-year access to the learning portal and can attend daily live class recordings or join future batches at no extra cost.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Q4 -->
+                    <div class="faq-item">
+                        <button class="faq-trigger" aria-expanded="false">
+                            <span class="faq-question">Will this help me get certified?</span>
+                            <span class="faq-chevron"></span>
+                        </button>
+                        <div class="faq-body">
+                            <p class="faq-answer">
+                                Yes - the curriculum prepares you for the Oracle Global Human Resources Cloud 2022 Implementation Professional exam (1Z0-1046-22).
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Q5 -->
+                    <div class="faq-item">
+                        <button class="faq-trigger" aria-expanded="false">
+                            <span class="faq-question">Do you help with job placement?</span>
+                            <span class="faq-chevron"></span>
+                        </button>
+                        <div class="faq-body">
+                            <p class="faq-answer">
+                                Yes - placement-oriented training with resume help, predefined interview Q&A, and mock interview sessions for top-performing students.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Q6 -->
+                    <div class="faq-item">
+                        <button class="faq-trigger" aria-expanded="false">
+                            <span class="faq-question">What's included in the fee?</span>
+                            <span class="faq-chevron"></span>
+                        </button>
+                        <div class="faq-body">
+                            <p class="faq-answer">
+                                10+ modules, 60+ hours of training, 5+ assessments, 5+ mock interviews, real-time project work, recorded video access, and a Tech Leads IT completion certificate - for ₹25,000.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Final CTA Section -->
+        <section class="final-cta-section section-padding text-center">
+            <div class="container">
+                <h2 class="final-title">Ready to Be the HR Person Who Actually Understands the System?</h2>
+                <p class="final-subtitle">Join the next batch and learn from a trainer with 23+ years of real-time implementation experience.</p>
+                
+                <div class="final-actions">
+                    <button class="btn btn-primary btn-lg cta-trigger">Book Your Free Demo Class</button>
+                    <a href="tel:+918125323232" class="btn btn-outline btn-lg">Call +91-8125 32 32 32</a>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal Form (Popup trigger on CTAs) -->
+    <div class="modal-overlay" id="leadModal" aria-hidden="true" role="dialog">
+        <div class="modal-dialog">
+            <button class="modal-close" id="modalCloseBtn" aria-label="Close Dialog">✕</button>
+            <div class="lead-form-box">
+                <h3 class="form-title">Get Your Free Demo Class</h3>
+                <p class="form-subtitle">Takes less than 30 seconds. We'll confirm your slot within 24 hours.</p>
+                
+                <form class="lead-capture-form conversational-form" id="modalLeadForm" novalidate>
+                    <!-- Progress Bar Tracker -->
+                    <div class="form-progress">
+                        <div class="progress-bar-track">
+                            <div class="progress-bar-fill" id="modal-progress-fill" style="width: 25%;"></div>
+                        </div>
+                        <span class="progress-text" id="modal-progress-text">Step 1 of 4: Contact Details</span>
+                    </div>
+
+                    <!-- Step 1: Basic details -->
+                    <div class="form-step active" data-step="1">
+                        <div class="form-group">
+                            <label for="modal-name">Full Name *</label>
+                            <input type="text" id="modal-name" name="name" placeholder="John Doe" required>
+                            <span class="error-msg" id="modal-name-error"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="modal-email">Email Address *</label>
+                            <input type="email" id="modal-email" name="email" placeholder="john@example.com" required>
+                            <span class="error-msg" id="modal-email-error"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="modal-phone">Phone Number *</label>
+                            <div class="tel-input-wrapper">
+                                <span class="phone-prefix">+91</span>
+                                <input type="tel" id="modal-phone" name="phone" placeholder="9876543210" required>
+                            </div>
+                            <span class="error-msg" id="modal-phone-error"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="modal-lang">Preferred Batch Language *</label>
+                            <select id="modal-lang" name="language" required>
+                                <option value="" disabled selected>Select Language</option>
+                                <option value="English">English</option>
+                                <option value="Hindi">Hindi</option>
+                                <option value="Telugu">Telugu</option>
+                                <option value="Tamil">Tamil</option>
+                            </select>
+                            <span class="error-msg" id="modal-lang-error"></span>
+                        </div>
+                        <button type="button" class="btn btn-primary btn-block next-step-btn" data-form="modal" data-next="2">Continue →</button>
+                    </div>
+
+                    <!-- Step 2: Segment -->
+                    <div class="form-step" data-step="2" style="display: none;">
+                        <div class="form-group qualifier-group">
+                            <p class="qualifier-question">Which fits you best? *</p>
+                            <div class="radio-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="modal-segment" value="fresher" required>
+                                    <span>🎓 Fresher/student - new to HR/IT</span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="modal-segment" value="pro">
+                                    <span>💼 IT/ERP professional - want to switch to Fusion HCM</span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="modal-segment" value="hr">
+                                    <span>📊 Already in HR - want to upskill</span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="modal-segment" value="owner">
+                                    <span>🏢 Business owner / hiring manager</span>
+                                </label>
+                            </div>
+                            <span class="error-msg" id="modal-segment-error"></span>
+                        </div>
+                        <div class="step-nav-buttons">
+                            <button type="button" class="btn btn-outline prev-step-btn" data-form="modal" data-prev="1">← Back</button>
+                            <button type="button" class="btn btn-primary next-step-btn" data-form="modal" data-next="3">Next →</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Motivation -->
+                    <div class="form-step" data-step="3" style="display: none;">
+                        <div class="form-group qualifier-group">
+                            <p class="qualifier-question">What's your main goal from this course? *</p>
+                            <div class="radio-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="modal-motivation" value="job" required>
+                                    <span>Land my first job in HCM</span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="modal-motivation" value="switch">
+                                    <span>Switch careers / get a higher package</span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="modal-motivation" value="cert">
+                                    <span>Get certified for my current role</span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="modal-motivation" value="team">
+                                    <span>Build my team's Oracle skill</span>
+                                </label>
+                            </div>
+                            <span class="error-msg" id="modal-motivation-error"></span>
+                        </div>
+                        <div class="step-nav-buttons">
+                            <button type="button" class="btn btn-outline prev-step-btn" data-form="modal" data-prev="2">← Back</button>
+                            <button type="button" class="btn btn-primary next-step-btn" data-form="modal" data-next="4">Next →</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Background -->
+                    <div class="form-step" data-step="4" style="display: none;">
+                        <div class="form-group qualifier-group">
+                            <p class="qualifier-question">Any Oracle / ERP / HR experience? *</p>
+                            <div class="radio-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="modal-background" value="none" required>
+                                    <span>None - starting fresh</span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="modal-background" value="hr_only">
+                                    <span>Some HR experience, no Oracle</span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="modal-background" value="ebs">
+                                    <span>Used Oracle EBS or another ERP</span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="modal-background" value="fusion">
+                                    <span>Already work on Fusion HCM</span>
+                                </label>
+                            </div>
+                            <span class="error-msg" id="modal-background-error"></span>
+                        </div>
+                        <div class="step-nav-buttons">
+                            <button type="button" class="btn btn-outline prev-step-btn" data-form="modal" data-prev="3">← Back</button>
+                            <button type="submit" class="btn btn-primary">Get My Free Demo Class</button>
+                        </div>
+                    </div>
+                    <p class="form-footer-note">🔒 No spam. We'll call or WhatsApp you within 24 hrs to confirm your demo slot.</p>
+                </form>
+
+                <!-- Success View (hidden by default) -->
+                <div class="form-success-state" id="modalFormSuccess" style="display: none;">
+                    <div class="success-icon">✓</div>
+                    <h3>Demo Slot Requested!</h3>
+                    <p>Thank you, <strong id="modal-success-user-name">Guest</strong>.</p>
+                    <p>We've received your details and batch preferences. One of our senior counselors will call or WhatsApp you within 24 hours to confirm your free demo details.</p>
+                    <div class="success-actions">
+                        <a href="https://wa.me/918125323232" target="_blank" class="btn btn-success">WhatsApp Us Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dynamic Download Gate Modal -->
+    <div class="modal-overlay" id="downloadModal" aria-hidden="true" role="dialog">
+        <div class="modal-dialog">
+            <button class="modal-close" id="downloadCloseBtn" aria-label="Close Dialog">✕</button>
+            <div class="lead-form-box">
+                <h3 class="form-title">Download Full Curriculum PDF</h3>
+                <p class="form-subtitle">Enter your name and email to download the complete 11-module syllabus.</p>
+                <form class="lead-capture-form" id="downloadGateForm" novalidate>
+                    <div class="form-group">
+                        <label for="gate-name">Full Name *</label>
+                        <input type="text" id="gate-name" name="name" placeholder="John Doe" required>
+                        <span class="error-msg" id="gate-name-error"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="gate-email">Email Address *</label>
+                        <input type="email" id="gate-email" name="email" placeholder="john@example.com" required>
+                        <span class="error-msg" id="gate-email-error"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="gate-phone">Phone Number *</label>
+                        <div class="tel-input-wrapper">
+                            <span class="phone-prefix">+91</span>
+                            <input type="tel" id="gate-phone" name="phone" placeholder="9876543210" required>
+                        </div>
+                        <span class="error-msg" id="gate-phone-error"></span>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Download Syllabus PDF</button>
+                </form>
+
+                <div class="form-success-state" id="downloadSuccessState" style="display: none;">
+                    <div class="success-icon">✓</div>
+                    <h3>Syllabus Download Initiated!</h3>
+                    <p>Thank you. Your download should start automatically in a few seconds. If it doesn't, click the link below:</p>
+                    <a href="#" class="btn btn-outline" id="directDownloadLink" download>Direct PDF Download Link</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WhatsApp Widget Float -->
+    <a href="https://wa.me/918125323232?text=Hi%20Tech%20Leads%20IT,%20I'm%20interested%20in%20the%20Oracle%20Fusion%20HCM%20training.%20Can%20you%20help%20me%20with%20batch%20details?" class="whatsapp-float-widget" target="_blank" aria-label="Chat on WhatsApp">
+        <span class="whatsapp-icon">💬</span>
+        <span class="whatsapp-label">Chat with Us</span>
+    </a>
+
+    <!-- Live Activity Notification (FOMO Toast) -->
+    <div class="fomo-toast" id="fomoToast">
+        <div class="fomo-toast-image" id="fomoIcon">⚡</div>
+        <div class="fomo-toast-content">
+            <p class="fomo-toast-text"><strong id="fomoName">Karthik</strong> from <span id="fomoLocation">Hyderabad</span></p>
+            <p class="fomo-toast-action" id="fomoAction">just booked a Free Demo class</p>
+            <p class="fomo-toast-time" id="fomoTime">2 minutes ago</p>
+        </div>
+        <button class="fomo-toast-close" id="fomoCloseBtn" aria-label="Close Notification">&times;</button>
+    </div>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="container footer-content text-center">
+            <p>&copy; 2026 Tech Leads IT. All Rights Reserved. All product names, logos, and brands are property of their respective owners.</p>
+        </div>
+    </footer>
+
+    <!-- Exit Intent Modal -->
+    <div class="modal-overlay" id="exitIntentModal" aria-hidden="true" role="dialog">
+        <div class="modal-dialog exit-intent-dialog">
+            <button class="modal-close" id="exitCloseBtn" aria-label="Close Dialog">✕</button>
+            <div class="exit-intent-box text-center">
+                <div class="exit-icon">💡</div>
+                <h3 class="exit-title">Wait! Before You Go...</h3>
+                <p class="exit-subtitle">Did you know an Oracle Fusion HCM consultant in Hyderabad earns an average of ₹10.5L – ₹12.5L per year?</p>
+                <p class="exit-text">Check out the real salary proofs, company averages, and location-specific packages from AmbitionBox in our proof gallery before you leave.</p>
+                <div class="exit-actions">
+                    <button class="btn btn-primary" id="exitActionProofBtn">Check Out Salary Proofs</button>
+                    <button class="btn btn-outline" id="exitActionDemoBtn">Book Free Demo Class</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Advisor Scroll Modal (75% Scroll) -->
+    <div class="modal-overlay" id="advisorModal" aria-hidden="true" role="dialog">
+        <div class="modal-dialog advisor-dialog">
+            <button class="modal-close" id="advisorCloseBtn" aria-label="Close Dialog">✕</button>
+            <div class="advisor-box text-center">
+                <div class="advisor-avatar">📞</div>
+                <h3 class="advisor-title">Still Have Questions?</h3>
+                <p class="advisor-subtitle">Get 1:1 Free Career Advice from our Senior Education Adviser</p>
+                <p class="advisor-text">Speak directly with an expert to understand curriculum details, batch timings, placement support, and certification pathways.</p>
+                <div class="advisor-actions">
+                    <a href="tel:+918125323232" class="btn btn-primary" id="advisorCallBtn">Call Adviser Now</a>
+                    <a href="https://wa.me/918125323232?text=Hi%20Tech%20Leads%20IT,%20I%20have%20some%20questions%20about%20the%20Oracle%20Fusion%20HCM%20course." target="_blank" class="btn btn-outline" id="advisorWaBtn">Chat on WhatsApp</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Returning Visitor Personalized Lead Modal -->
+    <div class="modal-overlay" id="returningVisitorModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="returningTitle" aria-describedby="returningDesc">
+        <div class="modal-dialog returning-dialog">
+            <button class="modal-close" id="returningCloseBtn" aria-label="Close Dialog">✕</button>
+            <div class="returning-box text-center">
+                <span class="returning-eyebrow">WELCOME BACK</span>
+                <h3 class="returning-title" id="returningTitle">Ready to Attend the Free Live Demo?</h3>
+                <p class="returning-desc" id="returningDesc">Experience a live training session, meet the trainer and understand how the course can support your career goals.</p>
+                <div class="returning-actions">
+                    <button class="btn btn-primary" id="returningActionDemoBtn">Reserve My Free Demo</button>
+                    <a href="https://wa.me/918125323232?text=Hi%2C%20I%20previously%20visited%20your%20website%20and%20would%20like%20details%20about%20the%20free%20live%20demo." target="_blank" class="btn btn-outline" id="returningActionWaBtn">Get Details on WhatsApp</a>
+                    <button class="returning-dismiss" id="returningDismissBtn">Maybe Later</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Screenshot Lightbox Modal -->
+    <div class="lightbox-overlay" id="proofLightbox" aria-hidden="true" role="dialog">
+        <button class="lightbox-close" id="lightboxCloseBtn" aria-label="Close Lightbox">&times;</button>
+        <div class="lightbox-container">
+            <img class="lightbox-content" id="lightboxImg" src="" alt="Proof View">
+            <div class="lightbox-caption" id="lightboxCaption"></div>
+        </div>
+    </div>
+
+    <!-- Sticky Bottom CTA Bar for Mobile -->
+    <div class="mobile-sticky-cta-bar">
+        <a href="#" class="btn btn-primary cta-trigger mobile-sticky-cta-btn">Book a Free Demo</a>
+    </div>
+
+    <!-- Custom Script -->
+    <script src="script.js"></script>
+</body>
+</html>

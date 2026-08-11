@@ -28,6 +28,7 @@ function techleadsit_route_landing_pages() {
         'free-sql-training-44819' => 'free-sql-training-44819/index.html',
         'oracle-fusion-hcm-training' => 'f-hcm-course/index.html',
         'f-hcm-course' => 'f-hcm-course/index.html',
+        'mb-hr-to' => 'mb-hr-to/index.html',
         // You can add more pages here in the future! E.g. 'scm-offer' => 'scm-offer/index.html'
     );
 
