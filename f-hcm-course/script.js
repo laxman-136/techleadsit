@@ -603,16 +603,56 @@ function initMobileCurriculumAccordion() {
         el.innerHTML = html;
     });
 
+    const durations = {
+        1: "1 Week",
+        2: "1.5 Weeks",
+        3: "2 Weeks",
+        4: "1 Week",
+        5: "1.5 Weeks",
+        6: "1 Week",
+        7: "1 Week",
+        8: "0.5 Weeks",
+        9: "1.5 Weeks",
+        10: "1 Week",
+        11: "1 Week"
+    };
+
     items.forEach(item => {
         const header = item.querySelector('.accordion-header');
+        if (!header) return;
+
+        const numEl = header.querySelector('.acc-num');
+        const titleEl = header.querySelector('.acc-title');
         
+        if (numEl && titleEl) {
+            const index = parseInt(numEl.textContent.trim());
+            const titleText = titleEl.textContent.trim();
+            const duration = durations[index] || "1 Week";
+            
+            header.innerHTML = `
+                <div class="acc-header-info">
+                    <span class="acc-title">${titleText}</span>
+                    <div class="acc-duration">
+                        <span class="dur-icon">📅</span>
+                        <span class="dur-text">Duration - ${duration}</span>
+                    </div>
+                </div>
+                <span class="acc-arrow">
+                    <svg viewBox="0 0 24 24" class="arrow-svg">
+                        <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+                    </svg>
+                </span>
+            `;
+        }
+
         header.addEventListener('click', () => {
             const isActive = item.classList.contains('active');
             
             // Collapse all other items
             items.forEach(el => {
                 el.classList.remove('active');
-                el.querySelector('.accordion-header').setAttribute('aria-expanded', 'false');
+                const h = el.querySelector('.accordion-header');
+                if (h) h.setAttribute('aria-expanded', 'false');
             });
 
             if (!isActive) {

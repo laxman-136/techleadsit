@@ -1943,15 +1943,21 @@ a {
 
 .accordion-item {
     background-color: #FFFFFF;
-    border: 1px solid var(--color-border);
+    border: 1px solid rgba(0, 0, 0, 0.05);
     border-radius: var(--border-radius-md);
     overflow: hidden;
-    box-shadow: 0 4px 10px var(--color-shadow);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    transition: var(--transition-smooth);
+}
+
+.accordion-item.active {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
 }
 
 .accordion-header {
     width: 100%;
     display: flex;
+    justify-content: space-between;
     align-items: center;
     padding: 1.25rem 1.5rem;
     background: transparent;
@@ -1960,56 +1966,53 @@ a {
     text-align: left;
 }
 
-.acc-num {
-    font-family: var(--font-mono);
-    font-weight: 700;
-    color: var(--color-accent);
-    font-size: 0.95rem;
-    margin-right: 1.25rem;
+.acc-header-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    text-align: left;
 }
 
-.acc-title {
+.acc-header-info .acc-title {
     font-family: var(--font-display);
     font-weight: 700;
     font-size: 1.05rem;
-    color: var(--color-text-primary);
-    flex-grow: 1;
+    color: #110626;
+    line-height: 1.35;
 }
 
-.acc-icon {
-    width: 20px;
-    height: 20px;
-    position: relative;
+.acc-duration {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #6C5DD3;
+}
+
+.acc-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: rgba(108, 93, 211, 0.05);
+    color: #6C5DD3;
+    transition: transform 0.3s ease, background-color 0.3s ease;
     flex-shrink: 0;
 }
 
-.acc-icon::before,
-.acc-icon::after {
-    content: '';
-    position: absolute;
-    background-color: var(--color-text-primary);
-    transition: var(--transition-smooth);
+.arrow-svg {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
 }
 
-/* Horizontal line */
-.acc-icon::before {
-    top: 9px;
-    left: 2px;
-    width: 16px;
-    height: 2px;
-}
-
-/* Vertical line */
-.acc-icon::after {
-    top: 2px;
-    left: 9px;
-    width: 2px;
-    height: 16px;
-}
-
-.accordion-item.active .acc-icon::after {
+.accordion-item.active .acc-arrow {
     transform: rotate(90deg);
-    opacity: 0;
+    background-color: #6C5DD3;
+    color: #FFFFFF;
 }
 
 .accordion-body {
