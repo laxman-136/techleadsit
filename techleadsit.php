@@ -84,6 +84,9 @@ function techleadsit_route_landing_pages() {
                 $slug_inject = "\n<script>window.pageSlug = '" . esc_js($slug) . "';</script>\n";
                 $html_content = str_replace('<head>', '<head>' . $slug_inject, $html_content);
 
+                // Force HTTP status header to 200 OK (overriding WordPress automatic 404 query status)
+                status_header(200);
+
                 // Output headers and HTML content
                 header('Content-Type: text/html; charset=utf-8');
                 echo $html_content;
