@@ -29,7 +29,6 @@ function techleadsit_route_landing_pages() {
         'oracle-fusion-hcm-training' => 'f-hcm-course/index.html',
         'f-hcm-course' => 'f-hcm-course/index.html',
         'mb-hr-to' => 'f-hcm-course/index.html',
-        'hcm-wscube' => 'hcm-wscube/index.html',
         // You can add more pages here in the future! E.g. 'scm-offer' => 'scm-offer/index.html'
     );
 
@@ -144,8 +143,7 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
         strpos($landing_page, 'free-sql-training-44819') !== false ||
         strpos($landing_page, 'oracle-fusion-hcm-training') !== false ||
         strpos($landing_page, 'f-hcm-course') !== false ||
-        strpos($landing_page, 'mb-hr-to') !== false ||
-        strpos($landing_page, 'hcm-wscube') !== false
+        strpos($landing_page, 'mb-hr-to') !== false
     )) {
         $bypass_otp = true;
     }
@@ -178,8 +176,7 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
     if (!empty($landing_page) && (
         strpos($landing_page, 'f-hcm-course') !== false ||
         strpos($landing_page, 'mb-hr-to') !== false ||
-        strpos($landing_page, 'oracle-fusion-hcm-training') !== false ||
-        strpos($landing_page, 'hcm-wscube') !== false
+        strpos($landing_page, 'oracle-fusion-hcm-training') !== false
     )) {
         $scm_year = 'Oracle Fusion HCM';
         
