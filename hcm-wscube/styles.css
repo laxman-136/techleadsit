@@ -485,7 +485,10 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--color-text-secondary);
 }
 
-.input-control {
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+select {
     width: 100%;
     min-height: 48px;
     padding: 10px var(--space-md);
@@ -497,7 +500,10 @@ h1, h2, h3, h4, h5, h6 {
     transition: all 0.2s ease;
 }
 
-.input-control:focus {
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="tel"]:focus,
+select:focus {
     border-color: var(--color-primary);
     box-shadow: var(--shadow-glow);
 }
