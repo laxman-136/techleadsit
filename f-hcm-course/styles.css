@@ -2040,6 +2040,14 @@ a {
     margin-top: 2rem;
 }
 
+.curriculum-cta-box .gate-download-btn {
+    box-shadow: 0 4px 15px rgba(0, 118, 190, 0.3);
+}
+
+.curriculum-cta-box .gate-download-btn:hover {
+    box-shadow: 0 8px 25px rgba(0, 118, 190, 0.5);
+}
+
 /* ==========================================================================
    Key Highlights Section
    ========================================================================== */
