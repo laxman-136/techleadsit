@@ -1295,6 +1295,505 @@ function initFormValidation() {
 
     // Apply copywriting variations based on active URL slug
     applySlugCopyVariants();
+
+    // Testimonials Data and Masonry Distribution
+    const testimonialsData = [
+    {
+        "name": "Ananya Sharma",
+        "previousRole": "Ex-HR Generalist (3.2 LPA)",
+        "currentRole": "Fusion HCM Consultant",
+        "company": "Accenture",
+        "package": "9.5 LPA",
+        "avatarText": "AS",
+        "content": "Laxman sir's explanation of Global Payroll elements and Fast Formulas was a game changer for me. Coming from a pure HR background, I was scared of the tech side, but the step-by-step lab setup made it easy. Placed at Accenture with a great hike!"
+    },
+    {
+        "name": "Sai Kiran Reddy",
+        "previousRole": "Oracle EBS HRMS Tech Lead (8 LPA)",
+        "currentRole": "Lead Cloud HCM Consultant",
+        "company": "Cognizant",
+        "package": "18.5 LPA",
+        "avatarText": "SK",
+        "content": "Highly recommend Tech Leads IT for EBS to Cloud switchers. The course covers HDL (HCM Data Loader), Spreadsheet Templates, and Fast Formulas in-depth. The security profiles and sandbox custom fields sessions were extremely useful."
+    },
+    {
+        "name": "Priyanka N.",
+        "previousRole": "MBA HR Fresher",
+        "currentRole": "Associate HCM Analyst",
+        "company": "Infosys",
+        "package": "6.2 LPA",
+        "avatarText": "PN",
+        "content": "As an MBA fresher, finding an entry-level HR job in Hyderabad was tough. Learning Oracle Fusion HCM at Tech Leads IT gave me a huge edge. The mock interviews and certification preparation sessions directly helped me clear the Infosys interview!"
+    },
+    {
+        "name": "Rohan Deshmukh",
+        "previousRole": "Ex-Recruiter (2.8 LPA)",
+        "currentRole": "Fusion Core HR Analyst",
+        "company": "Tech Mahindra",
+        "package": "8.8 LPA",
+        "avatarText": "RD",
+        "content": "I was stuck in recruitment for 3 years. This course helped me transition to a technical consulting role. Core HR, Security, and Approval Management modules are taught with live implementation examples."
+    },
+    {
+        "name": "Karthik Venkat",
+        "previousRole": "SAP ABAP Consultant (6 LPA)",
+        "currentRole": "Fusion HCM Technical Consultant",
+        "company": "NTT Data",
+        "package": "14.2 LPA",
+        "avatarText": "KV",
+        "content": "The best part about this training is the server access and practical scenarios. The security console, job/data roles setup, and HCM Extracts sessions are very comprehensive. Cleared my Oracle certification in my first attempt!"
+    },
+    {
+        "name": "Meera Nair",
+        "previousRole": "Workday Consultant (9 LPA)",
+        "currentRole": "Senior Cloud HCM Consultant",
+        "company": "L&T Technology Services",
+        "package": "21.0 LPA",
+        "avatarText": "MN",
+        "content": "I wanted to add Oracle Cloud HCM to my profile. The training at Tech Leads IT is highly professional and focused on real-time implementation challenges. Laxman Sir is incredibly knowledgeable, especially in Payroll and Absence."
+    },
+    {
+        "name": "Vikram Adithya",
+        "previousRole": "Ex-PeopleSoft Admin (7.5 LPA)",
+        "currentRole": "Fusion HCM Admin",
+        "company": "Mphasis",
+        "package": "15.5 LPA",
+        "avatarText": "VA",
+        "content": "Compared to Peoplesoft, Fusion's Architecture is very different. This course covers everything from basic enterprise structure setup to advanced payroll balances and element entries. The practical lab environment is top-notch."
+    },
+    {
+        "name": "Sneha Reddy",
+        "previousRole": "MBA Finance Graduate",
+        "currentRole": "HCM Compensation Specialist",
+        "company": "Genpact",
+        "package": "7.0 LPA",
+        "avatarText": "SR",
+        "content": "The Compensation and Benefits modules are covered with great detail. Setting up salary bases, grade rates, and individual compensation distributions was explained step-by-step. The mock tests were very similar to real interviews."
+    },
+    {
+        "name": "Abhishek Rao",
+        "previousRole": "Tech Support Associate (2.4 LPA)",
+        "currentRole": "Cloud HCM Helpdesk Lead",
+        "company": "MouriTech",
+        "package": "8.0 LPA",
+        "avatarText": "AR",
+        "content": "This course changed my career trajectory. From a low-paying tech support role, I am now working as an HCM Consultant. The training covers all modules including Absence Management and Performance Management."
+    },
+    {
+        "name": "Divya Teja",
+        "previousRole": "Ex-HR Specialist (4.0 LPA)",
+        "currentRole": "Fusion Talent Management Consultant",
+        "company": "SplashBI",
+        "package": "10.5 LPA",
+        "avatarText": "DT",
+        "content": "Awesome coaching! Talent Management module sessions like Goal Management, Performance templates, and Talent pools setups are explained with live demo environments. I got 3 job offers after completing the course!"
+    },
+    {
+        "name": "Harish Kumar",
+        "previousRole": "Fresher (B.Tech)",
+        "currentRole": "Trainee HCM Consultant",
+        "company": "CES",
+        "package": "6.0 LPA",
+        "avatarText": "HK",
+        "content": "I did my Fusion HCM training here. The trainer Laxman Sir has 23+ years of experience and teaches everything from scratch. The institute's placement cells regularly schedule drives. Landed at CES with 6 LPA."
+    },
+    {
+        "name": "Tejaswi G.",
+        "previousRole": "HR Generalist (3.5 LPA)",
+        "currentRole": "Oracle Cloud HCM Consultant",
+        "company": "Accenture",
+        "package": "11.2 LPA",
+        "avatarText": "TG",
+        "content": "The teaching is purely practical. I spent 80% of my time doing lab exercises on the cloud server. Laxman sir answers every query, no matter how basic. Very thankful to the team for helping with resume preparation."
+    },
+    {
+        "name": "Manish Sharma",
+        "previousRole": "Peoplesoft HRMS Consultant (8 LPA)",
+        "currentRole": "Fusion HCM Technical Lead",
+        "company": "Infosys",
+        "package": "19.0 LPA",
+        "avatarText": "MS",
+        "content": "Excellent course for seasoned consultants. The extraction tools, BIP reports, OTBI dashboards, and HCM Data Loader parts are covered extensively. It saved me weeks of self-learning."
+    },
+    {
+        "name": "Nisha Patnaik",
+        "previousRole": "MBA HR Fresher",
+        "currentRole": "Fusion Payroll Executive",
+        "company": "Tech Mahindra",
+        "package": "6.8 LPA",
+        "avatarText": "NP",
+        "content": "Landed a job at Tech Mahindra as a payroll consultant. Laxman sir's real-time projects mimic real client issues. The certification vouchers prep was very helpful to clear the Cloud Payroll Exam."
+    },
+    {
+        "name": "Rahul Varma",
+        "previousRole": "Java Developer (4.5 LPA)",
+        "currentRole": "HCM Technical Integration Lead",
+        "company": "Cognizant",
+        "package": "12.5 LPA",
+        "avatarText": "RV",
+        "content": "Switched from Java development to Oracle Cloud HCM. The demand for integration specialists (REST APIs, SOAP, HCM Extract) is huge. The course is very thorough on the technical integration components."
+    },
+    {
+        "name": "Deepika Rao",
+        "previousRole": "Recruiter (3.0 LPA)",
+        "currentRole": "Core HR Specialist",
+        "company": "NTT Data",
+        "package": "9.0 LPA",
+        "avatarText": "DR",
+        "content": "I joined after reading positive reviews, and it was worth it. The curriculum is broad, covering Goal management, Profile management, and Performance evaluations. Placement assistance is 100% active."
+    },
+    {
+        "name": "Srinivas Rao",
+        "previousRole": "EBS Technical Developer (6.5 LPA)",
+        "currentRole": "Senior Fusion HCM Tech Consultant",
+        "company": "L&T Technology Services",
+        "package": "16.8 LPA",
+        "avatarText": "SR",
+        "content": "Transitioning from PL/SQL to Cloud tech felt smooth under Laxman Sir's guidance. The sessions on BI Publisher reports and HCM extracts layout formatting were worth the entire course fee."
+    },
+    {
+        "name": "Kavitha M.",
+        "previousRole": "MBA Graduate",
+        "currentRole": "Fusion HCM Associate",
+        "company": "Genpact",
+        "package": "6.4 LPA",
+        "avatarText": "KM",
+        "content": "The classroom labs at Ameerpet are well-maintained. The placement coordinator guided me through the interview rounds at Genpact. The salary hike was a great career start for me."
+    },
+    {
+        "name": "Sandeep Verma",
+        "previousRole": "Operations Executive (3.2 LPA)",
+        "currentRole": "Oracle HCM Support Analyst",
+        "company": "Mphasis",
+        "package": "8.5 LPA",
+        "avatarText": "SV",
+        "content": "I liked how Laxman sir connects every concept to a real client implementation example. It makes remembering details very easy. Cleared interview for a Support role at Mphasis."
+    },
+    {
+        "name": "Pooja Hegde",
+        "previousRole": "HR Assistant (2.5 LPA)",
+        "currentRole": "Fusion Core HR Analyst",
+        "company": "MouriTech",
+        "package": "7.8 LPA",
+        "avatarText": "PH",
+        "content": "Learnt everything from Enterprise configuration, Legal Entities, Departments, to Position hierarchies. Practical lab exercises are very close to what I now do on my actual client project."
+    },
+    {
+        "name": "Varun Reddy",
+        "previousRole": "ERP Support (5.0 LPA)",
+        "currentRole": "Senior Cloud HCM Specialist",
+        "company": "SplashBI",
+        "package": "13.0 LPA",
+        "avatarText": "VR",
+        "content": "Excellent training content. The OTBI (Oracle Transactional Business Intelligence) sessions and security dashboards setup were explained exceptionally well. Landed a solid role at SplashBI."
+    },
+    {
+        "name": "Ritu Sen",
+        "previousRole": "MBA HR Fresher",
+        "currentRole": "Trainee HCM Consultant",
+        "company": "CES",
+        "package": "6.1 LPA",
+        "avatarText": "RS",
+        "content": "The mock tests and resume building support are the best highlights of the course. The trainers focus on every student's weak points. I was able to clear the technical rounds without any hassle."
+    },
+    {
+        "name": "Amit Patel",
+        "previousRole": "Ex-SAP SuccessFactors (10 LPA)",
+        "currentRole": "Lead Cloud HCM Consultant",
+        "company": "Accenture",
+        "package": "23.5 LPA",
+        "avatarText": "AP",
+        "content": "I took the fast-track online batch. The content is concise and aligns perfectly with the Oracle Certification Syllabus. It helped me clear both Core HR and Global Payroll Cloud certifications."
+    },
+    {
+        "name": "Pranitha K.",
+        "previousRole": "HR Recruiter (3.5 LPA)",
+        "currentRole": "Fusion HCM Recruitment Analyst",
+        "company": "Infosys",
+        "package": "10.0 LPA",
+        "avatarText": "PK",
+        "content": "The Talent Acquisition (ORC - Oracle Recruiting Cloud) overview and integration with Core HR was very informative. This is the most practical institute for Oracle products in Hyderabad."
+    },
+    {
+        "name": "Nikhil D.",
+        "previousRole": "Fresher (B.Tech)",
+        "currentRole": "HCM Technical Consultant",
+        "company": "Tech Mahindra",
+        "package": "6.6 LPA",
+        "avatarText": "ND",
+        "content": "Great lab support! There are lab coordinators available to solve system errors while we practice. The interview preparation checklist helped me stay confident during my interview."
+    },
+    {
+        "name": "Radhika J.",
+        "previousRole": "HR Generalist (Ex-Wipro 4.2 LPA)",
+        "currentRole": "Fusion HCM Functional Lead",
+        "company": "Cognizant",
+        "package": "12.0 LPA",
+        "avatarText": "RJ",
+        "content": "Laxman sir's teaching methodology is excellent. He starts from core fundamentals and gradually takes us to complex setups like Payroll balances and Absence patterns. Highly recommended!"
+    },
+    {
+        "name": "Vijay Bhaskar",
+        "previousRole": "Oracle EBS Apps DBA (8.5 LPA)",
+        "currentRole": "Fusion HCM Lead Architect",
+        "company": "NTT Data",
+        "package": "20.5 LPA",
+        "avatarText": "VB",
+        "content": "This course was perfect for my transition to the cloud. Sessions on PaaS integrations, security profiles, and Web Services in HCM were extremely thorough. Got placed at NTT Data at a great package."
+    },
+    {
+        "name": "Swathi Latha",
+        "previousRole": "MBA HR Graduate",
+        "currentRole": "HCM Implementation Associate",
+        "company": "L&T Technology Services",
+        "package": "6.7 LPA",
+        "avatarText": "SL",
+        "content": "The placement support is very prompt. They align drive schedules and coordinate directly with recruiters. The training covers all standard modules, giving freshers a well-rounded skillset."
+    },
+    {
+        "name": "Gopal Krishna",
+        "previousRole": "Technical Support (3.0 LPA)",
+        "currentRole": "Fusion Cloud Consultant",
+        "company": "Genpact",
+        "package": "8.7 LPA",
+        "avatarText": "GK",
+        "content": "The lab assignments are very exhaustive. Designing custom approval loops in BPM Worklist was a great learning experience. The trainers push you to solve errors yourself first, which builds real confidence."
+    },
+    {
+        "name": "Kiranmai P.",
+        "previousRole": "Ex-HR Analyst (4.5 LPA)",
+        "currentRole": "Oracle HCM Cloud Consultant",
+        "company": "Mphasis",
+        "package": "11.5 LPA",
+        "avatarText": "KP",
+        "content": "The deep dive into HR profiles, flexfields (DFF, KFF, EFF), and lookup setups helped me clear the Mphasis technical interview in the first round itself. Very structured course curriculum."
+    },
+    {
+        "name": "Manoj Kumar",
+        "previousRole": "Fresher (B.Sc Computer Science)",
+        "currentRole": "Cloud Support Associate",
+        "company": "MouriTech",
+        "package": "6.0 LPA",
+        "avatarText": "MK",
+        "content": "For anyone looking to start a career in ERP, learning Fusion HCM at Tech Leads IT is the best path. Practical labs are accessible 24/7, which was a huge advantage for me to practice at night."
+    },
+    {
+        "name": "Archana Singh",
+        "previousRole": "HR Specialist (3.8 LPA)",
+        "currentRole": "Talent Management Specialist",
+        "company": "SplashBI",
+        "package": "9.8 LPA",
+        "avatarText": "AS",
+        "content": "Laxman sir's teaching is exceptional. The sandbox concept, page composer customization, and OTBI reporting elements are explained in detail. Placed at SplashBI with a solid package."
+    },
+    {
+        "name": "Raghava Rao",
+        "previousRole": "EBS Technical Developer (7.0 LPA)",
+        "currentRole": "Senior Cloud Developer",
+        "company": "CES",
+        "package": "16.0 LPA",
+        "avatarText": "RR",
+        "content": "Excellent training on HCM Extracts and BI Publisher. The sessions focus on actual client business requirements, which helped me clear technical design interviews very easily."
+    },
+    {
+        "name": "Shravya Reddy",
+        "previousRole": "MBA HR Fresher",
+        "currentRole": "HCM Consultant",
+        "company": "Accenture",
+        "package": "6.9 LPA",
+        "avatarText": "SR",
+        "content": "The course is highly structured. From basic navigations to advanced payroll element entries, everything is taught step-by-step. The placement team helped me schedule my Accenture drive."
+    },
+    {
+        "name": "Balaji Naidu",
+        "previousRole": "Peoplesoft Technical (7.8 LPA)",
+        "currentRole": "Fusion HCM Technical Architect",
+        "company": "Infosys",
+        "package": "19.5 LPA",
+        "avatarText": "BN",
+        "content": "The technical modules of Fusion HCM like Spreadsheet loaders, HCM Extract, and BI Publisher reports are covered very deeply. It was the perfect course to upgrade my profile to the cloud."
+    },
+    {
+        "name": "Neeraja G.",
+        "previousRole": "Ex-Recruiting Lead (5.0 LPA)",
+        "currentRole": "Lead HCM Talent Specialist",
+        "company": "Tech Mahindra",
+        "package": "12.8 LPA",
+        "avatarText": "NG",
+        "content": "Learning ORC (Oracle Recruiting Cloud) and Talent Management modules here helped me switch from recruiting to consulting. Clear explanations, practical case studies, and solid placement support."
+    },
+    {
+        "name": "Kishore Babu",
+        "previousRole": "Fresher (MBA HR)",
+        "currentRole": "HCM Associate",
+        "company": "Cognizant",
+        "package": "6.3 LPA",
+        "avatarText": "KB",
+        "content": "The resume prep session was extremely helpful. The placement coordinator guided me through the interview round at Cognizant. I got a 6.3 LPA package, which is a dream start for me."
+    },
+    {
+        "name": "Sowmya K.",
+        "previousRole": "HR Assistant (2.8 LPA)",
+        "currentRole": "Fusion Core HR Consultant",
+        "company": "NTT Data",
+        "package": "8.9 LPA",
+        "avatarText": "SK",
+        "content": "Highly recommend Tech Leads IT for Fusion HCM. The trainer explains complex concepts in a simplified manner. The lab access helps us get hands-on experience which is highly valued in interviews."
+    },
+    {
+        "name": "Pradeep Chawla",
+        "previousRole": "Workday Integration Lead (11 LPA)",
+        "currentRole": "Principal Cloud HCM Architect",
+        "company": "L&T Technology Services",
+        "package": "24.0 LPA",
+        "avatarText": "PC",
+        "content": "The PaaS and Web Services integration modules are taught by industry experts. The technical depth of the course is matching real-world implementation standards. Best institute for senior professionals."
+    },
+    {
+        "name": "Divya Reddy",
+        "previousRole": "MBA Graduate",
+        "currentRole": "Payroll Consultant",
+        "company": "Genpact",
+        "package": "6.8 LPA",
+        "avatarText": "DR",
+        "content": "The payroll module training is very detailed. Configuring payroll definitions, consolidations, and element entries was explained with real-world scenarios. Landed at Genpact with 6.8 LPA."
+    },
+    {
+        "name": "Sudhir Rao",
+        "previousRole": "SQL Developer (4.0 LPA)",
+        "currentRole": "Cloud HCM Integration Consultant",
+        "company": "Mphasis",
+        "package": "11.0 LPA",
+        "avatarText": "SR",
+        "content": "Excellent course! The extracts and REST APIs integration sessions are very thorough. This course helped me transition from a databases developer to an in-demand Cloud Integration Specialist."
+    },
+    {
+        "name": "Anupama Nair",
+        "previousRole": "HR Specialist (3.6 LPA)",
+        "currentRole": "Fusion Absence Consultant",
+        "company": "MouriTech",
+        "package": "9.2 LPA",
+        "avatarText": "AN",
+        "content": "The Absence Management module sessions like plan types, lookup values, and accrual fast formulas are explained very clearly. Very cooperative trainers and placement coordinators."
+    },
+    {
+        "name": "Gautam Sen",
+        "previousRole": "Fresher (B.Tech)",
+        "currentRole": "Trainee HCM Specialist",
+        "company": "SplashBI",
+        "package": "6.2 LPA",
+        "avatarText": "GS",
+        "content": "Doing practical lab exercises on the live cloud server helped me understand the configurations. The mock interviews helped me build confidence. Placed at SplashBI with a solid hike."
+    },
+    {
+        "name": "Pallavi G.",
+        "previousRole": "Ex-HR Generalist (4.0 LPA)",
+        "currentRole": "Lead Core HR Consultant",
+        "company": "CES",
+        "package": "10.8 LPA",
+        "avatarText": "PG",
+        "content": "Joined the weekend batch. Laxman sir answers every question patiently. The study materials, sample resumes, and mock tests are very well-prepared. Placed at CES."
+    },
+    {
+        "name": "Naveen Prasad",
+        "previousRole": "Oracle EBS Technical (8 LPA)",
+        "currentRole": "Fusion HCM Principal Architect",
+        "company": "Accenture",
+        "package": "22.5 LPA",
+        "avatarText": "NP",
+        "content": "The transition from EBS PL/SQL to Cloud BIP and Extracts was seamless with Laxman Sir's course content. The architecture models, HDL mapping, and spreadsheet load setups are covered deeply."
+    },
+    {
+        "name": "Tejaswini K.",
+        "previousRole": "MBA HR Fresher",
+        "currentRole": "Trainee HCM Consultant",
+        "company": "Infosys",
+        "package": "6.5 LPA",
+        "avatarText": "TK",
+        "content": "Excellent course! Clear explanations, regular lab practice, and active placement drives. The trainers guide you individually. Landed at Infosys with a package of 6.5 LPA."
+    },
+    {
+        "name": "Rajesh Kannan",
+        "previousRole": "Technical Support (3.2 LPA)",
+        "currentRole": "Core HR Consultant",
+        "company": "Tech Mahindra",
+        "package": "8.2 LPA",
+        "avatarText": "RK",
+        "content": "The laboratory facility and standard of teaching are outstanding. Laxman sir makes complex Oracle topics easy to grasp. Placement assistant is highly active and helpful."
+    },
+    {
+        "name": "Manasa Rao",
+        "previousRole": "HR Recruiter (3.5 LPA)",
+        "currentRole": "Talent & Core HR Analyst",
+        "company": "Cognizant",
+        "package": "9.4 LPA",
+        "avatarText": "MR",
+        "content": "The Core HR and Profile Management sessions are highly comprehensive. The mock interviews were similar to the Cognizant rounds. Very grateful to the Tech Leads IT team."
+    },
+    {
+        "name": "Yashwant G.",
+        "previousRole": "EBS Technical DBA (7.2 LPA)",
+        "currentRole": "Lead Fusion HCM Technical Lead",
+        "company": "NTT Data",
+        "package": "17.5 LPA",
+        "avatarText": "YG",
+        "content": "The technical setup steps are matching real-world project scenarios. The training covers REST APIs, HDL loaders, Spreadsheet load templates, and BI Publisher dashboards setup in detail."
+    },
+    {
+        "name": "Shruti Gupta",
+        "previousRole": "MBA Graduate",
+        "currentRole": "Fusion Benefits Consultant",
+        "company": "L&T Technology Services",
+        "package": "6.6 LPA",
+        "avatarText": "SG",
+        "content": "The Compensation and Benefits modules are covered with great detail. Setting up salary bases and individual compensation distributions was explained step-by-step. Placed at L&T."
+    }
+];
+
+    function renderTestimonials() {
+        const col1 = document.getElementById('testimonialsCol1');
+        const col2 = document.getElementById('testimonialsCol2');
+        const col3 = document.getElementById('testimonialsCol3');
+
+        if (!col1 || !col2 || !col3) return;
+
+        // Clean columns first
+        col1.innerHTML = '';
+        col2.innerHTML = '';
+        col3.innerHTML = '';
+
+        // Distribute cards across 3 columns to build a masonry grid layout
+        testimonialsData.forEach((review, index) => {
+            const cardHTML = `
+                <div class="testimonial-card">
+                    <span class="author-package-badge">
+                        Placed at ${review.company} &bull; <strong>${review.package}</strong>
+                    </span>
+                    <div class="testimonial-content">
+                        "${review.content}"
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">${review.avatarText}</div>
+                        <div class="author-info">
+                            <span class="author-name">${review.name}</span>
+                            <span class="author-roles">${review.previousRole} &rarr; ${review.currentRole}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            const remainder = index % 3;
+            if (remainder === 0) {
+                col1.innerHTML += cardHTML;
+            } else if (remainder === 1) {
+                col2.innerHTML += cardHTML;
+            } else {
+                col3.innerHTML += cardHTML;
+            }
+        });
+    }
+
+    renderTestimonials();
 }
 
 /* ==========================================================================
