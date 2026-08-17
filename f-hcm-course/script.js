@@ -1305,7 +1305,7 @@ function initFormValidation() {
                 "company": "Accenture",
                 "package": "9.5 LPA",
                 "avatarText": "AS",
-                "content": "Laxman sir's explanation of Fusion Global Payroll elements, calculations, and Fast Formulas was excellent. Coming from a non-technical HR background, the hands-on labs helped me learn the cloud configuration easily. Placed at Accenture!"
+                "content": "Sumesh sir's explanation of Fusion Global Payroll elements, calculations, and Fast Formulas was excellent. Coming from a non-technical HR background, the hands-on labs helped me learn the cloud configuration easily. Placed at Accenture!"
         },
         {
                 "name": "Sai Kiran Reddy",
@@ -1350,7 +1350,7 @@ function initFormValidation() {
                 "company": "L&T Technology Services",
                 "package": "21.0 LPA",
                 "avatarText": "MN",
-                "content": "This Fusion HCM course is highly practical and focused on corporate client implementation guidelines. Laxman Sir is incredibly knowledgeable in payroll balance adjustments and absence plan configurations."
+                "content": "This Fusion HCM course is highly practical and focused on corporate client implementation guidelines. Sumesh Sir is incredibly knowledgeable in payroll balance adjustments and absence plan configurations."
         },
         {
                 "name": "Vikram Adithya",
@@ -1395,7 +1395,7 @@ function initFormValidation() {
                 "company": "CES",
                 "package": "6.0 LPA",
                 "avatarText": "HK",
-                "content": "Laxman Sir is an amazing trainer with 23+ years of experience. He starts every Fusion HCM module from the absolute basics, making it easy to learn the security architecture and payroll configurations. Placed at CES."
+                "content": "Sumesh Sir is an amazing trainer with 23+ years of experience. He starts every Fusion HCM module from the absolute basics, making it easy to learn the security architecture and payroll configurations. Placed at CES."
         },
         {
                 "name": "Tejaswi G.",
@@ -1467,7 +1467,7 @@ function initFormValidation() {
                 "company": "Mphasis",
                 "package": "8.5 LPA",
                 "avatarText": "SV",
-                "content": "Laxman sir connects every concept to a real client implementation case study. It helped me understand system parameters and configurations thoroughly. Landed a support role at Mphasis."
+                "content": "Sumesh sir connects every concept to a real client implementation case study. It helped me understand system parameters and configurations thoroughly. Landed a support role at Mphasis."
         },
         {
                 "name": "Pooja Hegde",
@@ -1530,7 +1530,7 @@ function initFormValidation() {
                 "company": "Cognizant",
                 "package": "12.0 LPA",
                 "avatarText": "RJ",
-                "content": "Laxman sir's teaching methodology is top-notch. He starts with enterprise structures and moves to complex topics like Payroll element setups and Absence accrual rules. Placed at Cognizant!"
+                "content": "Sumesh sir's teaching methodology is top-notch. He starts with enterprise structures and moves to complex topics like Payroll element setups and Absence accrual rules. Placed at Cognizant!"
         },
         {
                 "name": "Vijay Bhaskar",
@@ -1575,7 +1575,7 @@ function initFormValidation() {
                 "company": "MouriTech",
                 "package": "6.0 LPA",
                 "avatarText": "MK",
-                "content": "The cloud server lab access is available 24/7, which allowed me to practice configurations outside class hours. Laxman Sir's guidance helped me get placed at MouriTech."
+                "content": "The cloud server lab access is available 24/7, which allowed me to practice configurations outside class hours. Sumesh Sir's guidance helped me get placed at MouriTech."
         },
         {
                 "name": "Archana Singh",
@@ -1584,7 +1584,7 @@ function initFormValidation() {
                 "company": "SplashBI",
                 "package": "9.8 LPA",
                 "avatarText": "AS",
-                "content": "Laxman sir's teaching is exceptional. The sessions on sandbox setups, page composer modifications, and goal configurations are highly practical. Got placed at SplashBI with a solid hike."
+                "content": "Sumesh sir's teaching is exceptional. The sessions on sandbox setups, page composer modifications, and goal configurations are highly practical. Got placed at SplashBI with a solid hike."
         },
         {
                 "name": "Raghava Rao",
@@ -1638,7 +1638,7 @@ function initFormValidation() {
                 "company": "NTT Data",
                 "package": "8.9 LPA",
                 "avatarText": "SK",
-                "content": "Laxman sir's teaching is highly practical. The server access allowed me to practice all enterprise structure and legal entity configurations. Placed at NTT Data!"
+                "content": "Sumesh sir's teaching is highly practical. The server access allowed me to practice all enterprise structure and legal entity configurations. Placed at NTT Data!"
         },
         {
                 "name": "Pradeep Chawla",
@@ -1719,7 +1719,7 @@ function initFormValidation() {
                 "company": "Tech Mahindra",
                 "package": "8.2 LPA",
                 "avatarText": "RK",
-                "content": "The lab facilities and coaching quality are outstanding. Laxman sir makes complex Oracle HCM setups simple to understand. Got placed at Tech Mahindra with a solid salary."
+                "content": "The lab facilities and coaching quality are outstanding. Sumesh sir makes complex Oracle HCM setups simple to understand. Got placed at Tech Mahindra with a solid salary."
         },
         {
                 "name": "Manasa Rao",
