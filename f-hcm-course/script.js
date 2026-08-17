@@ -1065,7 +1065,7 @@ function initFormValidation() {
 
         const variants = {
             'mb-hr-to': {
-                '#hero-headline': "Your HR Degree Got You In the Room. Oracle Fusion HCM Keeps You There.",
+                '#hero-headline': "Your HR Degree Got You In the Room. <span class=\"text-gradient\">Oracle Fusion HCM</span> Keeps You There.",
                 '.who-section .section-title': "Is This the Skill Gap Holding Your HR Career Back?",
                 '.features-section .section-title': "What Sets Fusion-Certified HR Professionals Apart",
                 '.salary-section .section-title': "What HR Roles Pay Once You Add Fusion HCM",
@@ -1082,7 +1082,7 @@ function initFormValidation() {
         for (const selector in copy) {
             const el = document.querySelector(selector);
             if (el) {
-                el.textContent = copy[selector];
+                el.innerHTML = copy[selector];
             }
         }
     }
