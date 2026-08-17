@@ -3962,18 +3962,51 @@ a {
     }
 }
 
+
 /* ==========================================================================
-   Testimonials Section (Masonry Bento Cards)
+   Testimonials Section (Scrolling Masonry Bento Cards)
    ========================================================================== */
 .testimonials-section {
     background-color: #F8F9FA;
     border-bottom: 1px solid var(--color-border);
 }
 
+.testimonials-marquee-wrapper {
+    position: relative;
+    height: 700px;
+    overflow: hidden;
+    margin-top: 2rem;
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--color-border);
+    background-color: #F8F9FA;
+}
+
+.testimonials-fade-overlay-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 120px;
+    background: linear-gradient(to bottom, #F8F9FA 0%, rgba(248, 249, 250, 0) 100%);
+    z-index: 2;
+    pointer-events: none;
+}
+
+.testimonials-fade-overlay-bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 120px;
+    background: linear-gradient(to top, #F8F9FA 0%, rgba(248, 249, 250, 0) 100%);
+    z-index: 2;
+    pointer-events: none;
+}
+
 .testimonials-grid {
     display: flex;
     gap: 1.5rem;
-    align-items: flex-start;
+    height: 100%;
 }
 
 .testimonials-col {
@@ -3981,6 +4014,34 @@ a {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+}
+
+/* Scrolling animation properties */
+.testimonials-scroll-up {
+    animation: scrollUpTestimonials 65s linear infinite;
+}
+
+.testimonials-scroll-down {
+    animation: scrollDownTestimonials 75s linear infinite;
+}
+
+/* Offset animation speeds to create a natural, asynchronous/random scrolling flow */
+#testimonialsCol1 {
+    animation-duration: 70s;
+}
+
+#testimonialsCol2 {
+    animation-duration: 80s;
+}
+
+#testimonialsCol3 {
+    animation-duration: 75s;
+}
+
+/* Pause scroll animation on hover so visitors can easily read cards */
+.testimonials-marquee-wrapper:hover .testimonials-scroll-up,
+.testimonials-marquee-wrapper:hover .testimonials-scroll-down {
+    animation-play-state: paused;
 }
 
 .testimonial-card {
@@ -3993,6 +4054,7 @@ a {
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
+    cursor: pointer;
 }
 
 .testimonial-card:hover {
@@ -4061,8 +4123,44 @@ a {
     border: 1px solid #BAE6FD;
 }
 
+@keyframes scrollUpTestimonials {
+    0% {
+        transform: translateY(0);
+    }
+    100% {
+        transform: translateY(-50%);
+    }
+}
+
+@keyframes scrollDownTestimonials {
+    0% {
+        transform: translateY(-50%);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
 @media (max-width: 991px) {
+    .testimonials-marquee-wrapper {
+        height: 550px;
+    }
     .testimonials-grid {
-        flex-direction: column;
+        flex-direction: row; /* Keep it multi-column on tablet so it still looks premium */
+    }
+}
+
+@media (max-width: 767px) {
+    .testimonials-marquee-wrapper {
+        height: 500px;
+    }
+    .testimonials-grid {
+        flex-direction: column; /* Stacks vertically on mobile screen size */
+    }
+    #testimonialsCol3 {
+        display: none; /* Hide 3rd column on mobile to save layout space */
+    }
+    .testimonials-scroll-down {
+        animation: scrollUpTestimonials 60s linear infinite; /* Make them scroll same direction on mobile */
     }
 }

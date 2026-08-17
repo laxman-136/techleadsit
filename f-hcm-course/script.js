@@ -1757,12 +1757,11 @@ function initFormValidation() {
 
         if (!col1 || !col2 || !col3) return;
 
-        // Clean columns first
-        col1.innerHTML = '';
-        col2.innerHTML = '';
-        col3.innerHTML = '';
+        let col1HTML = '';
+        let col2HTML = '';
+        let col3HTML = '';
 
-        // Distribute cards across 3 columns to build a masonry grid layout
+        // Distribute reviews into three arrays
         testimonialsData.forEach((review, index) => {
             const cardHTML = `
                 <div class="testimonial-card">
@@ -1784,13 +1783,18 @@ function initFormValidation() {
             
             const remainder = index % 3;
             if (remainder === 0) {
-                col1.innerHTML += cardHTML;
+                col1HTML += cardHTML;
             } else if (remainder === 1) {
-                col2.innerHTML += cardHTML;
+                col2HTML += cardHTML;
             } else {
-                col3.innerHTML += cardHTML;
+                col3HTML += cardHTML;
             }
         });
+
+        // Duplicate the content inside each column so that it loops seamlessly without jumping
+        col1.innerHTML = col1HTML + col1HTML;
+        col2.innerHTML = col2HTML + col2HTML;
+        col3.innerHTML = col3HTML + col3HTML;
     }
 
     renderTestimonials();
