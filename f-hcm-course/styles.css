@@ -3007,6 +3007,12 @@ a {
     box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
     transform: translateY(20px);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE & Edge */
+}
+
+.modal-dialog::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
 }
 
 .modal-overlay.open .modal-dialog {
