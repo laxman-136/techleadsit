@@ -2006,11 +2006,11 @@ a {
     gap: 0.35rem;
     font-size: 0.8rem;
     font-weight: 700;
-    color: #38bdf8;
+    color: #38bdf8 !important;
 }
 
 .acc-duration .dur-text {
-    color: #9E8EC2;
+    color: #cbd5e1 !important;
     font-weight: 600;
 }
 
