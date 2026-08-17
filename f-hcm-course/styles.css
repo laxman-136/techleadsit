@@ -3977,7 +3977,7 @@ a {
     overflow: hidden;
     margin-top: 2rem;
     border-radius: var(--border-radius-lg);
-    border: 1px solid var(--color-border);
+    border: none;
     background-color: #F8F9FA;
 }
 
@@ -4018,24 +4018,24 @@ a {
 
 /* Scrolling animation properties */
 .testimonials-scroll-up {
-    animation: scrollUpTestimonials 65s linear infinite;
+    animation: scrollUpTestimonials 35s linear infinite;
 }
 
 .testimonials-scroll-down {
-    animation: scrollDownTestimonials 75s linear infinite;
+    animation: scrollDownTestimonials 40s linear infinite;
 }
 
 /* Offset animation speeds to create a natural, asynchronous/random scrolling flow */
 #testimonialsCol1 {
-    animation-duration: 70s;
+    animation-duration: 36s;
 }
 
 #testimonialsCol2 {
-    animation-duration: 80s;
+    animation-duration: 42s;
 }
 
 #testimonialsCol3 {
-    animation-duration: 75s;
+    animation-duration: 38s;
 }
 
 /* Pause scroll animation on hover so visitors can easily read cards */
@@ -4161,6 +4161,6 @@ a {
         display: none; /* Hide 3rd column on mobile to save layout space */
     }
     .testimonials-scroll-down {
-        animation: scrollUpTestimonials 60s linear infinite; /* Make them scroll same direction on mobile */
+        animation: scrollUpTestimonials 32s linear infinite; /* Make them scroll same direction on mobile */
     }
 }
