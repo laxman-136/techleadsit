@@ -4224,15 +4224,19 @@ a {
 }
 
 .badge-blue {
-    background-color: rgba(56, 189, 248, 0.1);
-    border: 1px solid rgba(56, 189, 248, 0.25);
-    color: #38bdf8;
+    background: linear-gradient(135deg, #0076BE 0%, #005a91 100%);
+    color: #FFFFFF;
+    box-shadow: 0 2px 8px rgba(0, 118, 190, 0.25);
+    border: 1px solid rgba(0, 118, 190, 0.5);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
 }
 
 .badge-purple {
-    background-color: rgba(168, 85, 247, 0.1);
-    border: 1px solid rgba(168, 85, 247, 0.25);
-    color: #c084fc;
+    background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+    color: #FFFFFF;
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.25);
+    border: 1px solid rgba(139, 92, 246, 0.5);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
 }
 
 .disruption-warning-box {
