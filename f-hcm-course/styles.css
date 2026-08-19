@@ -4273,14 +4273,16 @@ a {
 }
 
 .warning-text {
-    font-size: 0.9rem;
-    color: #334155;
-    line-height: 1.55;
+    font-size: 0.95rem;
+    color: #1e293b;
+    line-height: 1.6;
     margin-bottom: 1.25rem;
+    font-weight: 500;
 }
 
 .warning-text strong {
-    color: #0f172a;
+    color: #ef4444;
+    font-weight: 700;
 }
 
 .benefit-tagline {
@@ -4288,11 +4290,13 @@ a {
     border-left: 3px solid #0076BE;
     padding: 0.75rem 1rem;
     border-radius: 0 8px 8px 0;
-    font-size: 0.875rem;
-    color: #1e293b;
-    line-height: 1.5;
+    font-size: 0.9rem;
+    color: #0f172a;
+    line-height: 1.55;
+    font-weight: 500;
 }
 
 .benefit-tagline strong {
     color: #0076BE;
+    font-weight: 700;
 }
