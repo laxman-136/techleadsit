@@ -3,6 +3,21 @@
 // ==========================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
+    // GA4 Visitor Type Identification Event
+    window.dataLayer = window.dataLayer || [];
+    const isReturningVisitor = localStorage.getItem('eduVisitorFirstVisit') !== null;
+    window.dataLayer.push({
+        event: 'visitor_identified',
+        visitor_type: isReturningVisitor ? 'returning' : 'new',
+        timestamp: Date.now()
+    });
+
+    // Check for popup debug parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('test_popups')) {
+        window.bypassPopupLimits = true;
+        initPopupDebugger();
+    }
     
     // 1. Evergreen Countdown Timer
     initCountdown(3); // Start with a 3-day countdown, automatically loops when expired
@@ -258,13 +273,17 @@ function initModals() {
     let hasTriggeredScrollModal = false;
     window.addEventListener('scroll', () => {
         if (hasTriggeredScrollModal) return;
-        if (localStorage.getItem('hcm_lead_submitted') === 'true') return;
+        if (!window.bypassPopupLimits && localStorage.getItem('hcm_lead_submitted') === 'true') {
+            console.log('[Popups] Scroll 45% popup bypassed: lead already submitted.');
+            return;
+        }
 
         // Calculate scroll percentage
+        const scrollTop = window.scrollY || window.pageYOffset || document.documentElement.scrollTop;
         const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
         if (totalHeight <= 0) return;
 
-        const scrollPercent = (window.scrollY / totalHeight) * 100;
+        const scrollPercent = (scrollTop / totalHeight) * 100;
         if (scrollPercent >= 45) {
             hasTriggeredScrollModal = true;
             
@@ -285,12 +304,16 @@ function initModals() {
 
     window.addEventListener('scroll', () => {
         if (hasTriggeredAdvisorModal) return;
-        if (localStorage.getItem('hcm_lead_submitted') === 'true') return;
+        if (!window.bypassPopupLimits && localStorage.getItem('hcm_lead_submitted') === 'true') {
+            console.log('[Popups] Scroll 75% advisor popup bypassed: lead already submitted.');
+            return;
+        }
 
+        const scrollTop = window.scrollY || window.pageYOffset || document.documentElement.scrollTop;
         const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
         if (totalHeight <= 0) return;
 
-        const scrollPercent = (window.scrollY / totalHeight) * 100;
+        const scrollPercent = (scrollTop / totalHeight) * 100;
         if (scrollPercent >= 75) {
             hasTriggeredAdvisorModal = true;
             
@@ -312,6 +335,17 @@ function openModal(modal) {
     modal.classList.add('open');
     modal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden'; // Lock background scroll
+
+    // Push analytics events
+    window.dataLayer = window.dataLayer || [];
+    const modalId = modal.getAttribute('id');
+    if (modalId) {
+        window.dataLayer.push({
+            event: 'modal_open',
+            modal_id: modalId,
+            timestamp: Date.now()
+        });
+    }
 }
 
 function closeModal(modal) {
@@ -319,7 +353,22 @@ function closeModal(modal) {
     modal.classList.remove('open');
     modal.setAttribute('aria-hidden', 'true');
     document.body.style.overflow = ''; // Restore background scroll
+
+    // Push analytics events
+    window.dataLayer = window.dataLayer || [];
+    const modalId = modal.getAttribute('id');
+    if (modalId) {
+        window.dataLayer.push({
+            event: 'modal_close',
+            modal_id: modalId,
+            timestamp: Date.now()
+        });
+    }
 }
+
+// Make them explicitly global
+window.openModal = openModal;
+window.closeModal = closeModal;
 
 /* ==========================================================================
    6. Testimonial Slider / Carousel
@@ -1826,26 +1875,36 @@ function initReturningVisitorPopup() {
     }
 
     // Identify returning visitors using localStorage
-    const firstVisitTime = localStorage.getItem('eduVisitorFirstVisit');
+    let firstVisitTime = localStorage.getItem('eduVisitorFirstVisit');
     if (!firstVisitTime) {
-        // On a visitor's first visit: Store the visit timestamp and do NOT display the popup
-        localStorage.setItem('eduVisitorFirstVisit', Date.now().toString());
-        return;
+        firstVisitTime = Date.now().toString();
+        localStorage.setItem('eduVisitorFirstVisit', firstVisitTime);
+        if (!window.bypassPopupLimits) {
+            // On a visitor's first visit: Store the visit timestamp and do NOT display the popup
+            return;
+        }
     }
 
     // 2. Display Rules Check
     // Show only on a future visit in a new session (not page refreshes)
-    if (!isNewSession) return;
+    if (!isNewSession && !window.bypassPopupLimits) {
+        console.log('[Popups] Welcome back popup bypassed: not a new session.');
+        return;
+    }
 
     // Frequency cap: Do not show more than once every 7 days (604800000 milliseconds)
     const sevenDaysInMs = 7 * 24 * 60 * 60 * 1000;
     const lastShownTime = localStorage.getItem('eduVisitorLastPopupShown');
-    if (lastShownTime && (Date.now() - Number(lastShownTime) < sevenDaysInMs)) {
+    if (!window.bypassPopupLimits && lastShownTime && (Date.now() - Number(lastShownTime) < sevenDaysInMs)) {
+        console.log('[Popups] Welcome back popup bypassed: frequency cap active.');
         return;
     }
 
     // Do not show again after the visitor submits any lead form
-    if (localStorage.getItem('hcm_lead_submitted') === 'true') return;
+    if (!window.bypassPopupLimits && localStorage.getItem('hcm_lead_submitted') === 'true') {
+        console.log('[Popups] Welcome back popup bypassed: lead already submitted.');
+        return;
+    }
 
     let hasTriggered = false;
     let previousActiveElement = null;
@@ -2125,11 +2184,14 @@ function initExitIntent() {
         if (hasTriggeredExit) return;
         
         // Don't show if the user has already submitted their details
-        if (localStorage.getItem('hcm_lead_submitted') === 'true') return;
+        if (!window.bypassPopupLimits && localStorage.getItem('hcm_lead_submitted') === 'true') {
+            console.log('[Popups] Exit intent popup bypassed: lead already submitted.');
+            return;
+        }
         
         // Don't show if another modal is currently open to avoid stacking
         const activeModal = document.querySelector('.modal-overlay.open');
-        if (activeModal) return;
+        if (activeModal && !window.bypassPopupLimits) return;
 
         // Trigger only if mouse moves up past the top boundary
         if (e.clientY < 20) {
@@ -2336,4 +2398,48 @@ function initFomoToasts() {
             clearTimeout(cycleInterval);
         });
     }
+}
+
+
+/* ==========================================================================
+   14. Popup Test Preview Widget Panel
+   ========================================================================== */
+function initPopupDebugger() {
+    if (document.getElementById('popup-debugger')) return;
+
+    const div = document.createElement('div');
+    div.id = 'popup-debugger';
+    div.style.cssText = `
+        position: fixed; 
+        bottom: 20px; 
+        left: 20px; 
+        z-index: 999999; 
+        background: rgba(15, 23, 42, 0.95); 
+        border: 1px solid rgba(255, 255, 255, 0.15); 
+        padding: 15px; 
+        border-radius: 12px; 
+        box-shadow: 0 10px 25px rgba(0,0,0,0.5); 
+        backdrop-filter: blur(10px); 
+        color: #fff; 
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+        width: 280px; 
+        text-align: left;
+    `;
+    div.innerHTML = `
+        <div style="font-weight: 700; font-size: 13px; margin-bottom: 10px; color: #38bdf8; display: flex; justify-content: space-between; align-items: center;">
+            <span>POPUP PREVIEW PANEL</span>
+            <button onclick="document.getElementById('popup-debugger').remove()" style="background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 14px;">✕</button>
+        </div>
+        <div style="font-size: 11px; color: #94a3b8; margin-bottom: 12px; line-height: 1.4;">
+            Testing Mode is Active. Frequency caps, visitor checks, and submission limits are bypassed.
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+            <button onclick="window.openModal(document.getElementById('leadModal'))" style="background: #1e293b; border: 1px solid #334155; color: #fff; padding: 8px 10px; border-radius: 6px; font-size: 11px; cursor: pointer; text-align: left; transition: background 0.2s;" onmouseover="this.style.background='#334155'" onmouseout="this.style.background='#1e293b'">Trigger 45% Scroll Popup (Lead Modal)</button>
+            <button onclick="window.openModal(document.getElementById('advisorModal'))" style="background: #1e293b; border: 1px solid #334155; color: #fff; padding: 8px 10px; border-radius: 6px; font-size: 11px; cursor: pointer; text-align: left; transition: background 0.2s;" onmouseover="this.style.background='#334155'" onmouseout="this.style.background='#1e293b'">Trigger 75% Scroll Popup (Advisor Modal)</button>
+            <button onclick="window.openModal(document.getElementById('exitIntentModal'))" style="background: #1e293b; border: 1px solid #334155; color: #fff; padding: 8px 10px; border-radius: 6px; font-size: 11px; cursor: pointer; text-align: left; transition: background 0.2s;" onmouseover="this.style.background='#334155'" onmouseout="this.style.background='#1e293b'">Trigger Exit Intent Popup</button>
+            <button onclick="window.openModal(document.getElementById('returningVisitorModal'))" style="background: #1e293b; border: 1px solid #334155; color: #fff; padding: 8px 10px; border-radius: 6px; font-size: 11px; cursor: pointer; text-align: left; transition: background 0.2s;" onmouseover="this.style.background='#334155'" onmouseout="this.style.background='#1e293b'">Trigger Welcome Back Popup</button>
+            <button onclick="localStorage.clear(); sessionStorage.clear(); location.reload();" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border: none; color: #fff; padding: 9px 10px; border-radius: 6px; font-size: 11px; cursor: pointer; font-weight: 600; text-align: center; margin-top: 5px; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2);">Reset All Storage & Reload</button>
+        </div>
+    `;
+    document.body.appendChild(div);
 }
