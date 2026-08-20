@@ -55,8 +55,8 @@ function techleadsit_route_landing_pages() {
                 $plugin_url = plugin_dir_url(__FILE__) . $folder_path;
                 $html_content = str_replace('href="index.css"', 'href="' . $plugin_url . 'index.css"', $html_content);
                 $html_content = str_replace('src="index.js"', 'src="' . $plugin_url . 'index.js"', $html_content);
-                $html_content = str_replace('href="styles.css"', 'href="' . $plugin_url . 'styles.css?v=9.3"', $html_content);
-                $html_content = str_replace('src="script.js"', 'src="' . $plugin_url . 'script.js?v=9.3"', $html_content);
+                $html_content = str_replace('href="styles.css"', 'href="' . $plugin_url . 'styles.css?v=9.4"', $html_content);
+                $html_content = str_replace('src="script.js"', 'src="' . $plugin_url . 'script.js?v=9.4"', $html_content);
                 $html_content = str_replace('src="logo-dark.png"', 'src="' . $plugin_url . 'logo-dark.png"', $html_content);
                 $html_content = str_replace('src="logo-light.png"', 'src="' . $plugin_url . 'logo-light.png"', $html_content);
                 $html_content = str_replace('src="images/', 'src="' . $plugin_url . 'images/', $html_content);
@@ -376,6 +376,61 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
     $location = sanitize_text_field($params['location'] ?? '');
     $scm_year = sanitize_text_field($params['scm_year'] ?? '');
 
+    // Extract conversational form parameters
+    $language = sanitize_text_field($params['language'] ?? '');
+    $segment = sanitize_text_field($params['segment'] ?? '');
+    $motivation = sanitize_text_field($params['motivation'] ?? '');
+    $background = sanitize_text_field($params['background'] ?? '');
+
+    // If experience is empty, try to map it from conversational form segment/background answers
+    if (empty($experience)) {
+        if ($segment === 'fresher' || $background === 'none') {
+            $experience = 'Fresher';
+        } elseif ($segment === 'pro' || $segment === 'hr') {
+            $experience = 'Experienced';
+        } elseif (!empty($segment)) {
+            $experience = ucfirst($segment);
+        }
+    }
+
+    // Build comprehensive remarks text summarizing conversational choices
+    $remarks_parts = array();
+    if (!empty($language)) {
+        $remarks_parts[] = "Language Preferred: " . $language;
+    }
+    if (!empty($segment)) {
+        // Map slug values to user friendly strings
+        $segment_labels = array(
+            'fresher' => 'Fresher/Student (New to HR/IT)',
+            'pro' => 'IT/ERP Professional (Switching to HCM)',
+            'hr' => 'HR Professional (Upskilling)',
+            'owner' => 'Recruitment / Hiring Manager'
+        );
+        $segment_val = $segment_labels[$segment] ?? $segment;
+        $remarks_parts[] = "Profile Segment: " . $segment_val;
+    }
+    if (!empty($motivation)) {
+        $motivation_labels = array(
+            'job' => 'Land my first job in HCM',
+            'switch' => 'Switch careers / get a higher package',
+            'cert' => 'Get certified for my current role',
+            'team' => 'Upskill for better career growth'
+        );
+        $motivation_val = $motivation_labels[$motivation] ?? $motivation;
+        $remarks_parts[] = "Main Goal: " . $motivation_val;
+    }
+    if (!empty($background)) {
+        $background_labels = array(
+            'none' => 'None - starting fresh',
+            'hr_only' => 'Some HR experience, no Oracle',
+            'ebs' => 'Used Oracle EBS or another ERP',
+            'fusion' => 'Already work on Fusion HCM'
+        );
+        $background_val = $background_labels[$background] ?? $background;
+        $remarks_parts[] = "Oracle/HR Background: " . $background_val;
+    }
+    $remarks_text = implode(" | ", $remarks_parts);
+
     // Auto-detect real IP address and resolve location via Geolocation API
     $user_ip = '';
     if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
@@ -512,6 +567,20 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
             'scmyear' => $scm_year,
             'coursename' => $scm_year,
             'course_name' => $scm_year,
+            'course' => $scm_year,
+            
+            // Experience level variations
+            'explevel' => $experience,
+            'exp_level' => $experience,
+            'experiencelevel' => $experience,
+            'experience_level' => $experience,
+            
+            // Remarks/Comments fields
+            'remarks' => $remarks_text,
+            'remark' => $remarks_text,
+            'description' => $remarks_text,
+            'comments' => $remarks_text,
+            'comment' => $remarks_text,
             
             // Lead Source fields
             'source' => $utm_source,
