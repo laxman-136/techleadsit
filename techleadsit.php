@@ -55,8 +55,8 @@ function techleadsit_route_landing_pages() {
                 $plugin_url = plugin_dir_url(__FILE__) . $folder_path;
                 $html_content = str_replace('href="index.css"', 'href="' . $plugin_url . 'index.css"', $html_content);
                 $html_content = str_replace('src="index.js"', 'src="' . $plugin_url . 'index.js"', $html_content);
-                $html_content = str_replace('href="styles.css"', 'href="' . $plugin_url . 'styles.css?v=9.5"', $html_content);
-                $html_content = str_replace('src="script.js"', 'src="' . $plugin_url . 'script.js?v=9.5"', $html_content);
+                $html_content = str_replace('href="styles.css"', 'href="' . $plugin_url . 'styles.css?v=9.6"', $html_content);
+                $html_content = str_replace('src="script.js"', 'src="' . $plugin_url . 'script.js?v=9.6"', $html_content);
                 $html_content = str_replace('src="logo-dark.png"', 'src="' . $plugin_url . 'logo-dark.png"', $html_content);
                 $html_content = str_replace('src="logo-light.png"', 'src="' . $plugin_url . 'logo-light.png"', $html_content);
                 $html_content = str_replace('src="images/', 'src="' . $plugin_url . 'images/', $html_content);
@@ -86,6 +86,18 @@ function techleadsit_route_landing_pages() {
                     // Insert body script right after <body>
                     $html_content = str_replace('<body>', '<body>' . $gtm_body, $html_content);
                 }
+
+                // Dynamically inject Microsoft Clarity tracking code
+                $clarity_code = "\n<!-- Microsoft Clarity -->\n" .
+                                "<script type=\"text/javascript\">\n" .
+                                "    (function(c,l,a,r,i,t,y){\n" .
+                                "        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};\n" .
+                                "        t=l.createElement(r);t.async=1;t.src=\"https://www.clarity.ms/tag/\"+i;\n" .
+                                "        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);\n" .
+                                "    })(window, document, \"clarity\", \"script\", \"u5xu6vnb88\");\n" .
+                                "</script>\n" .
+                                "<!-- End Microsoft Clarity -->\n";
+                $html_content = str_replace('<head>', '<head>' . $clarity_code, $html_content);
 
                 // Dynamically inject the active slug variable to window.pageSlug context
                 $slug_inject = "\n<script>window.pageSlug = '" . esc_js($slug) . "';</script>\n";
