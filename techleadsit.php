@@ -29,6 +29,13 @@ function techleadsit_route_landing_pages() {
         'oracle-fusion-hcm-training' => 'f-hcm-course/index.html',
         'f-hcm-course' => 'f-hcm-course/index.html',
         'mb-hr-to' => 'f-hcm-course/index.html',
+        'oracle-fusion-hcm-training-in-hyderabad' => 'f-hcm-course/index.html',
+        'oracle-fusion-hcm-training-in-bangalore' => 'f-hcm-course/index.html',
+        'oracle-fusion-hcm-training-in-delhi' => 'f-hcm-course/index.html',
+        'oracle-fusion-hcm-online-training' => 'f-hcm-course/index.html',
+        'oracle-fusion-hcm-course' => 'f-hcm-course/index.html',
+        'oracle-fusion-hcm-functional-training' => 'f-hcm-course/index.html',
+        'oracle-fusion-hcm-modules-training' => 'f-hcm-course/index.html',
         // You can add more pages here in the future! E.g. 'scm-offer' => 'scm-offer/index.html'
     );
 
@@ -48,8 +55,8 @@ function techleadsit_route_landing_pages() {
                 $plugin_url = plugin_dir_url(__FILE__) . $folder_path;
                 $html_content = str_replace('href="index.css"', 'href="' . $plugin_url . 'index.css"', $html_content);
                 $html_content = str_replace('src="index.js"', 'src="' . $plugin_url . 'index.js"', $html_content);
-                $html_content = str_replace('href="styles.css"', 'href="' . $plugin_url . 'styles.css?v=9.0"', $html_content);
-                $html_content = str_replace('src="script.js"', 'src="' . $plugin_url . 'script.js?v=9.0"', $html_content);
+                $html_content = str_replace('href="styles.css"', 'href="' . $plugin_url . 'styles.css?v=9.1"', $html_content);
+                $html_content = str_replace('src="script.js"', 'src="' . $plugin_url . 'script.js?v=9.1"', $html_content);
                 $html_content = str_replace('src="logo-dark.png"', 'src="' . $plugin_url . 'logo-dark.png"', $html_content);
                 $html_content = str_replace('src="logo-light.png"', 'src="' . $plugin_url . 'logo-light.png"', $html_content);
                 $html_content = str_replace('src="images/', 'src="' . $plugin_url . 'images/', $html_content);
@@ -88,6 +95,192 @@ function techleadsit_route_landing_pages() {
                 $canonical_url = home_url('/' . $slug);
                 $canonical_tag = "\n<link rel=\"canonical\" href=\"" . esc_url($canonical_url) . "\" />\n";
                 $html_content = str_replace('<head>', '<head>' . $canonical_tag, $html_content);
+
+                // Apply slug-specific dynamic text replacements for Google Ads Ad Groups
+                $slug_replacements = array(
+                    'oracle-fusion-hcm-training-in-hyderabad' => array(
+                        'title' => 'Oracle Fusion HCM Training in Hyderabad | Certification + Placement Support',
+                        'description' => 'Join Oracle Fusion HCM Training in Hyderabad with Core HR, Payroll, Absence, Talent, Compensation, real-time projects, certification guidance, and placement support.',
+                        'eyebrow' => 'ORACLE FUSION HCM TRAINING IN HYDERABAD | LIVE ONLINE · CERTIFICATION · PLACEMENT SUPPORT',
+                        'h1' => '<span class="text-gradient">Oracle Fusion HCM</span> Training in Hyderabad with Real-Time Projects',
+                        'hero_sub' => 'Learn Oracle Fusion HCM from expert trainers and master Core HR, Payroll, Absence, Talent, Compensation, and OTL through live classes, real-time implementation practice, mock interviews, and placement support for Hyderabad learners.',
+                        'primary_cta' => 'Book Free Demo Class',
+                        'wa_cta' => 'Get HCM Training Details on WhatsApp →',
+                        'form_heading' => 'Get Your Free Oracle HCM Demo Class',
+                        'audience_heading' => 'Who Should Join Oracle Fusion HCM Training in Hyderabad?',
+                        'curriculum_heading' => 'Oracle Fusion HCM Training Curriculum for Hyderabad Learners',
+                        'key_features_heading' => 'Oracle Fusion HCM Training in Hyderabad - Key Features',
+                        'modules_heading' => 'Oracle Fusion HCM Modules You Will Master',
+                        'details_heading' => 'Oracle Fusion HCM Training Details, Duration & Fee',
+                        'faq_heading' => 'Oracle Fusion HCM Training in Hyderabad FAQs',
+                        'final_cta_heading' => 'Ready to Start Oracle Fusion HCM Training in Hyderabad?',
+                        'final_cta_sub' => 'Join the next Oracle Fusion HCM demo class and understand the course, trainer, modules, fee, and placement support before enrolling.'
+                    ),
+                    'oracle-fusion-hcm-training-in-bangalore' => array(
+                        'title' => 'Oracle Fusion HCM Training in Bangalore | Online Classes + Placement Support',
+                        'description' => 'Learn Oracle Fusion HCM in Bangalore with live online classes, Core HR, Payroll, Absence, Talent, Compensation, real-time projects, certification guidance, and placement support.',
+                        'eyebrow' => 'ORACLE FUSION HCM TRAINING IN BANGALORE | LIVE ONLINE · PROJECTS · JOB SUPPORT',
+                        'h1' => '<span class="text-gradient">Oracle Fusion HCM</span> Training in Bangalore for HR & ERP Careers',
+                        'hero_sub' => 'Build job-ready Oracle Fusion HCM skills with live online training for Bangalore learners. Learn Core HR, Payroll, Absence, Talent, Compensation, and implementation workflows with practical projects and interview preparation.',
+                        'primary_cta' => 'Book Free Demo Class',
+                        'wa_cta' => 'Get Bangalore Batch Details on WhatsApp →',
+                        'form_heading' => 'Get Your Free HCM Demo Class',
+                        'audience_heading' => 'Looking for Oracle Fusion HCM Training in Bangalore?',
+                        'curriculum_heading' => 'Oracle Fusion HCM Course Curriculum for Bangalore Learners',
+                        'key_features_heading' => 'Oracle Fusion HCM Training for Bangalore - Key Features',
+                        'modules_heading' => 'Oracle Fusion HCM Modules Covered in This Course',
+                        'details_heading' => 'Oracle Fusion HCM Course Details, Duration & Fee',
+                        'faq_heading' => 'Oracle Fusion HCM Training in Bangalore FAQs',
+                        'final_cta_heading' => 'Start Your Oracle Fusion HCM Training from Bangalore',
+                        'final_cta_sub' => 'Book a free demo class and see how the Oracle Fusion HCM course, modules, projects, and placement support work before joining.'
+                    ),
+                    'oracle-fusion-hcm-training-in-delhi' => array(
+                        'title' => 'Oracle Fusion HCM Training in Delhi | Certification + Job Support',
+                        'description' => 'Join Oracle Fusion HCM Training in Delhi with live online classes, Core HR, Payroll, Absence, Talent, Compensation, real-time projects, certification guidance, and placement support.',
+                        'eyebrow' => 'ORACLE FUSION HCM TRAINING IN DELHI | LIVE ONLINE · CERTIFICATION · PLACEMENT SUPPORT',
+                        'h1' => '<span class="text-gradient">Oracle Fusion HCM</span> Training in Delhi with Live Online Classes',
+                        'hero_sub' => 'Learn Oracle Fusion HCM through live online training for Delhi learners. Master Core HR, Payroll, Absence, Talent, Compensation, and real-time implementation workflows with expert trainer guidance and job support.',
+                        'primary_cta' => 'Book Free Demo Class',
+                        'wa_cta' => 'Get Delhi Batch Details on WhatsApp →',
+                        'form_heading' => 'Get Your Free Oracle HCM Demo Class',
+                        'audience_heading' => 'Is This Oracle Fusion HCM Course Right for Delhi Learners?',
+                        'curriculum_heading' => 'Oracle Fusion HCM Training Curriculum for Delhi Learners',
+                        'key_features_heading' => 'Oracle Fusion HCM Training in Delhi - Key Features',
+                        'modules_heading' => 'Oracle Fusion HCM Modules You Will Learn',
+                        'details_heading' => 'Oracle Fusion HCM Course Details, Duration & Fee',
+                        'faq_heading' => 'Oracle Fusion HCM Training in Delhi FAQs',
+                        'final_cta_heading' => 'Ready to Join Oracle Fusion HCM Training in Delhi?',
+                        'final_cta_sub' => 'Book a free demo class and understand the Oracle HCM course structure, trainer, modules, fee, and placement support before enrolling.'
+                    ),
+                    'oracle-fusion-hcm-online-training' => array(
+                        'title' => 'Oracle Fusion HCM Online Training | Live Classes + Projects',
+                        'description' => 'Join Oracle Fusion HCM Online Training with live classes, Core HR, Payroll, Absence, Talent, Compensation, hands-on projects, certification guidance, and placement support.',
+                        'eyebrow' => 'ORACLE FUSION HCM ONLINE TRAINING | LIVE CLASSES · LMS ACCESS · PLACEMENT SUPPORT',
+                        'h1' => '<span class="text-gradient">Oracle Fusion HCM</span> Online Training with Live Projects',
+                        'hero_sub' => 'Join live Oracle Fusion HCM online training and learn Core HR, Payroll, Absence, Talent Management, Compensation, OTL, and implementation workflows with recordings, LMS access, mock interviews, and placement support.',
+                        'primary_cta' => 'Book Free Online Demo',
+                        'wa_cta' => 'Get Online HCM Course Details on WhatsApp →',
+                        'form_heading' => 'Get Your Free Online Demo Class',
+                        'audience_heading' => 'Who Should Join Oracle Fusion HCM Online Training?',
+                        'curriculum_heading' => 'Oracle Fusion HCM Online Training Curriculum',
+                        'key_features_heading' => 'Oracle Fusion HCM Online Training - Key Features',
+                        'modules_heading' => 'Oracle Fusion HCM Modules Covered Online',
+                        'details_heading' => 'Oracle Fusion HCM Online Course Details, Duration & Fee',
+                        'faq_heading' => 'Oracle Fusion HCM Online Training FAQs',
+                        'final_cta_heading' => 'Start Oracle Fusion HCM Online Training with a Free Demo',
+                        'final_cta_sub' => 'Attend a free live demo class and see the trainer, course modules, LMS access, projects, and placement support before joining.'
+                    ),
+                    'oracle-fusion-hcm-course' => array(
+                        'title' => 'Oracle Fusion HCM Course | Fees, Curriculum & Placement Support',
+                        'description' => 'Explore Oracle Fusion HCM Course details including curriculum, fees, duration, Core HR, Payroll, Absence, Talent, Compensation, certification guidance, and placement support.',
+                        'eyebrow' => 'ORACLE FUSION HCM COURSE | CURRICULUM · FEES · CERTIFICATION · PLACEMENT SUPPORT',
+                        'h1' => '<span class="text-gradient">Oracle Fusion HCM</span> Course with Complete Curriculum & Job Support',
+                        'hero_sub' => 'Explore a complete Oracle Fusion HCM course covering Core HR, Payroll, Absence, Talent, Compensation, OTL, real-time projects, certification guidance, course fee details, and placement preparation.',
+                        'primary_cta' => 'Get Course Details',
+                        'wa_cta' => 'Ask for HCM Course Fee on WhatsApp →',
+                        'form_heading' => 'Get Oracle HCM Course Details',
+                        'audience_heading' => 'Is This Oracle Fusion HCM Course Right for You?',
+                        'curriculum_heading' => 'Oracle Fusion HCM Course Curriculum',
+                        'key_features_heading' => 'Oracle Fusion HCM Course - Key Features',
+                        'modules_heading' => 'Oracle Fusion HCM Course Modules',
+                        'details_heading' => 'Oracle Fusion HCM Course Details, Duration & Fee',
+                        'faq_heading' => 'Oracle Fusion HCM Course FAQs',
+                        'final_cta_heading' => 'Want the Oracle HCM Course Fee and Batch Details?',
+                        'final_cta_sub' => 'Book a free demo class and get complete details about the Oracle HCM course fee, modules, duration, trainer, projects, and placement support.'
+                    ),
+                    'oracle-fusion-hcm-functional-training' => array(
+                        'title' => 'Oracle Fusion HCM Functional Training | Core HR, Payroll, Talent',
+                        'description' => 'Join Oracle Fusion HCM Functional Training covering Core HR, Payroll, Absence, Talent, Compensation, OTL, functional setup, real-time projects, and placement support.',
+                        'eyebrow' => 'ORACLE FUSION HCM FUNCTIONAL TRAINING | CORE HR · PAYROLL · TALENT · ABSENCE',
+                        'h1' => '<span class="text-gradient">Oracle Fusion HCM</span> Functional Training with Real-Time Implementation',
+                        'hero_sub' => 'Learn Oracle Fusion HCM functional modules including Core HR, Payroll, Absence, Talent Management, Compensation, OTL, and functional setup through live projects, implementation workflows, and expert trainer support.',
+                        'primary_cta' => 'Book Functional Demo Class',
+                        'wa_cta' => 'Get Functional Training Details on WhatsApp →',
+                        'form_heading' => 'Get Your Free Functional Demo Class',
+                        'audience_heading' => 'Who Should Join Oracle Fusion HCM Functional Training?',
+                        'curriculum_heading' => 'Oracle Fusion HCM Functional Training Curriculum',
+                        'key_features_heading' => 'Oracle Fusion HCM Functional Training - Key Features',
+                        'modules_heading' => 'Oracle Fusion HCM Functional Modules You Will Master',
+                        'details_heading' => 'Oracle Fusion HCM Functional Training Details',
+                        'faq_heading' => 'Oracle Fusion HCM Functional Training FAQs',
+                        'final_cta_heading' => 'Ready to Build Oracle HCM Functional Skills?',
+                        'final_cta_sub' => 'Attend a free demo class and understand how Core HR, Payroll, Talent, Absence, and other functional modules are taught with real-time implementation practice.'
+                    ),
+                    'oracle-fusion-hcm-modules-training' => array(
+                        'title' => 'Oracle Fusion HCM Modules Training | Payroll, Core HR, Talent, Absence',
+                        'description' => 'Master Oracle Fusion HCM modules including Payroll, Core HR, Talent Management, Absence Management, Compensation, OTL, hands-on projects, and placement support.',
+                        'eyebrow' => 'ORACLE FUSION HCM MODULES TRAINING | PAYROLL · CORE HR · TALENT · ABSENCE',
+                        'h1' => '<span class="text-gradient">Oracle Fusion HCM</span> Modules Training: Core HR, Payroll, Talent & Absence',
+                        'hero_sub' => 'Master key Oracle Fusion HCM modules including Core HR, Payroll, Absence Management, Talent Management, Compensation, OTL, and implementation workflows with hands-on practice and expert trainer support.',
+                        'primary_cta' => 'Book Module Demo Class',
+                        'wa_cta' => 'Get HCM Module Details on WhatsApp →',
+                        'form_heading' => 'Get Your Free Module Demo Class',
+                        'audience_heading' => 'Who Should Learn Oracle Fusion HCM Modules?',
+                        'curriculum_heading' => 'Oracle Fusion HCM Modules Curriculum',
+                        'key_features_heading' => 'Oracle Fusion HCM Modules Training - Key Features',
+                        'modules_heading' => 'Oracle Fusion HCM Modules You Will Master',
+                        'details_heading' => 'Oracle Fusion HCM Modules Training Details',
+                        'faq_heading' => 'Oracle Fusion HCM Modules Training FAQs',
+                        'final_cta_heading' => 'Want to Learn Payroll, Core HR, Talent and Absence Modules?',
+                        'final_cta_sub' => 'Book a free demo class and see how each Oracle HCM module is taught through practical configuration, implementation flows, and real-time project scenarios.'
+                    )
+                );
+
+                if (isset($slug_replacements[$slug])) {
+                    $v = $slug_replacements[$slug];
+                    
+                    // 1. Title replacement
+                    $html_content = preg_replace('/<title>.*?<\/title>/i', '<title>' . $v['title'] . '</title>', $html_content);
+                    
+                    // 2. Meta description replacement
+                    $html_content = preg_replace('/<meta\s+name="description"\s+content=".*?"\s*\/?>/i', '<meta name="description" content="' . esc_attr($v['description']) . '" />', $html_content);
+                    
+                    // 3. Eyebrow injection (above headline-container)
+                    if (!empty($v['eyebrow'])) {
+                        $eyebrow_html = '<span class="eyebrow">' . esc_html($v['eyebrow']) . '</span>';
+                        $html_content = str_replace('<div class="headline-container">', $eyebrow_html . "\n                    " . '<div class="headline-container">', $html_content);
+                    }
+                    
+                    // 4. H1 Headline replacement
+                    $html_content = preg_replace('/<h1 id="hero-headline" class="hero-title">.*?<\/h1>/is', '<h1 id="hero-headline" class="hero-title">' . $v['h1'] . '</h1>', $html_content);
+                    
+                    // 5. Hero Subtitle replacement
+                    $html_content = preg_replace('/<p class="hero-subtitle">.*?<\/p>/is', '<p class="hero-subtitle">' . esc_html($v['hero_sub']) . '</p>', $html_content);
+                    
+                    // 6. Primary CTA button replacement (two occurrences)
+                    $html_content = str_replace('Book Your Free Demo Class', $v['primary_cta'], $html_content);
+                    
+                    // 7. WhatsApp CTA replacement
+                    $html_content = str_replace('Talk to a Counselor on WhatsApp →', $v['wa_cta'], $html_content);
+                    
+                    // 8. Form headings replacement
+                    $html_content = str_replace('<h3 class="form-title">Get Your Free Demo Class</h3>', '<h3 class="form-title">' . esc_html($v['form_heading']) . '</h3>', $html_content);
+                    
+                    // 9. Audience section heading replacement
+                    $html_content = str_replace('<h2 class="section-title">Is This Oracle Fusion HCM Course Right for You?</h2>', '<h2 class="section-title">' . esc_html($v['audience_heading']) . '</h2>', $html_content);
+                    
+                    // 10. Curriculum section heading replacement
+                    $html_content = str_replace('<h2 class="section-title">Oracle Fusion HCM Course Curriculum</h2>', '<h2 class="section-title">' . esc_html($v['curriculum_heading']) . '</h2>', $html_content);
+                    
+                    // 11. Key features section heading replacement
+                    $html_content = str_replace('<h2 class="section-title">Oracle Fusion HCM Training - Key Features</h2>', '<h2 class="section-title">' . esc_html($v['key_features_heading']) . '</h2>', $html_content);
+                    
+                    // 12. Modules section heading replacement
+                    $html_content = str_replace('<h3 class="snapshot-title text-center">Oracle Fusion HCM Modules You Will Master</h3>', '<h3 class="snapshot-title text-center">' . esc_html($v['modules_heading']) . '</h3>', $html_content);
+                    $html_content = str_replace('<h3 class="snapshot-title text-center">Tools & Modules You Will Master</h3>', '<h3 class="snapshot-title text-center">' . esc_html($v['modules_heading']) . '</h3>', $html_content);
+                    
+                    // 13. Details section heading replacement
+                    $html_content = str_replace('<h2 class="section-title">Program Details</h2>', '<h2 class="section-title">' . esc_html($v['details_heading']) . '</h2>', $html_content);
+                    
+                    // 14. FAQ section heading replacement
+                    $html_content = str_replace('<h2 class="section-title">Frequently Asked Questions</h2>', '<h2 class="section-title">' . esc_html($v['faq_heading']) . '</h2>', $html_content);
+                    
+                    // 15. Final CTA heading and subheading replacement
+                    $html_content = str_replace('<h2 class="final-title">Ready to Start Your Oracle Fusion HCM Career?</h2>', '<h2 class="final-title">' . esc_html($v['final_cta_heading']) . '</h2>', $html_content);
+                    $html_content = str_replace('<h2 class="final-title">Ready to Get Incubated in Oracle Fusion HCM?</h2>', '<h2 class="final-title">' . esc_html($v['final_cta_heading']) . '</h2>', $html_content);
+                    
+                    $html_content = preg_replace('/<p class="final-subtitle">.*?<\/p>/is', '<p class="final-subtitle">' . esc_html($v['final_cta_sub']) . '</p>', $html_content);
+                }
 
                 // Force HTTP status header to 200 OK (overriding WordPress automatic 404 query status)
                 status_header(200);
@@ -141,7 +334,7 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
         strpos($landing_page, 'scm-training') !== false ||
         strpos($landing_page, 'rise-form-16465496') !== false ||
         strpos($landing_page, 'free-sql-training-44819') !== false ||
-        strpos($landing_page, 'oracle-fusion-hcm-training') !== false ||
+        strpos($landing_page, 'oracle-fusion-hcm') !== false ||
         strpos($landing_page, 'f-hcm-course') !== false ||
         strpos($landing_page, 'mb-hr-to') !== false
     )) {
@@ -176,7 +369,7 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
     if (!empty($landing_page) && (
         strpos($landing_page, 'f-hcm-course') !== false ||
         strpos($landing_page, 'mb-hr-to') !== false ||
-        strpos($landing_page, 'oracle-fusion-hcm-training') !== false
+        strpos($landing_page, 'oracle-fusion-hcm') !== false
     )) {
         $scm_year = 'Oracle Fusion HCM';
         
