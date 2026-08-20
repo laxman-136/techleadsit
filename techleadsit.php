@@ -55,8 +55,8 @@ function techleadsit_route_landing_pages() {
                 $plugin_url = plugin_dir_url(__FILE__) . $folder_path;
                 $html_content = str_replace('href="index.css"', 'href="' . $plugin_url . 'index.css"', $html_content);
                 $html_content = str_replace('src="index.js"', 'src="' . $plugin_url . 'index.js"', $html_content);
-                $html_content = str_replace('href="styles.css"', 'href="' . $plugin_url . 'styles.css?v=9.4"', $html_content);
-                $html_content = str_replace('src="script.js"', 'src="' . $plugin_url . 'script.js?v=9.4"', $html_content);
+                $html_content = str_replace('href="styles.css"', 'href="' . $plugin_url . 'styles.css?v=9.5"', $html_content);
+                $html_content = str_replace('src="script.js"', 'src="' . $plugin_url . 'script.js?v=9.5"', $html_content);
                 $html_content = str_replace('src="logo-dark.png"', 'src="' . $plugin_url . 'logo-dark.png"', $html_content);
                 $html_content = str_replace('src="logo-light.png"', 'src="' . $plugin_url . 'logo-light.png"', $html_content);
                 $html_content = str_replace('src="images/', 'src="' . $plugin_url . 'images/', $html_content);
@@ -376,30 +376,38 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
     $location = sanitize_text_field($params['location'] ?? '');
     $scm_year = sanitize_text_field($params['scm_year'] ?? '');
 
-    // Extract conversational form parameters
+    // Extract conversational form parameters with fallback to legacy keys (role/salary/experience)
     $language = sanitize_text_field($params['language'] ?? '');
-    $segment = sanitize_text_field($params['segment'] ?? '');
-    $motivation = sanitize_text_field($params['motivation'] ?? '');
-    $background = sanitize_text_field($params['background'] ?? '');
+    $segment = sanitize_text_field($params['segment'] ?? $params['role'] ?? '');
+    $motivation = sanitize_text_field($params['motivation'] ?? $params['salary'] ?? '');
+    $background = sanitize_text_field($params['background'] ?? $params['experience'] ?? '');
 
-    // If experience is empty, try to map it from conversational form segment/background answers
-    if (empty($experience)) {
-        if ($segment === 'fresher' || $background === 'none') {
-            $experience = 'Fresher';
-        } elseif ($segment === 'pro' || $segment === 'hr') {
-            $experience = 'Experienced';
-        } elseif (!empty($segment)) {
-            $experience = ucfirst($segment);
-        }
+    // Normalize experience level to human-friendly Exp Level
+    $exp_mapping = array(
+        'none' => 'Fresher',
+        'fresher' => 'Fresher',
+        'hr_only' => 'Experienced',
+        'ebs' => 'Experienced',
+        'fusion' => 'Experienced',
+        'pro' => 'Experienced',
+        'hr' => 'Experienced',
+        'owner' => 'Recruitment / Hiring Manager',
+        'Not Provided' => 'Not Provided'
+    );
+    
+    // Map raw experience if available, otherwise check segment
+    $normalized_exp = $exp_mapping[$background] ?? $exp_mapping[$segment] ?? $experience;
+    if (empty($normalized_exp) || $normalized_exp === 'Not Provided') {
+        $normalized_exp = 'Fresher'; // default fallback
     }
+    $experience = $normalized_exp;
 
     // Build comprehensive remarks text summarizing conversational choices
     $remarks_parts = array();
-    if (!empty($language)) {
-        $remarks_parts[] = "Language Preferred: " . $language;
+    if (!empty($language) && $language !== 'Not Provided') {
+        $remarks_parts[] = "Language: " . $language;
     }
-    if (!empty($segment)) {
-        // Map slug values to user friendly strings
+    if (!empty($segment) && $segment !== 'Not Provided') {
         $segment_labels = array(
             'fresher' => 'Fresher/Student (New to HR/IT)',
             'pro' => 'IT/ERP Professional (Switching to HCM)',
@@ -407,9 +415,9 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
             'owner' => 'Recruitment / Hiring Manager'
         );
         $segment_val = $segment_labels[$segment] ?? $segment;
-        $remarks_parts[] = "Profile Segment: " . $segment_val;
+        $remarks_parts[] = "Segment: " . $segment_val;
     }
-    if (!empty($motivation)) {
+    if (!empty($motivation) && $motivation !== 'Not Provided') {
         $motivation_labels = array(
             'job' => 'Land my first job in HCM',
             'switch' => 'Switch careers / get a higher package',
@@ -417,9 +425,9 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
             'team' => 'Upskill for better career growth'
         );
         $motivation_val = $motivation_labels[$motivation] ?? $motivation;
-        $remarks_parts[] = "Main Goal: " . $motivation_val;
+        $remarks_parts[] = "Goal: " . $motivation_val;
     }
-    if (!empty($background)) {
+    if (!empty($background) && $background !== 'Not Provided') {
         $background_labels = array(
             'none' => 'None - starting fresh',
             'hr_only' => 'Some HR experience, no Oracle',
@@ -427,9 +435,15 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
             'fusion' => 'Already work on Fusion HCM'
         );
         $background_val = $background_labels[$background] ?? $background;
-        $remarks_parts[] = "Oracle/HR Background: " . $background_val;
+        $remarks_parts[] = "Background: " . $background_val;
     }
-    $remarks_text = implode(" | ", $remarks_parts);
+
+    // Default remarks if empty
+    if (empty($remarks_parts)) {
+        $remarks_text = "Oracle Fusion HCM Course Lead";
+    } else {
+        $remarks_text = implode(" | ", $remarks_parts);
+    }
 
     // Auto-detect real IP address and resolve location via Geolocation API
     $user_ip = '';
@@ -581,6 +595,13 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
             'description' => $remarks_text,
             'comments' => $remarks_text,
             'comment' => $remarks_text,
+            'notes' => $remarks_text,
+            'note' => $remarks_text,
+            'leaddescription' => $remarks_text,
+            'lead_description' => $remarks_text,
+            'remarks_text' => $remarks_text,
+            'message' => $remarks_text,
+            'messages' => $remarks_text,
             
             // Lead Source fields
             'source' => $utm_source,

@@ -1157,6 +1157,10 @@ function initFormValidation() {
             role: data.role,
             experience: data.background || 'Not Provided',
             salary: data.motivation || 'Not Provided',
+            language: data.language || 'Not Provided',
+            segment: data.role || 'Not Provided',
+            motivation: data.motivation || 'Not Provided',
+            background: data.background || 'Not Provided',
             location: 'Hyderabad',
             scm_year: 'Oracle Fusion HCM',
             ...trackingData
