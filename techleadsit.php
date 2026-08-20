@@ -55,8 +55,8 @@ function techleadsit_route_landing_pages() {
                 $plugin_url = plugin_dir_url(__FILE__) . $folder_path;
                 $html_content = str_replace('href="index.css"', 'href="' . $plugin_url . 'index.css"', $html_content);
                 $html_content = str_replace('src="index.js"', 'src="' . $plugin_url . 'index.js"', $html_content);
-                $html_content = str_replace('href="styles.css"', 'href="' . $plugin_url . 'styles.css?v=9.2"', $html_content);
-                $html_content = str_replace('src="script.js"', 'src="' . $plugin_url . 'script.js?v=9.2"', $html_content);
+                $html_content = str_replace('href="styles.css"', 'href="' . $plugin_url . 'styles.css?v=9.3"', $html_content);
+                $html_content = str_replace('src="script.js"', 'src="' . $plugin_url . 'script.js?v=9.3"', $html_content);
                 $html_content = str_replace('src="logo-dark.png"', 'src="' . $plugin_url . 'logo-dark.png"', $html_content);
                 $html_content = str_replace('src="logo-light.png"', 'src="' . $plugin_url . 'logo-light.png"', $html_content);
                 $html_content = str_replace('src="images/', 'src="' . $plugin_url . 'images/', $html_content);
@@ -314,23 +314,30 @@ add_action('rest_api_init', function () {
 });
 
 /**
- * Resolves geolocation (City, State, Country) from a given IP address using ip-api.com
+ * Resolves geolocation data array (City, State, Country) from a given IP address using ip-api.com
  */
-function techleadsit_get_ip_location($ip) {
+function techleadsit_get_ip_geo_data($ip) {
+    $default = array(
+        'city' => '',
+        'state' => '',
+        'country' => '',
+        'location' => 'Unknown'
+    );
+    
     if (empty($ip) || !filter_var($ip, FILTER_VALIDATE_IP)) {
-        return 'Unknown IP';
+        return $default;
     }
     
     // Ignore private/local IP ranges
     if (!filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
-        return 'Local/Private IP';
+        return array_merge($default, array('location' => 'Local/Private IP'));
     }
 
     $geo_url = 'http://ip-api.com/json/' . $ip;
     $response = wp_remote_get($geo_url, array('timeout' => 3));
 
     if (is_wp_error($response)) {
-        return 'Geo API Error';
+        return array_merge($default, array('location' => 'Geo API Error'));
     }
 
     $body = wp_remote_retrieve_body($response);
@@ -342,10 +349,17 @@ function techleadsit_get_ip_location($ip) {
         $country = $data['country'] ?? '';
 
         $parts = array_filter(array($city, $state, $country));
-        return !empty($parts) ? implode(', ', $parts) : 'Unknown Location';
+        $location = !empty($parts) ? implode(', ', $parts) : 'Unknown Location';
+        
+        return array(
+            'city' => $city,
+            'state' => $state,
+            'country' => $country,
+            'location' => $location
+        );
     }
 
-    return 'Location Not Found';
+    return array_merge($default, array('location' => 'Location Not Found'));
 }
 
 function techleadsit_handle_crm_lead(WP_REST_Request $request) {
@@ -374,7 +388,12 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
         $user_ip = $_SERVER['REMOTE_ADDR'] ?? '';
     }
 
-    $ip_location = techleadsit_get_ip_location($user_ip);
+    $geo_data = techleadsit_get_ip_geo_data($user_ip);
+    $ip_location = $geo_data['location'];
+    $city = $geo_data['city'];
+    $state = $geo_data['state'];
+    $country = $geo_data['country'];
+
     if (empty($location) || $location === 'Unknown') {
         $location = $ip_location;
     }
@@ -475,10 +494,39 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
             'role' => $role,
             'salary' => $salary,
             'experience' => $experience,
+            
+            // Location fields
             'location' => $location,
+            'city' => $city,
+            'cityname' => $city,
+            'city_name' => $city,
+            'state' => $state,
+            'statename' => $state,
+            'state_name' => $state,
+            'country' => $country,
+            'ipaddress' => $user_ip,
+            'iplocation' => $ip_location,
+            
+            // Course name fields
             'scm_year' => $scm_year,
-            'source' => $utm_source,      // Maps to TeleCRM default source field
-            'campaign' => $utm_campaign,  // Maps to TeleCRM default campaign field
+            'scmyear' => $scm_year,
+            'coursename' => $scm_year,
+            'course_name' => $scm_year,
+            
+            // Lead Source fields
+            'source' => $utm_source,
+            'leadsource' => $utm_source,
+            'lead_source' => $utm_source,
+            'utmsource' => $utm_source,
+            
+            // Date fields
+            'date' => $lead_date,
+            'leaddate' => $lead_date,
+            'lead_date' => $lead_date,
+            'courseenrollmentdate' => $lead_date,
+            'course_enrollment_date' => $lead_date,
+            
+            // Tracking fields
             'fbp' => $fbp,
             'fbc' => $fbc,
             'gclid' => $gclid,
@@ -486,31 +534,25 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
             'wbraid' => $wbraid,
             'fbclid' => $fbclid,
             'ga_client_id' => $ga_client_id,
+            'gaclient_id' => $ga_client_id,
+            'gaclientid' => $ga_client_id,
             'session_id' => $session_id,
+            'sessionid' => $session_id,
             'utm_source' => $utm_source,
             'utm_medium' => $utm_medium,
-            'utm_campaign' => $utm_campaign,
-            'utm_adgroup' => $utm_adgroup,
-            'utm_term' => $utm_term,
-            'utm_content' => $utm_content,
-            'landing_page' => $landing_page,
-            'referrer' => $referrer,
-            'leaddate' => $lead_date,
-            'date' => $lead_date,
-            // Custom fields without underscores (matching your TeleCRM account fields)
-            'utmsource' => $utm_source,
             'utmmedium' => $utm_medium,
+            'utm_campaign' => $utm_campaign,
             'utmcampaign' => $utm_campaign,
+            'utm_adgroup' => $utm_adgroup,
             'utmadgroup' => $utm_adgroup,
+            'utm_term' => $utm_term,
             'utmterm' => $utm_term,
+            'utm_content' => $utm_content,
             'utmcontent' => $utm_content,
+            'landing_page' => $landing_page,
             'landingpage' => $landing_page,
-            'location' => $location,
-            'scmyear' => $scm_year,
-            'date' => $lead_date,
-            'leaddate' => $lead_date,
-            'ipaddress' => $user_ip,
-            'iplocation' => $ip_location
+            'referrer' => $referrer,
+            'campaign' => $utm_campaign
         ),
         'actions' => array(
             array(
@@ -518,7 +560,7 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
                 'text' => "Location: " . $location . "\n" .
                           "IP Address: " . $user_ip . "\n" .
                           "IP Location: " . $ip_location . "\n" .
-                          "SCM Training Year: " . $scm_year . "\n" .
+                          "Course Name: " . $scm_year . "\n" .
                           "Lead Date: " . $lead_date . "\n\n" .
                           "Marketing Tracking Details:\n" .
                           "- Source: " . $utm_source . "\n" .
