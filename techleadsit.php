@@ -55,8 +55,8 @@ function techleadsit_route_landing_pages() {
                 $plugin_url = plugin_dir_url(__FILE__) . $folder_path;
                 $html_content = str_replace('href="index.css"', 'href="' . $plugin_url . 'index.css"', $html_content);
                 $html_content = str_replace('src="index.js"', 'src="' . $plugin_url . 'index.js"', $html_content);
-                $html_content = str_replace('href="styles.css"', 'href="' . $plugin_url . 'styles.css?v=9.1"', $html_content);
-                $html_content = str_replace('src="script.js"', 'src="' . $plugin_url . 'script.js?v=9.1"', $html_content);
+                $html_content = str_replace('href="styles.css"', 'href="' . $plugin_url . 'styles.css?v=9.2"', $html_content);
+                $html_content = str_replace('src="script.js"', 'src="' . $plugin_url . 'script.js?v=9.2"', $html_content);
                 $html_content = str_replace('src="logo-dark.png"', 'src="' . $plugin_url . 'logo-dark.png"', $html_content);
                 $html_content = str_replace('src="logo-light.png"', 'src="' . $plugin_url . 'logo-light.png"', $html_content);
                 $html_content = str_replace('src="images/', 'src="' . $plugin_url . 'images/', $html_content);
@@ -313,6 +313,41 @@ add_action('rest_api_init', function () {
     ));
 });
 
+/**
+ * Resolves geolocation (City, State, Country) from a given IP address using ip-api.com
+ */
+function techleadsit_get_ip_location($ip) {
+    if (empty($ip) || !filter_var($ip, FILTER_VALIDATE_IP)) {
+        return 'Unknown IP';
+    }
+    
+    // Ignore private/local IP ranges
+    if (!filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+        return 'Local/Private IP';
+    }
+
+    $geo_url = 'http://ip-api.com/json/' . $ip;
+    $response = wp_remote_get($geo_url, array('timeout' => 3));
+
+    if (is_wp_error($response)) {
+        return 'Geo API Error';
+    }
+
+    $body = wp_remote_retrieve_body($response);
+    $data = json_decode($body, true);
+
+    if (is_array($data) && ($data['status'] ?? '') === 'success') {
+        $city = $data['city'] ?? '';
+        $state = $data['regionName'] ?? '';
+        $country = $data['country'] ?? '';
+
+        $parts = array_filter(array($city, $state, $country));
+        return !empty($parts) ? implode(', ', $parts) : 'Unknown Location';
+    }
+
+    return 'Location Not Found';
+}
+
 function techleadsit_handle_crm_lead(WP_REST_Request $request) {
     $params = $request->get_json_params();
 
@@ -326,6 +361,23 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
     $landing_page = esc_url_raw($params['landing_page'] ?? '');
     $location = sanitize_text_field($params['location'] ?? '');
     $scm_year = sanitize_text_field($params['scm_year'] ?? '');
+
+    // Auto-detect real IP address and resolve location via Geolocation API
+    $user_ip = '';
+    if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+        $user_ip = $_SERVER['HTTP_CLIENT_IP'];
+    } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        $user_ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        $ip_list = explode(',', $user_ip);
+        $user_ip = trim($ip_list[0]);
+    } else {
+        $user_ip = $_SERVER['REMOTE_ADDR'] ?? '';
+    }
+
+    $ip_location = techleadsit_get_ip_location($user_ip);
+    if (empty($location) || $location === 'Unknown') {
+        $location = $ip_location;
+    }
 
     // Verify OTP first if email is provided, unless bypassed for specific landing pages
     $bypass_otp = false;
@@ -456,12 +508,16 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
             'location' => $location,
             'scmyear' => $scm_year,
             'date' => $lead_date,
-            'leaddate' => $lead_date
+            'leaddate' => $lead_date,
+            'ipaddress' => $user_ip,
+            'iplocation' => $ip_location
         ),
         'actions' => array(
             array(
                 'type' => 'SYSTEM_NOTE',
                 'text' => "Location: " . $location . "\n" .
+                          "IP Address: " . $user_ip . "\n" .
+                          "IP Location: " . $ip_location . "\n" .
                           "SCM Training Year: " . $scm_year . "\n" .
                           "Lead Date: " . $lead_date . "\n\n" .
                           "Marketing Tracking Details:\n" .
