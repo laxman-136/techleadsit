@@ -55,8 +55,8 @@ function techleadsit_route_landing_pages() {
                 $plugin_url = plugin_dir_url(__FILE__) . $folder_path;
                 $html_content = str_replace('href="index.css"', 'href="' . $plugin_url . 'index.css"', $html_content);
                 $html_content = str_replace('src="index.js"', 'src="' . $plugin_url . 'index.js"', $html_content);
-                $html_content = str_replace('href="styles.css"', 'href="' . $plugin_url . 'styles.css?v=9.6"', $html_content);
-                $html_content = str_replace('src="script.js"', 'src="' . $plugin_url . 'script.js?v=9.6"', $html_content);
+                $html_content = str_replace('href="styles.css"', 'href="' . $plugin_url . 'styles.css?v=9.7"', $html_content);
+                $html_content = str_replace('src="script.js"', 'src="' . $plugin_url . 'script.js?v=9.7"', $html_content);
                 $html_content = str_replace('src="logo-dark.png"', 'src="' . $plugin_url . 'logo-dark.png"', $html_content);
                 $html_content = str_replace('src="logo-light.png"', 'src="' . $plugin_url . 'logo-light.png"', $html_content);
                 $html_content = str_replace('src="images/', 'src="' . $plugin_url . 'images/', $html_content);
@@ -126,7 +126,8 @@ function techleadsit_route_landing_pages() {
                         'details_heading' => 'Oracle Fusion HCM Training Details, Duration & Fee',
                         'faq_heading' => 'Oracle Fusion HCM Training in Hyderabad FAQs',
                         'final_cta_heading' => 'Ready to Start Oracle Fusion HCM Training in Hyderabad?',
-                        'final_cta_sub' => 'Join the next Oracle Fusion HCM demo class and understand the course, trainer, modules, fee, and placement support before enrolling.'
+                        'final_cta_sub' => 'Join the next Oracle Fusion HCM demo class and understand the course, trainer, modules, fee, and placement support before enrolling.',
+                        'exit_subtitle' => 'Did you know an Oracle Fusion HCM consultant in Hyderabad earns an average of ₹10.5L – ₹12.5L per year?'
                     ),
                     'oracle-fusion-hcm-training-in-bangalore' => array(
                         'title' => 'Oracle Fusion HCM Training in Bangalore | Online Classes + Placement Support',
@@ -144,7 +145,8 @@ function techleadsit_route_landing_pages() {
                         'details_heading' => 'Oracle Fusion HCM Course Details, Duration & Fee',
                         'faq_heading' => 'Oracle Fusion HCM Training in Bangalore FAQs',
                         'final_cta_heading' => 'Start Your Oracle Fusion HCM Training from Bangalore',
-                        'final_cta_sub' => 'Book a free demo class and see how the Oracle Fusion HCM course, modules, projects, and placement support work before joining.'
+                        'final_cta_sub' => 'Book a free demo class and see how the Oracle Fusion HCM course, modules, projects, and placement support work before joining.',
+                        'exit_subtitle' => 'Did you know an Oracle Fusion HCM consultant in Bangalore earns an average of ₹11.5L – ₹13.5L per year?'
                     ),
                     'oracle-fusion-hcm-training-in-delhi' => array(
                         'title' => 'Oracle Fusion HCM Training in Delhi | Certification + Job Support',
@@ -162,7 +164,8 @@ function techleadsit_route_landing_pages() {
                         'details_heading' => 'Oracle Fusion HCM Course Details, Duration & Fee',
                         'faq_heading' => 'Oracle Fusion HCM Training in Delhi FAQs',
                         'final_cta_heading' => 'Ready to Join Oracle Fusion HCM Training in Delhi?',
-                        'final_cta_sub' => 'Book a free demo class and understand the Oracle HCM course structure, trainer, modules, fee, and placement support before enrolling.'
+                        'final_cta_sub' => 'Book a free demo class and understand the Oracle HCM course structure, trainer, modules, fee, and placement support before enrolling.',
+                        'exit_subtitle' => 'Did you know an Oracle Fusion HCM consultant in Delhi NCR earns an average of ₹10.2L – ₹12.2L per year?'
                     ),
                     'oracle-fusion-hcm-online-training' => array(
                         'title' => 'Oracle Fusion HCM Online Training | Live Classes + Projects',
@@ -180,7 +183,8 @@ function techleadsit_route_landing_pages() {
                         'details_heading' => 'Oracle Fusion HCM Online Course Details, Duration & Fee',
                         'faq_heading' => 'Oracle Fusion HCM Online Training FAQs',
                         'final_cta_heading' => 'Start Oracle Fusion HCM Online Training with a Free Demo',
-                        'final_cta_sub' => 'Attend a free live demo class and see the trainer, course modules, LMS access, projects, and placement support before joining.'
+                        'final_cta_sub' => 'Attend a free live demo class and see the trainer, course modules, LMS access, projects, and placement support before joining.',
+                        'exit_subtitle' => 'Did you know an Oracle Fusion HCM consultant earns an average of ₹10.5L – ₹12.5L per year?'
                     ),
                     'oracle-fusion-hcm-course' => array(
                         'title' => 'Oracle Fusion HCM Course | Fees, Curriculum & Placement Support',
@@ -198,7 +202,8 @@ function techleadsit_route_landing_pages() {
                         'details_heading' => 'Oracle Fusion HCM Course Details, Duration & Fee',
                         'faq_heading' => 'Oracle Fusion HCM Course FAQs',
                         'final_cta_heading' => 'Want the Oracle HCM Course Fee and Batch Details?',
-                        'final_cta_sub' => 'Book a free demo class and get complete details about the Oracle HCM course fee, modules, duration, trainer, projects, and placement support.'
+                        'final_cta_sub' => 'Book a free demo class and get complete details about the Oracle HCM course fee, modules, duration, trainer, projects, and placement support.',
+                        'exit_subtitle' => 'Did you know an Oracle Fusion HCM consultant earns an average of ₹10.5L – ₹12.5L per year?'
                     ),
                     'oracle-fusion-hcm-functional-training' => array(
                         'title' => 'Oracle Fusion HCM Functional Training | Core HR, Payroll, Talent',
@@ -216,7 +221,8 @@ function techleadsit_route_landing_pages() {
                         'details_heading' => 'Oracle Fusion HCM Functional Training Details',
                         'faq_heading' => 'Oracle Fusion HCM Functional Training FAQs',
                         'final_cta_heading' => 'Ready to Build Oracle HCM Functional Skills?',
-                        'final_cta_sub' => 'Attend a free demo class and understand how Core HR, Payroll, Talent, Absence, and other functional modules are taught with real-time implementation practice.'
+                        'final_cta_sub' => 'Attend a free demo class and understand how Core HR, Payroll, Talent, Absence, and other functional modules are taught with real-time implementation practice.',
+                        'exit_subtitle' => 'Did you know an Oracle Fusion HCM consultant earns an average of ₹10.5L – ₹12.5L per year?'
                     ),
                     'oracle-fusion-hcm-modules-training' => array(
                         'title' => 'Oracle Fusion HCM Modules Training | Payroll, Core HR, Talent, Absence',
@@ -234,7 +240,8 @@ function techleadsit_route_landing_pages() {
                         'details_heading' => 'Oracle Fusion HCM Modules Training Details',
                         'faq_heading' => 'Oracle Fusion HCM Modules Training FAQs',
                         'final_cta_heading' => 'Want to Learn Payroll, Core HR, Talent and Absence Modules?',
-                        'final_cta_sub' => 'Book a free demo class and see how each Oracle HCM module is taught through practical configuration, implementation flows, and real-time project scenarios.'
+                        'final_cta_sub' => 'Book a free demo class and see how each Oracle HCM module is taught through practical configuration, implementation flows, and real-time project scenarios.',
+                        'exit_subtitle' => 'Did you know an Oracle Fusion HCM consultant earns an average of ₹10.5L – ₹12.5L per year?'
                     )
                 );
 
@@ -292,6 +299,11 @@ function techleadsit_route_landing_pages() {
                     $html_content = str_replace('<h2 class="final-title">Ready to Get Incubated in Oracle Fusion HCM?</h2>', '<h2 class="final-title">' . esc_html($v['final_cta_heading']) . '</h2>', $html_content);
                     
                     $html_content = preg_replace('/<p class="final-subtitle">.*?<\/p>/is', '<p class="final-subtitle">' . esc_html($v['final_cta_sub']) . '</p>', $html_content);
+                    
+                    // 16. Exit Intent subtitle replacement
+                    if (isset($v['exit_subtitle'])) {
+                        $html_content = str_replace('<p class="exit-subtitle">Did you know an Oracle Fusion HCM consultant in Hyderabad earns an average of ₹10.5L – ₹12.5L per year?</p>', '<p class="exit-subtitle">' . esc_html($v['exit_subtitle']) . '</p>', $html_content);
+                    }
                 }
 
                 // Force HTTP status header to 200 OK (overriding WordPress automatic 404 query status)
