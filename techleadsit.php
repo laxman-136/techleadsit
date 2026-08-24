@@ -55,8 +55,8 @@ function techleadsit_route_landing_pages() {
                 $plugin_url = plugin_dir_url(__FILE__) . $folder_path;
                 $html_content = str_replace('href="index.css"', 'href="' . $plugin_url . 'index.css"', $html_content);
                 $html_content = str_replace('src="index.js"', 'src="' . $plugin_url . 'index.js"', $html_content);
-                $html_content = str_replace('href="styles.css"', 'href="' . $plugin_url . 'styles.css?v=9.7"', $html_content);
-                $html_content = str_replace('src="script.js"', 'src="' . $plugin_url . 'script.js?v=9.7"', $html_content);
+                $html_content = str_replace('href="styles.css"', 'href="' . $plugin_url . 'styles.css?v=9.8"', $html_content);
+                $html_content = str_replace('src="script.js"', 'src="' . $plugin_url . 'script.js?v=9.8"', $html_content);
                 $html_content = str_replace('src="logo-dark.png"', 'src="' . $plugin_url . 'logo-dark.png"', $html_content);
                 $html_content = str_replace('src="logo-light.png"', 'src="' . $plugin_url . 'logo-light.png"', $html_content);
                 $html_content = str_replace('src="images/', 'src="' . $plugin_url . 'images/', $html_content);
@@ -242,6 +242,364 @@ function techleadsit_route_landing_pages() {
                         'final_cta_heading' => 'Want to Learn Payroll, Core HR, Talent and Absence Modules?',
                         'final_cta_sub' => 'Book a free demo class and see how each Oracle HCM module is taught through practical configuration, implementation flows, and real-time project scenarios.',
                         'exit_subtitle' => 'Did you know an Oracle Fusion HCM consultant earns an average of ₹10.5L – ₹12.5L per year?'
+                    ),
+                    'oracle-fusion-hcm-training-in-pune' => array(
+                        'title' => 'Top-Rated Oracle HCM Training in Pune | Live Projects',
+                        'description' => 'Join top-rated Oracle Fusion HCM training in Pune. Learn 11 modules through live classes, projects, certification guidance, and placement assistance.',
+                        'eyebrow' => 'TOP-RATED ORACLE FUSION HCM TRAINING IN PUNE | LIVE ONLINE · PROJECTS · CERTIFICATION GUIDANCE',
+                        'h1' => 'Top-Rated Oracle Fusion HCM Training in Pune with Live Projects',
+                        'hero_sub' => 'Build practical Oracle Fusion HCM skills with expert-led live training for Pune learners. Master Core HR, Payroll, Absence, Talent, Compensation, OTL, and implementation workflows with hands-on projects, 6-month HCM instance access, 2-year LMS access, free mock interviews, and placement assistance.',
+                        'primary_cta' => 'Book My Free HCM Demo',
+                        'wa_cta' => 'Get Pune HCM Batch Details on WhatsApp →',
+                        'form_heading' => 'Get Your Free Oracle HCM Demo Class',
+                        'audience_heading' => 'Is This Oracle Fusion HCM Course Right for Pune Learners?',
+                        'audience_sub' => 'This program is designed for Pune learners who want practical Oracle Fusion HCM skills—not a general HR qualification. The training focuses on enterprise HCM configuration, implementation workflows, Core HR, Payroll, Absence, Talent, Compensation, OTL, reporting, and real project scenarios.',
+                        'spec_box_title' => 'Specialized Oracle HCM Training — Not a General HR Course',
+                        'spec_box_body' => 'This is not an MBA HR, HR generalist, recruitment, labor-law, or generic human-resources course. It is specialized Oracle Fusion HCM training focused on configuring and implementing enterprise HCM modules in a live Oracle environment.',
+                        'cert_card_title' => 'Certification Guidance Built Into Complete HCM Training',
+                        'cert_card_body' => 'Certification guidance is included as part of the complete Oracle Fusion HCM learning path. We help learners understand relevant certification topics and preparation requirements, but the program is not an exam-only, voucher-only, dumps, or certification-questions service.',
+                        'curriculum_heading' => 'Oracle Fusion HCM Training Curriculum for Pune Learners',
+                        'curriculum_sub' => 'Follow a complete, expert-guided learning path across 11 Oracle Fusion HCM modules with 60+ hours of live instruction, practical configuration exercises, case studies, and a real-time implementation project.',
+                        'key_features_heading' => 'Why Pune Learners Choose This Oracle Fusion HCM Training',
+                        'modules_heading' => 'Master 11 Oracle Fusion HCM Modules',
+                        'modules_sub' => 'Build complete HCM implementation skills across Core HR, Payroll, Absence, Talent, Compensation, Goal Management, Performance, Security, OTL, Profile Management, and reporting.',
+                        'career_heading' => 'Build Career-Ready Oracle HCM Skills in Pune',
+                        'career_sub' => 'Move from learning concepts to configuring real Oracle HCM workflows. Build the practical knowledge, project exposure, interview confidence, and functional skills required for Oracle Fusion HCM support and consulting opportunities.',
+                        'details_heading' => 'Oracle Fusion HCM Training in Pune — Duration, Access and Support',
+                        'faq_heading' => 'Oracle Fusion HCM Training in Pune FAQs',
+                        'final_cta_heading' => 'Ready to Master Oracle Fusion HCM in Pune?',
+                        'final_cta_sub' => 'Book a free live demo and explore the trainer, 11-module curriculum, projects, 6-month HCM instance access, 2-year LMS access, certification guidance, free mock interviews, and placement assistance before enrolling.',
+                        'exit_subtitle' => 'Did you know an Oracle Fusion HCM consultant in Pune earns an average of ₹10.5L – ₹12.5L per year?',
+                        'details_table' => '
+                        <table class="details-table">
+                            <tbody>
+                                <tr>
+                                    <td><strong>Duration</strong></td>
+                                    <td>2.5 months, including a real-time project</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Live Training</strong></td>
+                                    <td>60+ hours</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Modules</strong></td>
+                                    <td>11 Oracle Fusion HCM modules</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Mode</strong></td>
+                                    <td>Live online training for Pune learners</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>HCM Instance Access</strong></td>
+                                    <td>6 months</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>LMS Access</strong></td>
+                                    <td>2 years</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Mock Interviews</strong></td>
+                                    <td>Free</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Certification</strong></td>
+                                    <td>Guidance and preparation support included</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Placement</strong></td>
+                                    <td>100% placement assistance; no guaranteed-job claim</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Prerequisites</strong></td>
+                                    <td>No coding required; no prior Oracle experience required</td>
+                                </tr>
+                            </tbody>
+                        </table>',
+                        'faq_block' => '
+                <div class="faq-accordion-wrapper">
+                    <!-- Q1 -->
+                    <div class="faq-item">
+                        <button class="faq-trigger" aria-expanded="false">
+                            <span class="faq-question">Is this a general HR course?</span>
+                            <span class="faq-chevron"></span>
+                        </button>
+                        <div class="faq-body">
+                            <p class="faq-answer">
+                                No. This is specialized Oracle Fusion HCM functional training. It focuses on configuring and implementing enterprise HCM modules rather than general HR theory, recruitment basics, labor law, or MBA HR topics.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Q2 -->
+                    <div class="faq-item">
+                        <button class="faq-trigger" aria-expanded="false">
+                            <span class="faq-question">Do you provide Oracle HCM certification?</span>
+                            <span class="faq-chevron"></span>
+                        </button>
+                        <div class="faq-body">
+                            <p class="faq-answer">
+                                We provide certification guidance and preparation support as part of the complete HCM course. We do not provide an exam-only, voucher-only, dumps, or certification-questions service.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Q3 -->
+                    <div class="faq-item">
+                        <button class="faq-trigger" aria-expanded="false">
+                            <span class="faq-question">Do I need an HR or coding background?</span>
+                            <span class="faq-chevron"></span>
+                        </button>
+                        <div class="faq-body">
+                            <p class="faq-answer">
+                                No coding is required, and prior Oracle experience is not mandatory. The course starts with the required HCM and functional foundations before moving into implementation.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Q4 -->
+                    <div class="faq-item">
+                        <button class="faq-trigger" aria-expanded="false">
+                            <span class="faq-question">Is the training available for Pune learners?</span>
+                            <span class="faq-chevron"></span>
+                        </button>
+                        <div class="faq-body">
+                            <p class="faq-answer">
+                                Yes. Pune learners can attend live online, instructor-led sessions, interact with the trainer, access recordings, practise on the HCM instance, and complete real-time project exercises.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Q5 -->
+                    <div class="faq-item">
+                        <button class="faq-trigger" aria-expanded="false">
+                            <span class="faq-question">How long can I access the Oracle HCM instance?</span>
+                            <span class="faq-chevron"></span>
+                        </button>
+                        <div class="faq-body">
+                            <p class="faq-answer">
+                                Students receive six months of Oracle Fusion HCM instance access for practical exercises and implementation practice.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Q6 -->
+                    <div class="faq-item">
+                        <button class="faq-trigger" aria-expanded="false">
+                            <span class="faq-question">How long is LMS access available?</span>
+                            <span class="faq-chevron"></span>
+                        </button>
+                        <div class="faq-body">
+                            <p class="faq-answer">
+                                Students receive two years of LMS access for recordings, materials, lab guides, and course resources.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Q7 -->
+                    <div class="faq-item">
+                        <button class="faq-trigger" aria-expanded="false">
+                            <span class="faq-question">Are mock interviews included?</span>
+                            <span class="faq-chevron"></span>
+                        </button>
+                        <div class="faq-body">
+                            <p class="faq-answer">
+                                Yes. Free mock interviews, resume preparation support, guided questions, and interview-readiness assistance are included.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Q8 -->
+                    <div class="faq-item">
+                        <button class="faq-trigger" aria-expanded="false">
+                            <span class="faq-question">Is placement guaranteed?</span>
+                            <span class="faq-chevron"></span>
+                        </button>
+                        <div class="faq-body">
+                            <p class="faq-answer">
+                                No job is guaranteed. Tech Leads IT provides 100% placement assistance through resume support, mock interviews, job-readiness guidance, and opportunity assistance.
+                            </p>
+                        </div>
+                    </div>
+                </div>'
+                    ),
+                    'oracle-fusion-hcm-training-in-chennai' => array(
+                        'title' => 'Expert-Led Oracle HCM Training in Chennai | Live Projects',
+                        'description' => 'Join expert-led Oracle Fusion HCM training in Chennai. Learn 11 modules through live classes, projects, certification guidance, and placement assistance.',
+                        'eyebrow' => 'EXPERT-LED ORACLE FUSION HCM TRAINING IN CHENNAI | LIVE ONLINE · PROJECTS · CERTIFICATION GUIDANCE',
+                        'h1' => 'Expert-Led Oracle Fusion HCM Training in Chennai with Live Projects',
+                        'hero_sub' => 'Build practical Oracle Fusion HCM skills with expert-led live training for Chennai learners. Master Core HR, Payroll, Absence, Talent, Compensation, OTL, and implementation workflows with hands-on projects, 6-month HCM instance access, 2-year LMS access, free mock interviews, and placement assistance.',
+                        'primary_cta' => 'Book My Free HCM Demo',
+                        'wa_cta' => 'Get Chennai HCM Batch Details on WhatsApp →',
+                        'form_heading' => 'Get Your Free Oracle HCM Demo Class',
+                        'audience_heading' => 'Is This Oracle Fusion HCM Course Right for Chennai Learners?',
+                        'audience_sub' => 'This program is designed for Chennai learners who want practical Oracle Fusion HCM skills—not a general HR qualification. The training focuses on enterprise HCM configuration, implementation workflows, Core HR, Payroll, Absence, Talent, Compensation, OTL, reporting, and real project scenarios.',
+                        'spec_box_title' => 'Specialized Oracle HCM Training — Not a General HR Course',
+                        'spec_box_body' => 'This is not an MBA HR, HR generalist, recruitment, labor-law, or generic human-resources course. It is specialized Oracle Fusion HCM training focused on configuring and implementing enterprise HCM modules in a live Oracle environment.',
+                        'cert_card_title' => 'Certification Guidance Built Into Complete HCM Training',
+                        'cert_card_body' => 'Certification guidance is included as part of the complete Oracle Fusion HCM learning path. We help learners understand relevant certification topics and preparation requirements, but the program is not an exam-only, voucher-only, dumps, or certification-questions service.',
+                        'curriculum_heading' => 'Oracle Fusion HCM Training Curriculum for Chennai Learners',
+                        'curriculum_sub' => 'Follow a complete, expert-guided learning path across 11 Oracle Fusion HCM modules with 60+ hours of live instruction, practical configuration exercises, case studies, and a real-time implementation project.',
+                        'key_features_heading' => 'Why Chennai Learners Choose This Oracle Fusion HCM Training',
+                        'modules_heading' => 'Master 11 Oracle Fusion HCM Modules',
+                        'modules_sub' => 'Build complete HCM implementation skills across Core HR, Payroll, Absence, Talent, Compensation, Goal Management, Performance, Security, OTL, Profile Management, and reporting.',
+                        'career_heading' => 'Build Career-Ready Oracle HCM Skills in Chennai',
+                        'career_sub' => 'Move from learning concepts to configuring real Oracle HCM workflows. Build the practical knowledge, project exposure, interview confidence, and functional skills required for Oracle Fusion HCM support and consulting opportunities.',
+                        'details_heading' => 'Oracle Fusion HCM Training in Chennai — Duration, Access and Support',
+                        'faq_heading' => 'Oracle Fusion HCM Training in Chennai FAQs',
+                        'final_cta_heading' => 'Ready to Master Oracle Fusion HCM in Chennai?',
+                        'final_cta_sub' => 'Book a free live demo and explore the trainer, 11-module curriculum, projects, 6-month HCM instance access, 2-year LMS access, certification guidance, free mock interviews, and placement assistance before enrolling.',
+                        'exit_subtitle' => 'Did you know an Oracle Fusion HCM consultant in Chennai earns an average of ₹10.5L – ₹12.5L per year?',
+                        'details_table' => '
+                        <table class="details-table">
+                            <tbody>
+                                <tr>
+                                    <td><strong>Duration</strong></td>
+                                    <td>2.5 months, including a real-time project</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Live Training</strong></td>
+                                    <td>60+ hours</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Modules</strong></td>
+                                    <td>11 Oracle Fusion HCM modules</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Mode</strong></td>
+                                    <td>Live online training for Chennai learners</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>HCM Instance Access</strong></td>
+                                    <td>6 months</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>LMS Access</strong></td>
+                                    <td>2 years</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Mock Interviews</strong></td>
+                                    <td>Free</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Certification</strong></td>
+                                    <td>Guidance and preparation support included</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Placement</strong></td>
+                                    <td>100% placement assistance; no guaranteed-job claim</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Prerequisites</strong></td>
+                                    <td>No coding required; no prior Oracle experience required</td>
+                                </tr>
+                            </tbody>
+                        </table>',
+                        'faq_block' => '
+                <div class="faq-accordion-wrapper">
+                    <!-- Q1 -->
+                    <div class="faq-item">
+                        <button class="faq-trigger" aria-expanded="false">
+                            <span class="faq-question">Is this a general HR course?</span>
+                            <span class="faq-chevron"></span>
+                        </button>
+                        <div class="faq-body">
+                            <p class="faq-answer">
+                                No. This is specialized Oracle Fusion HCM functional training. It focuses on configuring and implementing enterprise HCM modules rather than general HR theory, recruitment basics, labor law, or MBA HR topics.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Q2 -->
+                    <div class="faq-item">
+                        <button class="faq-trigger" aria-expanded="false">
+                            <span class="faq-question">Do you provide Oracle HCM certification?</span>
+                            <span class="faq-chevron"></span>
+                        </button>
+                        <div class="faq-body">
+                            <p class="faq-answer">
+                                We provide certification guidance and preparation support as part of the complete HCM course. We do not provide an exam-only, voucher-only, dumps, or certification-questions service.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Q3 -->
+                    <div class="faq-item">
+                        <button class="faq-trigger" aria-expanded="false">
+                            <span class="faq-question">Do I need an HR or coding background?</span>
+                            <span class="faq-chevron"></span>
+                        </button>
+                        <div class="faq-body">
+                            <p class="faq-answer">
+                                No coding is required, and prior Oracle experience is not mandatory. The course starts with the required HCM and functional foundations before moving into implementation.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Q4 -->
+                    <div class="faq-item">
+                        <button class="faq-trigger" aria-expanded="false">
+                            <span class="faq-question">Is the training available for Chennai learners?</span>
+                            <span class="faq-chevron"></span>
+                        </button>
+                        <div class="faq-body">
+                            <p class="faq-answer">
+                                Yes. Chennai learners can attend live online, instructor-led sessions, interact with the trainer, access recordings, practise on the HCM instance, and complete real-time project exercises.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Q5 -->
+                    <div class="faq-item">
+                        <button class="faq-trigger" aria-expanded="false">
+                            <span class="faq-question">How long can I access the Oracle HCM instance?</span>
+                            <span class="faq-chevron"></span>
+                        </button>
+                        <div class="faq-body">
+                            <p class="faq-answer">
+                                Students receive six months of Oracle Fusion HCM instance access for practical exercises and implementation practice.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Q6 -->
+                    <div class="faq-item">
+                        <button class="faq-trigger" aria-expanded="false">
+                            <span class="faq-question">How long is LMS access available?</span>
+                            <span class="faq-chevron"></span>
+                        </button>
+                        <div class="faq-body">
+                            <p class="faq-answer">
+                                Students receive two years of LMS access for recordings, materials, lab guides, and course resources.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Q7 -->
+                    <div class="faq-item">
+                        <button class="faq-trigger" aria-expanded="false">
+                            <span class="faq-question">Are mock interviews included?</span>
+                            <span class="faq-chevron"></span>
+                        </button>
+                        <div class="faq-body">
+                            <p class="faq-answer">
+                                Yes. Free mock interviews, resume preparation support, guided questions, and interview-readiness assistance are included.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Q8 -->
+                    <div class="faq-item">
+                        <button class="faq-trigger" aria-expanded="false">
+                            <span class="faq-question">Is placement guaranteed?</span>
+                            <span class="faq-chevron"></span>
+                        </button>
+                        <div class="faq-body">
+                            <p class="faq-answer">
+                                No job is guaranteed. Tech Leads IT provides 100% placement assistance through resume support, mock interviews, job-readiness guidance, and opportunity assistance.
+                            </p>
+                        </div>
+                    </div>
+                </div>'
                     )
                 );
 
@@ -303,6 +661,38 @@ function techleadsit_route_landing_pages() {
                     // 16. Exit Intent subtitle replacement
                     if (isset($v['exit_subtitle'])) {
                         $html_content = str_replace('<p class="exit-subtitle">Did you know an Oracle Fusion HCM consultant in Hyderabad earns an average of ₹10.5L – ₹12.5L per year?</p>', '<p class="exit-subtitle">' . esc_html($v['exit_subtitle']) . '</p>', $html_content);
+                    }
+                    
+                    // 17. Audience section subtitle / intro replacement
+                    if (isset($v['audience_sub'])) {
+                        $html_content = str_replace('<p class="section-subtitle">Gain expertise in Human Capital Management with training designed for learners at every level - no prior Oracle experience required.</p>', '<p class="section-subtitle">' . esc_html($v['audience_sub']) . '</p>', $html_content);
+                    }
+                    
+                    // 18. Specialization clarification box replacement
+                    if (isset($v['spec_box_title']) && isset($v['spec_box_body'])) {
+                        $html_content = str_replace('<h3>Why Oracle Fusion HCM Skills Matter for HR Careers</h3>', '<h3>' . esc_html($v['spec_box_title']) . '</h3>', $html_content);
+                        $html_content = preg_replace('/<p class="warning-text">.*?<\/p>/is', '<p class="warning-text">' . esc_html($v['spec_box_body']) . '</p>', $html_content);
+                    }
+                    
+                    // 19. Certification card text replacement
+                    if (isset($v['cert_card_title']) && isset($v['cert_card_body'])) {
+                        $html_content = str_replace('<h3>Prepare for Oracle Cloud Certification</h3>', '<h3>' . esc_html($v['cert_card_title']) . '</h3>', $html_content);
+                        $html_content = str_replace('<p>This program fully maps to and prepares you for the following global credential exam:</p>', '<p>' . esc_html($v['cert_card_body']) . '</p>', $html_content);
+                    }
+                    
+                    // 20. Curriculum section subtitle replacement
+                    if (isset($v['curriculum_sub'])) {
+                        $html_content = str_replace('<p class="section-subtitle">A detailed overview of our Oracle Fusion HCM training course, including all modules, technical concepts, and more.</p>', '<p class="section-subtitle">' . esc_html($v['curriculum_sub']) . '</p>', $html_content);
+                    }
+                    
+                    // 21. Details table replacement
+                    if (isset($v['details_table'])) {
+                        $html_content = preg_replace('/<div class="details-table-wrapper">.*?<\/div>/is', '<div class="details-table-wrapper">' . $v['details_table'] . '</div>', $html_content);
+                    }
+                    
+                    // 22. FAQ block replacement
+                    if (isset($v['faq_block'])) {
+                        $html_content = preg_replace('/<div class="faq-accordion-wrapper">.*?<\/div>\s*<\/div>\s*<\/div>\s*<\/section>\s*<!-- Final CTA Section -->/is', $v['faq_block'] . "\n            </div>\n        </section>\n\n        <!-- Final CTA Section -->", $html_content);
                     }
                 }
 
