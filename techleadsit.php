@@ -35,6 +35,8 @@ function techleadsit_route_landing_pages() {
         'oracle-fusion-hcm-course' => 'f-hcm-course/index.html',
         'oracle-fusion-hcm-functional-training' => 'f-hcm-course/index.html',
         'oracle-fusion-hcm-modules-training' => 'f-hcm-course/index.html',
+        'oracle-fusion-hcm-training-in-pune' => 'f-hcm-course/index.html',
+        'oracle-fusion-hcm-training-in-chennai' => 'f-hcm-course/index.html',
         // You can add more pages here in the future! E.g. 'scm-offer' => 'scm-offer/index.html'
     );
 
@@ -54,8 +56,8 @@ function techleadsit_route_landing_pages() {
                 $plugin_url = plugin_dir_url(__FILE__) . $folder_path;
                 $html_content = str_replace('href="index.css"', 'href="' . $plugin_url . 'index.css"', $html_content);
                 $html_content = str_replace('src="index.js"', 'src="' . $plugin_url . 'index.js"', $html_content);
-                $html_content = str_replace('href="styles.css"', 'href="' . $plugin_url . 'styles.css?v=9.9"', $html_content);
-                $html_content = str_replace('src="script.js"', 'src="' . $plugin_url . 'script.js?v=9.9"', $html_content);
+                $html_content = str_replace('href="styles.css"', 'href="' . $plugin_url . 'styles.css?v=10.0"', $html_content);
+                $html_content = str_replace('src="script.js"', 'src="' . $plugin_url . 'script.js?v=10.0"', $html_content);
                 $html_content = str_replace('src="logo-dark.png"', 'src="' . $plugin_url . 'logo-dark.png"', $html_content);
                 $html_content = str_replace('src="logo-light.png"', 'src="' . $plugin_url . 'logo-light.png"', $html_content);
                 $html_content = str_replace('src="images/', 'src="' . $plugin_url . 'images/', $html_content);
