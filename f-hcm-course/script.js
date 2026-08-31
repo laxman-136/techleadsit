@@ -34,6 +34,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         });
+
+        // Prevent Lenis from blocking scroll inside modals and lightboxes
+        document.querySelectorAll('.modal-overlay, .modal-dialog, .lightbox-overlay').forEach(el => {
+            el.setAttribute('data-lenis-prevent', 'true');
+        });
     }
 
     // Disable auto-fill dropdowns dynamically for security and lead quality
