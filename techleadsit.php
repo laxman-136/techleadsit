@@ -56,8 +56,8 @@ function techleadsit_route_landing_pages() {
                 $plugin_url = plugin_dir_url(__FILE__) . $folder_path;
                 $html_content = str_replace('href="index.css"', 'href="' . $plugin_url . 'index.css"', $html_content);
                 $html_content = str_replace('src="index.js"', 'src="' . $plugin_url . 'index.js"', $html_content);
-                $html_content = str_replace('href="styles.css"', 'href="' . $plugin_url . 'styles.css?v=10.7"', $html_content);
-                $html_content = str_replace('src="script.js"', 'src="' . $plugin_url . 'script.js?v=10.7"', $html_content);
+                $html_content = str_replace('href="styles.css"', 'href="' . $plugin_url . 'styles.css?v=10.8"', $html_content);
+                $html_content = str_replace('src="script.js"', 'src="' . $plugin_url . 'script.js?v=10.8"', $html_content);
                 $html_content = str_replace('src="logo-dark.png"', 'src="' . $plugin_url . 'logo-dark.png"', $html_content);
                 $html_content = str_replace('src="logo-light.png"', 'src="' . $plugin_url . 'logo-light.png"', $html_content);
                 $html_content = str_replace('src="images/', 'src="' . $plugin_url . 'images/', $html_content);
@@ -708,7 +708,30 @@ add_action('rest_api_init', function () {
         'callback' => 'techleadsit_handle_verify_otp',
         'permission_callback' => '__return_true'
     ));
+    register_rest_route('techleadsit/v1', '/test-connectivity', array(
+        'methods' => 'GET',
+        'callback' => 'techleadsit_handle_test_connectivity',
+        'permission_callback' => '__return_true'
+    ));
 });
+
+function techleadsit_handle_test_connectivity(WP_REST_Request $request) {
+    $results = array();
+    $urls = array(
+        'google' => 'https://www.google.com',
+        'api_telecrm' => 'https://api.telecrm.in/api/v1/leads',
+        'app_telecrm' => 'https://app.telecrm.in/api/b1/enterprise/68ca5820ff2a2eda16382e4a/autoupdatelead'
+    );
+    foreach ($urls as $name => $url) {
+        $response = wp_remote_get($url, array('timeout' => 5));
+        if (is_wp_error($response)) {
+            $results[$name] = 'Error: ' . $response->get_error_message();
+        } else {
+            $results[$name] = 'Success: Code ' . wp_remote_retrieve_response_code($response);
+        }
+    }
+    return new WP_REST_Response($results, 200);
+}
 
 /**
  * Resolves geolocation data array (City, State, Country) from a given IP address using ip-api.com
