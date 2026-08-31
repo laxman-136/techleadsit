@@ -56,8 +56,8 @@ function techleadsit_route_landing_pages() {
                 $plugin_url = plugin_dir_url(__FILE__) . $folder_path;
                 $html_content = str_replace('href="index.css"', 'href="' . $plugin_url . 'index.css"', $html_content);
                 $html_content = str_replace('src="index.js"', 'src="' . $plugin_url . 'index.js"', $html_content);
-                $html_content = str_replace('href="styles.css"', 'href="' . $plugin_url . 'styles.css?v=10.9"', $html_content);
-                $html_content = str_replace('src="script.js"', 'src="' . $plugin_url . 'script.js?v=10.9"', $html_content);
+                $html_content = str_replace('href="styles.css"', 'href="' . $plugin_url . 'styles.css?v=11.0"', $html_content);
+                $html_content = str_replace('src="script.js"', 'src="' . $plugin_url . 'script.js?v=11.0"', $html_content);
                 $html_content = str_replace('src="logo-dark.png"', 'src="' . $plugin_url . 'logo-dark.png"', $html_content);
                 $html_content = str_replace('src="logo-light.png"', 'src="' . $plugin_url . 'logo-light.png"', $html_content);
                 $html_content = str_replace('src="images/', 'src="' . $plugin_url . 'images/', $html_content);
@@ -717,11 +717,12 @@ add_action('rest_api_init', function () {
 
 function techleadsit_handle_test_connectivity(WP_REST_Request $request) {
     $results = array();
+    $api_key = defined('TELECRM_API_KEY') ? TELECRM_API_KEY : ''; 
     $urls = array(
         'google' => 'https://www.google.com',
         'api_telecrm' => 'https://api.telecrm.in/api/v1/leads',
-        'app_telecrm' => 'https://app.telecrm.in/api/b1/enterprise/68ca5820ff2a2eda16382e4a/autoupdatelead',
-        'api_telecrm_enterprise' => 'https://api.telecrm.in/api/b1/enterprise/68ca5820ff2a2eda16382e4a/autoupdatelead'
+        'app_telecrm' => 'https://app.telecrm.in/api/b1/enterprise/' . $api_key . '/autoupdatelead',
+        'next_telecrm' => 'https://next.telecrm.in/api/b1/enterprise/' . $api_key . '/autoupdatelead'
     );
     foreach ($urls as $name => $url) {
         $response = wp_remote_get($url, array('timeout' => 5));
@@ -969,7 +970,7 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
     // For security on public repos, define 'TELECRM_API_KEY' in your server's wp-config.php:
     // define('TELECRM_API_KEY', 'your-actual-api-key-here');
     $api_key = defined('TELECRM_API_KEY') ? TELECRM_API_KEY : ''; 
-    $telecrm_api_url = 'https://app.telecrm.in/api/b1/enterprise/' . $api_key . '/autoupdatelead'; 
+    $telecrm_api_url = 'https://next.telecrm.in/api/b1/enterprise/' . $api_key . '/autoupdatelead'; 
 
     // Get current date/time in Indian Standard Time (IST)
     $date_ist = new DateTime("now", new DateTimeZone("Asia/Kolkata"));
