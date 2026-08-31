@@ -36,6 +36,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Disable auto-fill dropdowns dynamically for security and lead quality
+    document.querySelectorAll('form').forEach(form => {
+        form.setAttribute('autocomplete', 'off');
+    });
+    document.querySelectorAll('form input:not([type="hidden"]), form select').forEach(input => {
+        input.setAttribute('autocomplete', 'new-password');
+    });
+
     // GA4 Visitor Type Identification Event
     window.dataLayer = window.dataLayer || [];
     const isReturningVisitor = localStorage.getItem('eduVisitorFirstVisit') !== null;
