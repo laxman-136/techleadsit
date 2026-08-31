@@ -56,8 +56,8 @@ function techleadsit_route_landing_pages() {
                 $plugin_url = plugin_dir_url(__FILE__) . $folder_path;
                 $html_content = str_replace('href="index.css"', 'href="' . $plugin_url . 'index.css"', $html_content);
                 $html_content = str_replace('src="index.js"', 'src="' . $plugin_url . 'index.js"', $html_content);
-                $html_content = str_replace('href="styles.css"', 'href="' . $plugin_url . 'styles.css?v=10.8"', $html_content);
-                $html_content = str_replace('src="script.js"', 'src="' . $plugin_url . 'script.js?v=10.8"', $html_content);
+                $html_content = str_replace('href="styles.css"', 'href="' . $plugin_url . 'styles.css?v=10.9"', $html_content);
+                $html_content = str_replace('src="script.js"', 'src="' . $plugin_url . 'script.js?v=10.9"', $html_content);
                 $html_content = str_replace('src="logo-dark.png"', 'src="' . $plugin_url . 'logo-dark.png"', $html_content);
                 $html_content = str_replace('src="logo-light.png"', 'src="' . $plugin_url . 'logo-light.png"', $html_content);
                 $html_content = str_replace('src="images/', 'src="' . $plugin_url . 'images/', $html_content);
@@ -720,7 +720,8 @@ function techleadsit_handle_test_connectivity(WP_REST_Request $request) {
     $urls = array(
         'google' => 'https://www.google.com',
         'api_telecrm' => 'https://api.telecrm.in/api/v1/leads',
-        'app_telecrm' => 'https://app.telecrm.in/api/b1/enterprise/68ca5820ff2a2eda16382e4a/autoupdatelead'
+        'app_telecrm' => 'https://app.telecrm.in/api/b1/enterprise/68ca5820ff2a2eda16382e4a/autoupdatelead',
+        'api_telecrm_enterprise' => 'https://api.telecrm.in/api/b1/enterprise/68ca5820ff2a2eda16382e4a/autoupdatelead'
     );
     foreach ($urls as $name => $url) {
         $response = wp_remote_get($url, array('timeout' => 5));
