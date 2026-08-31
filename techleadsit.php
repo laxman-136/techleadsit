@@ -56,8 +56,8 @@ function techleadsit_route_landing_pages() {
                 $plugin_url = plugin_dir_url(__FILE__) . $folder_path;
                 $html_content = str_replace('href="index.css"', 'href="' . $plugin_url . 'index.css"', $html_content);
                 $html_content = str_replace('src="index.js"', 'src="' . $plugin_url . 'index.js"', $html_content);
-                $html_content = str_replace('href="styles.css"', 'href="' . $plugin_url . 'styles.css?v=10.3"', $html_content);
-                $html_content = str_replace('src="script.js"', 'src="' . $plugin_url . 'script.js?v=10.3"', $html_content);
+                $html_content = str_replace('href="styles.css"', 'href="' . $plugin_url . 'styles.css?v=10.4"', $html_content);
+                $html_content = str_replace('src="script.js"', 'src="' . $plugin_url . 'script.js?v=10.4"', $html_content);
                 $html_content = str_replace('src="logo-dark.png"', 'src="' . $plugin_url . 'logo-dark.png"', $html_content);
                 $html_content = str_replace('src="logo-light.png"', 'src="' . $plugin_url . 'logo-light.png"', $html_content);
                 $html_content = str_replace('src="images/', 'src="' . $plugin_url . 'images/', $html_content);
@@ -595,11 +595,11 @@ function techleadsit_route_landing_pages() {
                     // 2. Meta description replacement
                     $html_content = preg_replace('/<meta\s+name="description"\s+content=".*?"\s*\/?>/i', '<meta name="description" content="' . esc_attr($v['description']) . '" />', $html_content);
                     
-                    // 3. Eyebrow injection (above headline-container)
-                    if (!empty($v['eyebrow'])) {
-                        $eyebrow_html = '<span class="eyebrow">' . esc_html($v['eyebrow']) . '</span>';
-                        $html_content = str_replace('<div class="headline-container">', $eyebrow_html . "\n                    " . '<div class="headline-container">', $html_content);
-                    }
+                    // 3. Eyebrow injection (above headline-container) - DISABLED
+                    // if (!empty($v['eyebrow'])) {
+                    //     $eyebrow_html = '<span class="eyebrow">' . esc_html($v['eyebrow']) . '</span>';
+                    //     $html_content = str_replace('<div class="headline-container">', $eyebrow_html . "\n                    " . '<div class="headline-container">', $html_content);
+                    // }
                     
                     // 4. H1 Headline replacement
                     $html_content = preg_replace('/<h1 id="hero-headline" class="hero-title">.*?<\/h1>/is', '<h1 id="hero-headline" class="hero-title">' . $v['h1'] . '</h1>', $html_content);
