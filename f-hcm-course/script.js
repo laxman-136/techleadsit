@@ -417,70 +417,203 @@ window.openModal = openModal;
 window.closeModal = closeModal;
 
 /* ==========================================================================
-   6. Testimonial Slider / Carousel
+   6. Testimonial Showcase Carousel (Ultra-Smooth Animation & Interactions)
    ========================================================================== */
 function initTestimonialSlider() {
-    const slider = document.getElementById('testimonialSlider');
-    const slides = document.querySelectorAll('#testimonialSlider .slide');
-    const prevBtn = document.getElementById('sliderPrev');
-    const nextBtn = document.getElementById('sliderNext');
-    const dotsContainer = document.getElementById('sliderDots');
+    const track = document.getElementById('testiTrack');
+    const prevBtn = document.getElementById('testiPrevBtn');
+    const nextBtn = document.getElementById('testiNextBtn');
+    const progressTrack = document.querySelector('.testi-progress-track');
+    const progressThumb = document.getElementById('testiProgressIndicator');
+    const cards = document.querySelectorAll('.testi-card-wrapper');
 
-    if (!slider || slides.length === 0) return;
+    if (!track || cards.length === 0) return;
 
-    let currentIndex = 0;
-    const totalSlides = slides.length;
+    // Auto-Reset on Inactivity: After 5s of no interaction, flip cards back to image face
+    let autoResetTimer = null;
+    const AUTO_RESET_DELAY = 5000;
 
-    // Create Navigation Dot Indicators dynamically
-    for (let i = 0; i < totalSlides; i++) {
-        const dot = document.createElement('div');
-        dot.classList.add('dot');
-        if (i === 0) dot.classList.add('active');
-        dot.setAttribute('data-index', i);
-        dotsContainer.appendChild(dot);
+    function resetFlippedCards() {
+        cards.forEach(card => {
+            card.classList.remove('is-flipped');
+        });
     }
 
-    const dots = document.querySelectorAll('#sliderDots .dot');
-
-    function goToSlide(index) {
-        if (index < 0) index = totalSlides - 1;
-        if (index >= totalSlides) index = 0;
-        currentIndex = index;
-
-        // Slide width calculation and animation
-        slider.style.transform = `translateX(-${currentIndex * 25}%)`;
-
-        // Update Dots
-        dots.forEach(dot => dot.classList.remove('active'));
-        if (dots[currentIndex]) dots[currentIndex].classList.add('active');
+    function scheduleAutoReset() {
+        if (autoResetTimer) clearTimeout(autoResetTimer);
+        const hasFlipped = Array.from(cards).some(c => c.classList.contains('is-flipped'));
+        if (hasFlipped) {
+            autoResetTimer = setTimeout(() => {
+                resetFlippedCards();
+            }, AUTO_RESET_DELAY);
+        }
     }
 
-    // Wire Arrows
+    // 1. High-Performance Smooth Scroll Interpolation via requestAnimationFrame
+    let isAnimating = false;
+
+    function smoothScrollTrackTo(targetScrollLeft, duration = 550) {
+        if (isAnimating) return;
+        isAnimating = true;
+        const startScrollLeft = track.scrollLeft;
+        const distance = targetScrollLeft - startScrollLeft;
+        const startTime = performance.now();
+
+        function easeOutQuart(t) {
+            return 1 - (--t) * t * t * t;
+        }
+
+        function step(currentTime) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const ease = easeOutQuart(progress);
+
+            track.scrollLeft = startScrollLeft + (distance * ease);
+            updateProgress();
+
+            if (progress < 1) {
+                requestAnimationFrame(step);
+            } else {
+                track.scrollLeft = targetScrollLeft;
+                updateProgress();
+                isAnimating = false;
+            }
+        }
+
+        requestAnimationFrame(step);
+    }
+
+    // 2. Click Ripple Effect on Navigation Buttons
+    function createRipple(button, event) {
+        const rect = button.getBoundingClientRect();
+        const ripple = document.createElement('span');
+        ripple.className = 'ripple-wave';
+        const size = Math.max(rect.width, rect.height);
+        ripple.style.width = ripple.style.height = `${size}px`;
+        ripple.style.left = `${(event.clientX || rect.left + rect.width / 2) - rect.left - size / 2}px`;
+        ripple.style.top = `${(event.clientY || rect.top + rect.height / 2) - rect.top - size / 2}px`;
+        button.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 600);
+    }
+
+    // 3. Navigation Arrow Handlers
+    const getCardStep = () => {
+        const firstCard = cards[0];
+        const cardWidth = firstCard ? firstCard.offsetWidth : 285;
+        return cardWidth + 26;
+    };
+
     if (prevBtn) {
-        prevBtn.addEventListener('click', () => goToSlide(currentIndex - 1));
-    }
-    if (nextBtn) {
-        nextBtn.addEventListener('click', () => goToSlide(currentIndex + 1));
+        prevBtn.addEventListener('click', (e) => {
+            createRipple(prevBtn, e);
+            const maxScroll = track.scrollWidth - track.clientWidth;
+            const target = Math.max(0, track.scrollLeft - getCardStep());
+            smoothScrollTrackTo(target, 550);
+            scheduleAutoReset();
+        });
     }
 
-    // Wire Dots
-    dots.forEach(dot => {
-        dot.addEventListener('click', (e) => {
-            const index = parseInt(e.target.getAttribute('data-index'));
-            goToSlide(index);
+    if (nextBtn) {
+        nextBtn.addEventListener('click', (e) => {
+            createRipple(nextBtn, e);
+            const maxScroll = track.scrollWidth - track.clientWidth;
+            const target = Math.min(maxScroll, track.scrollLeft + getCardStep());
+            smoothScrollTrackTo(target, 550);
+            scheduleAutoReset();
+        });
+    }
+
+    // 4. Instant Smooth 3D Card Flip on Click with Activity Tracking
+    cards.forEach(card => {
+        card.addEventListener('click', (e) => {
+            if (card.dataset.preventFlip === 'true') {
+                card.dataset.preventFlip = 'false';
+                return;
+            }
+            card.classList.toggle('is-flipped');
+            scheduleAutoReset();
+        });
+
+        card.addEventListener('mousemove', () => {
+            scheduleAutoReset();
         });
     });
 
-    // Auto rotate every 6 seconds, pauses when user hovers
-    let autoRotate = setInterval(() => {
-        goToSlide(currentIndex + 1);
-    }, 6000);
+    // 5. Dynamic Scroll Progress Bar Sync
+    function updateProgress() {
+        if (!progressThumb) return;
+        const maxScroll = track.scrollWidth - track.clientWidth;
+        if (maxScroll <= 0) {
+            progressThumb.style.transform = 'translateX(0)';
+            return;
+        }
+        const scrollRatio = Math.min(1, Math.max(0, track.scrollLeft / maxScroll));
+        const maxTranslate = 185;
+        progressThumb.style.transform = `translateX(${scrollRatio * maxTranslate}%)`;
+    }
 
-    slider.parentElement.addEventListener('mouseenter', () => clearInterval(autoRotate));
-    slider.parentElement.addEventListener('mouseleave', () => {
-        autoRotate = setInterval(() => {
-            goToSlide(currentIndex + 1);
-        }, 6000);
+    track.addEventListener('scroll', updateProgress, { passive: true });
+    window.addEventListener('resize', updateProgress, { passive: true });
+    setTimeout(updateProgress, 100);
+
+    // 6. Click on Progress Track to Seek Position
+    if (progressTrack) {
+        progressTrack.addEventListener('click', (e) => {
+            const rect = progressTrack.getBoundingClientRect();
+            const clickRatio = (e.clientX - rect.left) / rect.width;
+            const maxScroll = track.scrollWidth - track.clientWidth;
+            smoothScrollTrackTo(clickRatio * maxScroll, 550);
+            scheduleAutoReset();
+        });
+    }
+
+    // 7. Touch / Mouse Drag to Scroll
+    let isDown = false;
+    let startX = 0;
+    let scrollStart = 0;
+    let dragMove = 0;
+
+    track.addEventListener('mousedown', (e) => {
+        isDown = true;
+        dragMove = 0;
+        track.classList.add('is-dragging');
+        startX = e.pageX - track.offsetLeft;
+        scrollStart = track.scrollLeft;
+        scheduleAutoReset();
+    });
+
+    window.addEventListener('mouseup', () => {
+        if (isDown) {
+            isDown = false;
+            track.classList.remove('is-dragging');
+            scheduleAutoReset();
+        }
+    });
+
+    track.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        const x = e.pageX - track.offsetLeft;
+        const walk = (x - startX) * 1.4;
+        dragMove += Math.abs(walk);
+        if (dragMove > 10) {
+            cards.forEach(c => c.dataset.preventFlip = 'true');
+        }
+        track.scrollLeft = scrollStart - walk;
+        updateProgress();
+        scheduleAutoReset();
+    });
+
+    // 8. Keyboard Navigation Support
+    track.setAttribute('tabindex', '0');
+    track.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            if (prevBtn) prevBtn.click();
+        } else if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            if (nextBtn) nextBtn.click();
+        }
+        scheduleAutoReset();
     });
 }
 

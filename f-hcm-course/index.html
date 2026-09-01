@@ -14,6 +14,8 @@
     
     <!-- CSS stylesheet -->
     <link rel="stylesheet" href="styles.css">
+    <!-- RemixIcon Official CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css">
 </head>
 <body>
 
@@ -21,7 +23,7 @@
     <!-- Urgency Countdown & Sticky Header -->
     <div class="countdown-bar" id="countdownBar">
         <div class="container countdown-container">
-            <span class="countdown-text">⚡ Next Batch starts soon - Only <span id="seats-left-counter">70</span> seats left!</span>
+            <span class="countdown-text"><i class="ri-flashlight-fill ri-flash-icon"></i> Next Batch starts soon - Only <span id="seats-left-counter">70</span> seats left!</span>
             <div class="timer" id="timer">
                 <span class="timer-unit" id="days">00</span>d : 
                 <span class="timer-unit" id="hours">00</span>h : 
@@ -49,7 +51,7 @@
                 <div class="hero-content">
                     
                     <div class="hero-badges">
-                        <span class="hero-badge badge-gold">✓ 100% Zero Coding Skill</span>
+                        <span class="hero-badge badge-gold"><i class="ri-rocket-2-fill ri-rocket-icon"></i> 100% Zero Coding Skill</span>
                     </div>
 
                     <!-- Headline container supporting dynamic swaps -->
@@ -72,8 +74,8 @@
                             <div class="trust-card-icon google-color">G</div>
                             <div class="trust-card-info">
                                 <div class="trust-rating">
-                                    <span class="stars">★★★★★</span>
-                                    <span class="score">4.8★</span>
+                                    <span class="stars"><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i></span>
+                                    <span class="score">4.8 <i class="ri-star-fill"></i></span>
                                 </div>
                                 <span class="label">Google (1072 reviews)</span>
                             </div>
@@ -83,15 +85,15 @@
                             <div class="trust-card-icon justdial-color">JD</div>
                             <div class="trust-card-info">
                                 <div class="trust-rating">
-                                    <span class="stars">★★★★★</span>
-                                    <span class="score">4.7★</span>
+                                    <span class="stars"><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i></span>
+                                    <span class="score">4.7 <i class="ri-star-fill"></i></span>
                                 </div>
                                 <span class="label">JustDial (1286 reviews)</span>
                             </div>
                         </div>
 
                         <div class="trust-card highlight-accent">
-                            <div class="trust-card-icon stat-icon">👤</div>
+                            <div class="trust-card-icon stat-icon"><i class="ri-team-fill"></i></div>
                             <div class="trust-card-info">
                                 <span class="stat-value">30,000+</span>
                                 <span class="label">Students Trained</span>
@@ -99,7 +101,7 @@
                         </div>
 
                         <div class="trust-card highlight-success">
-                            <div class="trust-card-icon stat-icon">💼</div>
+                            <div class="trust-card-icon stat-icon"><i class="ri-briefcase-4-fill"></i></div>
                             <div class="trust-card-info">
                                 <span class="stat-value">14,000+</span>
                                 <span class="label">Successful Placements</span>
@@ -181,19 +183,19 @@
                                     <div class="radio-options">
                                         <label class="radio-label">
                                             <input type="radio" name="segment" value="fresher" required>
-                                            <span>🎓 Fresher/student - new to HR/IT</span>
+                                            <span class="radio-label-flex"><i class="ri-graduation-cap-line"></i> <span>Fresher/student - new to HR/IT</span></span>
                                         </label>
                                         <label class="radio-label">
                                             <input type="radio" name="segment" value="pro">
-                                            <span>💼 IT/ERP professional - want to switch to Fusion HCM</span>
+                                            <span class="radio-label-flex"><i class="ri-briefcase-line"></i> <span>IT/ERP professional - switch to Fusion HCM</span></span>
                                         </label>
                                         <label class="radio-label">
                                             <input type="radio" name="segment" value="hr">
-                                            <span>📊 Already in HR - want to upskill</span>
+                                            <span class="radio-label-flex"><i class="ri-bar-chart-box-line"></i> <span>Already in HR - want to upskill</span></span>
                                         </label>
                                         <label class="radio-label">
                                             <input type="radio" name="segment" value="owner">
-                                            <span>🏢 Recruitment / Hiring Manager</span>
+                                            <span class="radio-label-flex"><i class="ri-building-4-line"></i> <span>Recruitment / Hiring Manager</span></span>
                                         </label>
                                     </div>
                                     <span class="error-msg" id="hero-segment-error"></span>
@@ -263,12 +265,12 @@
                                     <button type="submit" class="btn btn-primary">Get My Free Demo Class</button>
                                 </div>
                             </div>
-                            <p class="form-footer-note">🔒 No spam. We'll call or WhatsApp you within 24 hrs to confirm your demo slot.</p>
+                            <p class="form-footer-note"><i class="ri-lock-2-line ri-lock-icon"></i> No spam. We'll call or WhatsApp you within 24 hrs to confirm your demo slot.</p>
                         </form>
                         
                         <!-- Success View (hidden by default) -->
                         <div class="form-success-state" id="heroFormSuccess" style="display: none;">
-                            <div class="success-icon">✓</div>
+                            <div class="success-icon"><i class="ri-checkbox-circle-fill"></i></div>
                             <h3>Demo Slot Requested!</h3>
                             <p>Thank you, <strong id="success-user-name">Guest</strong>.</p>
                             <p>We've received your details and batch preferences. One of our senior counselors will call or WhatsApp you within 24 hours to confirm your free demo details.</p>
@@ -318,25 +320,314 @@
                 </div>
             </div>
         </section>
-        <!-- Testimonials Section (Masonry Bento Card Grid) -->
-        <section class="testimonials-section section-padding" id="testimonials">
-            <div class="container">
-                <div class="section-header text-center">
-                    <span class="eyebrow" style="color: #0076BE; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.85rem;">Hundreds of reviews & testimonials</span>
-                    <h2 class="section-title" style="margin-top: 0.5rem; margin-bottom: 2.5rem; font-weight: 900;">Hear From Learners Who Trained in Oracle Fusion HCM</h2>
-                </div>
-                
-                <div class="testimonials-marquee-wrapper">
-                    <div class="testimonials-grid" id="testimonialsGrid">
-                        <div class="testimonials-col testimonials-scroll-up" id="testimonialsCol1"></div>
-                        <div class="testimonials-col testimonials-scroll-down" id="testimonialsCol2"></div>
-                        <div class="testimonials-col testimonials-scroll-up" id="testimonialsCol3"></div>
+        <!-- ==========================================================================
+     New High-End Testimonials Showcase Carousel (Inspired by Reference Design)
+     ========================================================================== -->
+<section class="testimonials-showcase-section" id="testimonials" data-lenis-prevent="true">
+    <div class="testimonials-ambient-circle"></div>
+    <div class="testimonials-ambient-glow"></div>
+    
+    <div class="container relative-z">
+        <div class="testimonials-header-block text-center">
+            <span class="testimonials-eyebrow">HUNDREDS OF REVIEWS &amp; TESTIMONIALS</span>
+            <h2 class="testimonials-headline">
+                Hear From Learners Who Trained in<br>
+                <span class="testimonials-headline-accent">Oracle Fusion HCM</span>
+            </h2>
+            <p class="testimonials-subheading">
+                Over 10,000+ ambitious professionals transitioned to high-growth Oracle Cloud careers.
+            </p>
+        </div>
+
+        <div class="testimonials-slider-container">
+            <!-- Navigation Arrow: Prev -->
+            <button class="testi-nav-btn testi-nav-prev" id="testiPrevBtn" aria-label="Previous Reviews">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+            </button>
+
+            <!-- Testimonials Track -->
+            <div class="testi-track" id="testiTrack" data-lenis-prevent="true">
+                <!-- Card 1: Ananya Sharma -->
+                <div class="testi-card-wrapper" data-index="1">
+                    <div class="testi-flipper">
+                        <!-- Front (Portrait Photo) -->
+                        <div class="testi-card-face testi-card-front">
+                            <div class="testi-photo-box">
+                                <img src="images/testimonials/alumni-5.jpg" alt="Ananya Sharma" class="testi-alumni-img" loading="lazy">
+                                <div class="testi-photo-gradient"></div>
+                            </div>
+                            <div class="testi-card-top-pill">Accenture • 9.5 LPA</div>
+                            <div class="testi-card-bottom-info">
+                                <h3 class="testi-alumni-name">Ananya Sharma</h3>
+                                <p class="testi-alumni-role">Ex-HR Generalist → HCM Consultant</p>
+                                <div class="testi-flip-indicator">
+                                    <span>Read Review</span>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Back (Blue Grid Story) -->
+                        <div class="testi-card-face testi-card-back">
+                            <div class="testi-grid-mesh"></div>
+                            <div class="testi-story-wrap">
+                                <div class="testi-story-top">
+                                    <h3 class="testi-story-name">Ananya Sharma</h3>
+                                    <p class="testi-story-role">Oracle Fusion HCM Consultant</p>
+                                    <span class="testi-company-tag">Accenture • 9.5 LPA</span>
+                                </div>
+                                <div class="testi-story-rating"><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i></div>
+                                <p class="testi-story-text">
+                                    "Sumesh sir's explanation of Fusion Global Payroll elements, calculations, and Fast Formulas was excellent. Coming from a non-technical HR background, the hands-on labs helped me learn the cloud configuration easily. Placed at Accenture!"
+                                </p>
+                                <div class="testi-story-bottom">
+                                    <span class="testi-verified-pill"><i class="ri-checkbox-circle-fill"></i> Verified Alumnus</span>
+                                    <span class="testi-turn-back">View Photo ↺</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="testimonials-fade-overlay-top"></div>
-                    <div class="testimonials-fade-overlay-bottom"></div>
+                </div>
+
+                <!-- Card 2: Sai Kiran Reddy -->
+                <div class="testi-card-wrapper" data-index="2">
+                    <div class="testi-flipper">
+                        <!-- Front (Portrait Photo) -->
+                        <div class="testi-card-face testi-card-front">
+                            <div class="testi-photo-box">
+                                <img src="images/testimonials/alumni-1.jpg" alt="Sai Kiran Reddy" class="testi-alumni-img" loading="lazy">
+                                <div class="testi-photo-gradient"></div>
+                            </div>
+                            <div class="testi-card-top-pill">Cognizant • 18.5 LPA</div>
+                            <div class="testi-card-bottom-info">
+                                <h3 class="testi-alumni-name">Sai Kiran Reddy</h3>
+                                <p class="testi-alumni-role">Ex-EBS HRMS → Lead Consultant</p>
+                                <div class="testi-flip-indicator">
+                                    <span>Read Review</span>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Back (Blue Grid Story) -->
+                        <div class="testi-card-face testi-card-back">
+                            <div class="testi-grid-mesh"></div>
+                            <div class="testi-story-wrap">
+                                <div class="testi-story-top">
+                                    <h3 class="testi-story-name">Sai Kiran Reddy</h3>
+                                    <p class="testi-story-role">Lead Oracle Fusion HCM Consultant</p>
+                                    <span class="testi-company-tag">Cognizant • 18.5 LPA</span>
+                                </div>
+                                <div class="testi-story-rating"><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i></div>
+                                <p class="testi-story-text">
+                                    "Perfect training for EBS developers switching to Cloud. The modules on HCM Data Loader (HDL), HCM Spreadsheet Data Loader (HSDL), and HCM Extracts are covered in-depth. Security consoles and sandbox customizations were very helpful."
+                                </p>
+                                <div class="testi-story-bottom">
+                                    <span class="testi-verified-pill"><i class="ri-checkbox-circle-fill"></i> Verified Alumnus</span>
+                                    <span class="testi-turn-back">View Photo ↺</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3: Karthik Venkat -->
+                <div class="testi-card-wrapper" data-index="3">
+                    <div class="testi-flipper">
+                        <!-- Front (Portrait Photo) -->
+                        <div class="testi-card-face testi-card-front">
+                            <div class="testi-photo-box">
+                                <img src="images/testimonials/alumni-3.jpg" alt="Karthik Venkat" class="testi-alumni-img" loading="lazy">
+                                <div class="testi-photo-gradient"></div>
+                            </div>
+                            <div class="testi-card-top-pill">NTT Data • 14.2 LPA</div>
+                            <div class="testi-card-bottom-info">
+                                <h3 class="testi-alumni-name">Karthik Venkat</h3>
+                                <p class="testi-alumni-role">Ex-PL/SQL Dev → Tech Consultant</p>
+                                <div class="testi-flip-indicator">
+                                    <span>Read Review</span>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Back (Blue Grid Story) -->
+                        <div class="testi-card-face testi-card-back">
+                            <div class="testi-grid-mesh"></div>
+                            <div class="testi-story-wrap">
+                                <div class="testi-story-top">
+                                    <h3 class="testi-story-name">Karthik Venkat</h3>
+                                    <p class="testi-story-role">Fusion HCM Technical Consultant</p>
+                                    <span class="testi-company-tag">NTT Data • 14.2 LPA</span>
+                                </div>
+                                <div class="testi-story-rating"><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i></div>
+                                <p class="testi-story-text">
+                                    "Excellent lab access and real-time business scenarios. Designing custom BI Publisher reports, OTBI dashboards, and outbound HCM Extracts was covered comprehensively. Cleared my Oracle Cloud Certification on first try!"
+                                </p>
+                                <div class="testi-story-bottom">
+                                    <span class="testi-verified-pill"><i class="ri-checkbox-circle-fill"></i> Verified Alumnus</span>
+                                    <span class="testi-turn-back">View Photo ↺</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4: Rohan Deshmukh -->
+                <div class="testi-card-wrapper" data-index="4">
+                    <div class="testi-flipper">
+                        <!-- Front (Portrait Photo) -->
+                        <div class="testi-card-face testi-card-front">
+                            <div class="testi-photo-box">
+                                <img src="images/testimonials/alumni-2.jpg" alt="Rohan Deshmukh" class="testi-alumni-img" loading="lazy">
+                                <div class="testi-photo-gradient"></div>
+                            </div>
+                            <div class="testi-card-top-pill">Tech Mahindra • 8.8 LPA</div>
+                            <div class="testi-card-bottom-info">
+                                <h3 class="testi-alumni-name">Rohan Deshmukh</h3>
+                                <p class="testi-alumni-role">Ex-HR Admin → Core HR Analyst</p>
+                                <div class="testi-flip-indicator">
+                                    <span>Read Review</span>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Back (Blue Grid Story) -->
+                        <div class="testi-card-face testi-card-back">
+                            <div class="testi-grid-mesh"></div>
+                            <div class="testi-story-wrap">
+                                <div class="testi-story-top">
+                                    <h3 class="testi-story-name">Rohan Deshmukh</h3>
+                                    <p class="testi-story-role">Fusion Core HR Analyst</p>
+                                    <span class="testi-company-tag">Tech Mahindra • 8.8 LPA</span>
+                                </div>
+                                <div class="testi-story-rating"><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i></div>
+                                <p class="testi-story-text">
+                                    "Transitioning from general admin to Oracle Cloud HCM consulting was the best career move. The sessions on Enterprise Structure, security profiles, and Approval Management (BPM) are highly detailed with live implementations."
+                                </p>
+                                <div class="testi-story-bottom">
+                                    <span class="testi-verified-pill"><i class="ri-checkbox-circle-fill"></i> Verified Alumnus</span>
+                                    <span class="testi-turn-back">View Photo ↺</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 5: Vikram Adithya -->
+                <div class="testi-card-wrapper" data-index="5">
+                    <div class="testi-flipper">
+                        <!-- Front (Portrait Photo) -->
+                        <div class="testi-card-face testi-card-front">
+                            <div class="testi-photo-box">
+                                <img src="images/testimonials/alumni-4.jpg" alt="Vikram Adithya" class="testi-alumni-img" loading="lazy">
+                                <div class="testi-photo-gradient"></div>
+                            </div>
+                            <div class="testi-card-top-pill">Mphasis • 15.5 LPA</div>
+                            <div class="testi-card-bottom-info">
+                                <h3 class="testi-alumni-name">Vikram Adithya</h3>
+                                <p class="testi-alumni-role">Ex-PeopleSoft → Cloud HCM Admin</p>
+                                <div class="testi-flip-indicator">
+                                    <span>Read Review</span>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Back (Blue Grid Story) -->
+                        <div class="testi-card-face testi-card-back">
+                            <div class="testi-grid-mesh"></div>
+                            <div class="testi-story-wrap">
+                                <div class="testi-story-top">
+                                    <h3 class="testi-story-name">Vikram Adithya</h3>
+                                    <p class="testi-story-role">Oracle Cloud HCM Administrator</p>
+                                    <span class="testi-company-tag">Mphasis • 15.5 LPA</span>
+                                </div>
+                                <div class="testi-story-rating"><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i></div>
+                                <p class="testi-story-text">
+                                    "Moving from PeopleSoft to Oracle Fusion HCM was smooth. The course covers security console, job/data roles, and data migration tools (HDL) very thoroughly. The server availability is highly reliable."
+                                </p>
+                                <div class="testi-story-bottom">
+                                    <span class="testi-verified-pill"><i class="ri-checkbox-circle-fill"></i> Verified Alumnus</span>
+                                    <span class="testi-turn-back">View Photo ↺</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 6: Abhishek Rao -->
+                <div class="testi-card-wrapper" data-index="6">
+                    <div class="testi-flipper">
+                        <!-- Front (Portrait Photo) -->
+                        <div class="testi-card-face testi-card-front">
+                            <div class="testi-photo-box">
+                                <img src="images/testimonials/alumni-6.jpg" alt="Abhishek Rao" class="testi-alumni-img" loading="lazy">
+                                <div class="testi-photo-gradient"></div>
+                            </div>
+                            <div class="testi-card-top-pill">MouriTech • 8.0 LPA</div>
+                            <div class="testi-card-bottom-info">
+                                <h3 class="testi-alumni-name">Abhishek Rao</h3>
+                                <p class="testi-alumni-role">Ex-Tech Support → Support Engineer</p>
+                                <div class="testi-flip-indicator">
+                                    <span>Read Review</span>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Back (Blue Grid Story) -->
+                        <div class="testi-card-face testi-card-back">
+                            <div class="testi-grid-mesh"></div>
+                            <div class="testi-story-wrap">
+                                <div class="testi-story-top">
+                                    <h3 class="testi-story-name">Abhishek Rao</h3>
+                                    <p class="testi-story-role">Fusion Cloud Support Engineer</p>
+                                    <span class="testi-company-tag">MouriTech • 8.0 LPA</span>
+                                </div>
+                                <div class="testi-story-rating"><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i></div>
+                                <p class="testi-story-text">
+                                    "This course completely changed my career path. The training covers all modules including Absence Management and Workforce Directory. The real-time support tickets solved during the lab sessions prepared me for corporate work."
+                                </p>
+                                <div class="testi-story-bottom">
+                                    <span class="testi-verified-pill"><i class="ri-checkbox-circle-fill"></i> Verified Alumnus</span>
+                                    <span class="testi-turn-back">View Photo ↺</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </section>
+
+            <!-- Navigation Arrow: Next -->
+            <button class="testi-nav-btn testi-nav-next" id="testiNextBtn" aria-label="Next Reviews">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Custom Scrollbar / Progress Bar -->
+        <div class="testi-progress-bar-wrap">
+            <div class="testi-progress-track">
+                <div class="testi-progress-indicator" id="testiProgressIndicator"></div>
+            </div>
+        </div>
+
+        <!-- Interactive Hint -->
+        <div class="testi-interactive-tip text-center">
+            <span class="interactive-tip-flex"><i class="ri-cursor-line"></i> Tap or click any alumni card to flip and read their complete review &amp; placement story</span>
+        </div>
+    </div>
+</section>
+
+<!-- HIDDEN PREVIOUS TESTIMONIALS SECTION (Preserved as requested) -->
+<div style="display: none !important;" aria-hidden="true">
+    <div class="testimonials-marquee-wrapper">
+        <div class="testimonials-grid" id="testimonialsGrid">
+            <div class="testimonials-col testimonials-scroll-up" id="testimonialsCol1"></div>
+            <div class="testimonials-col testimonials-scroll-down" id="testimonialsCol2"></div>
+            <div class="testimonials-col testimonials-scroll-up" id="testimonialsCol3"></div>
+        </div>
+    </div>
+</div>
 
 
         <!-- Who This Is For Section -->
@@ -349,21 +640,21 @@
                 
                 <div class="disruption-warning-box">
                     <div class="warning-header">
-                        <span class="warning-badge">⚠️ Career Disruption Alert</span>
+                        <span class="warning-badge"><i class="ri-error-warning-fill ri-warn-icon"></i> Career Disruption Alert</span>
                         <h3>Why Oracle Fusion HCM Skills Matter for HR Careers</h3>
                     </div>
                     <p class="warning-text">
                         With AI tools already automating basic HR administration, resume screening, and manual payroll entry, generic HR admin roles are shrinking. The solution? <strong>Shift from admin to system architecture.</strong> Oracle Fusion HCM Consultants are the high-value professionals who configure and manage these global enterprise systems. 
                     </p>
                     <div class="benefit-tagline">
-                        <span class="tag-icon">⚡</span> <strong>Zero Coding Required:</strong> You do NOT need any programming or coding knowledge. Oracle Fusion HCM is a functional and configuration-based cloud system, making it the perfect tech career switch for HR graduates and non-technical professionals.
+                        <span class="tag-icon"><i class="ri-flashlight-fill"></i></span> <strong>Zero Coding Required:</strong> You do NOT need any programming or coding knowledge. Oracle Fusion HCM is a functional and configuration-based cloud system, making it the perfect tech career switch for HR graduates and non-technical professionals.
                     </div>
                 </div>
 
                 <div class="who-grid">
                     <div class="who-column">
                         <div class="who-header grad-header">
-                            <span class="who-icon">🎓</span>
+                            <span class="who-icon"><i class="ri-graduation-cap-fill"></i></span>
                             <h3>Students & Fresh Graduates</h3>
                         </div>
                         <ul class="who-list">
@@ -376,7 +667,7 @@
                     
                     <div class="who-column">
                         <div class="who-header pro-header">
-                            <span class="who-icon">💼</span>
+                            <span class="who-icon"><i class="ri-briefcase-fill"></i></span>
                             <h3>Working Professionals</h3>
                         </div>
                         <ul class="who-list">
@@ -389,11 +680,7 @@
                 </div>
 
                 <div class="reassurance-bar text-center">
-                    <p class="reassurance-text">💡 <strong>Reassurance:</strong> No prior Oracle experience needed. Any graduate is eligible.</p>
-                </div>
-
-                <div class="who-collaboration-img text-center">
-                    <img src="images/collaboration.jpg" loading="lazy" alt="Learners collaborating on Oracle Fusion HCM tasks" class="responsive-img collaboration-img">
+                    <p class="reassurance-text"><i class="ri-lightbulb-flash-fill ri-lightbulb-icon"></i> <strong>Reassurance:</strong> No prior Oracle experience needed. Any graduate is eligible.</p>
                 </div>
             </div>
         </section>
@@ -416,35 +703,35 @@
                     <div class="curr-metric-item">
                         <div class="curr-metric-label">Milestone</div>
                         <div class="curr-metric-val-wrap">
-                            <span class="curr-metric-icon">📚</span>
+                            <span class="curr-metric-icon"><i class="ri-book-open-fill"></i></span>
                             <span class="curr-metric-value">11 Modules</span>
                         </div>
                     </div>
                     <div class="curr-metric-item">
                         <div class="curr-metric-label">Duration</div>
                         <div class="curr-metric-val-wrap">
-                            <span class="curr-metric-icon">📅</span>
+                            <span class="curr-metric-icon"><i class="ri-calendar-2-fill"></i></span>
                             <span class="curr-metric-value">2.5 Months</span>
                         </div>
                     </div>
                     <div class="curr-metric-item">
                         <div class="curr-metric-label">Mode</div>
                         <div class="curr-metric-val-wrap">
-                            <span class="curr-metric-icon">💻</span>
+                            <span class="curr-metric-icon"><i class="ri-computer-fill"></i></span>
                             <span class="curr-metric-value">Online Live</span>
                         </div>
                     </div>
                     <div class="curr-metric-item">
                         <div class="curr-metric-label">Live Sessions</div>
                         <div class="curr-metric-val-wrap">
-                            <span class="curr-metric-icon">⏱️</span>
+                            <span class="curr-metric-icon"><i class="ri-time-fill"></i></span>
                             <span class="curr-metric-value">60+ Hours</span>
                         </div>
                     </div>
                     <div class="curr-metric-item">
                         <div class="curr-metric-label">Practice</div>
                         <div class="curr-metric-val-wrap">
-                            <span class="curr-metric-icon">💼</span>
+                            <span class="curr-metric-icon"><i class="ri-suitcase-fill"></i></span>
                             <span class="curr-metric-value">Real-time Project</span>
                         </div>
                     </div>
@@ -513,17 +800,17 @@
                                     <h3 id="paneModuleName">Functional Setup Manager</h3>
                                 </div>
                                 <div class="module-duration-tag">
-                                    <span class="dur-icon">📅</span>
+                                    <span class="dur-icon"><i class="ri-calendar-line"></i></span>
                                     <span id="paneModuleDuration">Duration: 1 Week</span>
                                 </div>
                             </div>
                             
                             <!-- Badges row under header -->
                             <div class="module-pills-row" id="paneModulePills">
-                                <span class="badge-pill pill-live">🎥 Live Training</span>
-                                <span class="badge-pill pill-practice">🛠️ Hands-on Lab</span>
-                                <span class="badge-pill pill-project">📊 Real Case Study</span>
-                                <span class="badge-pill pill-qa">💬 Q&A Support</span>
+                                <span class="badge-pill pill-live"><i class="ri-live-fill"></i> Live Training</span>
+                                <span class="badge-pill pill-practice"><i class="ri-tools-fill"></i> Hands-on Lab</span>
+                                <span class="badge-pill pill-project"><i class="ri-file-chart-fill"></i> Real Case Study</span>
+                                <span class="badge-pill pill-qa"><i class="ri-question-answer-fill"></i> Q&amp;A Support</span>
                             </div>
 
                             <!-- Divider line -->
@@ -739,7 +1026,7 @@
                     <!-- Feature Card 1 -->
                     <div class="feature-card">
                         <div class="feature-header">
-                            <span class="feature-icon-box">📘</span>
+                            <span class="feature-icon-box"><i class="ri-book-3-fill"></i></span>
                             <h3>Comprehensive Module Coverage</h3>
                         </div>
                         <p class="feature-text">A complete Oracle Fusion HCM learning path covering Core HR, Payroll, Absence, OTL, and key functional modules - from fundamentals to advanced concepts.</p>
@@ -748,7 +1035,7 @@
                     <!-- Feature Card 2 -->
                     <div class="feature-card">
                         <div class="feature-header">
-                            <span class="feature-icon-box">🎯</span>
+                            <span class="feature-icon-box"><i class="ri-focus-3-fill"></i></span>
                             <h3>Expert-Level Implementation</h3>
                         </div>
                         <p class="feature-text">Work on real-time scenarios, configurations, integrations, and implementation workflows - guided with practical best-practice tips.</p>
@@ -757,7 +1044,7 @@
                     <!-- Feature Card 3 -->
                     <div class="feature-card">
                         <div class="feature-header">
-                            <span class="feature-icon-box">👨‍🏫</span>
+                            <span class="feature-icon-box"><i class="ri-user-star-fill"></i></span>
                             <h3>Oracle Certified Trainers</h3>
                         </div>
                         <p class="feature-text">Learn from Oracle-certified HCM consultants with strong real-time implementation and project delivery experience.</p>
@@ -766,7 +1053,7 @@
                     <!-- Feature Card 4 -->
                     <div class="feature-card">
                         <div class="feature-header">
-                            <span class="feature-icon-box">🛠</span>
+                            <span class="feature-icon-box"><i class="ri-tools-fill"></i></span>
                             <h3>Hands-On Projects</h3>
                         </div>
                         <p class="feature-text">Hands-on Oracle Fusion HCM projects with real business use cases - ideal for freshers and professionals to gain practical implementation experience.</p>
@@ -775,7 +1062,7 @@
                     <!-- Feature Card 5 -->
                     <div class="feature-card">
                         <div class="feature-header">
-                            <span class="feature-icon-box">🤝</span>
+                            <span class="feature-icon-box"><i class="ri-shake-hands-fill"></i></span>
                             <h3>Placement & Job Support</h3>
                         </div>
                         <p class="feature-text">Placement-oriented training with interview guidance, resume support, and job-readiness mentoring for eligible learners.</p>
@@ -784,7 +1071,7 @@
                     <!-- Feature Card 6 -->
                     <div class="feature-card">
                         <div class="feature-header">
-                            <span class="feature-icon-box">📱</span>
+                            <span class="feature-icon-box"><i class="ri-smartphone-fill"></i></span>
                             <h3>LMS and Mobile App Learning</h3>
                         </div>
                         <p class="feature-text">Access course recordings, materials, and practice resources on mobile - learn anytime, anywhere.</p>
@@ -841,7 +1128,7 @@
                 </div>
 
                 <p class="salary-caption text-center">
-                    <span class="caption-icon">💡</span> Ranges are indicative, based on industry placement trends for Oracle Fusion HCM professionals in India, and vary by company, location, and module specialization (Payroll and Techno-Functional roles typically command a premium).
+                    <span class="caption-icon"><i class="ri-information-fill"></i></span> Ranges are indicative, based on industry placement trends for Oracle Fusion HCM professionals in India, and vary by company, location, and module specialization (Payroll and Techno-Functional roles typically command a premium).
                 </p>
 
                 <div class="salary-cta text-center">
@@ -906,9 +1193,9 @@
 
                     <!-- Slider Controls -->
                     <div class="proof-slider-controls">
-                        <button class="slider-arrow prev" id="proofPrev" aria-label="Previous Proof">←</button>
+                        <button class="slider-arrow prev" id="proofPrev" aria-label="Previous Proof"><i class="ri-arrow-left-s-line"></i></button>
                         <div class="proof-slider-dots" id="proofDots"></div>
-                        <button class="slider-arrow next" id="proofNext" aria-label="Next Proof">→</button>
+                        <button class="slider-arrow next" id="proofNext" aria-label="Next Proof"><i class="ri-arrow-right-s-line"></i></button>
                     </div>
                 </div>
 
@@ -952,42 +1239,42 @@
                     <div class="why-us-content">
                         <ul class="why-us-list">
                             <li>
-                                <span class="list-bullet">✓</span>
+                                <span class="list-bullet"><i class="ri-check-line"></i></span>
                                 <div class="list-text">
                                     <strong>14+ Years of Excellence</strong>
                                     <p>14+ years of experience delivering Oracle Fusion Cloud HCM training.</p>
                                 </div>
                             </li>
                             <li>
-                                <span class="list-bullet">✓</span>
+                                <span class="list-bullet"><i class="ri-check-line"></i></span>
                                 <div class="list-text">
                                     <strong>Real-Time Senior Faculty</strong>
                                     <p>Senior faculty with strong hands-on implementation experience, not just classroom theory.</p>
                                 </div>
                             </li>
                             <li>
-                                <span class="list-bullet">✓</span>
+                                <span class="list-bullet"><i class="ri-check-line"></i></span>
                                 <div class="list-text">
                                     <strong>14,000+ Career Transformations</strong>
                                     <p>Over 14,000 learners trained and moved from learning to real-time expertise.</p>
                                 </div>
                             </li>
                             <li>
-                                <span class="list-bullet">✓</span>
+                                <span class="list-bullet"><i class="ri-check-line"></i></span>
                                 <div class="list-text">
                                     <strong>Mobile App & Learning Portal</strong>
                                     <p>Access learning materials, live classes, and hands-on labs anytime.</p>
                                 </div>
                             </li>
                             <li>
-                                <span class="list-bullet">✓</span>
+                                <span class="list-bullet"><i class="ri-check-line"></i></span>
                                 <div class="list-text">
                                     <strong>Industry-Validated Curriculum</strong>
                                     <p>Curriculum aligned with real-time projects, current industry needs, and Oracle standards.</p>
                                 </div>
                             </li>
                             <li>
-                                <span class="list-bullet">✓</span>
+                                <span class="list-bullet"><i class="ri-check-line"></i></span>
                                 <div class="list-text">
                                     <strong>Placement-Focused Support</strong>
                                     <p>Interview guidance, resume help, and career support built into the program.</p>
@@ -1066,22 +1353,22 @@
 
                 <div class="highlights-stats-bar">
                     <div class="highlight-stat">
-                        <div class="h-stat-icon-wrapper">📚</div>
+                        <div class="h-stat-icon-wrapper"><i class="ri-book-open-fill"></i></div>
                         <span class="h-stat-num">11</span>
                         <span class="h-stat-label">Modules</span>
                     </div>
                     <div class="highlight-stat">
-                        <div class="h-stat-icon-wrapper">⏱️</div>
+                        <div class="h-stat-icon-wrapper"><i class="ri-time-fill"></i></div>
                         <span class="h-stat-num">60+</span>
                         <span class="h-stat-label">Hours Training</span>
                     </div>
                     <div class="highlight-stat">
-                        <div class="h-stat-icon-wrapper">📝</div>
+                        <div class="h-stat-icon-wrapper"><i class="ri-file-edit-fill"></i></div>
                         <span class="h-stat-num">5+</span>
                         <span class="h-stat-label">Assessments</span>
                     </div>
                     <div class="highlight-stat">
-                        <div class="h-stat-icon-wrapper">💬</div>
+                        <div class="h-stat-icon-wrapper"><i class="ri-chat-smile-3-fill"></i></div>
                         <span class="h-stat-num">5+</span>
                         <span class="h-stat-label">Mock Interviews</span>
                     </div>
@@ -1107,7 +1394,7 @@
                             <img src="images/certification-badge.jpg" loading="lazy" alt="Oracle Certified professional badge" class="cert-badge-img">
                         </div>
                         <div class="cert-details">
-                            <span class="cert-tag">🏅 Certification Mapping</span>
+                            <span class="cert-tag"><i class="ri-medal-fill"></i> Certification Mapping</span>
                             <h3>Prepare for Oracle Cloud Certification</h3>
                             <p>This program fully maps to and prepares you for the following global credential exam:</p>
                             <div class="exam-info">
@@ -1172,7 +1459,7 @@
                         <div class="slide">
                             <div class="testimonial-card">
                                 <div class="quote-icon">“</div>
-                                <div class="testimonial-stars">★★★★★</div>
+                                <div class="testimonial-stars"><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i></div>
                                 <p class="testimonial-text">
                                     Tech Leads IT is the best Oracle Fusion HCM training institute. I completed my training in December - it's completely real-time, scenario-based training and I'm very satisfied. The trainer has great knowledge of Fusion HCM modules and explains clearly.
                                 </p>
@@ -1182,7 +1469,7 @@
                                         <h4 class="author-name">Minal Nimbolkar</h4>
                                         <span class="author-title">Oracle HCM Trainee</span>
                                     </div>
-                                    <span class="verified-badge">✓ Verified Learner</span>
+                                    <span class="verified-badge"><i class="ri-checkbox-circle-fill"></i> Verified Learner</span>
                                 </div>
                             </div>
                         </div>
@@ -1191,7 +1478,7 @@
                         <div class="slide">
                             <div class="testimonial-card">
                                 <div class="quote-icon">“</div>
-                                <div class="testimonial-stars">★★★★★</div>
+                                <div class="testimonial-stars"><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i></div>
                                 <p class="testimonial-text">
                                     I took HCM training with Tech Leads. The trainer is well experienced and it's very helpful for gaining real-time knowledge. I'd recommend anyone looking for real-time training - they provide the best material and more application access time compared to other institutes.
                                 </p>
@@ -1201,7 +1488,7 @@
                                         <h4 class="author-name">Sunanda Reddy</h4>
                                         <span class="author-title">Oracle HCM Consultant</span>
                                     </div>
-                                    <span class="verified-badge">✓ Verified Learner</span>
+                                    <span class="verified-badge"><i class="ri-checkbox-circle-fill"></i> Verified Learner</span>
                                 </div>
                             </div>
                         </div>
@@ -1210,7 +1497,7 @@
                         <div class="slide">
                             <div class="testimonial-card">
                                 <div class="quote-icon">“</div>
-                                <div class="testimonial-stars">★★★★★</div>
+                                <div class="testimonial-stars"><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i></div>
                                 <p class="testimonial-text">
                                     One of the best training institutes for Oracle Fusion HCM modules. The trainer has in-depth knowledge of Core HR, Payroll, Absence, Talent, and Compensation modules, with real-time examples throughout.
                                 </p>
@@ -1220,7 +1507,7 @@
                                         <h4 class="author-name">Rakesh Reddy</h4>
                                         <span class="author-title">HCM Associate</span>
                                     </div>
-                                    <span class="verified-badge">✓ Verified Learner</span>
+                                    <span class="verified-badge"><i class="ri-checkbox-circle-fill"></i> Verified Learner</span>
                                 </div>
                             </div>
                         </div>
@@ -1229,7 +1516,7 @@
                         <div class="slide">
                             <div class="testimonial-card">
                                 <div class="quote-icon">“</div>
-                                <div class="testimonial-stars">★★★★★</div>
+                                <div class="testimonial-stars"><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i></div>
                                 <p class="testimonial-text">
                                     I joined Fusion HCM training at Tech Leads IT. The instructor is knowledgeable and real-time, explains concepts and real-life scenarios well for hands-on learning, and is very professional - answers all questions immediately.
                                 </p>
@@ -1239,7 +1526,7 @@
                                         <h4 class="author-name">Yogeesh P</h4>
                                         <span class="author-title">ERP Specialist</span>
                                     </div>
-                                    <span class="verified-badge">✓ Verified Learner</span>
+                                    <span class="verified-badge"><i class="ri-checkbox-circle-fill"></i> Verified Learner</span>
                                 </div>
                             </div>
                         </div>
@@ -1248,9 +1535,9 @@
 
                     <!-- Slider controls -->
                     <div class="slider-controls">
-                        <button class="slider-arrow prev" id="sliderPrev" aria-label="Previous Testimonial">←</button>
+                        <button class="slider-arrow prev" id="sliderPrev" aria-label="Previous Testimonial"><i class="ri-arrow-left-s-line"></i></button>
                         <div class="slider-dots" id="sliderDots"></div>
-                        <button class="slider-arrow next" id="sliderNext" aria-label="Next Testimonial">→</button>
+                        <button class="slider-arrow next" id="sliderNext" aria-label="Next Testimonial"><i class="ri-arrow-right-s-line"></i></button>
                     </div>
                 </div>
 
@@ -1259,8 +1546,8 @@
                     <div class="rating-item google-rate">
                         <span class="logo-circle font-mono">G</span>
                         <div class="rate-details">
-                            <span class="rate-stars">★★★★★</span>
-                            <span class="rate-score"><strong>4.8★</strong> (1072 reviews)</span>
+                            <span class="rate-stars"><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i></span>
+                            <span class="rate-score"><strong>4.8 <i class="ri-star-fill"></i></strong> (1072 reviews)</span>
                             <span class="rate-source">Google Reviews</span>
                         </div>
                     </div>
@@ -1268,8 +1555,8 @@
                     <div class="rating-item sulekha-rate">
                         <span class="logo-circle font-mono">S</span>
                         <div class="rate-details">
-                            <span class="rate-stars">★★★★★</span>
-                            <span class="rate-score"><strong>4.5★</strong> (449 reviews)</span>
+                            <span class="rate-stars"><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i></span>
+                            <span class="rate-score"><strong>4.5 <i class="ri-star-fill"></i></strong> (449 reviews)</span>
                             <span class="rate-source">Sulekha Recommended</span>
                         </div>
                     </div>
@@ -1277,8 +1564,8 @@
                     <div class="rating-item justdial-rate">
                         <span class="logo-circle font-mono">JD</span>
                         <div class="rate-details">
-                            <span class="rate-stars">★★★★★</span>
-                            <span class="rate-score"><strong>4.7★</strong> (1286 reviews)</span>
+                            <span class="rate-stars"><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i></span>
+                            <span class="rate-score"><strong>4.7 <i class="ri-star-fill"></i></strong> (1286 reviews)</span>
                             <span class="rate-source">JustDial Trust Verified</span>
                         </div>
                     </div>
@@ -1307,62 +1594,62 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td class="criteria-name">💻 Sophisticated LMS Portal (Like Udemy)</td>
-                                <td class="techleads-val"><span class="check-circle">✔</span> Yes</td>
-                                <td class="oracle-val"><span class="check-circle">✔</span> Yes</td>
+                                <td class="criteria-name"><i class="ri-computer-line"></i> Sophisticated LMS Portal (Like Udemy)</td>
+                                <td class="techleads-val"><span class="check-circle"><i class="ri-check-line"></i></span> Yes</td>
+                                <td class="oracle-val"><span class="check-circle"><i class="ri-check-line"></i></span> Yes</td>
                                 <td class="other-val">No</td>
                             </tr>
                             <tr>
-                                <td class="criteria-name">📱 Android / iOS Mobile App</td>
-                                <td class="techleads-val"><span class="check-circle">✔</span> Yes</td>
-                                <td class="oracle-val"><span class="cross-circle">✘</span> No</td>
+                                <td class="criteria-name"><i class="ri-smartphone-line"></i> Android / iOS Mobile App</td>
+                                <td class="techleads-val"><span class="check-circle"><i class="ri-check-line"></i></span> Yes</td>
+                                <td class="oracle-val"><span class="cross-circle"><i class="ri-close-line"></i></span> No</td>
                                 <td class="other-val">No</td>
                             </tr>
                             <tr>
-                                <td class="criteria-name">📖 In-Depth Content Coverage</td>
-                                <td class="techleads-val"><span class="check-circle">✔</span> Yes</td>
-                                <td class="oracle-val"><span class="cross-circle">✘</span> No</td>
+                                <td class="criteria-name"><i class="ri-book-open-line"></i> In-Depth Content Coverage</td>
+                                <td class="techleads-val"><span class="check-circle"><i class="ri-check-line"></i></span> Yes</td>
+                                <td class="oracle-val"><span class="cross-circle"><i class="ri-close-line"></i></span> No</td>
                                 <td class="other-val">Partial</td>
                             </tr>
                             <tr>
-                                <td class="criteria-name">👨‍🏫 Real-Time Trainers with 20+ Years Experience</td>
+                                <td class="criteria-name"><i class="ri-user-star-line"></i> Real-Time Trainers with 20+ Years Experience</td>
                                 <td class="techleads-val">Yes</td>
                                 <td class="oracle-val">Pure Trainers (No Real-Time Experience)</td>
                                 <td class="other-val">Junior Trainers (Less than 10 Years Experience)</td>
                             </tr>
                             <tr>
-                                <td class="criteria-name">📄 Step-by-Step Screenshot Material</td>
-                                <td class="techleads-val"><span class="check-circle">✔</span> Yes</td>
+                                <td class="criteria-name"><i class="ri-file-text-line"></i> Step-by-Step Screenshot Material</td>
+                                <td class="techleads-val"><span class="check-circle"><i class="ri-check-line"></i></span> Yes</td>
                                 <td class="oracle-val">Yes</td>
                                 <td class="other-val">Partial</td>
                             </tr>
                             <tr>
-                                <td class="criteria-name">🔄 Refresh Instance</td>
-                                <td class="techleads-val"><span class="check-circle">✔</span> Yes</td>
+                                <td class="criteria-name"><i class="ri-refresh-line"></i> Refresh Instance</td>
+                                <td class="techleads-val"><span class="check-circle"><i class="ri-check-line"></i></span> Yes</td>
                                 <td class="oracle-val">Yes</td>
                                 <td class="other-val">No</td>
                             </tr>
                             <tr>
-                                <td class="criteria-name">🗄️ Non-Refresh Instance</td>
-                                <td class="techleads-val"><span class="check-circle">✔</span> Yes</td>
+                                <td class="criteria-name"><i class="ri-database-2-line"></i> Non-Refresh Instance</td>
+                                <td class="techleads-val"><span class="check-circle"><i class="ri-check-line"></i></span> Yes</td>
                                 <td class="oracle-val">Yes</td>
                                 <td class="other-val">Some of Them</td>
                             </tr>
                             <tr>
-                                <td class="criteria-name">🤝 IT Services & Placements</td>
-                                <td class="techleads-val"><span class="check-circle">✔</span> Yes</td>
-                                <td class="oracle-val"><span class="check-circle">✔</span> Yes</td>
+                                <td class="criteria-name"><i class="ri-shake-hands-line"></i> IT Services &amp; Placements</td>
+                                <td class="techleads-val"><span class="check-circle"><i class="ri-check-line"></i></span> Yes</td>
+                                <td class="oracle-val"><span class="check-circle"><i class="ri-check-line"></i></span> Yes</td>
                                 <td class="other-val">No</td>
                             </tr>
                             <tr>
-                                <td class="criteria-name">🧑‍💻 Dedicated Lab Assistant</td>
-                                <td class="techleads-val"><span class="check-circle">✔</span> Yes</td>
+                                <td class="criteria-name"><i class="ri-customer-service-2-line"></i> Dedicated Lab Assistant</td>
+                                <td class="techleads-val"><span class="check-circle"><i class="ri-check-line"></i></span> Yes</td>
                                 <td class="oracle-val">No</td>
                                 <td class="other-val">No</td>
                             </tr>
                             <tr>
-                                <td class="criteria-name">👨‍💼 Dedicated Placement Officer</td>
-                                <td class="techleads-val"><span class="check-circle">✔</span> Yes</td>
+                                <td class="criteria-name"><i class="ri-user-follow-line"></i> Dedicated Placement Officer</td>
+                                <td class="techleads-val"><span class="check-circle"><i class="ri-check-line"></i></span> Yes</td>
                                 <td class="oracle-val">No</td>
                                 <td class="other-val">No</td>
                             </tr>
@@ -1576,7 +1863,7 @@
     <!-- Modal Form (Popup trigger on CTAs) -->
     <div class="modal-overlay" id="leadModal" data-lenis-prevent="true" aria-hidden="true" role="dialog">
         <div class="modal-dialog">
-            <button class="modal-close" id="modalCloseBtn" aria-label="Close Dialog">✕</button>
+            <button class="modal-close" id="modalCloseBtn" aria-label="Close Dialog"><i class="ri-close-line"></i></button>
             <div class="lead-form-box">
                 <h3 class="form-title">Get Your Free Demo Class</h3>
                 <p class="form-subtitle">Takes less than 30 seconds. We'll confirm your slot within 24 hours.</p>
@@ -1648,19 +1935,19 @@
                             <div class="radio-options">
                                 <label class="radio-label">
                                     <input type="radio" name="modal-segment" value="fresher" required>
-                                    <span>🎓 Fresher/student - new to HR/IT</span>
+                                    <span class="radio-label-flex"><i class="ri-graduation-cap-line"></i> <span>Fresher/student - new to HR/IT</span></span>
                                 </label>
                                 <label class="radio-label">
                                     <input type="radio" name="modal-segment" value="pro">
-                                    <span>💼 IT/ERP professional - want to switch to Fusion HCM</span>
+                                    <span class="radio-label-flex"><i class="ri-briefcase-line"></i> <span>IT/ERP professional - switch to Fusion HCM</span></span>
                                 </label>
                                 <label class="radio-label">
                                     <input type="radio" name="modal-segment" value="hr">
-                                    <span>📊 Already in HR - want to upskill</span>
+                                    <span class="radio-label-flex"><i class="ri-bar-chart-box-line"></i> <span>Already in HR - want to upskill</span></span>
                                 </label>
                                 <label class="radio-label">
                                     <input type="radio" name="modal-segment" value="owner">
-                                    <span>🏢 Recruitment / Hiring Manager</span>
+                                    <span class="radio-label-flex"><i class="ri-building-4-line"></i> <span>Recruitment / Hiring Manager</span></span>
                                 </label>
                             </div>
                             <span class="error-msg" id="modal-segment-error"></span>
@@ -1730,12 +2017,12 @@
                             <button type="submit" class="btn btn-primary">Get My Free Demo Class</button>
                         </div>
                     </div>
-                    <p class="form-footer-note">🔒 No spam. We'll call or WhatsApp you within 24 hrs to confirm your demo slot.</p>
+                    <p class="form-footer-note"><i class="ri-lock-2-line ri-lock-icon"></i> No spam. We'll call or WhatsApp you within 24 hrs to confirm your demo slot.</p>
                 </form>
 
                 <!-- Success View (hidden by default) -->
                 <div class="form-success-state" id="modalFormSuccess" style="display: none;">
-                    <div class="success-icon">✓</div>
+                    <div class="success-icon"><i class="ri-checkbox-circle-fill"></i></div>
                     <h3>Demo Slot Requested!</h3>
                     <p>Thank you, <strong id="modal-success-user-name">Guest</strong>.</p>
                     <p>We've received your details and batch preferences. One of our senior counselors will call or WhatsApp you within 24 hours to confirm your free demo details.</p>
@@ -1751,7 +2038,7 @@
     <!-- Dynamic Download Gate Modal -->
     <div class="modal-overlay" id="downloadModal" data-lenis-prevent="true" aria-hidden="true" role="dialog">
         <div class="modal-dialog">
-            <button class="modal-close" id="downloadCloseBtn" aria-label="Close Dialog">✕</button>
+            <button class="modal-close" id="downloadCloseBtn" aria-label="Close Dialog"><i class="ri-close-line"></i></button>
             <div class="lead-form-box">
                 <h3 class="form-title">Download Full Curriculum PDF</h3>
                 <p class="form-subtitle">Enter your name and email to download the complete 11-module syllabus.</p>
@@ -1795,7 +2082,7 @@
                 </form>
 
                 <div class="form-success-state" id="downloadSuccessState" style="display: none;">
-                    <div class="success-icon">✓</div>
+                    <div class="success-icon"><i class="ri-checkbox-circle-fill"></i></div>
                     <h3>Syllabus Download Initiated!</h3>
                     <p>Thank you. Your download should start automatically in a few seconds. If it doesn't, click the link below:</p>
                     <a href="#" class="btn btn-outline" id="directDownloadLink" download>Direct PDF Download Link</a>
@@ -1806,13 +2093,13 @@
 
     <!-- WhatsApp Widget Float -->
     <a href="https://wa.me/918125323232?text=Hi%20Tech%20Leads%20IT,%20I'm%20interested%20in%20the%20Oracle%20Fusion%20HCM%20training.%20Can%20you%20help%20me%20with%20batch%20details?" class="whatsapp-float-widget" target="_blank" aria-label="Chat on WhatsApp">
-        <span class="whatsapp-icon">💬</span>
+        <span class="whatsapp-icon"><i class="ri-whatsapp-fill"></i></span>
         <span class="whatsapp-label">Chat with Us</span>
     </a>
 
     <!-- Live Activity Notification (FOMO Toast) -->
     <div class="fomo-toast" id="fomoToast">
-        <div class="fomo-toast-image" id="fomoIcon">⚡</div>
+        <div class="fomo-toast-image" id="fomoIcon"><i class="ri-flashlight-fill"></i></div>
         <div class="fomo-toast-content">
             <p class="fomo-toast-text"><strong id="fomoName">Karthik</strong> from <span id="fomoLocation">Hyderabad</span></p>
             <p class="fomo-toast-action" id="fomoAction">just booked a Free Demo class</p>
@@ -1831,9 +2118,9 @@
     <!-- Exit Intent Modal -->
     <div class="modal-overlay" id="exitIntentModal" data-lenis-prevent="true" aria-hidden="true" role="dialog">
         <div class="modal-dialog exit-intent-dialog">
-            <button class="modal-close" id="exitCloseBtn" aria-label="Close Dialog">✕</button>
+            <button class="modal-close" id="exitCloseBtn" aria-label="Close Dialog"><i class="ri-close-line"></i></button>
             <div class="exit-intent-box text-center">
-                <div class="exit-icon">💡</div>
+                <div class="exit-icon"><i class="ri-lightbulb-fill"></i></div>
                 <h3 class="exit-title">Wait! Before You Go...</h3>
                 <p class="exit-subtitle">Did you know an Oracle Fusion HCM consultant in Hyderabad earns an average of ₹10.5L – ₹12.5L per year?</p>
                 <p class="exit-text">Check out the real salary proofs, company averages, and location-specific packages from AmbitionBox in our proof gallery before you leave.</p>
@@ -1848,9 +2135,9 @@
     <!-- Advisor Scroll Modal (75% Scroll) -->
     <div class="modal-overlay" id="advisorModal" data-lenis-prevent="true" aria-hidden="true" role="dialog">
         <div class="modal-dialog advisor-dialog">
-            <button class="modal-close" id="advisorCloseBtn" aria-label="Close Dialog">✕</button>
+            <button class="modal-close" id="advisorCloseBtn" aria-label="Close Dialog"><i class="ri-close-line"></i></button>
             <div class="advisor-box text-center">
-                <div class="advisor-avatar">📞</div>
+                <div class="advisor-avatar"><i class="ri-phone-fill"></i></div>
                 <h3 class="advisor-title">Still Have Questions?</h3>
                 <p class="advisor-subtitle">Get 1:1 Free Career Advice from our Senior Education Adviser</p>
                 <p class="advisor-text">Speak directly with an expert to understand curriculum details, batch timings, placement support, and certification pathways.</p>
@@ -1865,7 +2152,7 @@
     <!-- Returning Visitor Personalized Lead Modal -->
     <div class="modal-overlay" id="returningVisitorModal" data-lenis-prevent="true" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="returningTitle" aria-describedby="returningDesc">
         <div class="modal-dialog returning-dialog">
-            <button class="modal-close" id="returningCloseBtn" aria-label="Close Dialog">✕</button>
+            <button class="modal-close" id="returningCloseBtn" aria-label="Close Dialog"><i class="ri-close-line"></i></button>
             <div class="returning-box text-center">
                 <span class="returning-eyebrow">WELCOME BACK</span>
                 <h3 class="returning-title" id="returningTitle">Ready to Attend the Free Live Demo?</h3>

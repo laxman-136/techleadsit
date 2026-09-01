@@ -4384,3 +4384,663 @@ html.lenis, html.lenis body {
 .lenis.lenis-stopped {
     overflow: hidden;
 }
+
+
+/* ==========================================================================
+   New Premium Testimonials Showcase Carousel Styles (Pixel-Perfect Polish)
+   ========================================================================== */
+.testimonials-showcase-section {
+    background-color: #060914;
+    background: radial-gradient(circle at 50% 20%, #0d1b3e 0%, #060914 100%);
+    color: #FFFFFF;
+    position: relative;
+    overflow: hidden;
+    padding: 4.75rem 0 4.5rem;
+    perspective: 1500px;
+}
+
+.testimonials-ambient-circle {
+    position: absolute;
+    width: 820px;
+    height: 820px;
+    border-radius: 50%;
+    border: 1px solid rgba(99, 102, 241, 0.14);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 1;
+    box-shadow: 0 0 160px rgba(59, 130, 246, 0.05);
+}
+
+.testimonials-ambient-glow {
+    position: absolute;
+    width: 650px;
+    height: 380px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.16) 0%, rgba(99, 102, 241, 0) 70%);
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    filter: blur(65px);
+    z-index: 1;
+}
+
+.testimonials-header-block {
+    position: relative;
+    z-index: 2;
+    margin-bottom: 2.25rem;
+}
+
+.testimonials-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #38BDF8;
+    background: rgba(56, 189, 248, 0.08);
+    border: 1px solid rgba(56, 189, 248, 0.22);
+    padding: 0.35rem 0.95rem;
+    border-radius: 50px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 0.85rem;
+    backdrop-filter: blur(8px);
+}
+
+.testimonials-headline {
+    color: #FFFFFF;
+    font-size: clamp(1.85rem, 3.4vw, 2.6rem);
+    font-weight: 800;
+    line-height: 1.24;
+    letter-spacing: -0.025em;
+    margin: 0 auto 0.85rem;
+    max-width: 850px;
+}
+
+.testimonials-headline-accent {
+    font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+    font-style: italic;
+    font-weight: 400;
+    color: #A5B4FC;
+    background: linear-gradient(135deg, #93C5FD 0%, #C084FC 50%, #818CF8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+    letter-spacing: -0.01em;
+    padding-right: 4px;
+}
+
+.testimonials-subheading {
+    color: #94A3B8;
+    font-size: 1rem;
+    max-width: 620px;
+    margin: 0 auto;
+    line-height: 1.55;
+}
+
+/* Slider Track & Wrapper */
+.testimonials-slider-container {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    margin: 0 auto;
+    padding: 0;
+}
+
+.testi-track {
+    display: flex;
+    gap: 1.65rem;
+    overflow-x: auto;
+    scroll-behavior: auto;
+    padding: 1.5rem 0.75rem;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+    cursor: grab;
+}
+
+.testi-track::-webkit-scrollbar {
+    display: none;
+}
+
+.testi-track.is-dragging {
+    cursor: grabbing;
+    user-select: none;
+}
+
+/* Card 3D Setup */
+.testi-card-wrapper {
+    flex: 0 0 285px;
+    width: 285px;
+    height: 430px;
+    perspective: 1200px;
+    user-select: none;
+    transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+    will-change: transform;
+}
+
+.testi-card-wrapper:hover {
+    transform: translateY(-6px);
+}
+
+.testi-flipper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.6s cubic-bezier(0.34, 1.35, 0.64, 1);
+    border-radius: 22px;
+}
+
+.testi-card-wrapper.is-flipped .testi-flipper {
+    transform: rotateY(180deg) !important;
+}
+
+.testi-card-face {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 22px;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.1);
+    transition: box-shadow 0.35s ease, border-color 0.35s ease;
+    cursor: pointer;
+}
+
+.testi-card-wrapper:hover .testi-card-face {
+    box-shadow: 0 25px 55px -12px rgba(0, 0, 0, 0.9), 0 0 25px rgba(99, 102, 241, 0.35), 0 0 0 1.5px rgba(129, 140, 248, 0.5);
+}
+
+/* Dynamic Glare Reflection Effect */
+.testi-glare {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.14) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: 22px;
+}
+
+.testi-card-wrapper:hover .testi-glare {
+    opacity: 1;
+}
+
+/* Front Face (Photo Portrait) */
+.testi-card-front {
+    background-color: #0c1527;
+    background: radial-gradient(circle at center top, #18284e 0%, #060c18 100%);
+}
+
+.testi-photo-box {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.testi-alumni-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 12%;
+    display: block;
+    transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.testi-card-wrapper:hover .testi-alumni-img {
+    transform: scale(1.05);
+}
+
+.testi-photo-gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, #060914 0%, rgba(6, 9, 20, 0.82) 32%, rgba(6, 9, 20, 0.1) 65%, transparent 100%);
+    pointer-events: none;
+}
+
+.testi-card-top-pill {
+    position: absolute;
+    top: 1.15rem;
+    left: 1.15rem;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: #38BDF8;
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.3rem 0.75rem;
+    border-radius: 50px;
+    z-index: 2;
+    letter-spacing: 0.02em;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.testi-card-bottom-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1.35rem 1.4rem;
+    z-index: 2;
+}
+
+.testi-alumni-name {
+    color: #FFFFFF;
+    font-size: 1.22rem;
+    font-weight: 700;
+    margin: 0 0 0.2rem 0;
+    letter-spacing: -0.01em;
+}
+
+.testi-alumni-role {
+    color: #94A3B8;
+    font-size: 0.82rem;
+    font-weight: 500;
+    margin: 0 0 0.75rem 0;
+}
+
+.testi-flip-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #60A5FA;
+    background: rgba(30, 58, 138, 0.55);
+    border: 1px solid rgba(96, 165, 250, 0.4);
+    padding: 0.35rem 0.85rem;
+    border-radius: 7px;
+    backdrop-filter: blur(6px);
+    transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.testi-flip-indicator svg {
+    transition: transform 0.25s ease;
+}
+
+.testi-card-wrapper:hover .testi-flip-indicator {
+    background: #2563EB;
+    color: #FFFFFF;
+    border-color: #93C5FD;
+    box-shadow: 0 0 15px rgba(37, 99, 235, 0.6);
+    transform: translateY(-1px);
+}
+
+.testi-card-wrapper:hover .testi-flip-indicator svg {
+    transform: translateX(3px);
+}
+
+/* Back Face (Blue Grid Story) */
+.testi-card-back {
+    background: #1D4ED8;
+    background: linear-gradient(145deg, #1E40AF 0%, #172554 100%);
+    transform: rotateY(180deg);
+    padding: 1.65rem;
+    justify-content: space-between;
+    border: 1px solid rgba(147, 197, 253, 0.35);
+}
+
+.testi-grid-mesh {
+    position: absolute;
+    inset: 0;
+    background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+    background-size: 26px 26px;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.testi-story-wrap {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.testi-story-name {
+    color: #FFFFFF;
+    font-size: 1.22rem;
+    font-weight: 700;
+    margin: 0 0 0.2rem 0;
+    letter-spacing: -0.01em;
+}
+
+.testi-story-role {
+    color: #BFDBFE;
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin: 0 0 0.5rem 0;
+}
+
+.testi-company-tag {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.2);
+    color: #FFFFFF;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.25rem 0.65rem;
+    border-radius: 4px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.testi-story-rating {
+    color: #FBBF24;
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+    margin: 0.65rem 0 0.2rem 0;
+    text-shadow: 0 0 10px rgba(251, 191, 36, 0.35);
+}
+
+.testi-story-text {
+    color: rgba(255, 255, 255, 0.96);
+    font-size: 0.88rem;
+    line-height: 1.58;
+    margin: 0;
+    font-weight: 400;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    padding: 0.4rem 0;
+}
+
+.testi-story-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid rgba(255, 255, 255, 0.18);
+    padding-top: 0.85rem;
+    margin-top: 0.4rem;
+}
+
+.testi-verified-pill {
+    font-size: 0.75rem;
+    color: #86EFAC;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.testi-turn-back {
+    font-size: 0.78rem;
+    color: #FFFFFF;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    padding: 0.3rem 0.7rem;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.testi-turn-back:hover {
+    background: rgba(255, 255, 255, 0.35);
+    transform: scale(1.04);
+}
+
+/* Nav Buttons with Ripple & Spring Effect */
+.testi-nav-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(15, 23, 42, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.25s ease, box-shadow 0.25s ease;
+    z-index: 10;
+    flex-shrink: 0;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    position: relative;
+    overflow: hidden;
+}
+
+.testi-nav-btn:hover {
+    background: #2563EB;
+    border-color: #93C5FD;
+    transform: scale(1.1);
+    box-shadow: 0 0 22px rgba(37, 99, 235, 0.65);
+}
+
+.testi-nav-btn:active {
+    transform: scale(0.92);
+}
+
+.testi-nav-prev {
+    margin-right: 0.75rem;
+}
+
+.testi-nav-next {
+    margin-left: 0.75rem;
+}
+
+/* Click Ripple Effect */
+.ripple-wave {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.4);
+    transform: scale(0);
+    animation: rippleAnim 0.6s ease-out forwards;
+    pointer-events: none;
+}
+
+@keyframes rippleAnim {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+/* Progress Indicator */
+.testi-progress-bar-wrap {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+}
+
+.testi-progress-track {
+    width: 220px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    transition: height 0.2s ease, background 0.2s ease;
+}
+
+.testi-progress-track:hover {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.testi-progress-indicator {
+    height: 100%;
+    width: 35%;
+    background: linear-gradient(90deg, #38BDF8, #818CF8, #C084FC);
+    border-radius: 6px;
+    transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transform: translateX(0);
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+}
+
+.testi-interactive-tip {
+    margin-top: 1rem;
+    color: #64748B;
+    font-size: 0.82rem;
+    position: relative;
+    z-index: 2;
+    transition: color 0.3s ease;
+}
+
+.testimonials-showcase-section:hover .testi-interactive-tip {
+    color: #94A3B8;
+}
+
+@media (max-width: 991px) {
+    .testimonials-showcase-section {
+        padding: 4.25rem 0 3.75rem;
+    }
+    .testi-card-wrapper {
+        flex: 0 0 270px;
+        width: 270px;
+        height: 415px;
+    }
+    .testimonials-ambient-circle {
+        width: 580px;
+        height: 580px;
+    }
+}
+
+@media (max-width: 767px) {
+    .testimonials-showcase-section {
+        padding: 3.5rem 0 3rem;
+    }
+    .testimonials-header-block {
+        margin-bottom: 1.75rem;
+    }
+    .testi-nav-btn {
+        display: none;
+    }
+    .testi-track {
+        gap: 1.15rem;
+        padding: 1rem 0.35rem;
+    }
+    .testi-card-wrapper {
+        flex: 0 0 255px;
+        width: 255px;
+        height: 390px;
+    }
+}
+/* ==========================================================================
+   RemixIcon Professional Styling (https://remixicon.com)
+   ========================================================================== */
+i[class^="ri-"], i[class*=" ri-"] {
+    display: inline-block;
+    vertical-align: middle;
+    line-height: 1;
+}
+
+.ri-flash-icon {
+    color: #FBBF24;
+    font-size: 1.1rem;
+    margin-right: 4px;
+}
+
+.ri-rocket-icon {
+    color: #F59E0B;
+    font-size: 1.05rem;
+    margin-right: 5px;
+}
+
+.ri-lock-icon {
+    font-size: 0.95rem;
+    margin-right: 4px;
+    vertical-align: -1px;
+}
+
+.ri-warn-icon {
+    color: #EF4444;
+    font-size: 1.1rem;
+    margin-right: 4px;
+}
+
+.ri-lightbulb-icon {
+    color: #F59E0B;
+    font-size: 1.1rem;
+    margin-right: 4px;
+}
+
+.radio-label-flex {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.radio-label-flex i {
+    font-size: 1.15rem;
+    color: #2563EB;
+}
+
+.interactive-tip-flex {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.interactive-tip-flex i {
+    font-size: 1rem;
+    color: #60A5FA;
+}
+
+.criteria-name i {
+    margin-right: 9px;
+    color: #2563EB;
+    font-size: 1.15rem;
+}
+
+.who-icon i {
+    font-size: 1.75rem;
+    color: #0284C7;
+}
+
+.feature-icon-box i {
+    font-size: 1.85rem;
+    color: #2563EB;
+}
+
+.curr-metric-icon i {
+    font-size: 1.35rem;
+    color: #60A5FA;
+}
+
+.trust-card-icon i {
+    font-size: 1.55rem;
+    color: #0284C7;
+}
+
+.badge-pill i {
+    margin-right: 4px;
+    font-size: 0.9rem;
+}
+
+.fomo-toast-image i {
+    font-size: 1.3rem;
+    color: #FBBF24;
+}
+
+.exit-icon i,
+.advisor-avatar i {
+    font-size: 1.8rem;
+    color: #2563EB;
+}
+
+.whatsapp-icon i {
+    font-size: 1.75rem;
+    color: #FFFFFF;
+}
