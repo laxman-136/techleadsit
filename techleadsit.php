@@ -120,6 +120,15 @@ function techleadsit_route_landing_pages() {
                 $batch_timing = !empty($course_opts['batch_timing']) ? $course_opts['batch_timing'] : '8:30 PM to 9:30 PM';
                 $batch_pills = !empty($course_opts['batch_pills']) ? $course_opts['batch_pills'] : 'Online, Weekday (TTS)';
                 $batch_seats_left = !empty($course_opts['batch_seats_left']) ? $course_opts['batch_seats_left'] : '10';
+                $base_visitor_floor = !empty($course_opts['base_visitor_floor']) ? (int)$course_opts['base_visitor_floor'] : 1840;
+
+                // Server-side persistent monotonic visitor counter (Never decreases)
+                $db_views_key = 'techleadsit_views_' . $matched_course_id;
+                $current_db_views = (int) get_option($db_views_key, $base_visitor_floor);
+                if ($current_views_stored = max($base_visitor_floor, $current_db_views + 1)) {
+                    update_option($db_views_key, $current_views_stored, false);
+                    $base_visitor_floor = $current_views_stored;
+                }
 
                 // Inject global JS config object
                 $js_config = array(
@@ -131,6 +140,7 @@ function techleadsit_route_landing_pages() {
                     'batchStartDate' => $batch_start_date,
                     'batchTiming' => $batch_timing,
                     'batchSeatsLeft' => $batch_seats_left,
+                    'baseVisitorFloor' => $base_visitor_floor,
                 );
                 $config_script = "\n<script>window.TECHLEADSIT_BATCH_CONFIG = " . json_encode($js_config) . ";</script>\n";
                 $html_content = str_replace('<head>', '<head>' . $config_script, $html_content);
@@ -1244,7 +1254,8 @@ function techleadsit_get_courses_registry() {
                 'batch_start_date' => '23rd Sep, 26',
                 'batch_timing' => '8:30 PM to 9:30 PM',
                 'batch_pills' => 'Online, Weekday (TTS)',
-                'batch_seats_left' => '10'
+                'batch_seats_left' => '10',
+                'base_visitor_floor' => '1840'
             )
         ),
         'scm' => array(
@@ -1385,6 +1396,7 @@ function techleadsit_sanitize_course_settings($input) {
     $sanitized['batch_timing'] = sanitize_text_field($input['batch_timing'] ?? '');
     $sanitized['batch_pills'] = sanitize_text_field($input['batch_pills'] ?? '');
     $sanitized['batch_seats_left'] = sanitize_text_field($input['batch_seats_left'] ?? '');
+    $sanitized['base_visitor_floor'] = sanitize_text_field($input['base_visitor_floor'] ?? '1840');
 
     return $sanitized;
 }
@@ -1551,6 +1563,13 @@ function techleadsit_render_multi_course_settings_page() {
                         <th scope="row" style="font-weight: 600; color: #475569;">Mode Badges (Comma-separated)</th>
                         <td>
                             <input type="text" id="field_batch_pills" name="techleadsit_course_settings_<?php echo esc_attr($active_tab); ?>[batch_pills]" value="<?php echo esc_attr($opts['batch_pills']); ?>" class="large-text" style="padding: 7px 12px; border-radius: 6px; border: 1px solid #cbd5e1;" placeholder="Online, Weekday (TTS)">
+                        </td>
+                    </tr>
+                                        <tr>
+                        <th scope="row" style="font-weight: 600; color: #475569;">Live Visitor Counter Base Floor</th>
+                        <td>
+                            <input type="text" id="field_base_visitor_floor" name="techleadsit_course_settings_<?php echo esc_attr($active_tab); ?>[base_visitor_floor]" value="<?php echo esc_attr($opts['base_visitor_floor'] ?? '1840'); ?>" style="width: 120px; padding: 7px 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-weight: 700;" placeholder="1840">
+                            <p class="description" style="color: #64748b; margin-top: 5px;">Starting baseline for live visitor count. Increments on every real visit and never decreases.</p>
                         </td>
                     </tr>
                     <tr>

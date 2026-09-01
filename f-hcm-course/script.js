@@ -5,6 +5,54 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // ==========================================================================
+    // Persistent Ascending Live Visitor Counter (Never Decreases)
+    // ==========================================================================
+    (function initPersistentVisitorCounter() {
+        const courseId = window.TECHLEADSIT_BATCH_CONFIG?.courseId || 'hcm';
+        const storageKey = 'techleadsit_visitor_counter_' + courseId;
+        const baseFloor = parseInt(window.TECHLEADSIT_BATCH_CONFIG?.baseVisitorFloor, 10) || 1842;
+        
+        // Retrieve stored count
+        let stored = parseInt(localStorage.getItem(storageKey), 10);
+        if (isNaN(stored) || stored < baseFloor) {
+            stored = baseFloor + Math.floor(Math.random() * 8) + 1;
+        } else {
+            // Increment monotonically on every visit (never decrease)
+            stored += Math.floor(Math.random() * 2) + 1;
+        }
+        localStorage.setItem(storageKey, stored);
+
+        // Animate counter display
+        const countEl = document.getElementById('liveVisitorCount');
+        if (countEl) {
+            let current = Math.max(baseFloor - 40, stored - 25);
+            const step = Math.max(1, Math.ceil((stored - current) / 15));
+            const timer = setInterval(() => {
+                current += step;
+                if (current >= stored) {
+                    current = stored;
+                    clearInterval(timer);
+                }
+                countEl.textContent = Number(current).toLocaleString('en-IN');
+            }, 40);
+        }
+
+        // Live viewers in batch card (organic fluctuation between 18 and 36)
+        const liveViewerEl = document.getElementById('cohortLiveViewerCount');
+        if (liveViewerEl) {
+            let viewers = 18 + Math.floor(Math.random() * 15);
+            liveViewerEl.textContent = viewers;
+            
+            setInterval(() => {
+                const delta = Math.random() > 0.5 ? 1 : -1;
+                viewers = Math.min(38, Math.max(14, viewers + delta));
+                liveViewerEl.textContent = viewers;
+            }, 12000);
+        }
+    })();
+
+
+    // ==========================================================================
     // Dynamic Campaign Strategy: URL Query Overrides & Marketing Parameters
     // ==========================================================================
     (function handleMarketingCampaignOverrides() {
