@@ -1456,8 +1456,8 @@ function techleadsit_render_multi_course_settings_page() {
                 <button type="button" class="button" onclick="applyCampaignPreset('weekend')" style="background: rgba(255,255,255,0.12); color: #fff; border: 1px solid rgba(255,255,255,0.3); font-weight: 700; font-size: 12px; border-radius: 6px; padding: 4px 12px; cursor: pointer;">
                     🎯 Next Weekend Cohort
                 </button>
-                <button type="button" class="button" onclick="applyCampaignPreset('flagship')" style="background: rgba(255,255,255,0.12); color: #fff; border: 1px solid rgba(255,255,255,0.3); font-weight: 700; font-size: 12px; border-radius: 6px; padding: 4px 12px; cursor: pointer;">
-                    📅 23rd September Batch
+                <button type="button" class="button" onclick="applyCampaignPreset('upcoming_weekday')" style="background: rgba(255,255,255,0.12); color: #fff; border: 1px solid rgba(255,255,255,0.3); font-weight: 700; font-size: 12px; border-radius: 6px; padding: 4px 12px; cursor: pointer;">
+                    🗓️ Upcoming Weekday Batch (Auto-Calc)
                 </button>
                 <button type="button" class="button" onclick="applyCampaignPreset('resetEvergreen')" style="background: #ef4444; color: #fff; border: 1px solid #dc2626; font-weight: 700; font-size: 12px; border-radius: 6px; padding: 4px 12px; cursor: pointer;">
                     🔄 Reset to Clean Default
@@ -1632,16 +1632,31 @@ function techleadsit_render_multi_course_settings_page() {
                 document.getElementById('field_batch_pills').value = 'Weekend Only, Live Online';
                 document.getElementById('field_batch_seats_left').value = '6';
             }
-            else if (type === 'flagship') {
+            else if (type === 'upcoming_weekday') {
+                // Calculate the next upcoming Monday or Wednesday dynamically
+                const day = now.getDay();
+                let daysToAdd = 1;
+                if (day === 1) daysToAdd = 2; // Monday -> Wednesday
+                else if (day === 2) daysToAdd = 1; // Tuesday -> Wednesday
+                else if (day === 3) daysToAdd = 5; // Wednesday -> next Monday
+                else if (day === 4) daysToAdd = 4; // Thursday -> next Monday
+                else if (day === 5) daysToAdd = 3; // Friday -> next Monday
+                else if (day === 6) daysToAdd = 2; // Saturday -> next Monday
+                else if (day === 0) daysToAdd = 1; // Sunday -> Monday
+
+                const target = new Date(now.getTime() + daysToAdd * 24 * 60 * 60 * 1000);
+                target.setHours(20, 30, 0, 0);
+                const isoStr = target.getFullYear() + '-' + pad(target.getMonth()+1) + '-' + pad(target.getDate()) + 'T' + pad(target.getHours()) + ':' + pad(target.getMinutes());
+
                 document.getElementById('field_countdown_enabled').checked = true;
-                document.getElementById('field_countdown_target_datetime').value = '2026-09-23T20:30';
+                document.getElementById('field_countdown_target_datetime').value = isoStr;
                 document.getElementById('field_countdown_text').value = 'Next Batch starts soon - Only 4 seats left!';
                 document.getElementById('field_countdown_seats_count').value = '4';
 
                 document.getElementById('field_batch_section_enabled').checked = true;
                 document.getElementById('field_batch_title').value = 'Next Batch Starts Soon';
                 document.getElementById('field_batch_subtitle').value = 'Limited seats available - Reserve your spot today';
-                document.getElementById('field_batch_start_date').value = '23rd Sep, 26';
+                document.getElementById('field_batch_start_date').value = pad(target.getDate()) + 'th ' + target.toLocaleString('default', { month: 'short' }) + ', ' + String(target.getFullYear()).slice(-2);
                 document.getElementById('field_batch_timing').value = '8:30 PM to 9:30 PM';
                 document.getElementById('field_batch_pills').value = 'Online, Weekday (TTS)';
                 document.getElementById('field_batch_seats_left').value = '10';
