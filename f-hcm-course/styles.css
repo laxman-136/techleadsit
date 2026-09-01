@@ -4496,12 +4496,14 @@ html.lenis, html.lenis body {
     gap: 1.65rem;
     overflow-x: auto;
     scroll-behavior: auto;
-    padding: 1.5rem 0.75rem;
+    padding: 1.5rem 1rem;
     scrollbar-width: none;
     -ms-overflow-style: none;
     -webkit-overflow-scrolling: touch;
     width: 100%;
     cursor: grab;
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 1) 6%, rgba(0, 0, 0, 1) 94%, transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 1) 6%, rgba(0, 0, 0, 1) 94%, transparent 100%);
 }
 
 .testi-track::-webkit-scrollbar {
@@ -4928,7 +4930,9 @@ html.lenis, html.lenis body {
     }
     .testi-track {
         gap: 1.15rem;
-        padding: 1rem 0.35rem;
+        padding: 1rem 0.75rem;
+        -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 1) 5%, rgba(0, 0, 0, 1) 95%, transparent 100%);
+        mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 1) 5%, rgba(0, 0, 0, 1) 95%, transparent 100%);
     }
     .testi-card-wrapper {
         flex: 0 0 255px;
