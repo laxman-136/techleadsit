@@ -3,6 +3,55 @@
 // ==========================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
+
+    // ==========================================================================
+    // Dynamic Campaign Strategy: URL Query Overrides & Marketing Parameters
+    // ==========================================================================
+    (function handleMarketingCampaignOverrides() {
+        const params = new URLSearchParams(window.location.search);
+        
+        // 1. Batch Date Override (e.g. ?batch_date=28th+Sep,+26)
+        if (params.has('batch_date')) {
+            const customDate = params.get('batch_date');
+            document.querySelectorAll('.cohort-date-val').forEach(el => el.textContent = customDate);
+        }
+
+        // 2. Batch Timing Override (e.g. ?batch_time=7:00+PM+to+8:30+PM)
+        if (params.has('batch_time')) {
+            const customTime = params.get('batch_time');
+            document.querySelectorAll('.cohort-time-item span').forEach(el => el.textContent = customTime);
+        }
+
+        // 3. Batch Seats Left (e.g. ?seats=3)
+        if (params.has('seats')) {
+            const customSeats = params.get('seats');
+            document.querySelectorAll('#cohortSeatsCounter, #seats-left-counter').forEach(el => el.textContent = customSeats);
+        }
+
+        // 4. Section Visibility Toggles (e.g. ?hide_batch=1 or ?hide_countdown=1)
+        if (params.get('hide_batch') === '1') {
+            const b = document.getElementById('cohort-schedule');
+            if (b) b.style.display = 'none';
+        }
+        if (params.get('hide_countdown') === '1') {
+            const c = document.getElementById('countdownBar');
+            if (c) c.style.display = 'none';
+        }
+
+        // 5. Custom Countdown Target (e.g. ?countdown=2026-09-28T19:00)
+        if (params.has('countdown')) {
+            window.TECHLEADSIT_BATCH_CONFIG = window.TECHLEADSIT_BATCH_CONFIG || {};
+            window.TECHLEADSIT_BATCH_CONFIG.countdownTarget = params.get('countdown');
+        }
+
+        // 6. Reset Marketing Strategy Cache (e.g. ?reset_campaign=1)
+        if (params.get('reset_campaign') === '1') {
+            localStorage.removeItem('hcm_lead_submitted');
+            sessionStorage.clear();
+            console.log('[Campaign] Marketing storage reset successfully.');
+        }
+    })();
+
     // Initialize Lenis Smooth Scroll
     if (typeof Lenis !== 'undefined') {
         const lenis = new Lenis({

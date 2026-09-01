@@ -1399,25 +1399,30 @@ function techleadsit_render_multi_course_settings_page() {
     $current_course = $courses[$active_tab];
     $opts = techleadsit_get_course_options($active_tab);
     ?>
-    <div class="wrap" style="max-width: 980px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px;">
-            <h1 style="font-size: 24px; font-weight: 800; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 10px;">
-                <span class="dashicons dashicons-welcome-learn-more" style="font-size: 28px; width: 28px; height: 28px; color: #4f46e5;"></span>
-                TechLeadsIT Multi-Course Landing Pages
-            </h1>
-            <span style="background: #e0e7ff; color: #4338ca; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;">
-                Multi-Course Dynamic Engine Active
-            </span>
+    <div class="wrap" style="max-width: 1000px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+            <div>
+                <h1 style="font-size: 24px; font-weight: 800; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 10px;">
+                    <span class="dashicons dashicons-welcome-learn-more" style="font-size: 28px; width: 28px; height: 28px; color: #4f46e5;"></span>
+                    TechLeadsIT Campaign Strategy & Landing Pages
+                </h1>
+                <p style="margin: 4px 0 0; font-size: 13px; color: #64748b;">Manage batch schedules, countdown timers, and launch fresh marketing campaigns across all courses.</p>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <span style="background: #e0e7ff; color: #4338ca; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+                    <span style="width: 8px; height: 8px; background: #10b981; border-radius: 50%; display: inline-block;"></span> Dynamic Marketing Engine Active
+                </span>
+            </div>
         </div>
 
         <?php if (isset($_GET['settings-updated']) && $_GET['settings-updated']) : ?>
             <div class="notice notice-success is-dismissible" style="border-left-color: #10b981; margin-bottom: 20px;">
-                <p><strong>Settings Saved!</strong> Landing pages for <strong><?php echo esc_html($current_course['name']); ?></strong> have been updated instantly.</p>
+                <p><strong>Campaign Updated!</strong> Landing pages for <strong><?php echo esc_html($current_course['name']); ?></strong> are now broadcasting your updated schedule.</p>
             </div>
         <?php endif; ?>
 
         <!-- Course Category Tabs -->
-        <nav class="nav-tab-wrapper" style="margin-bottom: 24px; border-bottom: 2px solid #cbd5e1;">
+        <nav class="nav-tab-wrapper" style="margin-bottom: 20px; border-bottom: 2px solid #cbd5e1;">
             <?php foreach ($courses as $cid => $cdata) : 
                 $is_active = ($cid === $active_tab);
                 $tab_url = add_query_arg(array('page' => 'techleadsit-batch-settings', 'tab' => $cid), admin_url('admin.php'));
@@ -1432,7 +1437,35 @@ function techleadsit_render_multi_course_settings_page() {
             <?php endforeach; ?>
         </nav>
 
-        <form method="post" action="options.php">
+        <!-- 🚀 Marketing Strategy Quick Presets Panel -->
+        <div style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); color: #fff; border-radius: 12px; padding: 18px 24px; margin-bottom: 24px; box-shadow: 0 4px 15px rgba(49, 46, 129, 0.2);">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 12px;">
+                <div>
+                    <h3 style="margin: 0; font-size: 15px; font-weight: 700; color: #facc15; display: flex; align-items: center; gap: 8px;">
+                        <span class="dashicons dashicons-superhero-alt" style="font-size: 18px; width: 18px; height: 18px;"></span>
+                        1-Click Marketing Strategy Presets (Launch or Reset Fast)
+                    </h3>
+                    <p style="margin: 3px 0 0; font-size: 12.5px; color: #c7d2fe;">Click any preset to instantly populate the form below, then click Save.</p>
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button type="button" class="button" onclick="applyCampaignPreset('sprint3d')" style="background: rgba(255,255,255,0.12); color: #fff; border: 1px solid rgba(255,255,255,0.3); font-weight: 700; font-size: 12px; border-radius: 6px; padding: 4px 12px; cursor: pointer;">
+                    ⚡ 3-Day Urgency Sprint
+                </button>
+                <button type="button" class="button" onclick="applyCampaignPreset('weekend')" style="background: rgba(255,255,255,0.12); color: #fff; border: 1px solid rgba(255,255,255,0.3); font-weight: 700; font-size: 12px; border-radius: 6px; padding: 4px 12px; cursor: pointer;">
+                    🎯 Next Weekend Cohort
+                </button>
+                <button type="button" class="button" onclick="applyCampaignPreset('flagship')" style="background: rgba(255,255,255,0.12); color: #fff; border: 1px solid rgba(255,255,255,0.3); font-weight: 700; font-size: 12px; border-radius: 6px; padding: 4px 12px; cursor: pointer;">
+                    📅 23rd September Batch
+                </button>
+                <button type="button" class="button" onclick="applyCampaignPreset('resetEvergreen')" style="background: #ef4444; color: #fff; border: 1px solid #dc2626; font-weight: 700; font-size: 12px; border-radius: 6px; padding: 4px 12px; cursor: pointer;">
+                    🔄 Reset to Clean Default
+                </button>
+            </div>
+        </div>
+
+        <form method="post" action="options.php" id="techleadsitForm">
             <?php settings_fields('techleadsit_course_group_' . $active_tab); ?>
 
             <!-- Section 1: Sticky Countdown Bar -->
@@ -1442,10 +1475,10 @@ function techleadsit_render_multi_course_settings_page() {
                         <h2 style="font-size: 17px; font-weight: 700; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 8px;">
                             ⚡ Top Sticky Countdown Bar (<?php echo esc_html($current_course['name']); ?>)
                         </h2>
-                        <p style="margin: 4px 0 0; font-size: 12.5px; color: #64748b;">Controls the top urgency bar across all <?php echo count($current_course['slugs']); ?> landing pages in this course.</p>
+                        <p style="margin: 4px 0 0; font-size: 12.5px; color: #64748b;">Broadcasts live countdown urgency across all <?php echo count($current_course['slugs']); ?> landing pages in this course.</p>
                     </div>
                     <label style="display: inline-flex; align-items: center; cursor: pointer; font-weight: 700; color: #1e293b; font-size: 14px; background: #f8fafc; padding: 6px 14px; border-radius: 8px; border: 1px solid #cbd5e1;">
-                        <input type="checkbox" name="techleadsit_course_settings_<?php echo esc_attr($active_tab); ?>[countdown_enabled]" value="1" <?php checked(1, (int)$opts['countdown_enabled']); ?> style="margin-right: 8px;">
+                        <input type="checkbox" id="field_countdown_enabled" name="techleadsit_course_settings_<?php echo esc_attr($active_tab); ?>[countdown_enabled]" value="1" <?php checked(1, (int)$opts['countdown_enabled']); ?> style="margin-right: 8px;">
                         Enable Top Bar
                     </label>
                 </div>
@@ -1454,20 +1487,20 @@ function techleadsit_render_multi_course_settings_page() {
                     <tr>
                         <th scope="row" style="width: 220px; font-weight: 600; color: #475569;">Target Demo Date & Time</th>
                         <td>
-                            <input type="datetime-local" name="techleadsit_course_settings_<?php echo esc_attr($active_tab); ?>[countdown_target_datetime]" value="<?php echo esc_attr($opts['countdown_target_datetime']); ?>" class="regular-text" style="padding: 7px 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-weight: 600;">
-                            <p class="description" style="color: #64748b; margin-top: 5px;">Set the date and time when the next demo/batch begins (e.g. <code>2026-09-23 20:30</code>). The countdown on all <?php echo esc_html($current_course['name']); ?> pages will tick down to this moment.</p>
+                            <input type="datetime-local" id="field_countdown_target_datetime" name="techleadsit_course_settings_<?php echo esc_attr($active_tab); ?>[countdown_target_datetime]" value="<?php echo esc_attr($opts['countdown_target_datetime']); ?>" class="regular-text" style="padding: 7px 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-weight: 600;">
+                            <p class="description" style="color: #64748b; margin-top: 5px;">Countdown ticks down to this exact datetime (e.g. <code>2026-09-23 20:30</code>).</p>
                         </td>
                     </tr>
                     <tr>
                         <th scope="row" style="font-weight: 600; color: #475569;">Announcement Text</th>
                         <td>
-                            <input type="text" name="techleadsit_course_settings_<?php echo esc_attr($active_tab); ?>[countdown_text]" value="<?php echo esc_attr($opts['countdown_text']); ?>" class="large-text" style="padding: 7px 12px; border-radius: 6px; border: 1px solid #cbd5e1;">
+                            <input type="text" id="field_countdown_text" name="techleadsit_course_settings_<?php echo esc_attr($active_tab); ?>[countdown_text]" value="<?php echo esc_attr($opts['countdown_text']); ?>" class="large-text" style="padding: 7px 12px; border-radius: 6px; border: 1px solid #cbd5e1;">
                         </td>
                     </tr>
                     <tr>
                         <th scope="row" style="font-weight: 600; color: #475569;">Seats Left Number</th>
                         <td>
-                            <input type="text" name="techleadsit_course_settings_<?php echo esc_attr($active_tab); ?>[countdown_seats_count]" value="<?php echo esc_attr($opts['countdown_seats_count']); ?>" style="width: 90px; padding: 7px 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-weight: 700;">
+                            <input type="text" id="field_countdown_seats_count" name="techleadsit_course_settings_<?php echo esc_attr($active_tab); ?>[countdown_seats_count]" value="<?php echo esc_attr($opts['countdown_seats_count']); ?>" style="width: 90px; padding: 7px 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-weight: 700;">
                         </td>
                     </tr>
                 </table>
@@ -1483,7 +1516,7 @@ function techleadsit_render_multi_course_settings_page() {
                         <p style="margin: 4px 0 0; font-size: 12.5px; color: #64748b;">Controls the royal purple batch schedule section above "How Our Training Program Works".</p>
                     </div>
                     <label style="display: inline-flex; align-items: center; cursor: pointer; font-weight: 700; color: #1e293b; font-size: 14px; background: #f8fafc; padding: 6px 14px; border-radius: 8px; border: 1px solid #cbd5e1;">
-                        <input type="checkbox" name="techleadsit_course_settings_<?php echo esc_attr($active_tab); ?>[batch_section_enabled]" value="1" <?php checked(1, (int)$opts['batch_section_enabled']); ?> style="margin-right: 8px;">
+                        <input type="checkbox" id="field_batch_section_enabled" name="techleadsit_course_settings_<?php echo esc_attr($active_tab); ?>[batch_section_enabled]" value="1" <?php checked(1, (int)$opts['batch_section_enabled']); ?> style="margin-right: 8px;">
                         Show Batch Section
                     </label>
                 </div>
@@ -1492,38 +1525,38 @@ function techleadsit_render_multi_course_settings_page() {
                     <tr>
                         <th scope="row" style="width: 220px; font-weight: 600; color: #475569;">Section Headline</th>
                         <td>
-                            <input type="text" name="techleadsit_course_settings_<?php echo esc_attr($active_tab); ?>[batch_title]" value="<?php echo esc_attr($opts['batch_title']); ?>" class="large-text" style="padding: 7px 12px; border-radius: 6px; border: 1px solid #cbd5e1;">
+                            <input type="text" id="field_batch_title" name="techleadsit_course_settings_<?php echo esc_attr($active_tab); ?>[batch_title]" value="<?php echo esc_attr($opts['batch_title']); ?>" class="large-text" style="padding: 7px 12px; border-radius: 6px; border: 1px solid #cbd5e1;">
                         </td>
                     </tr>
                     <tr>
                         <th scope="row" style="font-weight: 600; color: #475569;">Section Subtitle</th>
                         <td>
-                            <input type="text" name="techleadsit_course_settings_<?php echo esc_attr($active_tab); ?>[batch_subtitle]" value="<?php echo esc_attr($opts['batch_subtitle']); ?>" class="large-text" style="padding: 7px 12px; border-radius: 6px; border: 1px solid #cbd5e1;">
+                            <input type="text" id="field_batch_subtitle" name="techleadsit_course_settings_<?php echo esc_attr($active_tab); ?>[batch_subtitle]" value="<?php echo esc_attr($opts['batch_subtitle']); ?>" class="large-text" style="padding: 7px 12px; border-radius: 6px; border: 1px solid #cbd5e1;">
                         </td>
                     </tr>
                     <tr>
                         <th scope="row" style="font-weight: 600; color: #475569;">Batch Start Date Badge</th>
                         <td>
-                            <input type="text" name="techleadsit_course_settings_<?php echo esc_attr($active_tab); ?>[batch_start_date]" value="<?php echo esc_attr($opts['batch_start_date']); ?>" class="regular-text" style="padding: 7px 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-weight: 700;" placeholder="23rd Sep, 26">
+                            <input type="text" id="field_batch_start_date" name="techleadsit_course_settings_<?php echo esc_attr($active_tab); ?>[batch_start_date]" value="<?php echo esc_attr($opts['batch_start_date']); ?>" class="regular-text" style="padding: 7px 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-weight: 700;" placeholder="23rd Sep, 26">
                             <p class="description" style="color: #64748b; margin-top: 5px;">Displayed in the purple date pill box (e.g. <code>23rd Sep, 26</code>).</p>
                         </td>
                     </tr>
                     <tr>
                         <th scope="row" style="font-weight: 600; color: #475569;">Batch Timing</th>
                         <td>
-                            <input type="text" name="techleadsit_course_settings_<?php echo esc_attr($active_tab); ?>[batch_timing]" value="<?php echo esc_attr($opts['batch_timing']); ?>" class="regular-text" style="padding: 7px 12px; border-radius: 6px; border: 1px solid #cbd5e1;" placeholder="8:30 PM to 9:30 PM">
+                            <input type="text" id="field_batch_timing" name="techleadsit_course_settings_<?php echo esc_attr($active_tab); ?>[batch_timing]" value="<?php echo esc_attr($opts['batch_timing']); ?>" class="regular-text" style="padding: 7px 12px; border-radius: 6px; border: 1px solid #cbd5e1;" placeholder="8:30 PM to 9:30 PM">
                         </td>
                     </tr>
                     <tr>
                         <th scope="row" style="font-weight: 600; color: #475569;">Mode Badges (Comma-separated)</th>
                         <td>
-                            <input type="text" name="techleadsit_course_settings_<?php echo esc_attr($active_tab); ?>[batch_pills]" value="<?php echo esc_attr($opts['batch_pills']); ?>" class="large-text" style="padding: 7px 12px; border-radius: 6px; border: 1px solid #cbd5e1;" placeholder="Online, Weekday (TTS)">
+                            <input type="text" id="field_batch_pills" name="techleadsit_course_settings_<?php echo esc_attr($active_tab); ?>[batch_pills]" value="<?php echo esc_attr($opts['batch_pills']); ?>" class="large-text" style="padding: 7px 12px; border-radius: 6px; border: 1px solid #cbd5e1;" placeholder="Online, Weekday (TTS)">
                         </td>
                     </tr>
                     <tr>
                         <th scope="row" style="font-weight: 600; color: #475569;">Seats Left Count</th>
                         <td>
-                            <input type="text" name="techleadsit_course_settings_<?php echo esc_attr($active_tab); ?>[batch_seats_left]" value="<?php echo esc_attr($opts['batch_seats_left']); ?>" style="width: 90px; padding: 7px 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-weight: 700;" placeholder="10">
+                            <input type="text" id="field_batch_seats_left" name="techleadsit_course_settings_<?php echo esc_attr($active_tab); ?>[batch_seats_left]" value="<?php echo esc_attr($opts['batch_seats_left']); ?>" style="width: 90px; padding: 7px 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-weight: 700;" placeholder="10">
                         </td>
                     </tr>
                 </table>
@@ -1556,6 +1589,85 @@ function techleadsit_render_multi_course_settings_page() {
                 <?php submit_button('Save ' . esc_html($current_course['name']) . ' Settings', 'primary', 'submit', false, array('style' => 'background: #4f46e5; border-color: #4338ca; padding: 8px 24px; font-weight: 800; font-size: 14px; border-radius: 8px; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25); cursor: pointer;')); ?>
             </div>
         </form>
+
+        <script>
+        function applyCampaignPreset(type) {
+            const now = new Date();
+            function pad(n) { return String(n).padStart(2, '0'); }
+
+            if (type === 'sprint3d') {
+                const target = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
+                target.setHours(20, 30, 0, 0);
+                const isoStr = target.getFullYear() + '-' + pad(target.getMonth()+1) + '-' + pad(target.getDate()) + 'T' + pad(target.getHours()) + ':' + pad(target.getMinutes());
+                
+                document.getElementById('field_countdown_enabled').checked = true;
+                document.getElementById('field_countdown_target_datetime').value = isoStr;
+                document.getElementById('field_countdown_text').value = 'Next Batch starts in 3 Days - Only 4 seats left!';
+                document.getElementById('field_countdown_seats_count').value = '4';
+
+                document.getElementById('field_batch_section_enabled').checked = true;
+                document.getElementById('field_batch_title').value = 'Next Live Sprint Batch Starts Soon';
+                document.getElementById('field_batch_subtitle').value = 'High-velocity fast track batch with real-time lab setup';
+                document.getElementById('field_batch_start_date').value = pad(target.getDate()) + 'th ' + target.toLocaleString('default', { month: 'short' }) + ', 26';
+                document.getElementById('field_batch_timing').value = '8:30 PM to 9:30 PM';
+                document.getElementById('field_batch_pills').value = 'Online Live, Fast Track';
+                document.getElementById('field_batch_seats_left').value = '4';
+            } 
+            else if (type === 'weekend') {
+                const daysUntilSat = (6 - now.getDay() + 7) % 7 || 7;
+                const target = new Date(now.getTime() + daysUntilSat * 24 * 60 * 60 * 1000);
+                target.setHours(10, 0, 0, 0);
+                const isoStr = target.getFullYear() + '-' + pad(target.getMonth()+1) + '-' + pad(target.getDate()) + 'T' + pad(target.getHours()) + ':' + pad(target.getMinutes());
+
+                document.getElementById('field_countdown_enabled').checked = true;
+                document.getElementById('field_countdown_target_datetime').value = isoStr;
+                document.getElementById('field_countdown_text').value = 'Weekend Masterclass Starts This Saturday - Limited Slots!';
+                document.getElementById('field_countdown_seats_count').value = '6';
+
+                document.getElementById('field_batch_section_enabled').checked = true;
+                document.getElementById('field_batch_title').value = 'Upcoming Weekend Batch Starts Soon';
+                document.getElementById('field_batch_subtitle').value = 'Convenient weekend training designed for working professionals';
+                document.getElementById('field_batch_start_date').value = pad(target.getDate()) + 'th ' + target.toLocaleString('default', { month: 'short' }) + ', 26';
+                document.getElementById('field_batch_timing').value = 'Sat & Sun 10:00 AM to 1:00 PM';
+                document.getElementById('field_batch_pills').value = 'Weekend Only, Live Online';
+                document.getElementById('field_batch_seats_left').value = '6';
+            }
+            else if (type === 'flagship') {
+                document.getElementById('field_countdown_enabled').checked = true;
+                document.getElementById('field_countdown_target_datetime').value = '2026-09-23T20:30';
+                document.getElementById('field_countdown_text').value = 'Next Batch starts soon - Only 4 seats left!';
+                document.getElementById('field_countdown_seats_count').value = '4';
+
+                document.getElementById('field_batch_section_enabled').checked = true;
+                document.getElementById('field_batch_title').value = 'Next Batch Starts Soon';
+                document.getElementById('field_batch_subtitle').value = 'Limited seats available - Reserve your spot today';
+                document.getElementById('field_batch_start_date').value = '23rd Sep, 26';
+                document.getElementById('field_batch_timing').value = '8:30 PM to 9:30 PM';
+                document.getElementById('field_batch_pills').value = 'Online, Weekday (TTS)';
+                document.getElementById('field_batch_seats_left').value = '10';
+            }
+            else if (type === 'resetEvergreen') {
+                document.getElementById('field_countdown_enabled').checked = true;
+                document.getElementById('field_countdown_target_datetime').value = '2026-09-23T20:30';
+                document.getElementById('field_countdown_text').value = 'Next Batch starts soon - Only 4 seats left!';
+                document.getElementById('field_countdown_seats_count').value = '4';
+
+                document.getElementById('field_batch_section_enabled').checked = true;
+                document.getElementById('field_batch_title').value = 'Next Batch Starts Soon';
+                document.getElementById('field_batch_subtitle').value = 'Limited seats available - Reserve your spot today';
+                document.getElementById('field_batch_start_date').value = '23rd Sep, 26';
+                document.getElementById('field_batch_timing').value = '8:30 PM to 9:30 PM';
+                document.getElementById('field_batch_pills').value = 'Online, Weekday (TTS)';
+                document.getElementById('field_batch_seats_left').value = '10';
+            }
+
+            // Visual pulse feedback
+            const form = document.getElementById('techleadsitForm');
+            form.style.transition = 'opacity 0.2s ease';
+            form.style.opacity = '0.5';
+            setTimeout(() => { form.style.opacity = '1'; }, 200);
+        }
+        </script>
     </div>
     <?php
 }
