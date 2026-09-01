@@ -5048,3 +5048,258 @@ i[class^="ri-"], i[class*=" ri-"] {
     font-size: 1.75rem;
     color: #FFFFFF;
 }
+
+/* ==========================================================================
+   Next Cohort Start Soon Section (Matching Reference Design)
+   ========================================================================== */
+.cohort-schedule-section {
+    background: #2E0854;
+    background: radial-gradient(circle at 50% 20%, #4a0e8f 0%, #20043d 70%, #140228 100%);
+    color: #FFFFFF;
+    padding: 4.25rem 0 4rem;
+    position: relative;
+    overflow: hidden;
+    border-top: 1px solid rgba(168, 85, 247, 0.2);
+    border-bottom: 1px solid rgba(168, 85, 247, 0.2);
+}
+
+.cohort-header {
+    margin-bottom: 2rem;
+}
+
+.cohort-title {
+    color: #FFFFFF;
+    font-size: clamp(2rem, 3.6vw, 2.75rem);
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -0.025em;
+    margin: 0 0 0.5rem 0;
+}
+
+.cohort-subtitle {
+    color: #D8B4FE;
+    font-size: 1.05rem;
+    margin: 0;
+    font-weight: 400;
+}
+
+/* Cohort Card Strip */
+.cohort-card-strip {
+    max-width: 960px;
+    margin: 0 auto 2.25rem;
+    background: rgba(126, 34, 206, 0.2);
+    border: 1.5px solid rgba(192, 132, 252, 0.4);
+    border-radius: 14px;
+    display: flex;
+    align-items: stretch;
+    padding: 6px;
+    gap: 8px;
+    box-shadow: 0 12px 36px -10px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.cohort-date-box {
+    background: #7E22CE;
+    background: linear-gradient(135deg, #9333EA 0%, #6B21A8 100%);
+    border-radius: 10px;
+    padding: 0.9rem 1.65rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.cohort-date-label {
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 600;
+    letter-spacing: 0.01em;
+}
+
+.cohort-date-val {
+    font-size: 1.18rem;
+    font-weight: 800;
+    color: #FFFFFF;
+    margin-top: 2px;
+    letter-spacing: -0.01em;
+}
+
+.cohort-details-bar {
+    flex: 1;
+    background: #6B21A8;
+    background: linear-gradient(90deg, #7C3AED 0%, #6D28D9 100%);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.85rem 1.4rem;
+    gap: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.cohort-left-meta {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+}
+
+.cohort-time-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #FFFFFF;
+}
+
+.cohort-time-item i {
+    font-size: 1.15rem;
+    color: #E9D5FF;
+}
+
+.cohort-pills-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.cohort-pill {
+    background: #FFFFFF;
+    color: #581C87;
+    font-size: 0.76rem;
+    font-weight: 700;
+    padding: 0.25rem 0.75rem;
+    border-radius: 50px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.cohort-right-meta {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    flex-shrink: 0;
+}
+
+.cohort-filling-fast {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: #F3E8FF;
+}
+
+.cohort-filling-fast i {
+    font-size: 1.05rem;
+    color: #FDE047;
+}
+
+.cohort-quick-apply-btn {
+    background: #FFFFFF;
+    color: #581C87;
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem 1.2rem;
+    font-size: 0.86rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+.cohort-quick-apply-btn:hover {
+    background: #FAF5FF;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+    color: #4C1D95;
+}
+
+/* Actions Row */
+.cohort-actions-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+}
+
+.btn-cohort-outline {
+    background: transparent;
+    color: #FFFFFF;
+    border: 1.5px solid #D8B4FE;
+    border-radius: 8px;
+    padding: 0.8rem 1.85rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-cohort-outline:hover {
+    background: rgba(216, 180, 254, 0.15);
+    border-color: #FFFFFF;
+    color: #FFFFFF;
+    transform: translateY(-2px);
+}
+
+.btn-cohort-solid {
+    background: #FAF5FF;
+    color: #4C1D95;
+    border: 1.5px solid #FAF5FF;
+    border-radius: 8px;
+    padding: 0.8rem 2.2rem;
+    font-size: 0.95rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.btn-cohort-solid:hover {
+    background: #FFFFFF;
+    color: #3B0764;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+
+@media (max-width: 900px) {
+    .cohort-card-strip {
+        flex-direction: column;
+    }
+    .cohort-details-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.85rem;
+    }
+    .cohort-right-meta {
+        width: 100%;
+        justify-content: space-between;
+    }
+}
+
+@media (max-width: 600px) {
+    .cohort-schedule-section {
+        padding: 3rem 0;
+    }
+    .cohort-left-meta {
+        gap: 0.75rem;
+    }
+    .cohort-actions-row {
+        flex-direction: column;
+        width: 100%;
+    }
+    .btn-cohort-outline,
+    .btn-cohort-solid {
+        width: 100%;
+        justify-content: center;
+    }
+}

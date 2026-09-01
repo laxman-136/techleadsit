@@ -80,6 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 5. Form Modals (Lead capture modal, syllabus download gate)
     initModals();
 
+
     // 6. Testimonial Slider / Carousel
     initTestimonialSlider();
 
@@ -110,9 +111,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* ==========================================================================
-   1. Evergreen Countdown Timer
+   1. Evergreen / Targeted Countdown Timer (Target: Configurable from WP Admin)
    ========================================================================== */
-function initCountdown(daysSpan) {
+function initCountdown() {
     const dEl = document.getElementById('days');
     const hEl = document.getElementById('hours');
     const mEl = document.getElementById('minutes');
@@ -120,47 +121,42 @@ function initCountdown(daysSpan) {
     
     if (!dEl || !hEl || !mEl || !sEl) return;
 
-    // Helper to calculate the next target date: targets next Wednesday or Sunday at 6 PM
-    function getNextTargetDate() {
-        const now = new Date();
-        const currentDay = now.getDay();
-        const currentHour = now.getHours();
-        
-        let target = new Date();
-        target.setHours(18, 0, 0, 0); // Target 6:00 PM
-        
-        if (currentDay === 0) { // Sunday
-            if (currentHour >= 18) {
-                target.setDate(now.getDate() + 3); // target Wednesday
+    function getTargetTime() {
+        // 1. Check if set dynamically via WordPress Admin Settings
+        if (window.TECHLEADSIT_BATCH_CONFIG && window.TECHLEADSIT_BATCH_CONFIG.countdownTarget) {
+            const rawTarget = window.TECHLEADSIT_BATCH_CONFIG.countdownTarget;
+            const parsed = new Date(rawTarget).getTime();
+            if (!isNaN(parsed)) {
+                const now = new Date().getTime();
+                if (now < parsed) {
+                    return parsed;
+                }
+                // If the target in WP has expired, roll over to the next 7-day upcoming cycle
+                const daysToAdd = 7 - (((now - parsed) / (1000 * 60 * 60 * 24)) % 7);
+                return parsed + Math.floor(daysToAdd * 24 * 60 * 60 * 1000);
             }
-        } else if (currentDay === 1) { // Monday
-            target.setDate(now.getDate() + 2); // target Wednesday
-        } else if (currentDay === 2) { // Tuesday
-            target.setDate(now.getDate() + 1); // target Wednesday
-        } else if (currentDay === 3) { // Wednesday
-            if (currentHour >= 18) {
-                target.setDate(now.getDate() + 4); // target Sunday
-            }
-        } else if (currentDay === 4) { // Thursday
-            target.setDate(now.getDate() + 3); // target Sunday
-        } else if (currentDay === 5) { // Friday
-            target.setDate(now.getDate() + 2); // target Sunday
-        } else if (currentDay === 6) { // Saturday
-            target.setDate(now.getDate() + 1); // target Sunday
         }
-        
+
+        // 2. Default target: 23 September 2026, 20:30:00 (8:30 PM IST)
+        const now = new Date();
+        const year = now.getFullYear();
+        let target = new Date(year, 8, 23, 20, 30, 0, 0);
+
+        if (now.getTime() >= target.getTime()) {
+            const daysToAdd = 7 - (((now.getTime() - target.getTime()) / (1000 * 60 * 60 * 24)) % 7);
+            target = new Date(now.getTime() + daysToAdd * 24 * 60 * 60 * 1000);
+            target.setHours(20, 30, 0, 0);
+        }
         return target.getTime();
     }
 
-    const targetTime = getNextTargetDate();
-    const targetDate = new Date(targetTime);
+    const targetTime = getTargetTime();
 
     function updateTimer() {
         const currentTime = new Date().getTime();
-        const difference = targetDate - currentTime;
+        const difference = targetTime - currentTime;
 
         if (difference <= 0) {
-            // Recalculate target when expired
             dEl.textContent = "00";
             hEl.textContent = "00";
             mEl.textContent = "00";
@@ -173,10 +169,10 @@ function initCountdown(daysSpan) {
         const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((difference % (1000 * 60)) / 1000);
 
-        dEl.textContent = days.toString().padStart(2, '0');
-        hEl.textContent = hours.toString().padStart(2, '0');
-        mEl.textContent = minutes.toString().padStart(2, '0');
-        sEl.textContent = seconds.toString().padStart(2, '0');
+        dEl.textContent = String(days).padStart(2, '0');
+        hEl.textContent = String(hours).padStart(2, '0');
+        mEl.textContent = String(minutes).padStart(2, '0');
+        sEl.textContent = String(seconds).padStart(2, '0');
     }
 
     updateTimer();
@@ -272,16 +268,27 @@ function initHeadlineSwapping() {
 function initModals() {
     const leadModal = document.getElementById('leadModal');
     const downloadModal = document.getElementById('downloadModal');
+    const advisorModal = document.getElementById('advisorModal');
     const closeLeadBtn = document.getElementById('modalCloseBtn');
     const closeDownloadBtn = document.getElementById('downloadCloseBtn');
+    const closeAdvisorBtn = document.getElementById('advisorCloseBtn');
     
-    // Wire all cta-triggers to open the Lead Capture Modal
-    document.querySelectorAll('.cta-trigger').forEach(btn => {
+    // Wire all cta-triggers, gate-demo-btns, and apply buttons to open the Lead Capture Modal
+    document.querySelectorAll('.cta-trigger, .gate-demo-btn, .cohort-quick-apply-btn, .btn-cohort-solid').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.preventDefault();
             openModal(leadModal);
         });
     });
+
+    // Wire Request a Callback button to open Advisor Modal
+    const callbackBtn = document.getElementById('cohortCallbackBtn');
+    if (callbackBtn && advisorModal) {
+        callbackBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            openModal(advisorModal);
+        });
+    }
 
     // Wire curriculum download button to open PDF Download Gate Modal
     document.querySelectorAll('.gate-download-btn').forEach(btn => {
@@ -344,8 +351,6 @@ function initModals() {
     });
 
     // Trigger Advisor modal (75% Scroll)
-    const advisorModal = document.getElementById('advisorModal');
-    const closeAdvisorBtn = document.getElementById('advisorCloseBtn');
     let hasTriggeredAdvisorModal = false;
 
     window.addEventListener('scroll', () => {
