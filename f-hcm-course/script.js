@@ -5,6 +5,74 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // ==========================================================================
+    // Dynamic Geo-IP Location Personalization (Live Visitor City Detection)
+    // ==========================================================================
+    (async function initGeoLocationPersonalization() {
+        async function getVisitorCity() {
+            // 1. Check URL parameters first (?city=Bangalore or ?location=Pune)
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('city')) return urlParams.get('city');
+            if (urlParams.has('location')) return urlParams.get('location');
+
+            // 2. Check slug context (e.g. -in-bangalore, -in-pune, -in-chennai)
+            const pathname = window.location.pathname.toLowerCase();
+            if (pathname.includes('bangalore') || pathname.includes('bengaluru')) return 'Bengaluru';
+            if (pathname.includes('pune')) return 'Pune';
+            if (pathname.includes('chennai')) return 'Chennai';
+            if (pathname.includes('hyderabad')) return 'Hyderabad';
+
+            // 3. Check cached location in sessionStorage
+            const cachedCity = sessionStorage.getItem('techleads_visitor_city');
+            if (cachedCity) return cachedCity;
+
+            // 4. Fast IP Lookup via high-speed Geo-IP API with 2s timeout
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 2000);
+                const res = await fetch('https://ipapi.co/json/', { signal: controller.signal });
+                clearTimeout(timeoutId);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.city) {
+                        sessionStorage.setItem('techleads_visitor_city', data.city);
+                        return data.city;
+                    }
+                }
+            } catch (e) {
+                // Secondary fallback API
+                try {
+                    const res2 = await fetch('https://ipwho.is/');
+                    if (res2.ok) {
+                        const data2 = await res2.json();
+                        if (data2.city) {
+                            sessionStorage.setItem('techleads_visitor_city', data2.city);
+                            return data2.city;
+                        }
+                    }
+                } catch (err) {}
+            }
+
+            return 'Hyderabad'; // Default safe fallback
+        }
+
+        const detectedCity = await getVisitorCity();
+        
+        // Update all elements with class .geo-city
+        document.querySelectorAll('.geo-city').forEach(el => {
+            el.textContent = detectedCity;
+        });
+
+        // Store detected city for form submission
+        window.detectedVisitorCity = detectedCity;
+        document.querySelectorAll('input[name="location"], input.user-city').forEach(input => {
+            input.value = detectedCity;
+        });
+
+        console.log('[GeoIP] Detected Visitor City:', detectedCity);
+    })();
+
+
+    // ==========================================================================
     // Dynamic Seats Left Synchronizer
     // ==========================================================================
     (function syncDynamicSeatsCount() {
@@ -2512,6 +2580,11 @@ function initExitIntent() {
         // Trigger only if mouse moves up past the top boundary
         if (e.clientY < 20) {
             hasTriggeredExit = true;
+            const city = window.detectedVisitorCity || 'Hyderabad';
+            const sub = exitModal.querySelector('.exit-subtitle');
+            if (sub) {
+                sub.innerHTML = `Did you know an Oracle Fusion HCM consultant in <strong class="geo-city" style="color: #0076BE;">${city}</strong> earns an average of ₹10.5L – ₹12.5L per year?`;
+            }
             openModal(exitModal);
         }
     });
