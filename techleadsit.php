@@ -149,7 +149,14 @@ function techleadsit_route_landing_pages() {
                 if (!$countdown_enabled) {
                     $html_content = str_replace('id="countdownBar"', 'id="countdownBar" style="display: none !important;"', $html_content);
                 } else {
-                    $html_content = preg_replace('/<span class="countdown-text">.*?<\/span>/', '<span class="countdown-text"><i class="ri-flashlight-fill ri-flash-icon"></i> ' . esc_html($countdown_text) . '</span>', $html_content);
+                    // Embed seats number if present
+                    $clean_text = esc_html($countdown_text);
+                    if (!empty($countdown_seats) && strpos($clean_text, $countdown_seats) === false) {
+                        // Replace any digit before 'seats left' with the exact seats count
+                        $clean_text = preg_replace('/\d+(\s+seats\s+left)/i', $countdown_seats . '$1', $clean_text);
+                    }
+                    $formatted_msg = '<span class="countdown-text" id="countdownText"><i class="ri-flashlight-fill ri-flash-icon"></i> <span id="countdownMsg">' . $clean_text . '</span></span>';
+                    $html_content = preg_replace('/<span class="countdown-text"[^>]*>.*?<\/span>\s*<\/span>|<span class="countdown-text"[^>]*>.*?<\/span>/s', $formatted_msg, $html_content);
                 }
 
                 // Handle batch schedule section visibility and dynamic text

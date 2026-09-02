@@ -5,6 +5,37 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // ==========================================================================
+    // Dynamic Seats Left Synchronizer
+    // ==========================================================================
+    (function syncDynamicSeatsCount() {
+        const config = window.TECHLEADSIT_BATCH_CONFIG || {};
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        // 1. Top Countdown Bar Seats
+        const topSeats = urlParams.get('seats') || config.countdownSeats;
+        if (topSeats) {
+            const topSeatsEl = document.getElementById('seats-left-counter');
+            if (topSeatsEl) {
+                topSeatsEl.textContent = topSeats;
+            } else {
+                const msgEl = document.getElementById('countdownMsg');
+                if (msgEl && msgEl.innerHTML.includes('seats left')) {
+                    msgEl.innerHTML = msgEl.innerHTML.replace(/\d+(\s+seats\s+left)/i, `<strong id="seats-left-counter">${topSeats}</strong>$1`);
+                }
+            }
+        }
+
+        // 2. Next Batch Schedule Section Seats
+        const batchSeats = urlParams.get('batch_seats') || urlParams.get('seats') || config.batchSeatsLeft;
+        if (batchSeats) {
+            document.querySelectorAll('#cohortSeatsCounter').forEach(el => el.textContent = batchSeats);
+            const fillingFastEl = document.querySelector('.cohort-filling-fast strong');
+            if (fillingFastEl) fillingFastEl.textContent = batchSeats;
+        }
+    })();
+
+
+    // ==========================================================================
     // Persistent Ascending Live Visitor Counter (Never Decreases)
     // ==========================================================================
     (function initPersistentVisitorCounter() {

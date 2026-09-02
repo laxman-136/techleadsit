@@ -23,7 +23,7 @@
     <!-- Urgency Countdown & Sticky Header -->
     <div class="countdown-bar" id="countdownBar">
         <div class="container countdown-container">
-            <span class="countdown-text"><i class="ri-flashlight-fill ri-flash-icon"></i> Next Batch starts soon - Only <span id="seats-left-counter">4</span> seats left!</span>
+            <span class="countdown-text" id="countdownText"><i class="ri-flashlight-fill ri-flash-icon"></i> <span id="countdownMsg">Next Batch starts soon - Only <strong id="seats-left-counter">4</strong> seats left!</span></span>
             <div class="timer" id="timer">
                 <span class="timer-unit" id="days">00</span>d : 
                 <span class="timer-unit" id="hours">00</span>h : 
@@ -1345,7 +1345,7 @@
                         <div class="cohort-right-meta">
                             <span class="cohort-filling-fast">
                                 <i class="ri-flashlight-line"></i>
-                                <span>Filling Fast • <strong>10</strong> seats left</span>
+                                <span>Filling Fast • <strong id="cohortSeatsCounter">10</strong> seats left</span>
                             </span>
                             <button type="button" class="cohort-quick-apply-btn gate-demo-btn cta-trigger" data-trigger="cohort-quick">Apply Now</button>
                         </div>
