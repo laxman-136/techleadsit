@@ -2701,27 +2701,49 @@ function initFomoToasts() {
         [fomoData[i], fomoData[j]] = [fomoData[j], fomoData[i]];
     }
 
-    const seatsCounterEl = document.getElementById('seats-left-counter');
-    // Retrieve persisted seats left count from localStorage or default to 70
-    let seatsLeft = 70;
-    const storedSeats = localStorage.getItem('hcm_seats_left');
-    const lastReset = localStorage.getItem('hcm_seats_last_reset');
-    const nowTime = Date.now();
-
-    if (storedSeats && lastReset) {
-        // Expire seats counter cache after 12 hours to restart the funnel realistically
-        if (nowTime - parseInt(lastReset) > 12 * 60 * 60 * 1000) {
-            localStorage.setItem('hcm_seats_left', '70');
-            localStorage.setItem('hcm_seats_last_reset', nowTime.toString());
-            seatsLeft = 70;
-        } else {
-            seatsLeft = parseInt(storedSeats);
+    // ==========================================================================
+    // Realistic Time-Based Seats Decay (2 seats drop per 1 day near 30 seats)
+    // ==========================================================================
+    function getRealisticSeatsCount() {
+        const config = window.TECHLEADSIT_BATCH_CONFIG || {};
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        // If explicit seats passed via URL or WP Admin (e.g. 4 or 6), respect it
+        if (urlParams.has('seats')) return parseInt(urlParams.get('seats'), 10);
+        if (config.countdownSeats && parseInt(config.countdownSeats, 10) <= 12) {
+            return parseInt(config.countdownSeats, 10);
         }
-    } else {
-        localStorage.setItem('hcm_seats_left', '70');
-        localStorage.setItem('hcm_seats_last_reset', nowTime.toString());
-        seatsLeft = 70;
+
+        const now = Date.now();
+        const cycleStartKey = 'techleads_batch_cycle_start_' + (config.courseId || 'hcm');
+        let cycleStart = parseInt(localStorage.getItem(cycleStartKey), 10);
+
+        if (!cycleStart || isNaN(cycleStart)) {
+            cycleStart = now;
+            localStorage.setItem(cycleStartKey, cycleStart.toString());
+        }
+
+        // Calculate days elapsed (1 day = 86400000 ms)
+        const daysElapsed = (now - cycleStart) / (1000 * 60 * 60 * 24);
+        
+        // Base starting capacity near 30 seats
+        const baseCapacity = parseInt(config.countdownSeats, 10) || 30;
+        
+        // 2 positions drop every 1 full day
+        const seatsDropped = Math.floor(daysElapsed * 2);
+        let currentSeats = Math.max(2, baseCapacity - seatsDropped);
+
+        // Rollover after full 14-day cycle so it stays evergreen without ever hitting 0
+        if (daysElapsed > 14) {
+            localStorage.setItem(cycleStartKey, now.toString());
+            currentSeats = baseCapacity;
+        }
+
+        return currentSeats;
     }
+
+    const seatsCounterEl = document.getElementById('seats-left-counter');
+    let seatsLeft = getRealisticSeatsCount();
 
     if (seatsCounterEl) {
         seatsCounterEl.textContent = seatsLeft;
@@ -2744,19 +2766,12 @@ function initFomoToasts() {
         // Slide the toast in
         toast.classList.add('show');
 
-        // Dynamic seats reduction to synchronize with FOMO alerts
-        if (seatsLeft > 2) {
-            seatsLeft--;
-            localStorage.setItem('hcm_seats_left', seatsLeft.toString());
-            if (seatsCounterEl) {
-                // Animate text fade for realism
-                seatsCounterEl.style.opacity = 0;
-                setTimeout(() => {
-                    seatsCounterEl.textContent = seatsLeft;
-                    seatsCounterEl.style.opacity = 1;
-                }, 200);
-            }
+        // Synchronize seats count across all UI elements cleanly
+        const freshSeats = getRealisticSeatsCount();
+        if (seatsCounterEl) {
+            seatsCounterEl.textContent = freshSeats;
         }
+        document.querySelectorAll('#cohortSeatsCounter').forEach(el => el.textContent = freshSeats);
 
         // Slide out and hide after 4.5 seconds
         toastTimeout = setTimeout(() => {
