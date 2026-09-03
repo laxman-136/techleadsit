@@ -1146,7 +1146,7 @@ function initFormValidation() {
             q1Error: document.getElementById('hero-segment-error'),
             getQ2: () => document.querySelector('input[name="motivation"]:checked'),
             q2Error: document.getElementById('hero-motivation-error'),
-            getQ3: () => document.querySelector('input[name="background"]:checked'),
+            getQ3: () => document.querySelector('input[name="call_time"]:checked, input[name="background"]:checked'),
             q3Error: document.getElementById('hero-background-error'),
         },
         modal: {
@@ -1168,7 +1168,7 @@ function initFormValidation() {
             q1Error: document.getElementById('modal-segment-error'),
             getQ2: () => document.querySelector('input[name="modal-motivation"]:checked'),
             q2Error: document.getElementById('modal-motivation-error'),
-            getQ3: () => document.querySelector('input[name="modal-background"]:checked'),
+            getQ3: () => document.querySelector('input[name="modal-call_time"]:checked, input[name="modal-background"]:checked'),
             q3Error: document.getElementById('modal-background-error'),
         },
         gate: {
@@ -1194,7 +1194,7 @@ function initFormValidation() {
         1: { pct: "25%", txt: "Step 1 of 4: Contact Details" },
         2: { pct: "50%", txt: "Step 2 of 4: Profile Type" },
         3: { pct: "75%", txt: "Step 3 of 4: Learning Goal" },
-        4: { pct: "100%", txt: "Step 4 of 4: Experience Check" }
+        4: { pct: "100%", txt: "Step 4 of 4: Preferred Call Time" }
     };
 
     // Wire Phone prefix numeric restriction
@@ -1538,6 +1538,8 @@ function initFormValidation() {
             email: data.email,
             phone: data.phone,
             role: data.role,
+            call_time: data.background || 'Anytime',
+            preferred_call_time: data.background || 'Anytime',
             experience: data.background || 'Not Provided',
             salary: data.motivation || 'Not Provided',
             language: data.language || 'Not Provided',
