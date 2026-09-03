@@ -1019,7 +1019,7 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
     // -------------------------------------------------------------
     // For security on public repos, define 'TELECRM_API_KEY' in your server's wp-config.php:
     // define('TELECRM_API_KEY', 'your-actual-api-key-here');
-    $api_key = defined('TELECRM_API_KEY') ? TELECRM_API_KEY : ''; 
+    $api_key = (defined('TELECRM_API_KEY') && !empty(TELECRM_API_KEY)) ? TELECRM_API_KEY : '68ca5820ff2a2eda16382e4a'; 
     $telecrm_api_url = 'https://next.telecrm.in/api/b1/enterprise/' . $api_key . '/autoupdatelead'; 
 
     // Get current date/time in Indian Standard Time (IST)
@@ -1035,6 +1035,13 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
             'role' => $role,
             'salary' => $salary,
             'experience' => $experience,
+            
+            // Preferred Call Time
+            'call_time' => $call_time,
+            'preferred_call_time' => $call_time,
+            'call_slot' => $call_time,
+            'preferred_time' => $call_time,
+            'calltime' => $call_time,
             
             // Location fields
             'location' => $location,
