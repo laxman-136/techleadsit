@@ -652,9 +652,10 @@ function initTestimonialSlider() {
 
     // 1. Smooth Scroll Interpolation via requestAnimationFrame
     let isAnimating = false;
+    let animRafId = null;
 
     function smoothScrollTrackTo(targetScrollLeft, duration = 450) {
-        if (isAnimating) return;
+        if (animRafId) cancelAnimationFrame(animRafId);
         isAnimating = true;
         const startScrollLeft = track.scrollLeft;
         const distance = targetScrollLeft - startScrollLeft;
@@ -673,15 +674,16 @@ function initTestimonialSlider() {
             updateProgress();
 
             if (progress < 1) {
-                requestAnimationFrame(step);
+                animRafId = requestAnimationFrame(step);
             } else {
                 track.scrollLeft = targetScrollLeft;
                 updateProgress();
                 isAnimating = false;
+                animRafId = null;
             }
         }
 
-        requestAnimationFrame(step);
+        animRafId = requestAnimationFrame(step);
     }
 
     // 2. Navigation Step Calculator
@@ -710,30 +712,49 @@ function initTestimonialSlider() {
         });
     }
 
-    // 3. Robust Mouse Drag & Touch Swipe Engine
+    // 3. Smooth Momentum Inertia Drag & Touch Engine
     let isDown = false;
     let startX = 0;
     let scrollLeftStart = 0;
     let totalDragDistance = 0;
     let wasDragging = false;
+    let lastX = 0;
+    let lastTime = 0;
+    let velocity = 0;
+    let momentumRafId = null;
 
     // Prevent default HTML5 ghost image dragging
     track.addEventListener('dragstart', (e) => e.preventDefault());
 
     track.addEventListener('mousedown', (e) => {
-        // Only trigger on left mouse button
         if (e.button !== 0) return;
+        if (momentumRafId) cancelAnimationFrame(momentumRafId);
+        if (animRafId) cancelAnimationFrame(animRafId);
+        
         isDown = true;
         wasDragging = false;
         totalDragDistance = 0;
         track.classList.add('is-dragging');
         startX = e.pageX - track.offsetLeft;
         scrollLeftStart = track.scrollLeft;
+        lastX = e.pageX;
+        lastTime = performance.now();
+        velocity = 0;
         scheduleAutoReset();
     });
 
     window.addEventListener('mousemove', (e) => {
         if (!isDown) return;
+        const now = performance.now();
+        const dt = now - lastTime;
+        const currentX = e.pageX;
+        
+        if (dt > 0) {
+            velocity = (currentX - lastX) / dt; // pixels per millisecond
+        }
+        lastX = currentX;
+        lastTime = now;
+
         const x = e.pageX - track.offsetLeft;
         const walk = (x - startX);
         totalDragDistance += Math.abs(walk);
@@ -742,24 +763,41 @@ function initTestimonialSlider() {
             wasDragging = true;
         }
 
-        track.scrollLeft = scrollLeftStart - (walk * 1.3);
+        track.scrollLeft = scrollLeftStart - (walk * 1.25);
         updateProgress();
         scheduleAutoReset();
     });
 
     window.addEventListener('mouseup', () => {
-        if (isDown) {
-            isDown = false;
-            track.classList.remove('is-dragging');
-            scheduleAutoReset();
+        if (!isDown) return;
+        isDown = false;
+        track.classList.remove('is-dragging');
+        scheduleAutoReset();
+
+        // Apply smooth exponential momentum glide if released with velocity
+        if (Math.abs(velocity) > 0.2) {
+            let currentVelocity = velocity * 18; // Initial boost
+            const friction = 0.94; // Deceleration factor
+
+            function momentumStep() {
+                if (Math.abs(currentVelocity) < 0.3) {
+                    momentumRafId = null;
+                    return;
+                }
+                track.scrollLeft -= currentVelocity;
+                updateProgress();
+                currentVelocity *= friction;
+                momentumRafId = requestAnimationFrame(momentumStep);
+            }
+
+            momentumRafId = requestAnimationFrame(momentumStep);
         }
     });
 
     // 4. Card Flip on Click (Without triggering on Drag)
     cards.forEach(card => {
         card.addEventListener('click', (e) => {
-            if (wasDragging) {
-                // Ignore click if it was the end of a drag action
+            if (wasDragging || totalDragDistance > 8) {
                 wasDragging = false;
                 return;
             }
@@ -768,15 +806,15 @@ function initTestimonialSlider() {
         });
     });
 
-    // 5. Smart Mouse Wheel Handling (Horizontal scroll on Shift+Wheel or trackpad)
+    // 5. Seamless Lenis Wheel Coordination (Horizontal scroll on Shift+Wheel or horizontal swipe)
     track.addEventListener('wheel', (e) => {
-        // If holding Shift key or horizontal wheel gesture
         if (e.shiftKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
             e.preventDefault();
             track.scrollLeft += (e.deltaX || e.deltaY);
             updateProgress();
             scheduleAutoReset();
         }
+        // Normal vertical wheel flows naturally to document Lenis scroll
     }, { passive: false });
 
     // 6. Dynamic Scroll Progress Bar Sync
