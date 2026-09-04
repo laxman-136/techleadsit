@@ -1558,6 +1558,56 @@ function initFormValidation() {
     }
 
     // Secure submit via WordPress template-redirect REST endpoint & GTM push
+        // Direct Fail-Safe TeleCRM API Dispatcher (Zero-Loss Backup)
+    async function dispatchDirectToTeleCRM(payload) {
+        const telecrmPayload = {
+            fields: {
+                name: payload.name || '',
+                phone: (payload.phone && payload.phone.startsWith('+')) ? payload.phone : '+91' + (payload.phone || ''),
+                email: payload.email || '',
+                role: payload.role || '',
+                salary: payload.salary || payload.motivation || '',
+                experience: payload.experience || '',
+                call_time: payload.preferred_call_time || payload.call_time || 'Anytime',
+                preferred_call_time: payload.preferred_call_time || payload.call_time || 'Anytime',
+                course: payload.scm_year || 'Oracle Fusion HCM',
+                scm_year: payload.scm_year || 'Oracle Fusion HCM',
+                coursename: payload.scm_year || 'Oracle Fusion HCM',
+                location: payload.location || window.detectedVisitorCity || 'Hyderabad',
+                city: window.detectedVisitorCity || payload.location || 'Hyderabad',
+                source: payload.utm_source || 'Direct',
+                utm_source: payload.utm_source || 'Direct',
+                utm_medium: payload.utm_medium || '',
+                utm_campaign: payload.utm_campaign || '',
+                utm_adgroup: payload.utm_adgroup || '',
+                utm_term: payload.utm_term || '',
+                utm_content: payload.utm_content || '',
+                gclid: payload.gclid || '',
+                fbclid: payload.fbclid || '',
+                landing_page: window.location.href,
+                remarks: `Preferred Call Time: ${payload.preferred_call_time || payload.call_time || 'Anytime'} | Profile: ${payload.role || 'Fresh'} | Goal: ${payload.motivation || 'Career switch'}`
+            },
+            actions: [
+                {
+                    type: 'SYSTEM_NOTE',
+                    text: `Lead from Landing Page: ${window.location.href}\nCity: ${window.detectedVisitorCity || 'Hyderabad'}\nPreferred Call Time: ${payload.preferred_call_time || payload.call_time || 'Anytime'}`
+                }
+            ]
+        };
+
+        try {
+            await fetch('https://next.telecrm.in/api/b1/enterprise/68ca5820ff2a2eda16382e4a/autoupdatelead', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(telecrmPayload),
+                mode: 'cors'
+            });
+            console.log('[TeleCRM] Fail-safe direct dispatch completed successfully.');
+        } catch (err) {
+            console.warn('[TeleCRM] Direct dispatch warning:', err);
+        }
+    }
+
     function submitLead(type, formConfig) {
         const submitBtn = formConfig.form.querySelector('button[type="submit"]');
         const originalText = submitBtn ? submitBtn.textContent : 'Continue →';
@@ -1640,9 +1690,11 @@ function initFormValidation() {
                 throw new Error(res.message || 'Submission failed');
             }
         })
-        .catch(err => {
-            console.error('Lead submission error:', err);
-            // Fallback success visual state if offline/localhost so test forms don't freeze
+        .catch(async err => {
+            console.warn('WordPress REST API lead routing unavailable, triggering direct TeleCRM fail-safe:', err);
+            await dispatchDirectToTeleCRM(payload);
+            
+            // Show success view seamlessly
             formConfig.successName.textContent = data.name;
             if (formConfig.form.querySelector('.form-progress')) {
                 formConfig.form.querySelector('.form-progress').style.display = 'none';
