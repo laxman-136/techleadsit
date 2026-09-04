@@ -963,6 +963,11 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
     // Capture the 16 tracking fields
     $fbp = sanitize_text_field($params['fbp'] ?? '');
     $fbc = sanitize_text_field($params['fbc'] ?? '');
+    $fb_ad = sanitize_text_field($params['fb_ad'] ?? ($params['ad_name'] ?? ''));
+    $fb_campaign = sanitize_text_field($params['fb_campaign'] ?? ($params['campaign_name'] ?? ''));
+    $fb_adset_name = sanitize_text_field($params['fb_adset_name'] ?? ($params['adset_name'] ?? ''));
+    $fb_adset_id = sanitize_text_field($params['fb_adset_id'] ?? ($params['adset_id'] ?? ''));
+    $fb_lead_id = sanitize_text_field($params['fb_lead_id'] ?? ($params['lead_id'] ?? ''));
     $gclid = sanitize_text_field($params['gclid'] ?? '');
     $gbraid = sanitize_text_field($params['gbraid'] ?? '');
     $wbraid = sanitize_text_field($params['wbraid'] ?? '');
@@ -1117,6 +1122,13 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
             'comments' => $formatted_remarks,
             'notes' => $formatted_remarks,
             
+            // Dedicated Facebook Ads Fields (exact TeleCRM dashboard labels)
+            'Facebook Ad' => $fb_ad ?: ((stripos($final_source, 'facebook') !== false || !empty($fbclid)) ? $utm_content : ''),
+            'Facebook Campaign' => $fb_campaign ?: ((stripos($final_source, 'facebook') !== false || !empty($fbclid)) ? $utm_campaign : ''),
+            'Facebook Ad set Name' => $fb_adset_name ?: ((stripos($final_source, 'facebook') !== false || !empty($fbclid)) ? $utm_adgroup : ''),
+            'Facebook Ad set ID' => $fb_adset_id,
+            'Facebook Lead ID' => $fb_lead_id,
+
             // Tracking fields
             'landingpage' => $landing_page ?: ($params['landing_page'] ?? ''),
             'landing_page' => $landing_page ?: ($params['landing_page'] ?? ''),

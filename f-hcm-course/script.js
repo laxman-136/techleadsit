@@ -1512,7 +1512,7 @@ function initFormValidation() {
         
         const queryParams = [
             'utm_source', 'utm_medium', 'utm_campaign', 'utm_adgroup', 'utm_term', 'utm_content',
-            'gclid', 'gbraid', 'wbraid', 'fbclid'
+            'gclid', 'gbraid', 'wbraid', 'fbclid', 'fb_ad', 'fb_campaign', 'fb_adset_name', 'fb_adset_id', 'fb_lead_id', 'adset_id', 'ad_id'
         ];
         
         queryParams.forEach(param => {
@@ -1674,6 +1674,13 @@ function initFormValidation() {
                 'comments': remarksText,
                 'notes': remarksText,
                 
+                // Dedicated Facebook Ads Fields (exact TeleCRM dashboard labels)
+                'Facebook Ad': payload.fb_ad || ((payload.utm_source === 'facebook' || payload.fbclid) ? (payload.utm_content || '') : ''),
+                'Facebook Campaign': payload.fb_campaign || ((payload.utm_source === 'facebook' || payload.fbclid) ? (payload.utm_campaign || '') : ''),
+                'Facebook Ad set Name': payload.fb_adset_name || ((payload.utm_source === 'facebook' || payload.fbclid) ? (payload.utm_adgroup || '') : ''),
+                'Facebook Ad set ID': payload.fb_adset_id || payload.adset_id || '',
+                'Facebook Lead ID': payload.fb_lead_id || '',
+
                 // Hidden Tracking Fields
                 'landingpage': window.location.href,
                 'landing_page': window.location.href,
