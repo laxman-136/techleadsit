@@ -57,6 +57,7 @@ Every landing page update and CRM route modification must preserve and guarantee
    - `Exp Level`: Human-readable profile (e.g. `Working Professional`)
    - `Remarks`: Formatted multi-line summary
    - **Hidden Tracking Data**: `gclid`, `gbraid`, `wbraid`, `fbclid`, `fbp`, `fbc`, `gaclientid`, `sessionid`, `landingpage`, `referrer`, `utmsource`, `utmmedium`, `utmcampaign`, `utmadgroup`, `utmterm`, `utmcontent`.
+   - **Dedicated Facebook Ads Fields**: `Facebook Campaign`, `Facebook Ad`, `Facebook Ad set Name`, `Facebook Ad set ID`, `Facebook Lead ID`.
 2. **Never Auto-Fill Counselor Fields**:
    - Do NOT populate `Course Enrollment date`, `Course 2 Enrollment Date`, or fee payment fields on lead submission (these must remain empty for manual counselor entry).
 3. **Pre-Commit Verification**:
