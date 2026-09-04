@@ -1083,9 +1083,6 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
             'lead_date' => $lead_date,
             'leaddate' => $lead_date,
             'leadDate' => $lead_date,
-            'Course Enrollment date' => $lead_date,
-            'course_enrollment_date' => $lead_date,
-            'courseenrollmentdate' => $lead_date,
             'date' => $lead_date,
             'Date' => $lead_date,
             

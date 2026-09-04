@@ -41,3 +41,23 @@ Run the mock WordPress runner to check for execution/runtime errors, registry in
 
 ## 4. No Unapproved GitHub Pushes
 * Always wait for the user's explicit request before pushing to GitHub `master` so the user has full control over when live deployments occur.
+
+---
+
+## 5. Mandatory TeleCRM Lead Capture & Tracking Schema Safeguard
+Every landing page update and CRM route modification must preserve and guarantee the full lead capture contract:
+1. **Mandatory Fields Sent to TeleCRM**:
+   - `name`, `phone` (with `+91`), `email`
+   - `Course Name`: Always populated with current course (e.g. `Oracle Fusion HCM`)
+   - `Lead date`: Auto-populated with current IST timestamp across `Lead date`, `lead_date`, `leaddate`, `date`
+   - `Your preferred time to call`: Human-readable slot (e.g. `Afternoon (12:00 PM – 4:00 PM)`)
+   - `City Name` & `State Name`: Auto-detected visitor city/state
+   - `Lead Source`: Normalized attribution (`Google Ads`, `Facebook Ads`, `Website - Direct`)
+   - `Mode of Training`: `Online Live Interactive Batch`
+   - `Exp Level`: Human-readable profile (e.g. `Working Professional`)
+   - `Remarks`: Formatted multi-line summary
+   - **Hidden Tracking Data**: `gclid`, `gbraid`, `wbraid`, `fbclid`, `fbp`, `fbc`, `gaclientid`, `sessionid`, `landingpage`, `referrer`, `utmsource`, `utmmedium`, `utmcampaign`, `utmadgroup`, `utmterm`, `utmcontent`.
+2. **Never Auto-Fill Counselor Fields**:
+   - Do NOT populate `Course Enrollment date`, `Course 2 Enrollment Date`, or fee payment fields on lead submission (these must remain empty for manual counselor entry).
+3. **Pre-Commit Verification**:
+   - Run end-to-end payload dry-run simulating Google Ads and Facebook Ads parameters to verify 100% field population before any live deployment.

@@ -1447,7 +1447,7 @@ function initFormValidation() {
         };
     }
 
-    // MARKETING TRACKING COOKIES & UTM ENGINE
+    // MARKETING TRACKING COOKIES & UTM ENGINE (Bulletproof Fallbacks)
     function getCookie(name) {
         const value = `; ${document.cookie}`;
         const parts = value.split(`; ${name}=`);
@@ -1455,22 +1455,52 @@ function initFormValidation() {
         return '';
     }
 
+    function setCookie(name, value, days = 90) {
+        try {
+            const d = new Date();
+            d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+            document.cookie = `${name}=${value};expires=${d.toUTCString()};path=/;SameSite=Lax`;
+        } catch (e) {}
+    }
+
     function getGaClientId() {
+        let gaId = '';
         const gaCookie = getCookie('_ga');
         if (gaCookie) {
             const parts = gaCookie.split('.');
             if (parts.length >= 4) {
-                return parts.slice(-2).join('.');
+                gaId = parts.slice(-2).join('.');
+            } else {
+                gaId = gaCookie;
             }
-            return gaCookie;
         }
-        return '';
+        if (!gaId) {
+            gaId = localStorage.getItem('techleads_ga_client_id');
+        }
+        if (!gaId) {
+            gaId = `${Math.floor(1000000000 + Math.random() * 9000000000)}.${Math.floor(Date.now() / 1000)}`;
+            try { localStorage.setItem('techleads_ga_client_id', gaId); } catch(e){}
+        }
+        return gaId;
+    }
+
+    function getFbp() {
+        let fbp = getCookie('_fbp');
+        if (!fbp) {
+            fbp = localStorage.getItem('techleads_fbp');
+        }
+        if (!fbp) {
+            fbp = `fb.1.${Date.now()}.${Math.floor(1000000000 + Math.random() * 9000000000)}`;
+            setCookie('_fbp', fbp);
+            try { localStorage.setItem('techleads_fbp', fbp); } catch(e){}
+        }
+        return fbp;
     }
 
     function getSessionId() {
         let sessId = sessionStorage.getItem('techleads_session_id');
         if (!sessId) {
-            sessId = 's' + Date.now() + '$r' + Math.floor(Math.random() * 1000000);
+            sessId = 's' + Date.now() + '.' + Math.floor(100000 + Math.random() * 900000);
             sessionStorage.setItem('techleads_session_id', sessId);
         }
         return sessId;
@@ -1495,7 +1525,7 @@ function initFormValidation() {
             data[param] = val;
         });
         
-        data['fbp'] = getCookie('_fbp') || '';
+        data['fbp'] = getFbp();
         
         let fbc = getCookie('_fbc') || '';
         if (!fbc && data['fbclid']) {
@@ -1616,9 +1646,6 @@ function initFormValidation() {
                 'lead_date': formattedDate,
                 'leaddate': formattedDate,
                 'leadDate': formattedDate,
-                'Course Enrollment date': formattedDate,
-                'course_enrollment_date': formattedDate,
-                'courseenrollmentdate': formattedDate,
                 'date': formattedDate,
                 
                 'Your preferred time to call': callTime,
