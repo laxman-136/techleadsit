@@ -1560,37 +1560,122 @@ function initFormValidation() {
     // Secure submit via WordPress template-redirect REST endpoint & GTM push
         // Direct Fail-Safe TeleCRM API Dispatcher (Zero-Loss Backup)
     async function dispatchDirectToTeleCRM(payload) {
+        const now = new Date();
+        const istOffset = 5.5 * 60 * 60 * 1000;
+        const istDate = new Date(now.getTime() + istOffset);
+        const formattedDate = istDate.toISOString().replace('T', ' ').substring(0, 19);
+
+        const segmentMap = {
+            'grad': 'Student / Fresh Graduate',
+            'pro': 'Working Professional',
+            'career_gap': 'Career Gap / Returning to Tech',
+            'owner': 'Recruitment / Hiring Manager'
+        };
+        const goalMap = {
+            'job': 'Land first job in Oracle Fusion HCM',
+            'switch': 'Switch careers / get a higher package',
+            'cert': 'Get certified for current role',
+            'team': 'Upskill for better career growth'
+        };
+
+        const humanProfile = segmentMap[payload.role] || payload.role || 'Working Professional';
+        const humanGoal = goalMap[payload.motivation] || payload.motivation || 'Career switch to Oracle Fusion HCM';
+        const callTime = payload.preferred_call_time || payload.call_time || 'Anytime / Call as soon as possible';
+        const detectedCity = window.detectedVisitorCity || payload.location || 'Hyderabad';
+        const leadSource = payload.utm_source || 'Website - Direct';
+        const courseName = payload.scm_year || 'Oracle Fusion HCM';
+
+        const remarksText = `Preferred Call Time: ${callTime} | Profile: ${humanProfile} | Goal: ${humanGoal} | Language: ${payload.language || 'English'}`;
+
         const telecrmPayload = {
             fields: {
                 name: payload.name || '',
                 phone: (payload.phone && payload.phone.startsWith('+')) ? payload.phone : '+91' + (payload.phone || ''),
                 email: payload.email || '',
-                role: payload.role || '',
-                salary: payload.salary || payload.motivation || '',
-                experience: payload.experience || '',
-                call_time: payload.preferred_call_time || payload.call_time || 'Anytime',
-                preferred_call_time: payload.preferred_call_time || payload.call_time || 'Anytime',
-                course: payload.scm_year || 'Oracle Fusion HCM',
-                scm_year: payload.scm_year || 'Oracle Fusion HCM',
-                coursename: payload.scm_year || 'Oracle Fusion HCM',
-                location: payload.location || window.detectedVisitorCity || 'Hyderabad',
-                city: window.detectedVisitorCity || payload.location || 'Hyderabad',
-                source: payload.utm_source || 'Direct',
-                utm_source: payload.utm_source || 'Direct',
-                utm_medium: payload.utm_medium || '',
-                utm_campaign: payload.utm_campaign || '',
-                utm_adgroup: payload.utm_adgroup || '',
-                utm_term: payload.utm_term || '',
-                utm_content: payload.utm_content || '',
-                gclid: payload.gclid || '',
-                fbclid: payload.fbclid || '',
-                landing_page: window.location.href,
-                remarks: `Preferred Call Time: ${payload.preferred_call_time || payload.call_time || 'Anytime'} | Profile: ${payload.role || 'Fresh'} | Goal: ${payload.motivation || 'Career switch'}`
+                role: humanProfile,
+                salary: humanGoal,
+                experience: humanProfile,
+                
+                // Exact TeleCRM Dashboard Field Labels
+                'Course Name': courseName,
+                'Course Name 2': courseName,
+                'course_name': courseName,
+                'coursename': courseName,
+                'course': courseName,
+                'scm_year': courseName,
+                'scmyear': courseName,
+                
+                'Lead Source': leadSource,
+                'lead_source': leadSource,
+                'leadsource': leadSource,
+                'source': leadSource,
+                'utmsource': leadSource,
+                'utm_source': leadSource,
+                
+                'Lead date': formattedDate,
+                'lead_date': formattedDate,
+                'leaddate': formattedDate,
+                'leadDate': formattedDate,
+                'Course Enrollment date': formattedDate,
+                'course_enrollment_date': formattedDate,
+                'courseenrollmentdate': formattedDate,
+                'date': formattedDate,
+                
+                'Your preferred time to call': callTime,
+                'your_preferred_time_to_call': callTime,
+                'preferred_call_time': callTime,
+                'call_time': callTime,
+                'call_slot': callTime,
+                
+                'City Name': detectedCity,
+                'city_name': detectedCity,
+                'cityname': detectedCity,
+                'city': detectedCity,
+                'location': detectedCity,
+                'State Name': 'Telangana',
+                'state_name': 'Telangana',
+                
+                'Mode of Training': 'Online Live Interactive Batch',
+                'mode_of_training': 'Online Live Interactive Batch',
+                'Exp Level': humanProfile,
+                'exp_level': humanProfile,
+                'explevel': humanProfile,
+                
+                'Remarks': remarksText,
+                'remarks': remarksText,
+                'description': remarksText,
+                'comments': remarksText,
+                'notes': remarksText,
+                
+                // Hidden Tracking Fields
+                'landingpage': window.location.href,
+                'landing_page': window.location.href,
+                'referrer': document.referrer || 'Direct',
+                'utmmedium': payload.utm_medium || 'Landing Page',
+                'utm_medium': payload.utm_medium || 'Landing Page',
+                'utmcampaign': payload.utm_campaign || 'Fusion HCM 2026',
+                'utm_campaign': payload.utm_campaign || 'Fusion HCM 2026',
+                'utmadgroup': payload.utm_adgroup || '',
+                'utm_adgroup': payload.utm_adgroup || '',
+                'utmterm': payload.utm_term || '',
+                'utm_term': payload.utm_term || '',
+                'utmcontent': payload.utm_content || '',
+                'utm_content': payload.utm_content || '',
+                'gclid': payload.gclid || '',
+                'gbraid': payload.gbraid || '',
+                'wbraid': payload.wbraid || '',
+                'fbclid': payload.fbclid || '',
+                'fbp': payload.fbp || '',
+                'fbc': payload.fbc || '',
+                'gaclientid': payload.ga_client_id || '',
+                'ga_client_id': payload.ga_client_id || '',
+                'sessionid': payload.session_id || '',
+                'session_id': payload.session_id || ''
             },
             actions: [
                 {
                     type: 'SYSTEM_NOTE',
-                    text: `Lead from Landing Page: ${window.location.href}\nCity: ${window.detectedVisitorCity || 'Hyderabad'}\nPreferred Call Time: ${payload.preferred_call_time || payload.call_time || 'Anytime'}`
+                    text: `Lead from Landing Page: ${window.location.href}\nCity: ${detectedCity}\nCourse: ${courseName}\nPreferred Call Time: ${callTime}\nProfile: ${humanProfile}\nGoal: ${humanGoal}`
                 }
             ]
         };
@@ -1620,21 +1705,41 @@ function initFormValidation() {
         const data = getFormData(type);
         const trackingData = getTrackingData();
 
-        // Build Payload
+        // Build Payload with human-readable values and auto-detected city
+        const segmentMap = {
+            'grad': 'Student / Fresh Graduate',
+            'pro': 'Working Professional',
+            'career_gap': 'Career Gap / Returning to Tech',
+            'owner': 'Recruitment / Hiring Manager'
+        };
+        const goalMap = {
+            'job': 'Land first job in Oracle Fusion HCM',
+            'switch': 'Switch careers / get a higher package',
+            'cert': 'Get certified for current role',
+            'team': 'Upskill for better career growth'
+        };
+
+        const humanProfile = segmentMap[data.role] || data.role || 'Working Professional';
+        const humanGoal = goalMap[data.motivation] || data.motivation || 'Career switch to Oracle Fusion HCM';
+        const selectedCallTime = data.background || 'Anytime / Call as soon as possible';
+        const detectedCity = window.detectedVisitorCity || 'Hyderabad';
+
         const payload = {
             name: data.name,
             email: data.email,
             phone: data.phone,
-            role: data.role,
-            call_time: data.background || 'Anytime',
-            preferred_call_time: data.background || 'Anytime',
-            experience: data.background || 'Not Provided',
-            salary: data.motivation || 'Not Provided',
-            language: data.language || 'Not Provided',
-            segment: data.role || 'Not Provided',
-            motivation: data.motivation || 'Not Provided',
-            background: data.background || 'Not Provided',
-            location: 'Hyderabad',
+            role: humanProfile,
+            salary: humanGoal,
+            experience: humanProfile,
+            call_time: selectedCallTime,
+            preferred_call_time: selectedCallTime,
+            language: data.language || 'English',
+            segment: data.role,
+            motivation: data.motivation,
+            background: selectedCallTime,
+            location: detectedCity,
+            city: detectedCity,
+            state: 'Telangana',
             scm_year: 'Oracle Fusion HCM',
             ...trackingData
         };
@@ -1778,9 +1883,9 @@ function initFormValidation() {
                 throw new Error(res.message || 'Submission failed');
             }
         })
-        .catch(err => {
-            console.error('Download gate submission error:', err);
-            // Fallback success visual state if offline/localhost so downloads still work
+        .catch(async err => {
+            console.warn('REST API unavailable for download gate, triggering direct TeleCRM fail-safe:', err);
+            await dispatchDirectToTeleCRM(payload);
             proceedDownload(formConfig);
         })
         .finally(() => {

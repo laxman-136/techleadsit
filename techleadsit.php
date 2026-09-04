@@ -1026,102 +1026,124 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
     $date_ist = new DateTime("now", new DateTimeZone("Asia/Kolkata"));
     $lead_date = $date_ist->format("Y-m-d H:i:s");
 
-    // Build the payload matching TeleCRM API specification
+    // Humanize profile segment and goal values for clean CRM records
+    $segment_map = array(
+        'grad' => 'Student / Fresh Graduate',
+        'pro' => 'Working Professional',
+        'career_gap' => 'Career Gap / Returning to Tech',
+        'owner' => 'Recruitment / Hiring Manager'
+    );
+    $goal_map = array(
+        'job' => 'Land first job in Oracle Fusion HCM',
+        'switch' => 'Switch careers / get a higher package',
+        'cert' => 'Get certified for current role',
+        'team' => 'Upskill for better career growth'
+    );
+    $human_profile = $segment_map[$role] ?? ($segment_map[$params['segment'] ?? ''] ?? $role);
+    $human_goal = $goal_map[$salary] ?? ($goal_map[$params['motivation'] ?? ''] ?? $salary);
+    if (empty($human_profile)) $human_profile = 'Working Professional';
+    if (empty($human_goal)) $human_goal = 'Career switch to Oracle Fusion HCM';
+    if (empty($call_time)) $call_time = 'Anytime / Call as soon as possible';
+
+    // Format clean professional remarks
+    $formatted_remarks = "Preferred Call Time: " . $call_time . " | Profile: " . $human_profile . " | Goal: " . $human_goal . " | Language: " . ($params['language'] ?? 'English');
+
+    $final_source = !empty($utm_source) ? $utm_source : 'Website - Direct';
+    $final_course = !empty($scm_year) ? $scm_year : 'Oracle Fusion HCM';
+    $final_city = !empty($city) ? $city : (!empty($location) ? $location : 'Hyderabad');
+    $final_state = !empty($state) ? $state : 'Telangana';
+
+    // Build the payload matching exact TeleCRM field labels and system keys
     $payload = array(
         'fields' => array(
             'name' => $name,
             'phone' => (strpos($phone, '+') === 0) ? $phone : '+91' . $phone,
             'email' => $email,
-            'role' => $role,
-            'salary' => $salary,
-            'experience' => $experience,
+            'role' => $human_profile,
+            'salary' => $human_goal,
+            'experience' => $human_profile,
             
-            // Preferred Call Time
-            'call_time' => $call_time,
+            // Exact TeleCRM Field Labels (from user dashboard)
+            'Course Name' => $final_course,
+            'Course Name 2' => $final_course,
+            'course_name' => $final_course,
+            'coursename' => $final_course,
+            'course' => $final_course,
+            'scm_year' => $final_course,
+            'scmyear' => $final_course,
+            
+            'Lead Source' => $final_source,
+            'lead_source' => $final_source,
+            'leadsource' => $final_source,
+            'source' => $final_source,
+            'utmsource' => $final_source,
+            'utm_source' => $final_source,
+            
+            'Lead date' => $lead_date,
+            'lead_date' => $lead_date,
+            'leaddate' => $lead_date,
+            'leadDate' => $lead_date,
+            'Course Enrollment date' => $lead_date,
+            'course_enrollment_date' => $lead_date,
+            'courseenrollmentdate' => $lead_date,
+            'date' => $lead_date,
+            'Date' => $lead_date,
+            
+            'Your preferred time to call' => $call_time,
+            'your_preferred_time_to_call' => $call_time,
             'preferred_call_time' => $call_time,
+            'call_time' => $call_time,
             'call_slot' => $call_time,
-            'preferred_time' => $call_time,
-            'calltime' => $call_time,
             
-            // Location fields
-            'location' => $location,
-            'city' => $city,
-            'cityname' => $city,
-            'city_name' => $city,
-            'state' => $state,
-            'statename' => $state,
-            'state_name' => $state,
+            'City Name' => $final_city,
+            'city_name' => $final_city,
+            'cityname' => $final_city,
+            'city' => $final_city,
+            'location' => $final_city,
+            'State Name' => $final_state,
+            'state_name' => $final_state,
+            'statename' => $final_state,
+            'state' => $final_state,
             'country' => $country,
             'ipaddress' => $user_ip,
             'iplocation' => $ip_location,
             
-            // Course name fields
-            'scm_year' => $scm_year,
-            'scmyear' => $scm_year,
-            'coursename' => $scm_year,
-            'course_name' => $scm_year,
-            'course' => $scm_year,
+            'Mode of Training' => 'Online Live Interactive Batch',
+            'mode_of_training' => 'Online Live Interactive Batch',
+            'Exp Level' => $human_profile,
+            'exp_level' => $human_profile,
+            'explevel' => $human_profile,
             
-            // Experience level variations
-            'explevel' => $experience,
-            'exp_level' => $experience,
-            'experiencelevel' => $experience,
-            'experience_level' => $experience,
-            
-            // Remarks/Comments fields
-            'remarks' => $remarks_text,
-            'remark' => $remarks_text,
-            'description' => $remarks_text,
-            'comments' => $remarks_text,
-            'comment' => $remarks_text,
-            'notes' => $remarks_text,
-            'note' => $remarks_text,
-            'leaddescription' => $remarks_text,
-            'lead_description' => $remarks_text,
-            'remarks_text' => $remarks_text,
-            'message' => $remarks_text,
-            'messages' => $remarks_text,
-            
-            // Lead Source fields
-            'source' => $utm_source,
-            'leadsource' => $utm_source,
-            'lead_source' => $utm_source,
-            'utmsource' => $utm_source,
-            
-            // Date fields
-            'date' => $lead_date,
-            'leaddate' => $lead_date,
-            'lead_date' => $lead_date,
-            'courseenrollmentdate' => $lead_date,
-            'course_enrollment_date' => $lead_date,
+            'Remarks' => $formatted_remarks,
+            'remarks' => $formatted_remarks,
+            'description' => $formatted_remarks,
+            'comments' => $formatted_remarks,
+            'notes' => $formatted_remarks,
             
             // Tracking fields
-            'fbp' => $fbp,
-            'fbc' => $fbc,
-            'gclid' => $gclid,
-            'gbraid' => $gbraid,
-            'wbraid' => $wbraid,
-            'fbclid' => $fbclid,
-            'ga_client_id' => $ga_client_id,
-            'gaclient_id' => $ga_client_id,
-            'gaclientid' => $ga_client_id,
-            'session_id' => $session_id,
-            'sessionid' => $session_id,
-            'utm_source' => $utm_source,
-            'utm_medium' => $utm_medium,
-            'utmmedium' => $utm_medium,
-            'utm_campaign' => $utm_campaign,
-            'utmcampaign' => $utm_campaign,
-            'utm_adgroup' => $utm_adgroup,
-            'utmadgroup' => $utm_adgroup,
-            'utm_term' => $utm_term,
-            'utmterm' => $utm_term,
-            'utm_content' => $utm_content,
-            'utmcontent' => $utm_content,
-            'landing_page' => $landing_page,
-            'landingpage' => $landing_page,
-            'referrer' => $referrer,
-            'campaign' => $utm_campaign
+            'landingpage' => $landing_page ?: ($params['landing_page'] ?? ''),
+            'landing_page' => $landing_page ?: ($params['landing_page'] ?? ''),
+            'referrer' => $referrer ?: ($params['referrer'] ?? 'Direct'),
+            'utmmedium' => $utm_medium ?: ($params['utm_medium'] ?? ''),
+            'utm_medium' => $utm_medium ?: ($params['utm_medium'] ?? ''),
+            'utmcampaign' => $utm_campaign ?: ($params['utm_campaign'] ?? ''),
+            'utm_campaign' => $utm_campaign ?: ($params['utm_campaign'] ?? ''),
+            'utmadgroup' => $utm_adgroup ?: ($params['utm_adgroup'] ?? ''),
+            'utm_adgroup' => $utm_adgroup ?: ($params['utm_adgroup'] ?? ''),
+            'utmterm' => $utm_term ?: ($params['utm_term'] ?? ''),
+            'utm_term' => $utm_term ?: ($params['utm_term'] ?? ''),
+            'utmcontent' => $utm_content ?: ($params['utm_content'] ?? ''),
+            'utm_content' => $utm_content ?: ($params['utm_content'] ?? ''),
+            'gclid' => $gclid ?: ($params['gclid'] ?? ''),
+            'gbraid' => $gbraid ?: ($params['gbraid'] ?? ''),
+            'wbraid' => $wbraid ?: ($params['wbraid'] ?? ''),
+            'fbclid' => $fbclid ?: ($params['fbclid'] ?? ''),
+            'fbp' => $fbp ?: ($params['fbp'] ?? ''),
+            'fbc' => $fbc ?: ($params['fbc'] ?? ''),
+            'gaclientid' => $ga_client_id ?: ($params['ga_client_id'] ?? ''),
+            'ga_client_id' => $ga_client_id ?: ($params['ga_client_id'] ?? ''),
+            'sessionid' => $session_id ?: ($params['session_id'] ?? ''),
+            'session_id' => $session_id ?: ($params['session_id'] ?? '')
         ),
         'actions' => array(
             array(
