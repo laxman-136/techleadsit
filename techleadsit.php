@@ -15,6 +15,61 @@ add_action('template_redirect', 'techleadsit_route_landing_pages');
 
 function techleadsit_route_landing_pages() {
     $request_uri = $_SERVER['REQUEST_URI'];
+
+    // -------------------------------------------------------------
+    // DYNAMIC ROBOTS.TXT (Allows AdsBot-Google & Policy Pages)
+    // -------------------------------------------------------------
+    if (preg_match('#^/robots\.txt(\?.*)?$#', $request_uri)) {
+        header('Content-Type: text/plain; charset=UTF-8');
+        header('X-Robots-Tag: all');
+        if (function_exists('status_header')) {
+            status_header(200);
+        } else {
+            header('HTTP/1.1 200 OK');
+        }
+        echo "User-agent: *\n";
+        echo "Allow: /\n";
+        echo "Allow: /privacy-policy/\n";
+        echo "Allow: /terms-and-conditions/\n";
+        echo "Allow: /refund-cancellation-policy/\n\n";
+        echo "User-agent: AdsBot-Google\n";
+        echo "Allow: /\n\n";
+        echo "User-agent: AdsBot-Google-Mobile\n";
+        echo "Allow: /\n\n";
+        echo "Sitemap: https://lp.techleadsit.com/sitemap.xml\n";
+        exit;
+    }
+
+    // -------------------------------------------------------------
+    // DYNAMIC SITEMAP.XML (Canonical landing & policy pages)
+    // -------------------------------------------------------------
+    if (preg_match('#^/sitemap\.xml(\?.*)?$#', $request_uri)) {
+        header('Content-Type: application/xml; charset=UTF-8');
+        if (function_exists('status_header')) {
+            status_header(200);
+        } else {
+            header('HTTP/1.1 200 OK');
+        }
+        echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+        echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
+        $sitemap_entries = array(
+            'https://lp.techleadsit.com/oracle-fusion-hcm-training/' => array('lastmod' => '2026-09-08', 'priority' => '1.0'),
+            'https://lp.techleadsit.com/f-hcm-course/' => array('lastmod' => '2026-09-08', 'priority' => '0.9'),
+            'https://lp.techleadsit.com/privacy-policy/' => array('lastmod' => '2026-09-07', 'priority' => '0.6'),
+            'https://lp.techleadsit.com/terms-and-conditions/' => array('lastmod' => '2026-09-07', 'priority' => '0.6'),
+            'https://lp.techleadsit.com/refund-cancellation-policy/' => array('lastmod' => '2026-09-07', 'priority' => '0.6')
+        );
+        foreach ($sitemap_entries as $url => $meta) {
+            echo "  <url>\n";
+            echo "    <loc>" . esc_url($url) . "</loc>\n";
+            echo "    <lastmod>" . $meta['lastmod'] . "</lastmod>\n";
+            echo "    <changefreq>weekly</changefreq>\n";
+            echo "    <priority>" . $meta['priority'] . "</priority>\n";
+            echo "  </url>\n";
+        }
+        echo '</urlset>';
+        exit;
+    }
     
     // Define your landing pages and their corresponding HTML files here
     // Slug key => HTML filename
@@ -37,6 +92,10 @@ function techleadsit_route_landing_pages() {
         'oracle-fusion-hcm-modules-training' => 'f-hcm-course/index.html',
         'oracle-fusion-hcm-training-in-pune' => 'f-hcm-course/index.html',
         'oracle-fusion-hcm-training-in-chennai' => 'f-hcm-course/index.html',
+        // Legal & Compliance Policy Pages (HTTP 200 for AdsBot & Users)
+        'privacy-policy' => 'policy/privacy-policy.html',
+        'terms-and-conditions' => 'policy/terms-and-conditions.html',
+        'refund-cancellation-policy' => 'policy/refund-cancellation-policy.html',
         // You can add more pages here in the future! E.g. 'scm-offer' => 'scm-offer/index.html'
     );
 
@@ -61,6 +120,20 @@ function techleadsit_route_landing_pages() {
                 $html_content = str_replace('src="logo-dark.png"', 'src="' . $plugin_url . 'logo-dark.png"', $html_content);
                 $html_content = str_replace('src="logo-light.png"', 'src="' . $plugin_url . 'logo-light.png"', $html_content);
                 $html_content = str_replace('src="images/', 'src="' . $plugin_url . 'images/', $html_content);
+                $html_content = str_replace('href="policy.css"', 'href="' . $plugin_url . 'policy.css?v=1.0"', $html_content);
+                $html_content = str_replace('src="../logo-dark.png"', 'src="' . plugin_dir_url(__FILE__) . 'f-hcm-course/logo-dark.png"', $html_content);
+
+                // Policy Pages: Serve clean, bloat-free HTML without tracking scripts, batch counters, or countdowns
+                if (strpos($file, 'policy/') === 0) {
+                    if (function_exists('status_header')) {
+                        status_header(200);
+                    } else {
+                        header('HTTP/1.1 200 OK');
+                    }
+                    header('Content-Type: text/html; charset=utf-8');
+                    echo $html_content;
+                    exit;
+                }
                 
                 // Dynamically inject GTM Container code if GTM4WP is active and configured
                 $gtm4wp_options = get_option('gtm4wp-options');

@@ -3139,15 +3139,109 @@ a {
     font-size: 0.875rem;
 }
 
+
+.form-privacy-disclosure {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    line-height: 1.45;
+    margin-top: 0.75rem;
+    margin-bottom: 0.25rem;
+    text-align: center;
+}
+
+.form-privacy-disclosure a {
+    color: #38bdf8;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.form-privacy-disclosure a:hover {
+    color: #7dd3fc;
+}
+
+.footer-policy-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    font-size: 0.875rem;
+    margin: 0.25rem 0;
+}
+
+.footer-policy-nav a {
+    color: #cbd5e1;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: color 0.15s ease;
+}
+
+.footer-policy-nav a:hover {
+    color: #ffffff;
+}
+
+.footer-nav-sep {
+    color: #475569;
+}
+
+.footer-entity-info {
+    color: #94a3b8;
+    font-size: 0.8125rem;
+    line-height: 1.6;
+}
+
+.footer-entity-info a {
+    color: #cbd5e1;
+    text-decoration: underline;
+}
+
 /* ==========================================================================
    Footer
    ========================================================================== */
 .main-footer {
     background-color: #0B121C;
     color: var(--color-text-muted);
-    padding: 2rem 0;
+    padding: 2.5rem 0 2rem;
     border-top: 1px solid rgba(255, 255, 255, 0.05);
     font-size: 0.8125rem;
+}
+
+.footer-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+}
+
+.footer-badges {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.75rem;
+    flex-wrap: wrap;
+}
+
+.footer-badge-img {
+    height: 38px;
+    width: auto;
+    object-fit: contain;
+    border-radius: 4px;
+    display: block;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.footer-badge-img:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+}
+
+.footer-copyright {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.8125rem;
+    line-height: 1.5;
 }
 
 /* ==========================================================================
