@@ -1033,6 +1033,11 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
         }
     }
 
+    // Check if phone was verified via VISPL SMS OTP
+    $clean_phone = techleadsit_clean_phone($phone);
+    $phone_hash = md5($clean_phone);
+    $is_phone_verified = !empty(get_transient('techleads_verified_' . $phone_hash));
+
     // Capture the 16 tracking fields
     $fbp = sanitize_text_field($params['fbp'] ?? '');
     $fbc = sanitize_text_field($params['fbc'] ?? '');
@@ -1195,6 +1200,11 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
             'comments' => $formatted_remarks,
             'notes' => $formatted_remarks,
             
+            // Mobile SMS OTP Verification Status
+            'Phone Verified' => $is_phone_verified ? 'Yes' : 'No',
+            'phone_verified' => $is_phone_verified ? 'Yes' : 'No',
+            'OTP Status' => $is_phone_verified ? 'Verified via 4-Digit SMS' : 'Unverified',
+            
             // Dedicated Facebook Ads Fields (exact TeleCRM dashboard labels)
             'Facebook Ad' => $fb_ad ?: ((stripos($final_source, 'facebook') !== false || !empty($fbclid)) ? $utm_content : ''),
             'Facebook Campaign' => $fb_campaign ?: ((stripos($final_source, 'facebook') !== false || !empty($fbclid)) ? $utm_campaign : ''),
@@ -1275,7 +1285,10 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
         return new WP_REST_Response(array('success' => false, 'message' => 'CRM rejected request: ' . $body), $response_code);
     }
 
-    // Success! Consume the verification transient so it cannot be reused for multiple submissions
+    // Success! Consume the verification transients so they cannot be reused for multiple submissions
+    if (!empty($clean_phone)) {
+        delete_transient('techleads_verified_' . md5($clean_phone));
+    }
     if (!empty($email)) {
         delete_transient('techleads_verified_' . md5($email));
     }
@@ -1283,54 +1296,203 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
     return new WP_REST_Response(array('success' => true, 'message' => 'Lead successfully saved and routed.'), 200);
 }
 
+// ==========================================================================
+// VISPL SMS GATEWAY & 4-DIGIT MOBILE OTP VERIFICATION
+// ==========================================================================
+
+if (!defined('TECHLEADSIT_VISPL_USERNAME')) {
+    define('TECHLEADSIT_VISPL_USERNAME', 'techleadsit.trans');
+}
+if (!defined('TECHLEADSIT_VISPL_PASSWORD')) {
+    define('TECHLEADSIT_VISPL_PASSWORD', 'oIIFh');
+}
+if (!defined('TECHLEADSIT_VISPL_SENDER')) {
+    define('TECHLEADSIT_VISPL_SENDER', 'TCHLIT');
+}
+if (!defined('TECHLEADSIT_VISPL_ENTITY_ID')) {
+    define('TECHLEADSIT_VISPL_ENTITY_ID', '1201159920237133362');
+}
+if (!defined('TECHLEADSIT_VISPL_CONTENT_ID')) {
+    define('TECHLEADSIT_VISPL_CONTENT_ID', '1707174591491612781');
+}
+
+/**
+ * Normalizes an Indian phone number to 10 digits
+ */
+function techleadsit_clean_phone($phone) {
+    $clean = preg_replace('/[^0-9]/', '', (string)$phone);
+    if (strlen($clean) === 12 && substr($clean, 0, 2) === '91') {
+        $clean = substr($clean, 2);
+    } elseif (strlen($clean) === 11 && substr($clean, 0, 1) === '0') {
+        $clean = substr($clean, 1);
+    }
+    return $clean;
+}
+
+/**
+ * Dispatches a 4-digit SMS OTP via the VISPL Gateway using the DLT-registered template
+ */
+function techleadsit_send_vispl_sms($phone, $otp, $name = 'Learner') {
+    $clean_phone = techleadsit_clean_phone($phone);
+    if (strlen($clean_phone) !== 10 || !preg_match('/^[6-9]\d{9}$/', $clean_phone)) {
+        return array('success' => false, 'message' => 'Invalid Indian mobile number.');
+    }
+
+    // Sanitize recipient first name for DLT compliance (alphanumeric only, max 25 chars)
+    $first_name = trim(explode(' ', trim((string)$name))[0]);
+    $first_name = preg_replace('/[^a-zA-Z0-9]/', '', $first_name);
+    if (empty($first_name)) {
+        $first_name = 'Learner';
+    }
+    if (strlen($first_name) > 25) {
+        $first_name = substr($first_name, 0, 25);
+    }
+
+    // Exact DLT template registered under Content ID 1707174591491612781
+    $message = "Hi " . $first_name . ", Your Tech Leads IT login OTP is " . $otp . ". Please do not share this OTP with anyone. Thank you, Team Tech Leads IT";
+
+    $query_params = array(
+        'username'             => TECHLEADSIT_VISPL_USERNAME,
+        'password'             => TECHLEADSIT_VISPL_PASSWORD,
+        'unicode'              => 'false',
+        'from'                 => TECHLEADSIT_VISPL_SENDER,
+        'to'                   => '91' . $clean_phone,
+        'dltPrincipalEntityId' => TECHLEADSIT_VISPL_ENTITY_ID,
+        'dltContentId'         => TECHLEADSIT_VISPL_CONTENT_ID,
+        'text'                 => $message
+    );
+
+    $endpoint = 'https://pgapi.vispl.in/fe/api/v1/multiSend?' . http_build_query($query_params);
+
+    $response = wp_remote_get($endpoint, array(
+        'timeout'   => 15,
+        'sslverify' => true
+    ));
+
+    if (is_wp_error($response)) {
+        error_log('VISPL SMS Error: ' . $response->get_error_message());
+        return array('success' => false, 'message' => 'SMS gateway communication failure: ' . $response->get_error_message());
+    }
+
+    $body = wp_remote_retrieve_body($response);
+    $data = json_decode($body, true);
+
+    $first_res = $data['submitResponses'][0] ?? null;
+    $status_code = $first_res['statusCode'] ?? null;
+    $state = $first_res['state'] ?? '';
+    $desc = $first_res['description'] ?? '';
+
+    if ($status_code == 200 || $state === 'SUBMIT_ACCEPTED' || stripos($desc, 'accepted') !== false) {
+        return array(
+            'success'        => true,
+            'transaction_id' => $first_res['transactionId'] ?? '',
+            'message'        => 'SMS OTP dispatched successfully.'
+        );
+    }
+
+    error_log('VISPL Gateway Rejected: ' . $body);
+    return array(
+        'success' => false,
+        'message' => !empty($desc) ? $desc : 'SMS could not be delivered by carrier.'
+    );
+}
+
 function techleadsit_handle_send_otp(WP_REST_Request $request) {
     $params = $request->get_json_params();
-    $email = sanitize_email($params['email'] ?? '');
-
-    if (empty($email) || !is_email($email)) {
-        return new WP_REST_Response(array('success' => false, 'message' => 'Please provide a valid email address.'), 400);
+    if (empty($params)) {
+        $params = $request->get_params();
     }
 
-    $otp = strval(rand(100000, 999999));
-    set_transient('techleads_otp_' . md5($email), $otp, 300); // 5 min expiry
+    $raw_phone = $params['phone'] ?? '';
+    $name = sanitize_text_field($params['name'] ?? 'Learner');
+    $clean_phone = techleadsit_clean_phone($raw_phone);
 
-    $subject = "Your Verification Code - TechLeadsIT";
-    $message = "Hello,\n\nYour 6-digit verification code is: " . $otp . "\n\nThis code will expire in 5 minutes.\n\nBest regards,\nTechLeadsIT";
-    $headers = array(
-        'Content-Type: text/plain; charset=UTF-8',
-        'From: TechLeadsIT <support@lp.techleadsit.com>'
-    );
-    
-    $sent = wp_mail($email, $subject, $message, $headers);
-
-    if (!$sent) {
-        return new WP_REST_Response(array('success' => false, 'message' => 'Failed to send verification email. Please check your email host config.'), 500);
+    if (strlen($clean_phone) !== 10 || !preg_match('/^[6-9]\d{9}$/', $clean_phone)) {
+        return new WP_REST_Response(array(
+            'success' => false,
+            'message' => 'Please enter a valid 10-digit Indian mobile number.'
+        ), 400);
     }
 
-    return new WP_REST_Response(array('success' => true, 'message' => 'Verification code sent to your email.'), 200);
+    $phone_hash = md5($clean_phone);
+
+    // Rate-limiting: prevent spam (minimum 25s cooldown between sends)
+    if (get_transient('techleads_otp_cooldown_' . $phone_hash)) {
+        return new WP_REST_Response(array(
+            'success' => false,
+            'message' => 'Please wait 30 seconds before requesting a new OTP.'
+        ), 429);
+    }
+
+    // Generate secure 4-digit OTP
+    $otp = sprintf('%04d', wp_rand(1000, 9999));
+
+    // Dispatch SMS via VISPL Gateway
+    $sms_res = techleadsit_send_vispl_sms($clean_phone, $otp, $name);
+
+    if (!$sms_res['success']) {
+        return new WP_REST_Response(array(
+            'success' => false,
+            'message' => $sms_res['message']
+        ), 500);
+    }
+
+    // Store OTP in transient for 5 minutes (300 seconds)
+    set_transient('techleads_otp_' . $phone_hash, $otp, 300);
+
+    // Set cooldown for 25 seconds to align with 30s UI resend timer
+    set_transient('techleads_otp_cooldown_' . $phone_hash, '1', 25);
+
+    return new WP_REST_Response(array(
+        'success' => true,
+        'message' => 'Verification code sent to +91 ' . substr($clean_phone, 0, 5) . ' ' . substr($clean_phone, 5) . '.'
+    ), 200);
 }
 
 function techleadsit_handle_verify_otp(WP_REST_Request $request) {
     $params = $request->get_json_params();
-    $email = sanitize_email($params['email'] ?? '');
+    if (empty($params)) {
+        $params = $request->get_params();
+    }
+
+    $raw_phone = $params['phone'] ?? '';
     $otp = sanitize_text_field($params['otp'] ?? '');
+    $clean_phone = techleadsit_clean_phone($raw_phone);
 
-    if (empty($email) || empty($otp)) {
-        return new WP_REST_Response(array('success' => false, 'message' => 'Email and code are required.'), 400);
+    if (empty($clean_phone) || empty($otp)) {
+        return new WP_REST_Response(array(
+            'success' => false,
+            'message' => 'Phone number and 4-digit code are required.'
+        ), 400);
     }
 
-    $stored_otp = get_transient('techleads_otp_' . md5($email));
+    $phone_hash = md5($clean_phone);
+    $stored_otp = get_transient('techleads_otp_' . $phone_hash);
 
-    if ($stored_otp === false || $stored_otp !== $otp) {
-        return new WP_REST_Response(array('success' => false, 'message' => 'Invalid or expired verification code.'), 400);
+    if ($stored_otp === false) {
+        return new WP_REST_Response(array(
+            'success' => false,
+            'message' => 'OTP has expired. Please request a new code.'
+        ), 400);
     }
 
-    // Mark as verified for 10 minutes
-    set_transient('techleads_verified_' . md5($email), '1', 600);
-    // Delete the OTP transient so it cannot be reused
-    delete_transient('techleads_otp_' . md5($email));
+    if (strval($stored_otp) !== strval(trim($otp))) {
+        return new WP_REST_Response(array(
+            'success' => false,
+            'message' => 'Invalid OTP code. Please check and try again.'
+        ), 400);
+    }
 
-    return new WP_REST_Response(array('success' => true, 'message' => 'Email verified successfully.'), 200);
+    // Mark mobile number as verified for 30 minutes
+    set_transient('techleads_verified_' . $phone_hash, '1', 1800);
+
+    // Invalidate the OTP transient to prevent replay
+    delete_transient('techleads_otp_' . $phone_hash);
+
+    return new WP_REST_Response(array(
+        'success' => true,
+        'message' => 'Mobile number verified successfully.'
+    ), 200);
 }
 
 

@@ -1621,6 +1621,58 @@ function initFormValidation() {
 
         // Start 30s countdown
         startOtpCountdown(type);
+
+        // Dispatch live SMS OTP via VISPL Gateway
+        requestOtpDispatch(type);
+    }
+
+    async function requestOtpDispatch(type) {
+        const formConfig = forms[type];
+        if (!formConfig) return;
+
+        const phone = formConfig.phoneInput ? formConfig.phoneInput.value.trim() : '';
+        const name = formConfig.nameInput ? formConfig.nameInput.value.trim() : '';
+
+        try {
+            const res = await fetch('/wp-json/techleadsit/v1/send-otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone: phone, name: name })
+            });
+            const data = await res.json();
+            if (data && data.success) {
+                if (formConfig.otpError) {
+                    formConfig.otpError.style.color = '#0D9488';
+                    formConfig.otpError.textContent = data.message || 'OTP dispatched to your mobile.';
+                    formConfig.otpError.style.display = 'block';
+                    setTimeout(() => {
+                        if (formConfig.otpError && formConfig.otpError.style.color === 'rgb(13, 148, 136)') {
+                            formConfig.otpError.style.display = 'none';
+                            formConfig.otpError.style.color = '#DC2626';
+                        }
+                    }, 4000);
+                }
+            } else if (data && !data.success) {
+                showOtpError(type, data.message || 'Failed to send OTP. Please try again.');
+            }
+        } catch (err) {
+            console.warn('Backend send-otp endpoint unreachable (running in static/local preview):', err);
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                if (formConfig.otpError) {
+                    formConfig.otpError.style.color = '#0D9488';
+                    formConfig.otpError.textContent = 'Local preview: Enter any 4 digits to verify.';
+                    formConfig.otpError.style.display = 'block';
+                    setTimeout(() => {
+                        if (formConfig.otpError) {
+                            formConfig.otpError.style.display = 'none';
+                            formConfig.otpError.style.color = '#DC2626';
+                        }
+                    }, 4000);
+                }
+            } else {
+                showOtpError(type, 'Could not connect to SMS server. Please check your network.');
+            }
+        }
     }
 
     function startOtpCountdown(type) {
@@ -1690,17 +1742,7 @@ function initFormValidation() {
             if (formConfig.otpInputs[0]) formConfig.otpInputs[0].focus();
         }
 
-        if (formConfig.otpError) {
-            formConfig.otpError.style.color = '#0D9488';
-            formConfig.otpError.textContent = 'A fresh 4-digit code has been sent!';
-            formConfig.otpError.style.display = 'block';
-            setTimeout(() => {
-                if (formConfig.otpError) {
-                    formConfig.otpError.style.display = 'none';
-                    formConfig.otpError.style.color = '#DC2626';
-                }
-            }, 3000);
-        }
+        requestOtpDispatch(type);
     }
 
     function showOtpError(type, message) {
@@ -1723,7 +1765,7 @@ function initFormValidation() {
         }
     }
 
-    function handleVerifyOtp(type) {
+    async function handleVerifyOtp(type) {
         const formConfig = forms[type];
         if (!formConfig) return;
 
@@ -1737,6 +1779,8 @@ function initFormValidation() {
             return;
         }
 
+        const phone = formConfig.phoneInput ? formConfig.phoneInput.value.trim() : '';
+
         // Button loading state
         const verifyBtn = formConfig.otpVerifyBtn;
         const origBtnHtml = verifyBtn ? verifyBtn.innerHTML : '';
@@ -1745,26 +1789,52 @@ function initFormValidation() {
             verifyBtn.innerHTML = '<i class="ri-loader-4-line ri-spin"></i> Verifying...';
         }
 
-        // Interactive Preview / Test Mode until SMS API key is configured
-        setTimeout(() => {
+        try {
+            const res = await fetch('/wp-json/techleadsit/v1/verify-otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone: phone, otp: digits })
+            });
+            const data = await res.json();
+
+            if (data && data.success) {
+                clearInterval(otpTimers[type]);
+                if (formConfig.otpState) {
+                    formConfig.otpState.style.display = 'none';
+                }
+
+                // Proceed with real lead submission
+                if (type === 'hero' || type === 'modal') {
+                    submitLead(type, formConfig);
+                } else if (type === 'gate') {
+                    submitDownloadGate();
+                }
+            } else {
+                showOtpError(type, (data && data.message) ? data.message : 'Invalid verification code. Please check and try again.');
+            }
+        } catch (err) {
+            console.warn('Backend verify-otp endpoint unreachable (running in static/local preview):', err);
+            // Local fallback for offline/preview environments
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                clearInterval(otpTimers[type]);
+                if (formConfig.otpState) {
+                    formConfig.otpState.style.display = 'none';
+                }
+
+                if (type === 'hero' || type === 'modal') {
+                    submitLead(type, formConfig);
+                } else if (type === 'gate') {
+                    submitDownloadGate();
+                }
+            } else {
+                showOtpError(type, 'Verification server unreachable. Please try again.');
+            }
+        } finally {
             if (verifyBtn) {
                 verifyBtn.disabled = false;
                 verifyBtn.innerHTML = origBtnHtml;
             }
-
-            clearInterval(otpTimers[type]);
-
-            if (formConfig.otpState) {
-                formConfig.otpState.style.display = 'none';
-            }
-
-            // Proceed with real lead submission
-            if (type === 'hero' || type === 'modal') {
-                submitLead(type, formConfig);
-            } else if (type === 'gate') {
-                submitDownloadGate();
-            }
-        }, 500);
+        }
     }
 
     // Initialize OTP listeners
