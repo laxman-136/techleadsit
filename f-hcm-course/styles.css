@@ -730,6 +730,213 @@ a {
 }
 
 /* ==========================================================================
+   4-Digit SMS OTP Verification State
+   ========================================================================== */
+.form-otp-state {
+    text-align: center;
+    padding: 0.5rem 0;
+    animation: fadeIn 0.35s ease-out;
+}
+
+.otp-header {
+    margin-bottom: 1.25rem;
+}
+
+.otp-icon-wrap {
+    width: 56px;
+    height: 56px;
+    background-color: var(--color-accent-light);
+    color: var(--color-accent);
+    border-radius: 50%;
+    font-size: 1.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 0.75rem auto;
+    border: 1.5px solid rgba(0, 118, 190, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 118, 190, 0.1);
+}
+
+.otp-title {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin-bottom: 0.25rem;
+}
+
+.otp-subtitle {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.otp-phone-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    background-color: #F1F5F9;
+    border: 1px solid var(--color-border);
+    padding: 0.35rem 0.85rem;
+    border-radius: 9999px;
+    font-size: 0.8125rem;
+    color: var(--color-text-primary);
+    font-weight: 600;
+}
+
+.otp-phone-pill i {
+    color: var(--color-accent);
+    font-size: 0.95rem;
+}
+
+.otp-edit-phone-btn {
+    background: none;
+    border: none;
+    color: var(--color-accent);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-decoration: underline;
+    cursor: pointer;
+    margin-left: 0.35rem;
+    padding: 0;
+    transition: var(--transition-fast);
+}
+
+.otp-edit-phone-btn:hover {
+    color: var(--color-accent-hover);
+}
+
+.otp-inputs-wrapper {
+    margin: 1.25rem 0 0.75rem;
+}
+
+.otp-inputs {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.75rem;
+    transition: transform 0.2s ease;
+}
+
+.otp-digit {
+    width: 52px;
+    height: 58px;
+    border-radius: var(--border-radius-sm);
+    background-color: #F8FAFC;
+    border: 2px solid var(--color-border);
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    font-weight: 700;
+    text-align: center;
+    color: var(--color-text-primary);
+    outline: none;
+    transition: var(--transition-fast);
+    caret-color: var(--color-accent);
+    -webkit-appearance: none;
+}
+
+.otp-digit:focus {
+    border-color: var(--color-accent);
+    background-color: #FFFFFF;
+    box-shadow: 0 0 0 3px rgba(0, 118, 190, 0.15), 0 4px 10px rgba(0, 118, 190, 0.08);
+    transform: translateY(-1px);
+}
+
+.otp-digit.has-val {
+    border-color: var(--color-accent);
+    background-color: #FFFFFF;
+}
+
+.otp-inputs.shake {
+    animation: otpShake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+.otp-inputs.shake .otp-digit {
+    border-color: #DC2626 !important;
+    background-color: #FEF2F2 !important;
+}
+
+@keyframes otpShake {
+    10%, 90% { transform: translate3d(-2px, 0, 0); }
+    20%, 80% { transform: translate3d(3px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-5px, 0, 0); }
+    40%, 60% { transform: translate3d(5px, 0, 0); }
+}
+
+.otp-error-msg {
+    color: #DC2626;
+    font-size: 0.8125rem;
+    margin-top: 0.5rem;
+    text-align: center;
+    font-weight: 500;
+}
+
+.otp-resend-row {
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+    margin: 0.75rem 0 1.25rem;
+    min-height: 20px;
+}
+
+.otp-timer-text strong {
+    color: var(--color-accent);
+    font-weight: 700;
+}
+
+.otp-resend-btn {
+    background: none;
+    border: none;
+    color: var(--color-accent);
+    font-weight: 700;
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 0.8125rem;
+    padding: 0;
+    transition: var(--transition-fast);
+}
+
+.otp-resend-btn:hover {
+    color: var(--color-accent-hover);
+}
+
+.otp-actions {
+    margin-top: 1rem;
+}
+
+.otp-verify-btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.otp-back-link {
+    display: inline-block;
+    margin-top: 0.85rem;
+    color: var(--color-text-secondary);
+    font-size: 0.8125rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.otp-back-link:hover {
+    color: var(--color-text-primary);
+    text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+    .otp-digit {
+        width: 44px;
+        height: 50px;
+        font-size: 1.35rem;
+    }
+    .otp-inputs {
+        gap: 0.5rem;
+    }
+}
+
+/* ==========================================================================
    Conversational Form Steps & Progress Bar
    ========================================================================== */
 .form-progress {

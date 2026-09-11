@@ -273,6 +273,46 @@
                             <p class="form-footer-note"><i class="ri-lock-2-line ri-lock-icon"></i> No spam. We'll call or WhatsApp you within 24 hrs to confirm your demo slot.</p>
                         </form>
                         
+                        <!-- OTP Verification State (hidden by default) -->
+                        <div class="form-otp-state" id="heroFormOtp" style="display: none;">
+                            <div class="otp-header text-center">
+                                <div class="otp-icon-wrap">
+                                    <i class="ri-shield-check-fill"></i>
+                                </div>
+                                <h3 class="otp-title">Verify Your Mobile Number</h3>
+                                <p class="otp-subtitle">Enter the 4-digit code sent via SMS to</p>
+                                <div class="otp-phone-pill">
+                                    <i class="ri-smartphone-line"></i>
+                                    <span class="otp-phone-display" id="heroOtpPhone">+91 XXXXX XXXXX</span>
+                                    <button type="button" class="otp-edit-phone-btn" data-form="hero" aria-label="Edit Phone Number">Edit</button>
+                                </div>
+                            </div>
+
+                            <div class="otp-inputs-wrapper">
+                                <div class="otp-inputs" data-form="hero">
+                                    <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code" aria-label="Digit 1" data-form="hero" data-index="0">
+                                    <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code" aria-label="Digit 2" data-form="hero" data-index="1">
+                                    <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code" aria-label="Digit 3" data-form="hero" data-index="2">
+                                    <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code" aria-label="Digit 4" data-form="hero" data-index="3">
+                                </div>
+                                <span class="error-msg otp-error-msg" id="heroOtpError" style="display: none;"></span>
+                            </div>
+
+                            <div class="otp-resend-row text-center">
+                                <span class="otp-timer-text" id="heroOtpTimerText">Resend OTP in <strong id="heroOtpCountdown">30</strong>s</span>
+                                <button type="button" class="otp-resend-btn" id="heroOtpResendBtn" data-form="hero" style="display: none;">Resend OTP</button>
+                            </div>
+
+                            <div class="otp-actions">
+                                <button type="button" class="btn btn-primary btn-block otp-verify-btn" id="heroOtpVerifyBtn" data-form="hero">
+                                    <span class="btn-text">Verify &amp; Confirm Demo Slot</span>
+                                </button>
+                                <button type="button" class="otp-back-link" data-form="hero">
+                                    &larr; Back to details
+                                </button>
+                            </div>
+                        </div>
+
                         <!-- Success View (hidden by default) -->
                         <div class="form-success-state" id="heroFormSuccess" style="display: none;">
                             <div class="success-icon"><i class="ri-checkbox-circle-fill"></i></div>
@@ -2287,6 +2327,46 @@
                     <p class="form-footer-note"><i class="ri-lock-2-line ri-lock-icon"></i> No spam. We'll call or WhatsApp you within 24 hrs to confirm your demo slot.</p>
                 </form>
 
+                <!-- OTP Verification State (hidden by default) -->
+                <div class="form-otp-state" id="modalFormOtp" style="display: none;">
+                    <div class="otp-header text-center">
+                        <div class="otp-icon-wrap">
+                            <i class="ri-shield-check-fill"></i>
+                        </div>
+                        <h3 class="otp-title">Verify Your Mobile Number</h3>
+                        <p class="otp-subtitle">Enter the 4-digit code sent via SMS to</p>
+                        <div class="otp-phone-pill">
+                            <i class="ri-smartphone-line"></i>
+                            <span class="otp-phone-display" id="modalOtpPhone">+91 XXXXX XXXXX</span>
+                            <button type="button" class="otp-edit-phone-btn" data-form="modal" aria-label="Edit Phone Number">Edit</button>
+                        </div>
+                    </div>
+
+                    <div class="otp-inputs-wrapper">
+                        <div class="otp-inputs" data-form="modal">
+                            <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code" aria-label="Digit 1" data-form="modal" data-index="0">
+                            <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code" aria-label="Digit 2" data-form="modal" data-index="1">
+                            <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code" aria-label="Digit 3" data-form="modal" data-index="2">
+                            <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code" aria-label="Digit 4" data-form="modal" data-index="3">
+                        </div>
+                        <span class="error-msg otp-error-msg" id="modalOtpError" style="display: none;"></span>
+                    </div>
+
+                    <div class="otp-resend-row text-center">
+                        <span class="otp-timer-text" id="modalOtpTimerText">Resend OTP in <strong id="modalOtpCountdown">30</strong>s</span>
+                        <button type="button" class="otp-resend-btn" id="modalOtpResendBtn" data-form="modal" style="display: none;">Resend OTP</button>
+                    </div>
+
+                    <div class="otp-actions">
+                        <button type="button" class="btn btn-primary btn-block otp-verify-btn" id="modalOtpVerifyBtn" data-form="modal">
+                            <span class="btn-text">Verify &amp; Confirm Demo Slot</span>
+                        </button>
+                        <button type="button" class="otp-back-link" data-form="modal">
+                            &larr; Back to details
+                        </button>
+                    </div>
+                </div>
+
                 <!-- Success View (hidden by default) -->
                 <div class="form-success-state" id="modalFormSuccess" style="display: none;">
                     <div class="success-icon"><i class="ri-checkbox-circle-fill"></i></div>
@@ -2348,6 +2428,46 @@
                     <button type="submit" class="btn btn-primary btn-block">Download Syllabus PDF</button>
                     <p class="form-privacy-disclosure">By submitting, you agree to our <a href="/terms-and-conditions/" target="_blank" rel="noopener">Terms &amp; Conditions</a> and <a href="/privacy-policy/" target="_blank" rel="noopener">Privacy Policy</a>. We respect your privacy and will never sell your personal information.</p>
                 </form>
+
+                <!-- OTP Verification State (hidden by default) -->
+                <div class="form-otp-state" id="gateFormOtp" style="display: none;">
+                    <div class="otp-header text-center">
+                        <div class="otp-icon-wrap">
+                            <i class="ri-shield-check-fill"></i>
+                        </div>
+                        <h3 class="otp-title">Verify Mobile to Download</h3>
+                        <p class="otp-subtitle">Enter the 4-digit code sent via SMS to</p>
+                        <div class="otp-phone-pill">
+                            <i class="ri-smartphone-line"></i>
+                            <span class="otp-phone-display" id="gateOtpPhone">+91 XXXXX XXXXX</span>
+                            <button type="button" class="otp-edit-phone-btn" data-form="gate" aria-label="Edit Phone Number">Edit</button>
+                        </div>
+                    </div>
+
+                    <div class="otp-inputs-wrapper">
+                        <div class="otp-inputs" data-form="gate">
+                            <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code" aria-label="Digit 1" data-form="gate" data-index="0">
+                            <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code" aria-label="Digit 2" data-form="gate" data-index="1">
+                            <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code" aria-label="Digit 3" data-form="gate" data-index="2">
+                            <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code" aria-label="Digit 4" data-form="gate" data-index="3">
+                        </div>
+                        <span class="error-msg otp-error-msg" id="gateOtpError" style="display: none;"></span>
+                    </div>
+
+                    <div class="otp-resend-row text-center">
+                        <span class="otp-timer-text" id="gateOtpTimerText">Resend OTP in <strong id="gateOtpCountdown">30</strong>s</span>
+                        <button type="button" class="otp-resend-btn" id="gateOtpResendBtn" data-form="gate" style="display: none;">Resend OTP</button>
+                    </div>
+
+                    <div class="otp-actions">
+                        <button type="button" class="btn btn-primary btn-block otp-verify-btn" id="gateOtpVerifyBtn" data-form="gate">
+                            <span class="btn-text">Verify &amp; Download Syllabus PDF</span>
+                        </button>
+                        <button type="button" class="otp-back-link" data-form="gate">
+                            &larr; Back to form
+                        </button>
+                    </div>
+                </div>
 
                 <div class="form-success-state" id="downloadSuccessState" style="display: none;">
                     <div class="success-icon"><i class="ri-checkbox-circle-fill"></i></div>

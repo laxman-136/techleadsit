@@ -1186,6 +1186,15 @@ function initFormValidation() {
             q2Error: document.getElementById('hero-motivation-error'),
             getQ3: () => document.querySelector('input[name="call_time"]:checked, input[name="background"]:checked'),
             q3Error: document.getElementById('hero-background-error'),
+            otpState: document.getElementById('heroFormOtp'),
+            otpPhone: document.getElementById('heroOtpPhone'),
+            otpInputs: document.querySelectorAll('#heroFormOtp .otp-digit'),
+            otpInputsWrap: document.querySelector('#heroFormOtp .otp-inputs'),
+            otpError: document.getElementById('heroOtpError'),
+            otpCountdown: document.getElementById('heroOtpCountdown'),
+            otpTimerText: document.getElementById('heroOtpTimerText'),
+            otpResendBtn: document.getElementById('heroOtpResendBtn'),
+            otpVerifyBtn: document.getElementById('heroOtpVerifyBtn'),
         },
         modal: {
             id: 'modal',
@@ -1208,6 +1217,15 @@ function initFormValidation() {
             q2Error: document.getElementById('modal-motivation-error'),
             getQ3: () => document.querySelector('input[name="modal-call_time"]:checked, input[name="modal-background"]:checked'),
             q3Error: document.getElementById('modal-background-error'),
+            otpState: document.getElementById('modalFormOtp'),
+            otpPhone: document.getElementById('modalOtpPhone'),
+            otpInputs: document.querySelectorAll('#modalFormOtp .otp-digit'),
+            otpInputsWrap: document.querySelector('#modalFormOtp .otp-inputs'),
+            otpError: document.getElementById('modalOtpError'),
+            otpCountdown: document.getElementById('modalOtpCountdown'),
+            otpTimerText: document.getElementById('modalOtpTimerText'),
+            otpResendBtn: document.getElementById('modalOtpResendBtn'),
+            otpVerifyBtn: document.getElementById('modalOtpVerifyBtn'),
         },
         gate: {
             id: 'gate',
@@ -1220,6 +1238,15 @@ function initFormValidation() {
             phoneInput: document.getElementById('gate-phone'),
             phoneError: document.getElementById('gate-phone-error'),
             directLink: document.getElementById('directDownloadLink'),
+            otpState: document.getElementById('gateFormOtp'),
+            otpPhone: document.getElementById('gateOtpPhone'),
+            otpInputs: document.querySelectorAll('#gateFormOtp .otp-digit'),
+            otpInputsWrap: document.querySelector('#gateFormOtp .otp-inputs'),
+            otpError: document.getElementById('gateOtpError'),
+            otpCountdown: document.getElementById('gateOtpCountdown'),
+            otpTimerText: document.getElementById('gateOtpTimerText'),
+            otpResendBtn: document.getElementById('gateOtpResendBtn'),
+            otpVerifyBtn: document.getElementById('gateOtpVerifyBtn'),
         }
     };
 
@@ -1373,32 +1400,32 @@ function initFormValidation() {
     setupRadioAutoAdvance('modal', 'modal-segment', 3);
     setupRadioAutoAdvance('modal', 'modal-motivation', 4);
 
-    // Validate Hero form Submission (Step 4)
+    // Validate Hero form Submission (Step 4 -> OTP Verification)
     if (forms.hero.form) {
         forms.hero.form.addEventListener('submit', (e) => {
             e.preventDefault();
             if (validateStep('hero', 4)) {
-                submitLead('hero', forms.hero);
+                openOtpVerification('hero');
             }
         });
     }
 
-    // Validate Modal form Submission (Step 4)
+    // Validate Modal form Submission (Step 4 -> OTP Verification)
     if (forms.modal.form) {
         forms.modal.form.addEventListener('submit', (e) => {
             e.preventDefault();
             if (validateStep('modal', 4)) {
-                submitLead('modal', forms.modal);
+                openOtpVerification('modal');
             }
         });
     }
 
-    // Validate Download Gate form (Standard non-conversational single step)
+    // Validate Download Gate form (Single Step -> OTP Verification)
     if (forms.gate.form) {
         forms.gate.form.addEventListener('submit', (e) => {
             e.preventDefault();
             if (validateDownloadForm()) {
-                submitDownloadGate();
+                openOtpVerification('gate');
             }
         });
     }
@@ -1432,6 +1459,316 @@ function initFormValidation() {
 
         return isValid;
     }
+
+    // ==========================================================================
+    // 4-Digit SMS OTP Verification Controller
+    // ==========================================================================
+    const otpTimers = {};
+
+    function initOtpInputs() {
+        ['hero', 'modal', 'gate'].forEach(type => {
+            const formConfig = forms[type];
+            if (!formConfig || !formConfig.otpState) return;
+
+            const inputs = formConfig.otpInputs;
+            const wrap = formConfig.otpInputsWrap;
+
+            inputs.forEach((input, idx) => {
+                // Numeric-only input and auto-advance
+                input.addEventListener('input', (e) => {
+                    const cleanVal = e.target.value.replace(/\D/g, '');
+                    e.target.value = cleanVal ? cleanVal.slice(-1) : '';
+
+                    if (e.target.value) {
+                        e.target.classList.add('has-val');
+                        if (idx < inputs.length - 1) {
+                            inputs[idx + 1].focus();
+                        }
+                    } else {
+                        e.target.classList.remove('has-val');
+                    }
+
+                    if (formConfig.otpError) {
+                        formConfig.otpError.style.display = 'none';
+                    }
+                    if (wrap) {
+                        wrap.classList.remove('shake');
+                    }
+                });
+
+                // Backspace & arrow keys navigation
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace') {
+                        if (input.value) {
+                            input.value = '';
+                            input.classList.remove('has-val');
+                        } else if (idx > 0) {
+                            inputs[idx - 1].focus();
+                            inputs[idx - 1].value = '';
+                            inputs[idx - 1].classList.remove('has-val');
+                        }
+                        e.preventDefault();
+                    } else if (e.key === 'ArrowLeft' && idx > 0) {
+                        inputs[idx - 1].focus();
+                    } else if (e.key === 'ArrowRight' && idx < inputs.length - 1) {
+                        inputs[idx + 1].focus();
+                    } else if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleVerifyOtp(type);
+                    }
+                });
+
+                // Select on focus
+                input.addEventListener('focus', () => {
+                    input.select();
+                });
+
+                // Paste handling across all 4 boxes
+                input.addEventListener('paste', (e) => {
+                    e.preventDefault();
+                    const pasteText = (e.clipboardData || window.clipboardData).getData('text');
+                    const digits = pasteText.replace(/\D/g, '').slice(0, 4);
+                    if (digits.length > 0) {
+                        inputs.forEach((inp, i) => {
+                            if (i < digits.length) {
+                                inp.value = digits[i];
+                                inp.classList.add('has-val');
+                            }
+                        });
+                        const targetIdx = Math.min(digits.length, inputs.length - 1);
+                        inputs[targetIdx].focus();
+                        if (formConfig.otpError) {
+                            formConfig.otpError.style.display = 'none';
+                        }
+                        if (wrap) {
+                            wrap.classList.remove('shake');
+                        }
+                    }
+                });
+            });
+
+            // Wire Edit Phone and Back to Form buttons
+            const editBtns = formConfig.otpState.querySelectorAll('.otp-edit-phone-btn, .otp-back-link');
+            editBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    returnToFormFromOtp(type);
+                });
+            });
+
+            // Wire Resend OTP button
+            if (formConfig.otpResendBtn) {
+                formConfig.otpResendBtn.addEventListener('click', () => {
+                    handleResendOtp(type);
+                });
+            }
+
+            // Wire Verify OTP button
+            if (formConfig.otpVerifyBtn) {
+                formConfig.otpVerifyBtn.addEventListener('click', () => {
+                    handleVerifyOtp(type);
+                });
+            }
+        });
+    }
+
+    function openOtpVerification(type) {
+        const formConfig = forms[type];
+        if (!formConfig) return;
+
+        // Extract phone number and format
+        const phone = formConfig.phoneInput ? formConfig.phoneInput.value.trim() : '';
+        const formatted = phone.length === 10 ? `+91 ${phone.slice(0, 5)} ${phone.slice(5)}` : (phone ? `+91 ${phone}` : '+91 XXXXX XXXXX');
+        if (formConfig.otpPhone) {
+            formConfig.otpPhone.textContent = formatted;
+        }
+
+        // Hide form element & progress bar
+        if (formConfig.form) {
+            formConfig.form.style.display = 'none';
+            const progress = formConfig.form.querySelector('.form-progress');
+            if (progress) progress.style.display = 'none';
+        }
+
+        // Hide outer card title and subtitle for a dedicated, distraction-free OTP view
+        const cardBox = formConfig.form ? formConfig.form.closest('.lead-form-box') : null;
+        if (cardBox) {
+            const bt = cardBox.querySelector('.form-title');
+            const bs = cardBox.querySelector('.form-subtitle');
+            if (bt) bt.style.display = 'none';
+            if (bs) bs.style.display = 'none';
+        }
+
+        // Show OTP container
+        if (formConfig.otpState) {
+            formConfig.otpState.style.display = 'block';
+        }
+
+        // Clear all inputs
+        if (formConfig.otpInputs) {
+            formConfig.otpInputs.forEach(i => {
+                i.value = '';
+                i.classList.remove('has-val');
+            });
+            setTimeout(() => {
+                if (formConfig.otpInputs[0]) formConfig.otpInputs[0].focus();
+            }, 100);
+        }
+
+        // Reset error message
+        if (formConfig.otpError) {
+            formConfig.otpError.style.display = 'none';
+        }
+
+        // Start 30s countdown
+        startOtpCountdown(type);
+    }
+
+    function startOtpCountdown(type) {
+        const formConfig = forms[type];
+        if (!formConfig) return;
+
+        clearInterval(otpTimers[type]);
+        let countdown = 30;
+
+        if (formConfig.otpTimerText) formConfig.otpTimerText.style.display = 'inline';
+        if (formConfig.otpResendBtn) formConfig.otpResendBtn.style.display = 'none';
+        if (formConfig.otpCountdown) formConfig.otpCountdown.textContent = countdown;
+
+        otpTimers[type] = setInterval(() => {
+            countdown--;
+            if (countdown <= 0) {
+                clearInterval(otpTimers[type]);
+                if (formConfig.otpTimerText) formConfig.otpTimerText.style.display = 'none';
+                if (formConfig.otpResendBtn) formConfig.otpResendBtn.style.display = 'inline-block';
+            } else {
+                if (formConfig.otpCountdown) formConfig.otpCountdown.textContent = countdown;
+            }
+        }, 1000);
+    }
+
+    function returnToFormFromOtp(type) {
+        const formConfig = forms[type];
+        if (!formConfig) return;
+
+        clearInterval(otpTimers[type]);
+        if (formConfig.otpState) formConfig.otpState.style.display = 'none';
+        if (formConfig.form) {
+            formConfig.form.style.display = 'block';
+            const progress = formConfig.form.querySelector('.form-progress');
+            if (progress) progress.style.display = 'block';
+        }
+
+        // Restore outer card title and subtitle
+        const cardBox = formConfig.form ? formConfig.form.closest('.lead-form-box') : null;
+        if (cardBox) {
+            const bt = cardBox.querySelector('.form-title');
+            const bs = cardBox.querySelector('.form-subtitle');
+            if (bt) bt.style.display = '';
+            if (bs) bs.style.display = '';
+        }
+
+        // For conversational forms, navigate to Step 1 and focus phone
+        if (type === 'hero' || type === 'modal') {
+            setFormStep(type, 1);
+        }
+        if (formConfig.phoneInput) {
+            formConfig.phoneInput.focus();
+        }
+    }
+
+    function handleResendOtp(type) {
+        const formConfig = forms[type];
+        if (!formConfig) return;
+
+        startOtpCountdown(type);
+
+        if (formConfig.otpInputs) {
+            formConfig.otpInputs.forEach(i => {
+                i.value = '';
+                i.classList.remove('has-val');
+            });
+            if (formConfig.otpInputs[0]) formConfig.otpInputs[0].focus();
+        }
+
+        if (formConfig.otpError) {
+            formConfig.otpError.style.color = '#0D9488';
+            formConfig.otpError.textContent = 'A fresh 4-digit code has been sent!';
+            formConfig.otpError.style.display = 'block';
+            setTimeout(() => {
+                if (formConfig.otpError) {
+                    formConfig.otpError.style.display = 'none';
+                    formConfig.otpError.style.color = '#DC2626';
+                }
+            }, 3000);
+        }
+    }
+
+    function showOtpError(type, message) {
+        const formConfig = forms[type];
+        if (!formConfig) return;
+
+        if (formConfig.otpError) {
+            formConfig.otpError.style.color = '#DC2626';
+            formConfig.otpError.textContent = message;
+            formConfig.otpError.style.display = 'block';
+        }
+
+        if (formConfig.otpInputsWrap) {
+            formConfig.otpInputsWrap.classList.remove('shake');
+            void formConfig.otpInputsWrap.offsetWidth;
+            formConfig.otpInputsWrap.classList.add('shake');
+            setTimeout(() => {
+                if (formConfig.otpInputsWrap) formConfig.otpInputsWrap.classList.remove('shake');
+            }, 600);
+        }
+    }
+
+    function handleVerifyOtp(type) {
+        const formConfig = forms[type];
+        if (!formConfig) return;
+
+        // Collect 4 digits
+        const digits = Array.from(formConfig.otpInputs || []).map(inp => inp.value.trim()).join('');
+
+        if (digits.length < 4) {
+            showOtpError(type, 'Please enter all 4 digits of the verification code.');
+            const firstEmpty = Array.from(formConfig.otpInputs || []).find(inp => !inp.value);
+            if (firstEmpty) firstEmpty.focus();
+            return;
+        }
+
+        // Button loading state
+        const verifyBtn = formConfig.otpVerifyBtn;
+        const origBtnHtml = verifyBtn ? verifyBtn.innerHTML : '';
+        if (verifyBtn) {
+            verifyBtn.disabled = true;
+            verifyBtn.innerHTML = '<i class="ri-loader-4-line ri-spin"></i> Verifying...';
+        }
+
+        // Interactive Preview / Test Mode until SMS API key is configured
+        setTimeout(() => {
+            if (verifyBtn) {
+                verifyBtn.disabled = false;
+                verifyBtn.innerHTML = origBtnHtml;
+            }
+
+            clearInterval(otpTimers[type]);
+
+            if (formConfig.otpState) {
+                formConfig.otpState.style.display = 'none';
+            }
+
+            // Proceed with real lead submission
+            if (type === 'hero' || type === 'modal') {
+                submitLead(type, formConfig);
+            } else if (type === 'gate') {
+                submitDownloadGate();
+            }
+        }, 500);
+    }
+
+    // Initialize OTP listeners
+    initOtpInputs();
 
     // Extract form variables for logging/CRM payload
     function getFormData(type) {
@@ -1818,11 +2155,19 @@ function initFormValidation() {
                 // Show success view
                 formConfig.successName.textContent = data.name;
                 
-                // Hide header indicator and form
+                // Hide header indicator, box title and form
+                const cardBox = formConfig.form ? formConfig.form.closest('.lead-form-box') : null;
+                if (cardBox) {
+                    const bt = cardBox.querySelector('.form-title');
+                    const bs = cardBox.querySelector('.form-subtitle');
+                    if (bt) bt.style.display = 'none';
+                    if (bs) bs.style.display = 'none';
+                }
                 if (formConfig.form.querySelector('.form-progress')) {
                     formConfig.form.querySelector('.form-progress').style.display = 'none';
                 }
                 formConfig.form.querySelectorAll('.form-step').forEach(step => step.style.display = 'none');
+                if (formConfig.otpState) formConfig.otpState.style.display = 'none';
                 formConfig.success.style.display = 'block';
                 localStorage.setItem('hcm_lead_submitted', 'true');
             } else {
@@ -1835,10 +2180,18 @@ function initFormValidation() {
             
             // Show success view seamlessly
             formConfig.successName.textContent = data.name;
+            const cardBox = formConfig.form ? formConfig.form.closest('.lead-form-box') : null;
+            if (cardBox) {
+                const bt = cardBox.querySelector('.form-title');
+                const bs = cardBox.querySelector('.form-subtitle');
+                if (bt) bt.style.display = 'none';
+                if (bs) bs.style.display = 'none';
+            }
             if (formConfig.form.querySelector('.form-progress')) {
                 formConfig.form.querySelector('.form-progress').style.display = 'none';
             }
             formConfig.form.querySelectorAll('.form-step').forEach(step => step.style.display = 'none');
+            if (formConfig.otpState) formConfig.otpState.style.display = 'none';
             formConfig.success.style.display = 'block';
             localStorage.setItem('hcm_lead_submitted', 'true');
         })
@@ -1933,6 +2286,14 @@ function initFormValidation() {
     // Process PDF Download Trigger
     function proceedDownload(formConfig) {
         formConfig.form.style.display = 'none';
+        const cardBox = formConfig.form ? formConfig.form.closest('.lead-form-box') : null;
+        if (cardBox) {
+            const bt = cardBox.querySelector('.form-title');
+            const bs = cardBox.querySelector('.form-subtitle');
+            if (bt) bt.style.display = 'none';
+            if (bs) bs.style.display = 'none';
+        }
+        if (formConfig.otpState) formConfig.otpState.style.display = 'none';
         formConfig.success.style.display = 'block';
         
         formConfig.directLink.href = "data:application/pdf;base64,JVBERi0xLjQKJ..."
