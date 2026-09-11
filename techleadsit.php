@@ -203,6 +203,14 @@ function techleadsit_route_landing_pages() {
                     $base_visitor_floor = $current_views_stored;
                 }
 
+                // 4-Digit SMS OTP Verification Settings Resolution
+                $otp_master_enabled = isset($course_opts['otp_verification_enabled']) ? (bool)$course_opts['otp_verification_enabled'] : true;
+                $otp_disabled_slugs = isset($course_opts['otp_disabled_slugs']) && is_array($course_opts['otp_disabled_slugs']) ? $course_opts['otp_disabled_slugs'] : array();
+                $page_otp_enabled = $otp_master_enabled && empty($otp_disabled_slugs[$slug]);
+                $otp_required_hero = $page_otp_enabled && (isset($course_opts['otp_required_hero']) ? (bool)$course_opts['otp_required_hero'] : true);
+                $otp_required_modal = $page_otp_enabled && (isset($course_opts['otp_required_modal']) ? (bool)$course_opts['otp_required_modal'] : true);
+                $otp_required_gate = $page_otp_enabled && (isset($course_opts['otp_required_gate']) ? (bool)$course_opts['otp_required_gate'] : true);
+
                 // Inject global JS config object
                 $js_config = array(
                     'courseId' => $matched_course_id,
@@ -214,6 +222,10 @@ function techleadsit_route_landing_pages() {
                     'batchTiming' => $batch_timing,
                     'batchSeatsLeft' => $batch_seats_left,
                     'baseVisitorFloor' => $base_visitor_floor,
+                    'otpEnabled' => $page_otp_enabled,
+                    'otpRequiredHero' => $otp_required_hero,
+                    'otpRequiredModal' => $otp_required_modal,
+                    'otpRequiredGate' => $otp_required_gate,
                 );
                 $config_script = "\n<script>window.TECHLEADSIT_BATCH_CONFIG = " . json_encode($js_config) . ";</script>\n";
                 $html_content = str_replace('<head>', '<head>' . $config_script, $html_content);
@@ -1038,6 +1050,21 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
     $phone_hash = md5($clean_phone);
     $is_phone_verified = !empty(get_transient('techleads_verified_' . $phone_hash));
 
+    // Determine whether OTP was required for this specific landing page
+    $page_otp_required = true;
+    $lead_slug = '';
+    if (!empty($landing_page)) {
+        $lead_path = trim((string)parse_url($landing_page, PHP_URL_PATH), '/');
+        $lead_slug = $lead_path;
+    }
+    if (!empty($lead_slug)) {
+        $course_id = techleadsit_find_course_for_slug($lead_slug);
+        $course_opts = techleadsit_get_course_options($course_id);
+        $otp_master = isset($course_opts['otp_verification_enabled']) ? (bool)$course_opts['otp_verification_enabled'] : true;
+        $disabled_slugs = isset($course_opts['otp_disabled_slugs']) && is_array($course_opts['otp_disabled_slugs']) ? $course_opts['otp_disabled_slugs'] : array();
+        $page_otp_required = $otp_master && empty($disabled_slugs[$lead_slug]);
+    }
+
     // Capture the 16 tracking fields
     $fbp = sanitize_text_field($params['fbp'] ?? '');
     $fbc = sanitize_text_field($params['fbc'] ?? '');
@@ -1201,9 +1228,9 @@ function techleadsit_handle_crm_lead(WP_REST_Request $request) {
             'notes' => $formatted_remarks,
             
             // Mobile SMS OTP Verification Status
-            'Phone Verified' => $is_phone_verified ? 'Yes' : 'No',
-            'phone_verified' => $is_phone_verified ? 'Yes' : 'No',
-            'OTP Status' => $is_phone_verified ? 'Verified via 4-Digit SMS' : 'Unverified',
+            'Phone Verified' => $is_phone_verified ? 'Yes' : ($page_otp_required ? 'No' : 'Bypassed'),
+            'phone_verified' => $is_phone_verified ? 'Yes' : ($page_otp_required ? 'No' : 'Bypassed'),
+            'OTP Status' => $is_phone_verified ? 'Verified via 4-Digit SMS' : ($page_otp_required ? 'Unverified' : 'Bypassed (OTP Not Required)'),
             
             // Dedicated Facebook Ads Fields (exact TeleCRM dashboard labels)
             'Facebook Ad' => $fb_ad ?: ((stripos($final_source, 'facebook') !== false || !empty($fbclid)) ? $utm_content : ''),
@@ -1535,7 +1562,12 @@ function techleadsit_get_courses_registry() {
                 'batch_timing' => '8:30 PM to 9:30 PM',
                 'batch_pills' => 'Online, Weekday (TTS)',
                 'batch_seats_left' => '10',
-                'base_visitor_floor' => '1840'
+                'base_visitor_floor' => '1840',
+                'otp_verification_enabled' => 1,
+                'otp_required_hero' => 1,
+                'otp_required_modal' => 1,
+                'otp_required_gate' => 1,
+                'otp_disabled_slugs' => array()
             )
         ),
         'scm' => array(
@@ -1563,7 +1595,12 @@ function techleadsit_get_courses_registry() {
                 'batch_start_date' => '28th Sep, 26',
                 'batch_timing' => '7:00 PM to 8:30 PM',
                 'batch_pills' => 'Online Live, Weekend / Weekday',
-                'batch_seats_left' => '8'
+                'batch_seats_left' => '8',
+                'otp_verification_enabled' => 1,
+                'otp_required_hero' => 1,
+                'otp_required_modal' => 1,
+                'otp_required_gate' => 1,
+                'otp_disabled_slugs' => array()
             )
         ),
         'sql' => array(
@@ -1586,7 +1623,12 @@ function techleadsit_get_courses_registry() {
                 'batch_start_date' => '25th Sep, 26',
                 'batch_timing' => '6:00 PM to 7:30 PM',
                 'batch_pills' => '100% Free, Online Live',
-                'batch_seats_left' => '25'
+                'batch_seats_left' => '25',
+                'otp_verification_enabled' => 1,
+                'otp_required_hero' => 1,
+                'otp_required_modal' => 1,
+                'otp_required_gate' => 1,
+                'otp_disabled_slugs' => array()
             )
         ),
         'financials' => array(
@@ -1609,7 +1651,12 @@ function techleadsit_get_courses_registry() {
                 'batch_start_date' => '5th Oct, 26',
                 'batch_timing' => '8:00 PM to 9:30 PM',
                 'batch_pills' => 'Online Live, Project-Based',
-                'batch_seats_left' => '12'
+                'batch_seats_left' => '12',
+                'otp_verification_enabled' => 1,
+                'otp_required_hero' => 1,
+                'otp_required_modal' => 1,
+                'otp_required_gate' => 1,
+                'otp_disabled_slugs' => array()
             )
         )
     );
@@ -1677,6 +1724,24 @@ function techleadsit_sanitize_course_settings($input) {
     $sanitized['batch_pills'] = sanitize_text_field($input['batch_pills'] ?? '');
     $sanitized['batch_seats_left'] = sanitize_text_field($input['batch_seats_left'] ?? '');
     $sanitized['base_visitor_floor'] = sanitize_text_field($input['base_visitor_floor'] ?? '1840');
+
+    // 4-Digit SMS OTP Verification Settings
+    $sanitized['otp_verification_enabled'] = isset($input['otp_verification_enabled']) ? 1 : 0;
+    $sanitized['otp_required_hero'] = isset($input['otp_required_hero']) ? 1 : 0;
+    $sanitized['otp_required_modal'] = isset($input['otp_required_modal']) ? 1 : 0;
+    $sanitized['otp_required_gate'] = isset($input['otp_required_gate']) ? 1 : 0;
+
+    // Per-landing-page OTP toggle mapping
+    $course_id = sanitize_key($input['course_id'] ?? (isset($_GET['tab']) ? $_GET['tab'] : 'hcm'));
+    $courses = techleadsit_get_courses_registry();
+    $slugs = $courses[$course_id]['slugs'] ?? array();
+
+    $sanitized['otp_disabled_slugs'] = array();
+    foreach ($slugs as $slug => $file) {
+        if (empty($input['otp_enabled_slugs'][$slug])) {
+            $sanitized['otp_disabled_slugs'][$slug] = 1;
+        }
+    }
 
     return $sanitized;
 }
@@ -1759,6 +1824,7 @@ function techleadsit_render_multi_course_settings_page() {
 
         <form method="post" action="options.php" id="techleadsitForm">
             <?php settings_fields('techleadsit_course_group_' . $active_tab); ?>
+            <input type="hidden" name="techleadsit_course_settings_<?php echo esc_attr($active_tab); ?>[course_id]" value="<?php echo esc_attr($active_tab); ?>">
 
             <!-- Section 1: Sticky Countdown Bar -->
             <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
@@ -1861,7 +1927,93 @@ function techleadsit_render_multi_course_settings_page() {
                 </table>
             </div>
 
-            <!-- Section 3: Mapped Landing Pages in this Course -->
+            <!-- Section 3: 📱 4-Digit SMS OTP Verification Settings -->
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+                    <div>
+                        <h2 style="font-size: 16px; font-weight: 700; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 8px;">
+                            <span class="dashicons dashicons-smartphone" style="color: #0d9488; font-size: 20px;"></span>
+                            Section 3: 📱 4-Digit SMS OTP Verification Settings
+                        </h2>
+                        <p style="margin: 4px 0 0; font-size: 12.5px; color: #64748b;">Enforce 4-digit SMS OTP verification via VISPL Gateway before recording TeleCRM leads.</p>
+                    </div>
+                    <span style="background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; border-radius: 9999px; padding: 3px 12px; font-size: 11.5px; font-weight: 700;">VISPL DLT SMS Active</span>
+                </div>
+
+                <table class="form-table" style="margin-top: 0;">
+                    <tr>
+                        <th scope="row" style="font-weight: 600; color: #475569;">Course Master Toggle</th>
+                        <td>
+                            <label style="display: inline-flex; align-items: center; gap: 8px; font-weight: 700; color: #0f172a; font-size: 14px; cursor: pointer;">
+                                <input type="checkbox" id="field_otp_verification_enabled" name="techleadsit_course_settings_<?php echo esc_attr($active_tab); ?>[otp_verification_enabled]" value="1" <?php checked(!empty($opts['otp_verification_enabled'])); ?> style="width: 18px; height: 18px;">
+                                Require 4-Digit SMS OTP Verification for <?php echo esc_html($current_course['name']); ?>
+                            </label>
+                            <p class="description" style="color: #64748b; margin-top: 5px;">If unchecked, OTP verification is turned off across all landing pages in this course (leads submit directly with 1-click).</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row" style="font-weight: 600; color: #475569;">Form Placement Scope</th>
+                        <td>
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                <label style="display: inline-flex; align-items: center; gap: 8px; font-weight: 600; color: #334155; font-size: 13px; cursor: pointer;">
+                                    <input type="checkbox" name="techleadsit_course_settings_<?php echo esc_attr($active_tab); ?>[otp_required_hero]" value="1" <?php checked(!empty($opts['otp_required_hero'])); ?>>
+                                    Hero Multi-Step Form (Conversational Lead Flow)
+                                </label>
+                                <label style="display: inline-flex; align-items: center; gap: 8px; font-weight: 600; color: #334155; font-size: 13px; cursor: pointer;">
+                                    <input type="checkbox" name="techleadsit_course_settings_<?php echo esc_attr($active_tab); ?>[otp_required_modal]" value="1" <?php checked(!empty($opts['otp_required_modal'])); ?>>
+                                    Popup Modal Form (Instant Demo / Call Reservation)
+                                </label>
+                                <label style="display: inline-flex; align-items: center; gap: 8px; font-weight: 600; color: #334155; font-size: 13px; cursor: pointer;">
+                                    <input type="checkbox" name="techleadsit_course_settings_<?php echo esc_attr($active_tab); ?>[otp_required_gate]" value="1" <?php checked(!empty($opts['otp_required_gate'])); ?>>
+                                    Syllabus PDF Download Gate Form
+                                </label>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- Per-Landing-Page Independent Toggles -->
+                <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #f1f5f9;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                        <div>
+                            <h4 style="font-size: 13.5px; font-weight: 700; color: #1e293b; margin: 0;">Per-Landing-Page OTP Toggle</h4>
+                            <p style="font-size: 12px; color: #64748b; margin: 2px 0 0;">Check pages that MUST enforce OTP. Uncheck pages to bypass OTP and enable direct lead capture.</p>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button type="button" class="button button-small" onclick="toggleAllOtpCheckboxes(true)" style="font-size: 11px;">Require All</button>
+                            <button type="button" class="button button-small" onclick="toggleAllOtpCheckboxes(false)" style="font-size: 11px;">Bypass All</button>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 10px;">
+                        <?php foreach ($current_course['slugs'] as $slug => $file) : 
+                            $is_enabled = empty($opts['otp_disabled_slugs'][$slug]);
+                            $page_url = home_url('/' . $slug);
+                        ?>
+                            <div class="otp-slug-card" style="background: <?php echo $is_enabled ? '#f8fafc' : '#fffbeb'; ?>; border: 1px solid <?php echo $is_enabled ? '#cbd5e1' : '#fde68a'; ?>; border-radius: 8px; padding: 10px 12px; transition: all 0.2s ease;">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                                    <label style="display: flex; align-items: center; gap: 8px; font-weight: 700; font-family: monospace; font-size: 12.5px; color: #0f172a; cursor: pointer;">
+                                        <input type="checkbox" class="otp-slug-checkbox" name="techleadsit_course_settings_<?php echo esc_attr($active_tab); ?>[otp_enabled_slugs][<?php echo esc_attr($slug); ?>]" value="1" <?php checked($is_enabled); ?> onchange="handleOtpSlugToggle(this)">
+                                        /<?php echo esc_html($slug); ?>
+                                    </label>
+                                    <span class="otp-status-badge" style="background: <?php echo $is_enabled ? '#dcfce7' : '#fef3c7'; ?>; color: <?php echo $is_enabled ? '#15803d' : '#b45309'; ?>; font-size: 10.5px; font-weight: 700; padding: 2px 7px; border-radius: 4px; border: 1px solid <?php echo $is_enabled ? '#bbf7d0' : '#fde68a'; ?>;">
+                                        <?php echo $is_enabled ? 'OTP REQUIRED' : 'OTP BYPASS'; ?>
+                                    </span>
+                                </div>
+                                <div style="display: flex; gap: 10px; font-size: 11px; margin-left: 24px;">
+                                    <a href="<?php echo esc_url($page_url); ?>" target="_blank" style="color: #4f46e5; text-decoration: none; font-weight: 600;">Live Page ↗</a>
+                                    <span style="color: #cbd5e1;">|</span>
+                                    <a href="<?php echo esc_url(add_query_arg('otp', '1', $page_url)); ?>" target="_blank" style="color: #059669; text-decoration: none; font-weight: 600;" title="Test with OTP forced">Force OTP ↗</a>
+                                    <span style="color: #cbd5e1;">|</span>
+                                    <a href="<?php echo esc_url(add_query_arg('otp', '0', $page_url)); ?>" target="_blank" style="color: #d97706; text-decoration: none; font-weight: 600;" title="Test with OTP bypassed">Bypass OTP ↗</a>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 4: Mapped Landing Pages in this Course -->
             <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
                 <h3 style="font-size: 15px; font-weight: 700; color: #334155; margin: 0 0 12px 0; display: flex; align-items: center; gap: 8px;">
                     <span class="dashicons dashicons-admin-links" style="color: #6366f1;"></span>
@@ -1980,6 +2132,38 @@ function techleadsit_render_multi_course_settings_page() {
             form.style.transition = 'opacity 0.2s ease';
             form.style.opacity = '0.5';
             setTimeout(() => { form.style.opacity = '1'; }, 200);
+        }
+
+        function toggleAllOtpCheckboxes(enable) {
+            document.querySelectorAll('.otp-slug-checkbox').forEach(function(cb) {
+                cb.checked = enable;
+                handleOtpSlugToggle(cb);
+            });
+        }
+
+        function handleOtpSlugToggle(cb) {
+            const card = cb.closest('.otp-slug-card');
+            if (!card) return;
+            const badge = card.querySelector('.otp-status-badge');
+            if (cb.checked) {
+                card.style.background = '#f8fafc';
+                card.style.borderColor = '#cbd5e1';
+                if (badge) {
+                    badge.textContent = 'OTP REQUIRED';
+                    badge.style.background = '#dcfce7';
+                    badge.style.color = '#15803d';
+                    badge.style.borderColor = '#bbf7d0';
+                }
+            } else {
+                card.style.background = '#fffbeb';
+                card.style.borderColor = '#fde68a';
+                if (badge) {
+                    badge.textContent = 'OTP BYPASS';
+                    badge.style.background = '#fef3c7';
+                    badge.style.color = '#b45309';
+                    badge.style.borderColor = '#fde68a';
+                }
+            }
         }
         </script>
     </div>

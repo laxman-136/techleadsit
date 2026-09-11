@@ -1400,32 +1400,73 @@ function initFormValidation() {
     setupRadioAutoAdvance('modal', 'modal-segment', 3);
     setupRadioAutoAdvance('modal', 'modal-motivation', 4);
 
-    // Validate Hero form Submission (Step 4 -> OTP Verification)
+    /**
+     * Checks whether 4-digit SMS OTP is enabled for this landing page and form type.
+     * Supports:
+     * 1. URL Query Override (?otp=0 or ?otp=off to bypass, ?otp=1 or ?otp=on to force)
+     * 2. WordPress Admin Dynamic Injected Config (window.TECHLEADSIT_BATCH_CONFIG)
+     */
+    function isOtpEnabled(type) {
+        // 1. URL Parameter Override (?otp=0 to bypass, ?otp=1 to force)
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('otp')) {
+            const val = urlParams.get('otp').toLowerCase();
+            if (val === '0' || val === 'off' || val === 'false' || val === 'no') return false;
+            if (val === '1' || val === 'on' || val === 'true' || val === 'yes') return true;
+        }
+
+        // 2. WordPress Admin Configuration
+        const config = window.TECHLEADSIT_BATCH_CONFIG;
+        if (config && typeof config.otpEnabled !== 'undefined') {
+            if (!config.otpEnabled) return false;
+            if (type === 'hero' && typeof config.otpRequiredHero !== 'undefined') return !!config.otpRequiredHero;
+            if (type === 'modal' && typeof config.otpRequiredModal !== 'undefined') return !!config.otpRequiredModal;
+            if (type === 'gate' && typeof config.otpRequiredGate !== 'undefined') return !!config.otpRequiredGate;
+            return !!config.otpEnabled;
+        }
+
+        // Default: Enabled
+        return true;
+    }
+
+    // Validate Hero form Submission (Step 4 -> OTP Verification or Direct Submit)
     if (forms.hero.form) {
         forms.hero.form.addEventListener('submit', (e) => {
             e.preventDefault();
             if (validateStep('hero', 4)) {
-                openOtpVerification('hero');
+                if (isOtpEnabled('hero')) {
+                    openOtpVerification('hero');
+                } else {
+                    submitLead('hero', forms.hero);
+                }
             }
         });
     }
 
-    // Validate Modal form Submission (Step 4 -> OTP Verification)
+    // Validate Modal form Submission (Step 4 -> OTP Verification or Direct Submit)
     if (forms.modal.form) {
         forms.modal.form.addEventListener('submit', (e) => {
             e.preventDefault();
             if (validateStep('modal', 4)) {
-                openOtpVerification('modal');
+                if (isOtpEnabled('modal')) {
+                    openOtpVerification('modal');
+                } else {
+                    submitLead('modal', forms.modal);
+                }
             }
         });
     }
 
-    // Validate Download Gate form (Single Step -> OTP Verification)
+    // Validate Download Gate form (Single Step -> OTP Verification or Direct Submit)
     if (forms.gate.form) {
         forms.gate.form.addEventListener('submit', (e) => {
             e.preventDefault();
             if (validateDownloadForm()) {
-                openOtpVerification('gate');
+                if (isOtpEnabled('gate')) {
+                    openOtpVerification('gate');
+                } else {
+                    submitDownloadGate();
+                }
             }
         });
     }
