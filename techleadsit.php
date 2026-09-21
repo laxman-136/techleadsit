@@ -131,6 +131,11 @@ function techleadsit_route_landing_pages() {
                         header('HTTP/1.1 200 OK');
                     }
                     header('Content-Type: text/html; charset=utf-8');
+                    header('X-Robots-Tag: index, follow');
+                    if (isset($_SERVER['REQUEST_METHOD']) && strtoupper($_SERVER['REQUEST_METHOD']) === 'HEAD') {
+                        header('Content-Length: ' . strlen($html_content));
+                        exit;
+                    }
                     echo $html_content;
                     exit;
                 }
@@ -844,6 +849,14 @@ function techleadsit_route_landing_pages() {
 
                 // Output headers and HTML content
                 header('Content-Type: text/html; charset=utf-8');
+                header('X-Robots-Tag: index, follow');
+
+                // Gracefully handle HTTP HEAD requests (used by Google AdsBot crawlers) without hanging sockets
+                if (isset($_SERVER['REQUEST_METHOD']) && strtoupper($_SERVER['REQUEST_METHOD']) === 'HEAD') {
+                    header('Content-Length: ' . strlen($html_content));
+                    exit;
+                }
+
                 echo $html_content;
                 exit;
             }
