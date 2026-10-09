@@ -33,6 +33,7 @@ function techleadsit_route_landing_pages() {
         echo "User-agent: *\n";
         echo "Allow: /\n";
         echo "Allow: /privacy-policy/\n";
+        echo "Allow: /cookie-policy/\n";
         echo "Allow: /terms-and-conditions/\n";
         echo "Allow: /refund-cancellation-policy/\n\n";
         echo "User-agent: AdsBot-Google\n";
@@ -58,6 +59,7 @@ function techleadsit_route_landing_pages() {
         $sitemap_entries = array(
             'https://lp.techleadsit.com/oracle-fusion-hcm-training/' => array('lastmod' => '2026-09-08', 'priority' => '1.0'),
             'https://lp.techleadsit.com/f-hcm-course/' => array('lastmod' => '2026-09-08', 'priority' => '0.9'),
+            'https://lp.techleadsit.com/cookie-policy/' => array('lastmod' => '2026-10-09', 'priority' => '0.6'),
             'https://lp.techleadsit.com/privacy-policy/' => array('lastmod' => '2026-09-07', 'priority' => '0.6'),
             'https://lp.techleadsit.com/terms-and-conditions/' => array('lastmod' => '2026-09-07', 'priority' => '0.6'),
             'https://lp.techleadsit.com/refund-cancellation-policy/' => array('lastmod' => '2026-09-07', 'priority' => '0.6')
@@ -98,6 +100,7 @@ function techleadsit_route_landing_pages() {
         'oracle-fusion-hcm-training-in-chennai' => 'f-hcm-course/index.html',
         // Legal & Compliance Policy Pages (HTTP 200 for AdsBot & Users)
         'privacy-policy' => 'policy/privacy-policy.html',
+        'cookie-policy' => 'policy/cookie-policy.html',
         'terms-and-conditions' => 'policy/terms-and-conditions.html',
         'refund-cancellation-policy' => 'policy/refund-cancellation-policy.html',
         // You can add more pages here in the future! E.g. 'scm-offer' => 'scm-offer/index.html'
