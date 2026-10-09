@@ -188,3 +188,6 @@ body{--flow-paper:#fcfcf9}
 @media(max-width:359px){.mentor-photo>.mobile-search-credential{top:10px;left:auto;right:10px}}
 .footer>div{display:flex;flex-wrap:wrap;gap:14px 22px;align-items:center}.footer>div a{font-size:12px;line-height:1.7}
 @media(max-width:760px){.footer>div{width:100%;justify-content:flex-start;gap:12px 20px;margin-top:16px}}
+
+/* Keep review topics legible against their pale sage labels. */
+#reviews .review-card header p{color:#3e5848}

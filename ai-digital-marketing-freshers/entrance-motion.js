@@ -12,7 +12,7 @@
  }
  function headline(el){
   // Keep the full heading in place and reveal it once, without cloned text or movement.
-  play(el,[{opacity:0},{opacity:1}],{duration:1000,easing:'ease-out'});
+  play(el,[{opacity:.85},{opacity:1}],{duration:1000,easing:'ease-out'});
  }
 
  function enter(el,kind,index){
