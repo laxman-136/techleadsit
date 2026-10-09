@@ -1,0 +1,5 @@
+/* No contact details, query strings, or visitor identifiers in analytics events. */
+(()=>{
+ const sent=new Set();window.courseEvent=(name,extra={})=>{const allowed=new Set(['demo_open','form_step','otp_requested','lead_submitted','preview_complete','syllabus_download','whatsapp_click']);if(!allowed.has(name))return;const mode=window.COURSE_ENQUIRY_CONFIG?.mode||'preview';if(name==='lead_submitted'&&mode!=='live')return;const payload={event:name==='lead_submitted'?'form_submitted':name,course:'ai_digital_marketing',form_name:'digital_marketing_conversational_lead',mode};if(Number.isInteger(extra.step))payload.step=extra.step;if(name==='lead_submitted'){if(sent.has(extra.receipt))return;sent.add(extra.receipt);}window.dataLayer=window.dataLayer||[];window.dataLayer.push(payload);};
+ document.querySelectorAll('a[download]').forEach(a=>a.addEventListener('click',()=>window.courseEvent('syllabus_download')));document.querySelectorAll('a[href^="https://wa.me/"]').forEach(a=>a.addEventListener('click',()=>window.courseEvent('whatsapp_click')));
+})();

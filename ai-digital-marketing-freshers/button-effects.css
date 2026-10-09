@@ -1,0 +1,15 @@
+/* Selected button designs: expanding fill for primary actions; glass for secondary actions. */
+.cta-circle,.cta-glass{position:relative;isolation:isolate;overflow:hidden;transition:color .25s,background-color .25s,box-shadow .25s,transform .2s,border-color .25s;touch-action:manipulation}
+.cta-circle::before,.cta-glass::before{content:"";position:absolute;pointer-events:none;z-index:-1}
+.cta-circle{background:#fff!important;color:#1e6445!important;border:1px solid #b3cdbb!important}
+.cta-circle::before{inset:0;background:#176c4d;clip-path:circle(0% at calc(100% - 28px) 50%);transition:clip-path .48s cubic-bezier(.16,1,.3,1)}
+.cta-circle:is(:hover,:focus-visible):not(:disabled){color:#fff!important;border-color:#176c4d!important}
+.cta-circle:is(:hover,:focus-visible):not(:disabled)::before{clip-path:circle(150% at calc(100% - 28px) 50%)}
+.cta-glass{display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:46px;padding:12px 18px;border:1px solid #b9d3c1!important;border-radius:9px;background:#e0eee3b8!important;color:#1d5137!important;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:inset 0 1px 0 #ffffffcf;text-decoration:none}
+.cta-glass::before{inset:-65%;background:linear-gradient(110deg,transparent 40%,#ffffffd6 50%,transparent 60%);transform:translateX(-105%);transition:transform .65s}
+.cta-glass:is(:hover,:focus-visible):not(:disabled){background:#c7e6cf!important;box-shadow:inset 0 1px 0 #fff,0 6px 18px #26593a1a;border-color:#8dbb9d!important}
+.cta-glass:is(:hover,:focus-visible):not(:disabled)::before{transform:translateX(105%)}
+.cta-circle:active:not(:disabled),.cta-glass:active:not(:disabled){transform:translateY(2px) scale(.985)}
+.cta-circle:focus-visible,.cta-glass:focus-visible{outline:3px solid #37875e;outline-offset:4px}.batch-sticky .cta-circle:focus-visible{outline-color:#e7f2df}
+.cta-circle:disabled,.cta-glass:disabled{opacity:.55;cursor:not-allowed;transform:none}
+@media(prefers-reduced-motion:reduce){.cta-circle,.cta-glass,.cta-circle::before,.cta-glass::before{transition:none!important}.cta-circle:active,.cta-glass:active{transform:none!important}.cta-glass::before{display:none}}

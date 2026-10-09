@@ -1,0 +1,1 @@
+document.querySelector('#sample-form')?.addEventListener('submit',event=>{event.preventDefault();document.querySelector('#sample-message').textContent='Preview complete. No enquiry was sent or saved.';});

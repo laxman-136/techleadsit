@@ -1,0 +1,19 @@
+/* Left-to-right batch ticker with soft edges against the bar colour. */
+#countdownBar{background:#173e2e;overflow:hidden;padding:0}
+.batch-loop-window{overflow:hidden;position:relative;mask-image:linear-gradient(to right,transparent,#000 7%,#000 93%,transparent);-webkit-mask-image:linear-gradient(to right,transparent,#000 7%,#000 93%,transparent)}
+.batch-loop-track{display:flex;width:max-content}
+#countdownBar .batch-loop-group{display:flex;align-items:center;justify-content:flex-start;gap:32px;flex-shrink:0;min-width:0;width:max-content;max-width:none;box-sizing:border-box;padding:18px 32px 18px 0;margin:0}
+#countdownBar .batch-loop-group p{margin:0;white-space:nowrap;font-size:14px;line-height:1.5}
+#countdownBar .batch-sticky-seats{display:flex;align-items:center;gap:16px}
+.batch-loop-track>[aria-hidden=true]{display:none}
+.batch-loop-ready .batch-loop-track>[aria-hidden=true]{display:flex}
+.batch-loop-ready .batch-loop-track{animation:batch-travel-right var(--batch-duration,24s) linear infinite;will-change:transform}
+.batch-loop-window:hover .batch-loop-track,.batch-loop-window:focus-within .batch-loop-track,.batch-loop-window.is-paused .batch-loop-track{animation-play-state:paused}
+.batch-loop-window:focus-visible{outline:2px solid #cfe5be;outline-offset:-4px}
+@keyframes batch-travel-right{from{transform:translateX(-50%)}to{transform:translateX(0)}}
+@media(max-width:760px){#countdownBar .batch-loop-group{gap:24px;padding:15px 24px 15px 0;min-width:0}#countdownBar .batch-loop-group p,#countdownBar .batch-sticky-date strong{font-size:12px!important}.batch-loop-window{mask-image:linear-gradient(to right,transparent,#000 24px,#000 calc(100% - 24px),transparent);-webkit-mask-image:linear-gradient(to right,transparent,#000 24px,#000 calc(100% - 24px),transparent)}}
+@media(prefers-reduced-motion:reduce){.batch-loop-ready .batch-loop-track{animation:none;transform:none;width:100%;will-change:auto}.batch-loop-ready .batch-loop-track>[aria-hidden=true]{display:none!important}.batch-loop-window{mask-image:none;-webkit-mask-image:none}#countdownBar .batch-loop-group{width:100%;min-width:0;padding:16px 22px;gap:10px 28px;flex-wrap:wrap;justify-content:center}#countdownBar .batch-loop-group p{white-space:normal;text-align:center}}
+
+#countdownBar .batch-loop-group p::after{content:"";display:inline-block;width:4px;height:4px;border-radius:50%;background:#a5cbb0;margin-left:32px;vertical-align:middle;flex-shrink:0}
+@media(max-width:760px){#countdownBar .batch-loop-group p::after{margin-left:24px}}
+@media(prefers-reduced-motion:reduce){[data-batch-fill]{display:none!important}#countdownBar .batch-loop-group p::after{display:none}}

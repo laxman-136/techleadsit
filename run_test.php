@@ -18,7 +18,7 @@ function esc_url($url) { return $url; }
 function esc_js($js) { return addslashes($js); }
 function home_url($path = '') { return 'https://techleadsit.com' . $path; }
 function admin_url($path = '') { return 'https://techleadsit.com/wp-admin/' . $path; }
-function add_query_arg($args, $url) { return $url . '?' . http_build_query($args); }
+function add_query_arg($args, $url, $target = null) { if (!is_array($args)) { $args = array($args=>$url); $url=$target; } return $url . (strpos($url,'?')===false?'?':'&') . http_build_query($args); }
 function current_user_can($capability) { return true; }
 function checked($checked, $current = true, $echo = true) { return $checked == $current ? 'checked="checked"' : ''; }
 function submit_button($text = null, $type = 'primary', $name = 'submit', $wrap = true, $other_attributes = null) {}
