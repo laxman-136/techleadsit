@@ -11,18 +11,10 @@
   active.add(animation);animation.finished.catch(()=>{}).finally(()=>active.delete(animation));return animation;
  }
  function headline(el){
-  const source=el.querySelector('copy-text');if(!source)return;
-  const overlay=document.createElement('span');overlay.className='headline-entrance-overlay';overlay.setAttribute('aria-hidden','true');overlay.inert=true;
-  let line=document.createElement('span');const lines=[];
-  function push(){const mask=document.createElement('span');mask.className='headline-entrance-mask';line.className='headline-entrance-line';mask.append(line);overlay.append(mask);lines.push(line);line=document.createElement('span');}
-  source.childNodes.forEach(node=>{if(node.nodeName==='BR')push();else line.append(node.cloneNode(true));});if(line.childNodes.length)push();
-  overlay.querySelectorAll('[data-copy-id],[id]').forEach(n=>{n.removeAttribute('data-copy-id');n.removeAttribute('id');});
-  el.classList.add('entrance-headline','is-performing');el.append(overlay);
-  const clean=()=>{overlay.remove();el.classList.remove('is-performing');cleanups.delete(clean);};cleanups.add(clean);
-  const jobs=lines.map((n,i)=>play(n,[{transform:'translateY(115%) skewY(4deg)',opacity:0},{transform:'translateY(-5%) skewY(0)',opacity:1,offset:.75},{transform:'translateY(0)',opacity:1}],{duration:1000,delay:i*85}));
-  const emphasis=overlay.querySelector('em');if(emphasis){emphasis.style.display='inline-block';jobs.push(play(emphasis,[{transform:'scale(.88)'},{transform:'scale(1.065)',offset:.65},{transform:'scale(1)'}],{duration:1000,delay:220}));}
-  Promise.allSettled(jobs.filter(Boolean).map(a=>a.finished)).then(clean);setTimeout(clean,2500);
+  // Keep the full heading in place and reveal it once, without cloned text or movement.
+  play(el,[{opacity:0},{opacity:1}],{duration:1000,easing:'ease-out'});
  }
+
  function enter(el,kind,index){
   if(seen.has(el)||disabled())return;seen.add(el);
   const small=mobile.matches;
