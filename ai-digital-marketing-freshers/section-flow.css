@@ -191,3 +191,7 @@ body{--flow-paper:#fcfcf9}
 
 /* Keep review topics legible against their pale sage labels. */
 #reviews .review-card header p{color:#3e5848}
+/* Projects now sits directly above course fit: share an exact boundary tone. */
+#projects{background:linear-gradient(180deg,var(--flow-paper) 0%,#edf4ed 90px,#edf3e7 100%)}
+#projects::before,#projects::after{content:none}
+#projects + #course-fit{background:linear-gradient(180deg,#edf3e7 0%,#edf3e7 calc(100% - 80px),var(--flow-paper) 100%);border-top:0}
