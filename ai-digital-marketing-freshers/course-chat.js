@@ -13,7 +13,7 @@ launch.addEventListener('click',()=>{if(!panel.hidden){close();return;}panel.hid
 say('Hi! What would you like to know about the course?');
 async function respond(q){
  if(answerBusy)return;answerBusy=true;widget.querySelector('.chat-quick').hidden=true;say(q,'user');
- const pending=document.createElement('p');pending.className='chat-message';pending.textContent='Checking the course details…';log.append(pending);log.scrollTop=log.scrollHeight;
+ const pending=document.createElement('p');pending.className='chat-message chat-typing';pending.innerHTML='<span class="chat-sr">The course assistant is typing…</span><span class="chat-typing-dots" aria-hidden="true"><i></i><i></i><i></i></span>';log.append(pending);log.scrollTop=log.scrollHeight;
  compose.setAttribute('aria-busy','true');compose.querySelector('button').disabled=true;widget.querySelectorAll('.chat-quick button').forEach(b=>b.disabled=true);
  try{
   if(window.COURSE_ENQUIRY_CONFIG?.mode==='preview')throw Error('AI answers connect on the live website after the OpenRouter key is configured. You can preview the brochure form here.');
