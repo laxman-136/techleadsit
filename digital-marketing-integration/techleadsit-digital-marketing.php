@@ -6,6 +6,17 @@
  */
 if (!defined('ABSPATH')) exit;
 require_once __DIR__.'/lead-schema.php';
+// One-time launch requested by the site owner. Later admin changes remain authoritative.
+function tlit_dm_enable_live_launch() {
+    if (get_option('tlit_dm_live_launch_v1')) return;
+    $key='techleadsit_course_settings_digital_marketing';
+    $settings=get_option($key,array());
+    if (!is_array($settings)) $settings=array();
+    $settings['dm_live_enabled']=1;
+    update_option($key,$settings);
+    add_option('tlit_dm_live_launch_v1',1,'','no');
+}
+add_action('init','tlit_dm_enable_live_launch');
 function tlit_dm_options(){return function_exists('techleadsit_get_course_options')?techleadsit_get_course_options('digital_marketing'):array();}
 function tlit_dm_ready() {
     $o=tlit_dm_options();$enabled=defined('TLIT_DM_ENABLED')?TLIT_DM_ENABLED:!empty($o['dm_live_enabled']);

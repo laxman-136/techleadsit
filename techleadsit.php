@@ -1562,7 +1562,7 @@ function techleadsit_get_courses_registry() {
             'id'=>'digital_marketing','name'=>'AI Powered+ Digital Marketing','icon'=>'dashicons-megaphone','badge_color'=>'#176c4d',
             'default_template'=>'ai-digital-marketing-freshers/index.html',
             'slugs'=>array('ai-powered-digital-marketing'=>'ai-digital-marketing-freshers/index.html'),
-            'defaults'=>array('countdown_enabled'=>1,'countdown_text'=>'Next batch: 30 November 2026','countdown_target_datetime'=>'2026-11-30T20:00','countdown_seats_count'=>'67','batch_section_enabled'=>1,'batch_title'=>'Classes that fit into a real week.','batch_subtitle'=>'Live online, taught in English','batch_start_date'=>'30 November 2026','batch_timing'=>'Monday–Friday, 8–9 PM IST','batch_pills'=>'English, recordings for 6 months','batch_seats_left'=>'67','base_visitor_floor'=>'0','otp_verification_enabled'=>1,'otp_required_hero'=>1,'otp_required_modal'=>1,'otp_required_gate'=>1,'otp_disabled_slugs'=>array(),'dm_live_enabled'=>0,'dm_gtm_enabled'=>1,'dm_geo_enabled'=>1,'dm_clarity_enabled'=>0,'dm_seats_enabled'=>1)
+            'defaults'=>array('countdown_enabled'=>1,'countdown_text'=>'Next batch: 30 November 2026','countdown_target_datetime'=>'2026-11-30T20:00','countdown_seats_count'=>'67','batch_section_enabled'=>1,'batch_title'=>'Classes that fit into a real week.','batch_subtitle'=>'Live online, taught in English','batch_start_date'=>'30 November 2026','batch_timing'=>'Monday–Friday, 8–9 PM IST','batch_pills'=>'English, recordings for 6 months','batch_seats_left'=>'67','base_visitor_floor'=>'0','otp_verification_enabled'=>1,'otp_required_hero'=>1,'otp_required_modal'=>1,'otp_required_gate'=>1,'otp_disabled_slugs'=>array(),'dm_live_enabled'=>1,'dm_gtm_enabled'=>1,'dm_geo_enabled'=>1,'dm_clarity_enabled'=>0,'dm_seats_enabled'=>1)
         ),
         'hcm' => array(
             'id' => 'hcm',
@@ -1863,7 +1863,7 @@ function techleadsit_render_multi_course_settings_page() {
             <p>Connected URL: <a href="<?php echo esc_url(home_url('/ai-powered-digital-marketing/')); ?>">AI Powered Digital Marketing</a>. Banner visibility/date/seats and schedule controls are below. Zero seats means full.</p>
             <?php foreach(array('dm_live_enabled'=>'Enable live enquiries (requires SMS OTP and TeleCRM)','dm_seats_enabled'=>'Show seats remaining','dm_gtm_enabled'=>'Load existing GTM4WP container','dm_geo_enabled'=>'Detect approximate city/state through existing ipapi provider when the demo opens','dm_clarity_enabled'=>'Load existing Clarity project (leave off if GTM already loads Clarity)') as $field=>$label): ?>
             <p><label><input type="checkbox" name="techleadsit_course_settings_digital_marketing[<?php echo esc_attr($field); ?>]" value="1" <?php checked(1,(int)($opts[$field]??0)); ?>> <?php echo esc_html($label); ?></label></p>
-            <?php endforeach; ?><p>Disabling OTP puts this course in preview mode; it does not submit unverified leads. Counsellor enrolment/payment fields remain untouched.</p></fieldset>
+            <?php endforeach; ?><p>Disabling OTP closes online enquiries; it does not submit unverified leads. Counsellor enrolment/payment fields remain untouched.</p></fieldset>
             <?php endif; ?>
 
             <input type="hidden" name="techleadsit_course_settings_<?php echo esc_attr($active_tab); ?>[course_id]" value="<?php echo esc_attr($active_tab); ?>">
@@ -2019,7 +2019,7 @@ function techleadsit_render_multi_course_settings_page() {
                     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
                         <div>
                             <h4 style="font-size: 13.5px; font-weight: 700; color: #1e293b; margin: 0;">Per-Landing-Page OTP Toggle</h4>
-                            <p style="font-size: 12px; color: #64748b; margin: 2px 0 0;"><?php echo $active_tab==='digital_marketing' ? 'OTP is required for live Digital Marketing enquiries. Unchecking switches this course to preview mode.' : 'Check pages that MUST enforce OTP. Uncheck pages to bypass OTP and enable direct lead capture.'; ?></p>
+                            <p style="font-size: 12px; color: #64748b; margin: 2px 0 0;"><?php echo $active_tab==='digital_marketing' ? 'OTP is required for live Digital Marketing enquiries. Unchecking closes online enquiries.' : 'Check pages that MUST enforce OTP. Uncheck pages to bypass OTP and enable direct lead capture.'; ?></p>
                         </div>
                         <div style="display: flex; gap: 8px;">
                             <button type="button" class="button button-small" onclick="toggleAllOtpCheckboxes(true)" style="font-size: 11px;">Require All</button>

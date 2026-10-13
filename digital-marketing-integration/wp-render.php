@@ -16,7 +16,7 @@ function tlit_dm_render_page($html,$asset_url,$opts) {
     $hide='';if(empty($opts['countdown_enabled']))$hide.='#countdownBar{display:none!important}';
     if(empty($opts['dm_seats_enabled']))$hide.='.batch-sticky-seats,.pricing-status,.cohort-availability{display:none!important}';
     if(empty($opts['batch_section_enabled']))$hide.='#cohort-schedule,#upcoming-cohort{display:none!important}';
-    $config=array('mode'=>tlit_dm_ready()?'live':'preview','apiBase'=>rest_url('tlit-dm/v1'),'geoEnabled'=>!empty($opts['dm_geo_enabled']));
+    $config=array('mode'=>tlit_dm_ready()?'live':'unavailable','apiBase'=>rest_url('tlit-dm/v1'),'geoEnabled'=>!empty($opts['dm_geo_enabled']));
     if(tlit_dm_ready())$html=str_replace('This design preview only demonstrates the form and OTP screens; it sends no enquiry.','Phone verification confirms your number before your request is sent to the course team.',$html);
     $injection='<style>'.$hide.'</style><script>window.COURSE_ENQUIRY_CONFIG='.wp_json_encode($config,JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT).';</script>';
     if(!empty($opts['dm_gtm_enabled'])){
