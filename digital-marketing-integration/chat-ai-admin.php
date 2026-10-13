@@ -1,6 +1,21 @@
 <?php
 if(!defined('ABSPATH'))exit;
 add_action('admin_menu',function(){add_options_page('Digital Marketing AI Guide','Digital Marketing AI Guide','manage_options','tlit-dm-ai','tlit_dm_ai_admin');});
+function tlit_dm_ai_course_key_field(){
+ $configured=tlit_dm_ai_key()!=='';
+ echo '<fieldset style="margin:20px 0;padding:20px;background:#fff;border:1px solid #ccd9ce;border-radius:10px"><legend><strong>Course chatbot · DeepSeek / OpenRouter</strong></legend><p><label for="dm-course-api-key"><strong>OpenRouter API key</strong></label></p><input id="dm-course-api-key" type="password" name="techleadsit_course_settings_digital_marketing[dm_ai_api_key]" value="" autocomplete="new-password" class="regular-text" placeholder="'.($configured?'Key saved — leave blank to keep it':'Enter your OpenRouter API key').'">';
+ echo '<p>'.($configured?'Key saved.':'No API key saved yet.').' Enter a valid key and click <strong>Save Settings</strong> below to enable the chatbot and AI answers. Leaving this field blank keeps the existing key. The key is never displayed or sent to visitors.</p><p><a href="'.esc_url(admin_url('options-general.php?page=tlit-dm-ai')).'">Advanced AI settings, connection test and knowledge review →</a></p></fieldset>';
+}
+function tlit_dm_ai_save_course_key($input,&$sanitized){
+ if(!array_key_exists('dm_ai_api_key',$input)||!current_user_can('manage_options'))return;
+ $key=is_string($input['dm_ai_api_key'])?trim($input['dm_ai_api_key']):'';
+ if($key==='')return;
+ $settings=tlit_dm_ai_options();$settings['api_key']=$key;$settings['enabled']=1;
+ $error=tlit_dm_ai_admin_save($settings);
+ if($error){add_settings_error('techleadsit_course_settings_digital_marketing','dm_ai_key',$error,'error');return;}
+ $sanitized['dm_chat_enabled']=1;
+ // Never return the key as part of the course settings option.
+}
 function tlit_dm_ai_admin_save($post){
  $o=tlit_dm_ai_options();
  $model=is_string($post['model']??null)?trim($post['model']):'';

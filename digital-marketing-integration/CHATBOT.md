@@ -2,9 +2,9 @@
 
 ## Activate
 1. Update the existing plugin through WP Pusher and purge the page cache.
-2. Open **Settings → Digital Marketing AI Guide** in WordPress.
-3. Enter an OpenRouter API key in the password field, keep **Enable AI answers** selected, and save. The field is write-only; blank preserves the saved key. The server encrypts the saved key with the WordPress authentication salt. Alternatively set `TLIT_DM_OPENROUTER_KEY` in wp-config.php. Never commit a real key.
-4. Click **Test saved AI connection**. This sends one billable sample question but creates no lead.
+2. Open **Landing Page Settings → AI Powered+ Digital Marketing** in WordPress.
+3. Enter an OpenRouter API key in the course chatbot password field and save the course settings. This automatically enables chatbot visibility and AI answers. The field is write-only; blank preserves the saved key. The server encrypts the saved key with the WordPress authentication salt. Alternatively set `TLIT_DM_OPENROUTER_KEY` in wp-config.php. Never commit a real key.
+4. Optionally follow **Advanced AI settings** and click **Test saved AI connection**. This sends one billable sample question but creates no lead.
 5. Ask paraphrases and follow-ups on the live widget before sending paid traffic. Test fees → instalments, beginner eligibility, missed classes, brochure, an unknown refund question, spelling mistakes and an unrelated request. Do not claim that offline mocks establish model accuracy.
 
 Default model: `deepseek/deepseek-v3.2`, editable to another DeepSeek model ID supported by OpenRouter. Structured JSON output is required; routing requires supporting parameters. API destination is fixed to `https://openrouter.ai/api/v1/chat/completions`; no browser receives the key. Reference: https://openrouter.ai/docs/guides/features/structured-outputs

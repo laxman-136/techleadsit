@@ -1766,10 +1766,14 @@ function techleadsit_sanitize_course_settings($input) {
 
     // Per-landing-page OTP toggle mapping
     $course_id = sanitize_key($input['course_id'] ?? (isset($_GET['tab']) ? $_GET['tab'] : 'hcm'));
+    $sanitized['course_id'] = $course_id;
     $courses = techleadsit_get_courses_registry();
     $slugs = $courses[$course_id]['slugs'] ?? array();
 
-    if ($course_id === 'digital_marketing') {foreach(array('dm_chat_enabled','dm_chat_otp_required','dm_live_enabled','dm_gtm_enabled','dm_geo_enabled','dm_clarity_enabled','dm_seats_enabled') as $field)$sanitized[$field]=empty($input[$field])?0:1;}
+    if ($course_id === 'digital_marketing') {
+        foreach(array('dm_chat_enabled','dm_chat_otp_required','dm_live_enabled','dm_gtm_enabled','dm_geo_enabled','dm_clarity_enabled','dm_seats_enabled') as $field)$sanitized[$field]=empty($input[$field])?0:1;
+        tlit_dm_ai_save_course_key($input,$sanitized);
+    }
     $sanitized['otp_disabled_slugs'] = array();
     foreach ($slugs as $slug => $file) {
         if (empty($input['otp_enabled_slugs'][$slug])) {
@@ -1789,6 +1793,7 @@ function techleadsit_render_multi_course_settings_page() {
     $active_tab = isset($_GET['tab']) && isset($courses[$_GET['tab']]) ? sanitize_key($_GET['tab']) : 'hcm';
     $current_course = $courses[$active_tab];
     $opts = techleadsit_get_course_options($active_tab);
+    if ($active_tab === 'digital_marketing' && function_exists('settings_errors')) settings_errors('techleadsit_course_settings_digital_marketing');
     ?>
     <div class="wrap" style="max-width: 1000px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
@@ -1863,7 +1868,8 @@ function techleadsit_render_multi_course_settings_page() {
             <p>Connected URL: <a href="<?php echo esc_url(home_url('/ai-powered-digital-marketing/')); ?>">AI Powered Digital Marketing</a>. Banner visibility/date/seats and schedule controls are below. Zero seats means full.</p>
             <?php foreach(array('dm_chat_enabled'=>'Show course chatbot','dm_chat_otp_required'=>'Require SMS OTP for chatbot brochure leads (turning off accepts unverified phone numbers)','dm_live_enabled'=>'Enable live enquiries (requires SMS OTP and TeleCRM)','dm_seats_enabled'=>'Show seats remaining','dm_gtm_enabled'=>'Load existing GTM4WP container','dm_geo_enabled'=>'Detect approximate city/state through existing ipapi provider when the demo opens','dm_clarity_enabled'=>'Load existing Clarity project (leave off if GTM already loads Clarity)') as $field=>$label): ?>
             <p><label><input type="checkbox" name="techleadsit_course_settings_digital_marketing[<?php echo esc_attr($field); ?>]" value="1" <?php checked(1,(int)($opts[$field]??0)); ?>> <?php echo esc_html($label); ?></label></p>
-            <?php endforeach; ?><p>Disabling OTP closes online enquiries; it does not submit unverified leads. Counsellor enrolment/payment fields remain untouched.</p></fieldset>
+            <?php endforeach; ?><p>Demo and brochure-popup enquiries require OTP. The chatbot has its own OTP switch; when off, its phone numbers are marked unverified. Counsellor enrolment/payment fields remain untouched.</p></fieldset>
+            <?php tlit_dm_ai_course_key_field(); ?>
             <?php endif; ?>
 
             <input type="hidden" name="techleadsit_course_settings_<?php echo esc_attr($active_tab); ?>[course_id]" value="<?php echo esc_attr($active_tab); ?>">
