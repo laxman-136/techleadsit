@@ -6,6 +6,7 @@
  */
 if (!defined('ABSPATH')) exit;
 require_once __DIR__.'/lead-schema.php';
+require_once __DIR__.'/chat-backend.php';
 // One-time launch requested by the site owner. Later admin changes remain authoritative.
 function tlit_dm_enable_live_launch() {
     if (get_option('tlit_dm_live_launch_v1')) return;
@@ -118,7 +119,8 @@ function tlit_dm_submit($request) {
         $note='Course: AI Powered+ Digital Marketing | Reference: '.$reference.' | Goal: '.$goal.' | Language: English | Batch: '.$batch.' | Email marketing consent: '.($consent?'Yes':'No').' | Contact permission: demo enquiry | Captured: '.gmdate('c');
         $details=$p['details']??array();
         if(is_array($details)){foreach(array('student_status','start_timeline','main_question','preferred_call_time') as $detailKey){if(isset($details[$detailKey])&&is_string($details[$detailKey])&&$details[$detailKey]!=='')$note.=' | '.$detailKey.': '.tlit_dm_answer($detailKey,substr(sanitize_text_field($details[$detailKey]),0,200));}}
-        $note=(($p['intent']??'')==='brochure'?'Person downloaded brochure — AI Powered Digital Marketing | Request type: brochure download | ':'').$note;
+        $note=(in_array(($p['intent']??''),array('brochure','chatbot_brochure'),true)?'Person downloaded brochure — AI Powered Digital Marketing | Request type: brochure download | ':'').$note;
+        if(($p['intent']??'')==='chatbot_brochure')$note.=' | Enquiry channel: Course chatbot | Pain point / goal: '.substr(sanitize_text_field(is_string($p['painPoint']??null)?$p['painPoint']:''),0,600);
         $note=str_replace(' | ',"\n",$note);
         $fields=tlit_dm_lead_fields($p,$name,$phone,$email,$goal,$note);
         if(!tlit_dm_crm($fields,$note))return tlit_dm_error('Your phone is verified, but the enquiry could not be confirmed. Please retry; do not close this page.',502);

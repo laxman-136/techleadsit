@@ -16,6 +16,9 @@ h1,h2,.session-note strong{font-family:Manrope,Inter,sans-serif;font-weight:700}
 <section class="support" aria-labelledby="next-title"><div><p class="section-label">We’re here to help</p><h2 id="next-title">Questions before your session?</h2><p>Chat with the team, or explore the syllabus while you wait. Your session time and joining link will be confirmed separately.</p></div><div class="actions"><a class="button" href="https://wa.me/919515793373?text=Hi%2C%20please%20help%20me%20with%20my%20Digital%20Marketing%20Live%20Session%20details." target="_blank" rel="noopener">Chat with the team ↗</a><a class="button secondary" id="thank-you-brochure" href="assets/digital-marketing-brochure.pdf" download="AI-Powered-Digital-Marketing-Brochure.pdf">Download course brochure ↓</a></div></section>
 <footer><span>© 2026 Tech Leads IT</span><a href="https://lp.techleadsit.com/privacy-policy/">Privacy Policy</a><a href="https://lp.techleadsit.com/terms-and-conditions/">Terms &amp; Conditions</a><a href="https://lp.techleadsit.com/cookie-policy/">Cookie Policy</a></footer>
 </main><script>
+const brochureDownload=document.querySelector('#thank-you-brochure');
+const downloadNotice=document.createElement('p');downloadNotice.setAttribute('role','status');downloadNotice.textContent='Your brochure download will start automatically. If it does not, use the Download course brochure button.';brochureDownload.parentElement.after(downloadNotice);
+window.addEventListener('load',()=>{brochureDownload.click();},{once:true});
 document.querySelector('#thank-you-brochure').addEventListener('click',()=>{
   // Download stays direct; reuse existing verification only to record the CRM remark.
   try {const proof=JSON.parse(sessionStorage.getItem('tlit_verified_enquiry')||'null');if(proof)fetch('/wp-json/tlit-dm/v1/brochure',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify(proof),keepalive:true}).catch(()=>{});}catch{}
