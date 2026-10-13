@@ -126,6 +126,7 @@ function tlit_dm_submit($request) {
         if(!tlit_dm_crm($fields,$note))return tlit_dm_error('Your phone is verified, but the enquiry could not be confirmed. Please retry; do not close this page.',502);
         $token=bin2hex(random_bytes(24));$state['complete']=true;$state['receipt']=$reference;$state['token']=$token;
         set_transient($key,$state,1800);set_transient('tlit_dm_receipt_'.tlit_dm_hash($reference),array('phone'=>$phone,'token'=>tlit_dm_hash($token),'remarks'=>$note),1800);
+        if(($p['intent']??'')==='chatbot_brochure')tlit_dm_archive_brochure($p,$reference);
         return new WP_REST_Response(array('success'=>true,'receipt'=>$reference,'leadToken'=>$token),200);
     }finally{delete_option($lock);}
 }

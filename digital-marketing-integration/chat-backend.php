@@ -46,6 +46,7 @@ function tlit_dm_chat_submit($request){
   $note="Person downloaded brochure — AI Powered Digital Marketing\nEnquiry channel: Course chatbot\nPain point / goal: ".$pain."\nPhone verification: Not performed (chatbot OTP disabled in WordPress)\nEmail marketing consent: No\nReference: ".$reference;
   $fields=tlit_dm_lead_fields($p,$name,$phone,$email,$pain,$note);
   if(!tlit_dm_crm($fields,$note))return tlit_dm_error('Your enquiry could not be confirmed. Please retry.',502);
+  tlit_dm_archive_brochure($p,$reference);
   $done=array('success'=>true,'receipt'=>$reference);set_transient($key,$done,1800);return new WP_REST_Response($done,200);
  }finally{delete_option($lock);}
 }

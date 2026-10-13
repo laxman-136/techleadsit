@@ -1,0 +1,56 @@
+<?php
+/**
+ * Plugin Name: Tech Leads IT Conversation Bridge
+ * Description: A private conversation inbox, DOCX exports and controlled integrations for course chatbots.
+ * Version: 1.0.0
+ * Requires at least: 6.4
+ * Requires PHP: 8.0
+ * Author: Tech Leads IT
+ * License: GPL-2.0-or-later
+ */
+if (!defined('ABSPATH')) { exit; }
+// The same module can be installed independently or bundled with Landing Pages.
+if (!defined('TLIT_CB_FILE')) {
+define('TLIT_CB_FILE', __FILE__);
+define('TLIT_CB_VERSION', '1.0.0');
+define('TLIT_CB_URL', plugin_dir_url(__FILE__));
+
+function tlit_cb_boot() {
+    require_once __DIR__ . '/includes/store.php';
+    require_once __DIR__ . '/includes/export.php';
+    require_once __DIR__ . '/includes/admin.php';
+    require_once __DIR__ . '/includes/integrations.php';
+    TLIT_CB_Admin::register();
+    TLIT_CB_Export::register();
+    TLIT_CB_Integrations::register();
+    add_action('init', 'tlit_cb_install', 5);
+    add_action('tlit_cb_capture', 'tlit_cb_capture', 10, 1);
+    add_action('admin_notices', 'tlit_cb_storage_notice');
+}
+function tlit_cb_install() {
+    $result = TLIT_CB_Store::install();
+    if (is_wp_error($result)) { update_option('tlit_cb_storage_error', time(), false); return; }
+    TLIT_CB_Integrations::install();
+}
+function tlit_cb_activate() {
+    require_once __DIR__ . '/includes/store.php';
+    require_once __DIR__ . '/includes/integrations.php';
+    tlit_cb_install();
+}
+function tlit_cb_capture($event) {
+    // A reporting failure must not interrupt a visitor's chat or lead submission.
+    try {
+        $result = TLIT_CB_Store::capture($event);
+        if (is_wp_error($result)) { update_option('tlit_cb_storage_error', time(), false); return; }
+        delete_option('tlit_cb_storage_error');
+    } catch (Throwable $error) {
+        update_option('tlit_cb_storage_error', time(), false);
+    }
+}
+function tlit_cb_storage_notice() {
+    if (!current_user_can('manage_options') || !get_option('tlit_cb_storage_error')) { return; }
+    echo '<div class="notice notice-error"><p><strong>Conversation Bridge:</strong> Some conversation data could not be saved. Check database availability and the plugin tables before relying on exports.</p></div>';
+}
+add_action('plugins_loaded', 'tlit_cb_boot', 5);
+if (function_exists('register_activation_hook')) { register_activation_hook(__FILE__, 'tlit_cb_activate'); }
+}

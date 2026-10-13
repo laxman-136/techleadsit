@@ -2,6 +2,7 @@
 if(!defined('ABSPATH'))exit;
 require_once __DIR__.'/chat-ai-admin.php';
 require_once __DIR__.'/chat-flow.php';
+require_once __DIR__.'/chat-archive.php';
 
 function tlit_dm_ai_options(){
  $saved=get_option('tlit_dm_ai_settings',array());
@@ -97,14 +98,15 @@ function tlit_dm_ai_answer($request){
  $quotaLock='';$key='tlit_dm_ai_conversation_'.tlit_dm_hash($token);$lock=tlit_dm_lock($key);if(!$lock)return tlit_dm_error('Please wait for the previous answer.',429);
  try{
   $question=tlit_dm_ai_redact($p['question']);$state=get_transient($key);if(!is_array($state))$state=array('history'=>array(),'goal'=>'');
-  $language=tlit_dm_ai_language($p['language']??'English');
-  if(($p['action']??'')==='intro'){if(!tlit_dm_rate('chat-intro-'.($_SERVER['REMOTE_ADDR']??'unknown'),30,3600))return tlit_dm_error('Please try again later.',429);$captureError=tlit_dm_chat_capture($state,'name',$p['question']);if($captureError)return tlit_dm_error($captureError);set_transient($key,$state,86400);return new WP_REST_Response(tlit_dm_chat_flow_reply($state,$token,$language),200);}
+  $language=tlit_dm_ai_language($p['language']??'English');$state['language']=$language;
+  if(($p['action']??'')==='intro'){if(!tlit_dm_rate('chat-intro-'.($_SERVER['REMOTE_ADDR']??'unknown'),30,3600))return tlit_dm_error('Please try again later.',429);$captureError=tlit_dm_chat_capture($state,'name',$p['question']);if($captureError)return tlit_dm_error($captureError);set_transient($key,$state,86400);tlit_dm_archive_intro($token,$state,$p['question'],$language,$p['tracking']??array());return new WP_REST_Response(tlit_dm_chat_flow_reply($state,$token,$language),200);}
   $quotaLock=!empty($state['contact_complete'])?tlit_dm_lock($state['lead_quota_key']):'';if(!empty($state['contact_complete'])&&!$quotaLock)return tlit_dm_error('Please wait for the previous answer.',429);$stage=tlit_dm_chat_stage($state);
   if(($p['action']??'')==='resume'||$stage!=='question'){
    
    if(in_array($stage,array('name','phone','email'),true)&&($p['action']??'')==='contact'&&($p['contactStage']??'')===$stage){
     if(!tlit_dm_rate('chat-capture-'.($_SERVER['REMOTE_ADDR']??'unknown'),30,3600))return tlit_dm_error('Please try again later.',429);
     $captureError=tlit_dm_chat_capture($state,$stage,$p['question']);if($captureError)return tlit_dm_error($captureError);
+    tlit_dm_archive($token,'contact:'.$stage.':'.hash('sha256',$p['question']),$state,$language,array(array('role'=>'visitor','type'=>'contact_'.$stage,'content'=>$p['question']),array('role'=>'assistant','type'=>'capture_prompt','content'=>tlit_dm_chat_prompt(tlit_dm_chat_stage($state),$language))));
    }
    $result=tlit_dm_chat_flow_reply($state,$token,$language);set_transient($key,$state,86400);$out=new WP_REST_Response($result,200);$out->header('Cache-Control','no-store');return $out;
   }
@@ -114,13 +116,15 @@ function tlit_dm_ai_answer($request){
   if(($state['last']??'')===$question&&($state['version']??'')===$version&&isset($state['response']))return new WP_REST_Response($state['response'],200);
   $o=tlit_dm_ai_options();
   if(!tlit_dm_rate('ai-ip-'.($_SERVER['REMOTE_ADDR']??'unknown'),30,3600)||!tlit_dm_rate('ai-day-'.gmdate('Y-m-d'),max(1,(int)$o['daily_limit']),86400))return tlit_dm_error('The course guide is busy. Please try later or contact the team on WhatsApp.',429);
+  $archive_turn=(1+(int)($state['answers']??0)).':'.hash('sha256',$question);
+  tlit_dm_archive($token,'question:'.$archive_turn,$state,$language,array(array('role'=>'visitor','type'=>'question','content'=>$p['question'])));
   $aiPayload=tlit_dm_ai_payload($question,$state['history'],$records,$language);
   if((empty($state['contact_complete'])&&($state['answers']??0)===1)||($state['followup_answers']??0)>=9)$aiPayload['messages'][0]['content'].="\nFor this reply, answer directly without asking a follow-up question or requesting contact details. The interface supplies the next conversational step.";
   $response=wp_remote_post('https://openrouter.ai/api/v1/chat/completions',array('timeout'=>35,'redirection'=>0,'sslverify'=>true,'limit_response_size'=>65536,'headers'=>array('Authorization'=>'Bearer '.tlit_dm_ai_key(),'Content-Type'=>'application/json','HTTP-Referer'=>home_url(),'X-OpenRouter-Title'=>'Tech Leads IT Course Guide'),'body'=>wp_json_encode($aiPayload)));
-  if(is_wp_error($response)||wp_remote_retrieve_response_code($response)!==200)return tlit_dm_error('I could not check the course information right now. Please retry or use WhatsApp.',503);
+  if(is_wp_error($response)||wp_remote_retrieve_response_code($response)!==200){tlit_dm_archive($token,'error:'.$archive_turn,$state,$language,array(array('role'=>'assistant','type'=>'error','content'=>'I could not check the course information right now. Please retry or use WhatsApp.')));return tlit_dm_error('I could not check the course information right now. Please retry or use WhatsApp.',503);}
   $body=json_decode(wp_remote_retrieve_body($response),true);$choice=$body['choices'][0]??array();$content=$choice['message']['content']??null;
   $answer=is_string($content)&&($choice['finish_reason']??'')==='stop'?tlit_dm_ai_validate($content,$records):null;
-  if(!$answer){tlit_dm_ai_review($question);return tlit_dm_error('I could not confirm a reliable answer. Please rephrase or ask the team on WhatsApp.',502);}
+  if(!$answer){tlit_dm_archive($token,'unconfirmed:'.$archive_turn,$state,$language,array(array('role'=>'assistant','type'=>'error','content'=>'I could not confirm a reliable answer. Please rephrase or ask the team on WhatsApp.')));tlit_dm_ai_review($question);return tlit_dm_error('I could not confirm a reliable answer. Please rephrase or ask the team on WhatsApp.',502);}
   if($answer['kind']==='handoff')tlit_dm_ai_review($question);
   if($answer['goal']!=='')$state['goal']=$answer['goal'];
   $state['history'][]=array('role'=>'user','content'=>$question);$state['history'][]=array('role'=>'assistant','content'=>$answer['answer']);$state['history']=array_slice($state['history'],-8);
@@ -131,6 +135,9 @@ function tlit_dm_ai_answer($request){
   }
   $result=array('success'=>true,'answer'=>$answer['answer'],'kind'=>$answer['kind'],'sources'=>array_values(array_unique($labels)),'conversation'=>$token);
   $result=array_merge($result,tlit_dm_chat_flow_reply($state,$token,$language,$answer['answer']));
+  $archive_messages=array(array('role'=>'assistant','type'=>'answer','content'=>$answer['answer']));
+  if($result['stage']!=='question')$archive_messages[]=array('role'=>'assistant','type'=>$result['stage']==='limit'?'handoff':'capture_prompt','content'=>tlit_dm_chat_prompt($result['stage'],$language));
+  tlit_dm_archive($token,'answer:'.$archive_turn,$state,$language,$archive_messages);
   $state['last']=$question;$state['version']=$version;$state['response']=$result;set_transient($key,$state,86400);
   $out=new WP_REST_Response($result,200);$out->header('Cache-Control','no-store');return $out;
  }finally{if(!empty($quotaLock))delete_option($quotaLock);delete_option($lock);}

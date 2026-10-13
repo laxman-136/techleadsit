@@ -10,6 +10,7 @@ if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly
 }
 
+require_once __DIR__.'/conversation-bridge/techleadsit-chat-bridge.php';
 require_once __DIR__.'/digital-marketing-integration/techleadsit-digital-marketing.php';
 require_once __DIR__.'/digital-marketing-integration/wp-render.php';
 
