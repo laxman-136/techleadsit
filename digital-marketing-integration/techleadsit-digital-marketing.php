@@ -39,7 +39,8 @@ function tlit_dm_permission($request) {
     return true;
 }
 add_action('rest_api_init', function() {
-    foreach(array('send-otp'=>'tlit_dm_send', 'submit'=>'tlit_dm_submit', 'followup'=>'tlit_dm_followup') as $route=>$callback) {
+    register_rest_route('tlit-dm/v1','/status',array('methods'=>'GET','permission_callback'=>'__return_true','callback'=>function(){return new WP_REST_Response(array('mode'=>tlit_dm_ready()?'live':'unavailable'),200);}));
+    foreach(array('send-otp'=>'tlit_dm_send', 'submit'=>'tlit_dm_submit', 'followup'=>'tlit_dm_followup','brochure'=>'tlit_dm_brochure') as $route=>$callback) {
         register_rest_route('tlit-dm/v1', '/'.$route, array('methods'=>'POST','callback'=>$callback,'permission_callback'=>'tlit_dm_permission'));
     }
 });
@@ -117,11 +118,12 @@ function tlit_dm_submit($request) {
         $note='Course: AI Powered+ Digital Marketing | Reference: '.$reference.' | Goal: '.$goal.' | Language: English | Batch: '.$batch.' | Email marketing consent: '.($consent?'Yes':'No').' | Contact permission: demo enquiry | Captured: '.gmdate('c');
         $details=$p['details']??array();
         if(is_array($details)){foreach(array('student_status','start_timeline','main_question','preferred_call_time') as $detailKey){if(isset($details[$detailKey])&&is_string($details[$detailKey])&&$details[$detailKey]!=='')$note.=' | '.$detailKey.': '.tlit_dm_answer($detailKey,substr(sanitize_text_field($details[$detailKey]),0,200));}}
+        $note=(($p['intent']??'')==='brochure'?'Person downloaded brochure — AI Powered Digital Marketing | Request type: brochure download | ':'').$note;
         $note=str_replace(' | ',"\n",$note);
         $fields=tlit_dm_lead_fields($p,$name,$phone,$email,$goal,$note);
         if(!tlit_dm_crm($fields,$note))return tlit_dm_error('Your phone is verified, but the enquiry could not be confirmed. Please retry; do not close this page.',502);
         $token=bin2hex(random_bytes(24));$state['complete']=true;$state['receipt']=$reference;$state['token']=$token;
-        set_transient($key,$state,1800);set_transient('tlit_dm_receipt_'.tlit_dm_hash($reference),array('phone'=>$phone,'token'=>tlit_dm_hash($token)),1800);
+        set_transient($key,$state,1800);set_transient('tlit_dm_receipt_'.tlit_dm_hash($reference),array('phone'=>$phone,'token'=>tlit_dm_hash($token),'remarks'=>$note),1800);
         return new WP_REST_Response(array('success'=>true,'receipt'=>$reference,'leadToken'=>$token),200);
     }finally{delete_option($lock);}
 }
@@ -139,4 +141,22 @@ function tlit_dm_followup($request) {
     if(!tlit_dm_rate('followup-'.$receipt,3,1800))return tlit_dm_error('Please discuss any further changes on your call.',429);
     if(!tlit_dm_crm(array('phone'=>'+91'.$phone),$note))return tlit_dm_error('Could not save optional details. Your original demo request is still received.',502);
     set_transient($fingerprint,1,1800);return new WP_REST_Response(array('success'=>true),200);
+}
+
+// Reuse a verified, CRM-confirmed session; never accept a client-only verified flag.
+function tlit_dm_brochure($request) {
+    $p=tlit_dm_body($request);if(!$p)return tlit_dm_error('Invalid request.');
+    $receipt=$p['receipt']??'';$token=$p['leadToken']??'';$phone=tlit_dm_phone($p['phone']??'');
+    if(!is_string($receipt)||!is_string($token)||!preg_match('/^DM-[A-F0-9]{10}$/D',$receipt)||!preg_match('/^[a-f0-9]{48}$/D',$token))return tlit_dm_error('Please verify your phone first.',403);
+    $state=get_transient('tlit_dm_receipt_'.tlit_dm_hash($receipt));
+    if(!$state||$state['phone']!==$phone||!hash_equals($state['token'],tlit_dm_hash($token)))return tlit_dm_error('Your verification expired. Please verify your phone again.',403);
+    $lock=tlit_dm_lock('brochure-'.$receipt);if(!$lock)return tlit_dm_error('Please wait and try again.',409);
+    try {
+        if(empty($state['brochure'])) {
+            $note='Person downloaded brochure — AI Powered Digital Marketing';
+            if(!tlit_dm_crm(array('phone'=>'+91'.$phone,'Remarks'=>($state['remarks']??'')."\n".$note),$note.' | Reference: '.$receipt))return tlit_dm_error('Could not confirm your brochure request. Please try again.',502);
+            $state['brochure']=true;set_transient('tlit_dm_receipt_'.tlit_dm_hash($receipt),$state,1800);
+        }
+        return new WP_REST_Response(array('success'=>true,'url'=>plugins_url('../ai-digital-marketing-freshers/assets/digital-marketing-brochure.pdf',__FILE__)),200);
+    } finally {delete_option($lock);}
 }
