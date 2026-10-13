@@ -1,6 +1,12 @@
 <?php
 if (!defined('ABSPATH')) exit;
 function tlit_dm_render_page($html,$asset_url,$opts) {
+    // One server-side fee source for both the visible course and AI answers.
+    if(function_exists('tlit_dm_ai_options')){
+        $ai=tlit_dm_ai_options();
+        $inr=function($n){$s=(string)(int)$n;$last=substr($s,-3);$first=substr($s,0,-3);return $first!==''?preg_replace('/\B(?=(\d{2})+(?!\d))/',',',$first).','.$last:$last;};
+        $html=str_replace(array('₹44,999','₹1,20,000','63% OFF','Original price: 1 lakh 20 thousand rupees'),array('₹'.$inr($ai['fee']),'₹'.$inr($ai['regular_fee']),round((1-$ai['fee']/$ai['regular_fee'])*100).'% OFF','Original price: '.$inr($ai['regular_fee']).' rupees'),$html);
+    }
     // Production does not load local editing endpoints or draft comments.
     $html=preg_replace('~<script src="(?:copy-editor|feedback)\.js" defer></script>~','',$html);
     $html=preg_replace('~<link rel="stylesheet" href="copy-editor\.css">~','',$html);
