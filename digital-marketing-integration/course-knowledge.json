@@ -1,107 +1,946 @@
 [
   {
     "id": "guarantee",
-    "text": "The course includes placement assistance, portfolio guidance, resume preparation and mock interviews. You build three projects to explain in interviews. A job, salary or employer referral is not guaranteed; hiring depends on your skills and employer requirements.",
-    "source": "Approved landing page / supplied course brochure"
+    "text": "The programme provides placement assistance, portfolio guidance, resume preparation and mock interviews. Learners build three projects to explain in interviews. This prepares learners for applications; employer selection, job offers, employer referrals, salary, client acquisition and revenue are not guaranteed. Certificate completion criteria do not automatically establish placement eligibility.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "J21",
+      "J22",
+      "J27",
+      "J31",
+      "J32",
+      "J33",
+      "J34",
+      "J35",
+      "J36",
+      "J37",
+      "J38",
+      "J41",
+      "J42",
+      "J48",
+      "J76",
+      "J77"
+    ],
+    "question_examples": [
+      "Will you get me a job?",
+      "What does 100% placement assistance actually mean?",
+      "Do I get a job for sure?"
+    ]
   },
   {
     "id": "beginner",
-    "text": "It is beginner friendly and this landing page is designed for students and fresh graduates. You don’t need previous marketing experience. The brochure also describes professionals, business owners and career switchers as potential learners. You’ll need time to practise alongside live classes.",
-    "source": "Approved landing page / supplied course brochure"
+    "text": "The course starts with marketing fundamentals and moves into connected practical strategies. Previous marketing experience is not required. The landing-page audience is students and fresh graduates; the brochure also includes career switchers, working professionals, business owners and freelancers. Progress depends on attending, practising and completing the work.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "C031",
+      "C034",
+      "C035",
+      "C040",
+      "C041",
+      "C045",
+      "C048",
+      "J02",
+      "J09",
+      "J10",
+      "J13",
+      "J15",
+      "J16",
+      "J20"
+    ]
   },
   {
     "id": "coding",
-    "text": "Prior coding knowledge is not required. You use WordPress, Elementor and no-code tools, while learning technical topics such as tracking and webhooks step by step.",
-    "source": "Approved landing page / supplied course brochure"
+    "text": "Coding, design and analytical skills are not admission prerequisites. Learners use WordPress, Elementor and no-code tools, with tracking and webhook concepts explained step by step. Prior technical skills can help, but beginners can learn the required concepts through guided practice.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "C040",
+      "C041",
+      "C043",
+      "C059",
+      "C060"
+    ],
+    "question_examples": [
+      "I am not from IT.",
+      "I cannot code—is that a problem?"
+    ]
   },
   {
     "id": "duration",
-    "text": "The course runs for 12 weeks, with 12 weekly modules and three capstone projects. Classes are one hour a day, Monday–Friday. Practice time outside class varies by assignment.",
-    "source": "Approved landing page / supplied course brochure"
+    "text": "The AI Powered+ programme is a 12-week structured course with 12 weekly modules, seven learning milestones and three capstone projects. The team describes a typical week as about five class hours plus about two practice hours; actual practice needs vary. Sessions can be 1–2 hours depending on the batch. The currently published batch timetable is authoritative for its own days and duration.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "C046",
+      "C048",
+      "C081",
+      "C082",
+      "C083",
+      "C084",
+      "C085",
+      "C086",
+      "C087",
+      "J02",
+      "J20"
+    ],
+    "question_examples": [
+      "How many months?",
+      "How much time will I need every week?"
+    ]
   },
   {
     "id": "format",
-    "text": "This batch is live online, so you can join remotely. Ask the course team if you need classroom training; I don’t have a confirmed offline batch or venue for this offer.",
-    "source": "Approved landing page / supplied course brochure"
+    "text": "The landing-page batch is live online. Online classes use Zoom, with learning materials and updates in the organisation’s LMS. The team also provides offline training in SR Nagar when an offline batch is available; that is separate from the currently listed online offer. Do not assume both formats are offered on the same dates.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "C084",
+      "C088",
+      "C089"
+    ]
   },
   {
     "id": "equipment",
-    "text": "You will use web-based marketing and website tools for the practical work. Ask the team for confirmed laptop specifications and any software setup requirements before enrolling.",
-    "source": "Approved landing page / supplied course brochure"
+    "text": "A learner may watch a webinar or class from a phone, but needs access to a laptop or computer for website, marketing-tool and project practice. Basic computer skills help; no precise RAM/processor specification has been approved. A learner does not need an existing business or website to start.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "C043",
+      "C044",
+      "C099",
+      "C110"
+    ],
+    "question_examples": [
+      "Can I do everything on my mobile?",
+      "Do I need a laptop?"
+    ]
   },
   {
     "id": "recording",
-    "text": "Classes are live online, with recordings listed as available for six months. It is not a fully self-paced course. If you miss a class, use the recording and ask the team how to catch up on the practical work.",
-    "source": "Approved landing page / supplied course brochure"
+    "text": "Live class recordings and course materials are available for six months. They help learners catch up or revisit concepts if they miss a class or fall behind. Recordings are support for a live programme, not a promise of unlimited access, a self-paced-only course or an automatic attendance exemption.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "C090",
+      "C091",
+      "C093",
+      "J20",
+      "J32",
+      "J35"
+    ]
   },
   {
     "id": "support",
-    "text": "Support is listed as 12 hours a day, five days a week, alongside project feedback and live doubt clarification. Confirm the exact support window, channels and total support period with the team.",
-    "source": "Approved landing page / supplied course brochure"
+    "text": "The programme includes trainer project feedback and opportunities for live doubt clarification. The published support availability is 12 hours a day, five days a week; the exact clock-time window, channel, response time and career-support period are not specified. Extra revision sessions and individual doubt sessions depend on availability and the learner’s needs; do not promise a fixed number or instant replies.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "C079",
+      "C095",
+      "C096",
+      "C097",
+      "J04",
+      "J24",
+      "J25",
+      "J26",
+      "J27",
+      "J36",
+      "J71",
+      "J72",
+      "J76"
+    ]
   },
   {
     "id": "trainer",
-    "text": "Your trainer is Veera Subramanyam Aki. This landing page lists 8+ years of experience, 10,000+ leads generated and ₹2 Cr+ revenue generated, with Google Ads Video and Search certification badges.",
-    "source": "Approved landing page / supplied course brochure"
+    "text": "The trainer is Veera Subramanyam Aki. The landing page lists 8+ years of marketing experience,10,000+ leads generated and₹2 Cr+ revenue generated, with Google Ads Video and Search credential badges. Those are trainer credentials and experience claims; they are not learner job or income outcomes. Use the linked credential where provided rather than inventing additional credentials.",
+    "source": "Current landing page #mentor; supplied brochure trainer section. The landing-page revenue figure takes precedence over a differing brochure figure.",
+    "question_ids": [
+      "C101",
+      "C102"
+    ]
   },
   {
     "id": "internship",
-    "text": "The AI Powered+ programme lists a three-month supervised internship. Timing, eligibility, assessment and whether it follows the 12-week course must be confirmed with the team. I don’t have confirmed stipend details.",
-    "source": "Approved landing page / supplied course brochure"
+    "text": "The AI Powered+ programme lists a three-month supervised internship as an inclusion. The brochure mentions paid and unpaid internship opportunities. It does not establish that every learner receives a paid internship. Stipend amount, paid/unpaid allocation, working hours, host organisation, start date, assessment and whether it follows the 12-week course are not confirmed. No automatic full-time-job conversion is promised.",
+    "source": "Landing page #course-details/#programme-fee; supplied brochure PDF page 7 (Program Highlights).",
+    "question_ids": [
+      "J37",
+      "J62",
+      "J63",
+      "J64",
+      "J65",
+      "J66",
+      "J67",
+      "J68",
+      "J69"
+    ]
   },
   {
     "id": "certificate",
-    "text": "The page describes a Tech Leads IT Digital Marketing Professional Certificate after successful completion of programme requirements. Trainer Google certifications are separate; enrolling does not automatically award a Google certification.",
-    "source": "Approved landing page / supplied course brochure"
+    "text": "The course-completion credential is a Digital Marketing Professional Certificate issued by Tech Leads IT. There is no separate course-certificate charge. Requirements confirmed by the team: minimum 96% attendance, completion of the projects and passing the mock interview. A separate internship certificate, experience letter or external accreditation is not confirmed for the current offer. Trainer Google certifications do not automatically award learners a Google certificate. The 96% course requirement is not automatically an internship or placement condition.",
+    "source": "Team certificate clarifications and current landing page certificate section; unconfirmed preview-only features are not current offer commitments.",
+    "question_ids": [
+      "C013",
+      "C106",
+      "C107",
+      "C108",
+      "C109",
+      "J32",
+      "J33",
+      "J34",
+      "J68"
+    ]
   },
   {
     "id": "projects",
-    "text": "You build three capstones: a Brand & Landing Page Starter Kit, an Organic Visibility & Content Campaign, and a 90-Day AI-Enabled Digital Growth System. They connect research, websites, content, ads, measurement and follow-up.",
-    "source": "Approved landing page / supplied course brochure"
+    "text": "The three capstones are: (1)Brand & Landing Page Starter Kit—customer research, positioning and a WordPress website or landing page; (2)Organic Visibility & Content Campaign—SEO planning, technical/on-page audit, creative assets and a 30-day content calendar; (3)90-Day AI-Enabled Digital Growth System—campaign plan, Google/Meta ads, tracking, CRM, email/WhatsApp follow-up and n 8 n automation. They are portfolio outputs that learners can explain in interviews.",
+    "source": "Landing page #projects/#curriculum; brochure PDF page 11 capstones.",
+    "question_ids": [
+      "C044",
+      "C059",
+      "C076",
+      "C077",
+      "C078",
+      "C079",
+      "C080",
+      "C103",
+      "J01",
+      "J02",
+      "J03",
+      "J04",
+      "J05",
+      "J06",
+      "J09",
+      "J33",
+      "J70",
+      "J71",
+      "J72",
+      "J73",
+      "J74",
+      "J75",
+      "J76"
+    ]
   },
   {
     "id": "tools",
-    "text": "You learn tools such as WordPress, Elementor, ChatGPT, Canva, Semrush, Google Ads, Meta Ads, GA4, GTM and n8n. The programme lists WordPress, Elementor Pro, Semrush and n8n Pro access. Confirm licence type, duration and usage limits; tool logos don’t mean every paid subscription is included.",
-    "source": "Approved landing page / supplied course brochure"
+    "text": "Learning covers 60+ marketing/AI tools and extensions, including ChatGPT, Gemini, Claude, Perplexity, WordPress, Elementor, Canva, CapCut, Google Trends, Semrush, Search Console, Screaming Frog, Google Ads, Meta Ads Manager, GA 4, Google Tag Manager, n 8 n, Make, Mailchimp and WhatsApp Business. A tool being taught is different from receiving an individual paid subscription to every tool.",
+    "source": "Owner-completed worksheet; landing-page tool library and supplied brochure.",
+    "question_ids": [
+      "C008",
+      "C010",
+      "C050",
+      "C055",
+      "C060",
+      "C073",
+      "C074",
+      "C075"
+    ]
   },
   {
     "id": "seo",
-    "text": "SEO learning covers keyword research, on-page and technical SEO, local search and AI search visibility (AEO/GEO). You practise keyword mapping, audits and content planning as part of the organic visibility project.",
-    "source": "Approved landing page / supplied course brochure"
+    "text": "SEO includes keyword and competitor research, on-page, off-page and technical SEO, local SEO/Google Business Profile, and AI search visibility (AEO/GEO). Practical outputs include keyword mapping, a website audit, optimised pages and content planning. Teaching optimisation does not promise a particular Google rank or immediate results.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "C061",
+      "C062",
+      "J03",
+      "J05",
+      "J08"
+    ]
   },
   {
     "id": "ads",
-    "text": "You learn Google Search campaigns and Meta Ads, audience research, creative planning, measurement, and lead follow-up. The projects connect campaign planning with tracking and CRM. Ad spend or live campaign budgets are not confirmed as included.",
-    "source": "Approved landing page / supplied course brochure"
+    "text": "Paid-media learning covers Google Search campaigns and Meta Ads for Facebook/Instagram, audience research, creative planning, budget planning, campaign testing and performance improvement. Learners connect campaign decisions with measurement and lead follow-up. Actual provider-supported practice-spend arrangements are explained during the Live Session; no budget amount or unlimited funded advertising is confirmed for general chat.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "C011",
+      "C065",
+      "C066",
+      "C067",
+      "C068",
+      "C069",
+      "J03",
+      "J05",
+      "J08",
+      "J74"
+    ]
   },
   {
     "id": "automation",
-    "text": "The growth-system project connects ads, GA4/GTM tracking, CRM stages, email or WhatsApp follow-up and automation with n8n. You learn how the tools fit together in a practical marketing workflow.",
-    "source": "Approved landing page / supplied course brochure"
+    "text": "Learners connect forms, landing pages, tracking, CRM stages and lead follow-up. The course covers email marketing, WhatsApp marketing and n 8 n/AI-assisted workflows, including webhooks and tested automations. The final growth-system project brings these tools together into a connected marketing process.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "C039",
+      "C070",
+      "C071",
+      "C072",
+      "J03",
+      "J06",
+      "J08",
+      "J16",
+      "J79",
+      "J80"
+    ]
   },
   {
     "id": "syllabus",
-    "text": "The 12-week path covers market and customer research; brand and WordPress landing pages; SEO; content and social media; Google Ads and analytics; then Meta Ads, CRM and AI automation. Three capstones turn that learning into portfolio work.",
-    "source": "Approved landing page / supplied course brochure"
+    "text": "The 12-week path covers customer and competitor research; branding and WordPress landing pages; SEO/local and AI search; content and social media; paid campaigns with GA 4/GTM conversion measurement; then CRM, email/WhatsApp follow-up and AI automation. Fundamental explanations are applied in three capstone projects; no numerical theory/practical ratio has been approved.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "C046",
+      "C047",
+      "C048",
+      "C057",
+      "C058",
+      "C059",
+      "C060",
+      "C061",
+      "C062",
+      "C063",
+      "C064",
+      "C065",
+      "C066",
+      "C067",
+      "C068",
+      "C069",
+      "C070",
+      "C071",
+      "C072",
+      "J02",
+      "J03",
+      "J04",
+      "J05",
+      "J06",
+      "J08",
+      "J16",
+      "J72"
+    ]
   },
   {
     "id": "demo",
-    "text": "The free Live Session helps you explore the course and ask about projects, fees and class timings. Submit a demo enquiry using “Book my free demo”; the team confirms your session date, time and joining details separately.",
-    "source": "Approved landing page / supplied course brochure"
+    "text": "The free Live Session/demo lets learners meet the trainer, explore the teaching approach and ask about the programme before paying. The team requires attending a Live Session before enrolment. Its date, joining information and any announced session offer are confirmed through the booking process; course batch start date is not automatically the free-session date. Requesting a session does not commit the learner to buying.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "C001",
+      "C005",
+      "C006",
+      "C007",
+      "C022",
+      "C023",
+      "C024",
+      "C025",
+      "C027",
+      "C045",
+      "C081",
+      "C082",
+      "C083",
+      "C084",
+      "C111",
+      "C112",
+      "C113"
+    ]
   },
   {
     "id": "business",
-    "text": "For a business or freelancing goal, the course connects customer research, a landing page, SEO/content, paid campaigns and lead follow-up. Projects help you practise the process; revenue and client results are not guaranteed.",
-    "source": "Approved landing page / supplied course brochure"
+    "text": "The course can help business owners and freelancers practise audience research, positioning, websites, SEO/content, paid-campaign planning and lead follow-up. Learners may apply the projects to their own business or idea. This can support more informed marketing decisions and discussions with agencies; it does not establish that an agency is never needed or that clients, leads, income or revenue are guaranteed.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "C036",
+      "C037",
+      "C078",
+      "J79",
+      "J80"
+    ]
   },
   {
     "id": "terms",
-    "text": "The Live Session/demo is free. The full course is paid. Taxes, instalment options, refunds, cancellation terms, scholarships and internship stipends require confirmation from the team; no approved policy or EMI schedule is available.",
-    "source": "Landing page FAQs / pricing notes"
+    "text": "The Live Session and brochure enquiry are free; the full course is paid. Confirmed course terms are in the payment, refund, tool-access and certificate records. Additional Live Session offers have their own announced eligibility and validity; use those records instead of assuming every financial question requires a team referral.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "C001",
+      "C002",
+      "C003",
+      "C004",
+      "C005",
+      "C006",
+      "C007",
+      "C008",
+      "C009",
+      "C010",
+      "C011",
+      "C012",
+      "C013",
+      "C014",
+      "C015",
+      "C016",
+      "C017",
+      "C018",
+      "C019",
+      "C020",
+      "C021",
+      "C022",
+      "C023",
+      "C024",
+      "C025",
+      "C026",
+      "C027",
+      "C028",
+      "C029",
+      "C030",
+      "C113",
+      "C114",
+      "C115"
+    ]
   },
   {
     "id": "language",
-    "text": "The current landing-page batch is taught in English. Other language batches require confirmation.",
-    "source": "Current landing page (takes priority over broader course page)"
+    "text": "The current landing-page batch is taught in simple English. Basic English sufficient to follow the lessons is acceptable. Stronger communication can help with interviews, but requirements differ by employer; fluency is not a universal job guarantee or universal admission condition. Chat reply language may be Telugu, Hindi, English or another preferred language; that choice does not change the teaching language of the booked batch.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "C042",
+      "C098",
+      "J17"
+    ]
+  },
+  {
+    "id": "price-value",
+    "text": "Use the live WordPress fee and regular-price records for price comparisons. The regular price is the listed programme price, not an audited delivery cost. Compare value through live guidance, curriculum, practice access, trainer feedback, career preparation and three connected projects. The displayed saving is calculated from the current prices and rounded to a whole percentage.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "C001",
+      "C003",
+      "C004",
+      "C008",
+      "C026",
+      "C105"
+    ],
+    "question_examples": [
+      "Why does it cost this much?",
+      "Why pay when YouTube is free?"
+    ]
+  },
+  {
+    "id": "session-offers",
+    "text": "Submitting an enquiry does not itself change the listed course fee. Any extra student/scholarship, group/friends or full-payment offer is conditional on the organisation announcing it in a Live Session and on its stated eligibility, payment conditions and validity. No undisclosed discount amount, individual entitlement, guaranteed scholarship or expiry date is available in these records.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "C001",
+      "C005",
+      "C006",
+      "C007",
+      "C022",
+      "C023",
+      "C024",
+      "C025"
+    ],
+    "question_examples": [
+      "Any student offer?",
+      "My friend and I want to join.",
+      "Can I get a better price for full payment?"
+    ]
+  },
+  {
+    "id": "payment-plan",
+    "text": "When offered, the provider’s payment option has up to two instalments:50% first to reserve the seat, and the remaining 50% within one month of the FIRST PAYMENT. The deadline is not one month after course completion or batch start. Unpaid balance may affect continued course access. No bank/lender EMI or open-ended monthly plan is confirmed.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "C009",
+      "C014",
+      "C015",
+      "C016",
+      "C017",
+      "C029"
+    ],
+    "question_examples": [
+      "Can I split the payment?",
+      "When do I pay the balance?",
+      "Monthly EMI possible?"
+    ]
+  },
+  {
+    "id": "payment-charges",
+    "text": "The team states no interest, processing fees or late-payment fees for the offered instalment arrangement. Payments must meet the agreed deadline. Any extension requires agreement; no automatic extension, additional penalty amount or financing charge is confirmed.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "C018",
+      "C029"
+    ]
+  },
+  {
+    "id": "payment-channel",
+    "text": "The stated course-payment channel is Razorpay. GST invoices are provided for Razorpay payments. A family member or relative may pay on the learner’s behalf, with payment linked to that learner’s enrolment details. Use the official enrolment/checkout instructions; no payment URL, invoice issue-time or other gateway policy has been supplied.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "C019",
+      "C020",
+      "C021"
+    ],
+    "question_examples": [
+      "Can my father pay?",
+      "How do I pay?",
+      "Will I get an invoice?"
+    ]
+  },
+  {
+    "id": "refund-window",
+    "text": "The team explicitly confirmed a full refund when requested WITHIN 14 days of PAYMENT. Refund processing is within 48 hours. Change-of-mind or withdrawal requests after that 14-day window are not covered by this stated policy. Processing time does not establish the payment processor or bank’s settlement time. The AI cannot approve, issue or confirm a refund.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "C028",
+      "C029"
+    ],
+    "question_examples": [
+      "Can I leave and get my money back?",
+      "What if I change my mind after three weeks?",
+      "How soon is a refund processed?"
+    ]
+  },
+  {
+    "id": "batch-cancellation",
+    "text": "If the provider cancels or reschedules the batch, the learner may choose a refund or move to the next available batch. Do not force a transfer, invent a replacement date or silently impose the ordinary change-of-mind 14-day window on provider cancellation. No separate cancellation refund-processing timeline is confirmed.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "C030"
+    ]
+  },
+  {
+    "id": "tool-access",
+    "text": "Included required practice access: Semrush for three months; n 8 n for three months; the supplied WordPress practice environment for three months; Elementor Pro access is stated as lifetime under the provider’s arrangement. Learners do not need to buy extra mandatory paid AI/software subscriptions for the required course practice during the included periods. Individual licence ownership, transferability, plan tiers, usage limits and lifetime support are not established.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "C008",
+      "C009",
+      "C010",
+      "C055",
+      "C073",
+      "C074",
+      "C075",
+      "J74"
+    ],
+    "question_examples": [
+      "Are all tools lifetime?",
+      "Do I need ChatGPT Plus?",
+      "How long is Semrush access?"
+    ]
+  },
+  {
+    "id": "practice-website",
+    "text": "The organisation provides a temporary practice website/domain environment, sample business context and practice social-media context. Learners do not need an existing website, business or social profile to begin. The supplied environment supports course-tool integration; permanent custom-domain ownership, unrestricted production hosting and indefinite environment access are not promised.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "C012",
+      "C044",
+      "C059",
+      "C060"
+    ]
+  },
+  {
+    "id": "admission",
+    "text": "The team states that a college degree or marketing degree is not required for course admission, but completing Intermediate/Class 12 is required. Previous marketing experience and coding/design/analytics skills are not prerequisites. No upper age limit is stated. A specific minimum age is ambiguous in the rough worksheet and is not established here. Course admission is separate from any employer’s degree, age, marks or backlog criteria and from placement-support eligibility.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "C031",
+      "C032",
+      "C033",
+      "C040",
+      "C041",
+      "C042",
+      "C043",
+      "C110",
+      "J09",
+      "J10",
+      "J11",
+      "J12",
+      "J13",
+      "J18",
+      "J19"
+    ]
+  },
+  {
+    "id": "learning-fit",
+    "text": "Students, employed learners, career switchers, business owners and freelancers can consider the course if they can follow the live timetable and practise. It is especially useful for learners who want to connect marketing concepts and tools into a working process. Ask one relevant goal question if suitability is unclear, then connect the goal to the actual curriculum. Do not guarantee a promotion, a higher package or success solely from enrolling.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "C034",
+      "C035",
+      "C036",
+      "C037",
+      "C038",
+      "C039",
+      "C045",
+      "J13",
+      "J14",
+      "J15",
+      "J16",
+      "J20"
+    ]
+  },
+  {
+    "id": "experienced-fit",
+    "text": "An experienced learner may benefit from gaps in AI-assisted marketing, measurement, tool integration and connected/omnichannel workflows. Learners already comfortable with those areas should compare the detailed syllabus to their needs; the course is not automatically the right advanced specialist programme for everyone.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "C038",
+      "C039",
+      "C045",
+      "J04",
+      "J16"
+    ]
+  },
+  {
+    "id": "ai-practice",
+    "text": "Learners practise using ChatGPT, Gemini, Claude and Perplexity for audience/competitor research, ideation, content/copy drafts, creative variations and review. They learn effective prompts, checking output accuracy and relevance, deciding when human work is needed, and responsible use including privacy/copyright considerations. These are practical marketing skills, not legal advice or a promise that AI output is always correct.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "C049",
+      "C050",
+      "C051",
+      "C052",
+      "C053",
+      "C054",
+      "J06",
+      "J07"
+    ]
+  },
+  {
+    "id": "tool-changes",
+    "text": "Learning tool fundamentals and the marketing process helps learners adapt when interfaces or features change. Learners can consult official documentation or learning videos for updates and use suitable alternative tools when needed. This does not promise lifetime updates, support, replacement subscriptions or unchanged third-party software.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "C056",
+      "C075"
+    ]
+  },
+  {
+    "id": "research-brand",
+    "text": "The course begins with customer journeys, audience personas, customer and competitor research, business objectives, positioning, value proposition and brand messaging. Learners apply this to a new or established brand context before building content, a website and campaigns.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "C057",
+      "C058",
+      "J05",
+      "J08"
+    ]
+  },
+  {
+    "id": "content-social",
+    "text": "The organic/content modules cover planning, copywriting, social-media strategy, creative assets, short-form video planning, content calendars and AI-assisted production. Work includes a 30-day content campaign and connecting content choices with audience needs and marketing goals.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "C063",
+      "C064",
+      "J03",
+      "J05",
+      "J08"
+    ]
+  },
+  {
+    "id": "analytics",
+    "text": "Learners practise GA 4, Google Tag Manager, conversion tracking/pixels, UTM measurement, campaign reports and interpreting performance against business goals. They learn budgeting, testing and optimisation as decisions supported by evidence; there is no guaranteed campaign result.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "C067",
+      "C068",
+      "C069",
+      "J03",
+      "J05",
+      "J08",
+      "J74"
+    ]
+  },
+  {
+    "id": "project-scope",
+    "text": "Learners can practise using supplied sample business contexts or their own business/idea. They retain their own project work for portfolios. Project feedback helps them improve. Sample projects and case studies are examples, not proof that every learner runs live client campaigns. Temporary practice hosting and third-party tool access still have their stated periods; confidential client data or publishing permission should not be assumed.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "C076",
+      "C077",
+      "C078",
+      "C079",
+      "C080",
+      "C103",
+      "J33",
+      "J63",
+      "J73",
+      "J74",
+      "J75"
+    ]
+  },
+  {
+    "id": "batch-options",
+    "text": "Current start date, weekday/timing and available batch options should come from the live published settings. Morning/evening and online/offline options may exist when published; weekend availability is not guaranteed. The current online batch uses its own listed timetable in IST. Do not fabricate additional batch dates or treat a free-session date as a course start.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "C034",
+      "C035",
+      "C081",
+      "C082",
+      "C083",
+      "C084",
+      "C085",
+      "C088",
+      "J20"
+    ]
+  },
+  {
+    "id": "batch-transfer",
+    "text": "The team permits pausing or transfer to another batch up to two times. A transfer depends on arranging an available batch; it does not promise unlimited transfers, an automatic extension of every tool licence or recording access, or an exception to payment and certificate requirements.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "C092",
+      "C093"
+    ]
+  },
+  {
+    "id": "class-experience",
+    "text": "The team aims for manageable groups and personal attention, but has not specified a class-size cap. Learners may ask questions during live classes and should allow the trainer to explain the topic before interrupting. Extra doubt or revision sessions depend on availability; avoid promising one-to-one tutoring in every session.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "C094",
+      "C095",
+      "C096",
+      "C097"
+    ]
+  },
+  {
+    "id": "accessibility",
+    "text": "The team answered yes to caption/readable-material/accessibility support, but did not specify supported formats, platforms, languages, real-time caption coverage or a formal standard. If a learner has a specific access requirement, ask one brief clarification and explain the confirmed support without promising an unsupported format.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "C100"
+    ]
+  },
+  {
+    "id": "brochure-flow",
+    "text": "The course outline and syllabus are in the brochure. The existing Download brochure action collects the required lead details and, after a confirmed submission, opens the thank-you page with brochure delivery/automatic download. Basic conversation captures name, preferred language and later mobile; email is needed for the brochure flow, not to keep chatting. OTP follows the actual server setting for the selected form. The AI itself cannot send an OTP, submit a form or start a download.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "C047",
+      "C110",
+      "C114",
+      "C115",
+      "C116"
+    ]
+  },
+  {
+    "id": "enrolment-flow",
+    "text": "Requesting a brochure or a free Live Session does not commit a learner to buying. The provider requires a Live Session before enrolment. The booking flow confirms joining details; a one-to-one education conversation may be offered when needed, but routine course questions can be answered in chat. Specific surprises, gifts, discounts or session content beyond the confirmed course exploration are not promised.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "C027",
+      "C110",
+      "C111",
+      "C112",
+      "C113"
+    ]
+  },
+  {
+    "id": "free-resources",
+    "text": "The organisation may upload free Digital Marketing learning videos to YouTube. A free Live Session is available to explore the course before deciding. No exact video URL or guaranteed currently uploaded free-video library is supplied; never fabricate a link or promise an available scholarship to a budget-constrained visitor.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "C025",
+      "C026",
+      "C027",
+      "C114"
+    ]
+  },
+  {
+    "id": "privacy",
+    "text": "Chat and lead data are stored on the private WordPress backend; the Conversation Bridge keeps authorised-access conversation records and lead details. The AI service is DeepSeek through OpenRouter: questions and limited conversation context are processed server-side, with email/phone patterns redacted and captured lead-contact fields excluded from the model payload. Lead forms may send submitted contact details to the configured TeleCRM workflow and necessary service providers. Do not promise that no data ever leaves WordPress or that data is shared with no service provider. Do not invent third-party advertising sales, additional destinations or retention periods.",
+    "source": "Actual WordPress chatbot/Conversation Bridge/TeleCRM implementation; user privacy intent, interpreted consistently with active processors.",
+    "question_ids": [
+      "C117",
+      "C118"
+    ]
+  },
+  {
+    "id": "contact-preferences",
+    "text": "Lead details support personalised course communication. The brochure form has separate consent for course contact; broad email marketing is not automatically enabled by downloading. Visitors can request contact-preference changes or deletion by contacting the organisation through its published channel. A deletion request needs the organisation’s process; the AI cannot claim it has deleted data or unsubscribed someone by answering.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "C114",
+      "C115",
+      "C119",
+      "C120"
+    ]
+  },
+  {
+    "id": "evidence",
+    "text": "Visitors can review the landing-page learner reviews, the linked trainer credentials and available sample project pages to assess the teaching approach. Review-platform logos alone do not verify a review against an external public profile. Do not invent a Google/Trustpilot review URL, verified hiring-partner list, independent outcome audit, alumni introduction or latest placement percentage. The current information does not establish a dated cohort placement-outcome denominator.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "C102",
+      "C103",
+      "C104",
+      "C105",
+      "J39",
+      "J77",
+      "J78"
+    ]
+  },
+  {
+    "id": "role-paths",
+    "text": "The landing page points to Digital Marketing Executive, SEO/Paid Media Trainee, Social Media Executive and Digital Content Associate roles. As general career guidance, different roles involve customer/keyword research, content and social planning, websites, paid campaigns, analytics or automation. Candidates should compare actual vacancies with their skills and project evidence; a role list is not a promise of current job openings.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "J01",
+      "J02",
+      "J03",
+      "J04",
+      "J05",
+      "J06",
+      "J07",
+      "J08",
+      "J09",
+      "J10",
+      "J43",
+      "J44"
+    ]
+  },
+  {
+    "id": "career-background",
+    "text": "As general career guidance, applicants can focus on trainee/entry-level vacancies that match their eligibility and show recent practical work. A career gap, non-marketing background or prior sales/support/teaching/IT experience is assessed differently by employers. Relevant earlier skills may help, but admission eligibility does not override an employer’s education, age, marks, backlog, language or work-authorisation requirements.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "J09",
+      "J10",
+      "J11",
+      "J12",
+      "J13",
+      "J14",
+      "J15",
+      "J16",
+      "J17",
+      "J18",
+      "J19",
+      "J20",
+      "J50",
+      "J51",
+      "J60"
+    ]
+  },
+  {
+    "id": "placement-details",
+    "text": "Known preparation is portfolio guidance, resume work, mock interviews and project feedback. No specific career-support expiry, dedicated job-search counsellor, job-sharing frequency, approved active partner list, guaranteed referral, recruitment-drive schedule, repeat/replacement-placement policy, offer-letter review or salary-negotiation service is established. These are unspecified details, not proof that the organisation never provides them. Answer the known part directly and avoid presenting an unspecified service as included.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "J23",
+      "J24",
+      "J25",
+      "J26",
+      "J27",
+      "J28",
+      "J29",
+      "J30",
+      "J39",
+      "J40",
+      "J41",
+      "J42",
+      "J43",
+      "J44",
+      "J45",
+      "J46",
+      "J54",
+      "J76",
+      "J77",
+      "J78"
+    ]
+  },
+  {
+    "id": "placement-eligibility",
+    "text": "Course-certificate rules (96% attendance, completed projects and successful mock interview) are confirmed for the certificate only. No exact placement attendance/pass-mark checklist, resubmission limit, internship-first requirement, late participation rule, additional placement fee or declining-offer rule is established. Do not apply certificate criteria as a placement policy without confirmation.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "J18",
+      "J19",
+      "J26",
+      "J28",
+      "J31",
+      "J32",
+      "J33",
+      "J34",
+      "J35",
+      "J36",
+      "J37",
+      "J38"
+    ]
+  },
+  {
+    "id": "salary-reference",
+    "text": "For a dated historical reference only, foundit’s October 2025 India Salary Trends Report gives a Digital Marketing 0–3 years experience band of₹2.90–₹4.61 lakh per year. It is not a freshers-only range, a current 2026 offer, a programme graduate outcome, a guaranteed floor or take-home salary. General pay depends on role, location, employer and demonstrated skills; no course-specific minimum package is promised.",
+    "source": "foundit Salary Trends Report, October 2025, PDF page 5: https://www.foundit.in/career-advice/wp-content/uploads/2025/11/Salary-Trends-Report.pdf#page=5",
+    "question_ids": [
+      "J47",
+      "J48",
+      "J49",
+      "J50",
+      "J51"
+    ],
+    "question_examples": [
+      "What salary can a beginner expect?",
+      "Will I get at least 4LPA?"
+    ]
+  },
+  {
+    "id": "job-terms",
+    "text": "As general employment guidance, annual CTC is the employer’s total yearly compensation cost and monthly take-home is the amount received after deductions. Vacancies can have fixed salary, variable incentives, permanent/contract terms and probation conditions. Read the actual offer for its breakdown, hours, location, probation and terms; no particular package, bond or probation period is confirmed for this course’s opportunities.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "J29",
+      "J43",
+      "J44",
+      "J45",
+      "J46",
+      "J49",
+      "J52",
+      "J53",
+      "J54",
+      "J61"
+    ]
+  },
+  {
+    "id": "work-location",
+    "text": "The live course can be attended online, but that does not determine future employment location. Local, remote, hybrid or overseas opportunities depend on the actual employer and vacancy. No hometown placement, remote fresher vacancy, relocation waiver, overseas placement service or specific shift is guaranteed or currently confirmed in this knowledge.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "J55",
+      "J56",
+      "J57",
+      "J58",
+      "J59",
+      "J60",
+      "J61"
+    ]
+  },
+  {
+    "id": "interview-evidence",
+    "text": "Learners can use the three capstones to explain the brief, audience, research, tools, decisions, outputs and lessons learned. Resume preparation, mock interviews and project feedback support that preparation. LinkedIn profile review, company-specific test coaching, real-interview rejection review, number of sessions and individual mock-feedback format are not separately confirmed. Describe practice work accurately without inventing real-client revenue or employer results.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "J70",
+      "J71",
+      "J72",
+      "J73",
+      "J74",
+      "J75",
+      "J76"
+    ]
+  },
+  {
+    "id": "freelance-agency",
+    "text": "The curriculum supports practical marketing delivery through research, positioning, websites, content, ads, measurement and lead follow-up. Those skills can be applied to freelance work, an agency idea or a learner’s own business. Explicit client-acquisition coaching, freelance service pricing, contracts/proposals, agency setup mentoring and paid clients are not separately confirmed; do not promise income or that the course supplies clients.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "J79",
+      "J80"
+    ]
+  },
+  {
+    "id": "brand-value",
+    "text": "Describe Tech Leads IT’s own confirmed strengths: structured learning, trainer guidance, practice, connected tool workflows, three portfolio projects and career preparation. Free resources can teach individual topics. Do not accuse competing institutes or free trainers of hiding knowledge, being worthless, misleading learners or providing inferior content without specific verified evidence. A good fit depends on the visitor’s goals and existing skills.",
+    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "question_ids": [
+      "C026",
+      "C036",
+      "C038",
+      "C039",
+      "C045",
+      "C105"
+    ]
   }
 ]
