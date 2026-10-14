@@ -1,8 +1,8 @@
 [
   {
     "id": "guarantee",
-    "text": "The programme provides placement assistance, portfolio guidance, resume preparation and mock interviews. Learners build three projects to explain in interviews. This prepares learners for applications; employer selection, job offers, employer referrals, salary, client acquisition and revenue are not guaranteed. Certificate completion criteria do not automatically establish placement eligibility.",
-    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "text": "Tech Leads IT provides 100% placement assistance through its hiring team, with portfolio guidance, resume preparation, mock interviews and trainer project feedback. Learners build three projects to explain in applications and interviews. The 100% describes placement assistance, not a measured placement-success rate or guaranteed job offer. The employer makes the hiring decision; job offers, employer referrals, salary, client acquisition and revenue are not guaranteed. Certificate completion criteria do not automatically establish placement eligibility.",
+    "source": "Direct owner confirmation, 14 October 2026: hiring team and 100% placement assistance; team-completed worksheets, course landing page and supplied brochure",
     "question_ids": [
       "J21",
       "J22",
@@ -741,7 +741,7 @@
   },
   {
     "id": "privacy",
-    "text": "Chat and lead data are stored on the private WordPress backend; the Conversation Bridge keeps authorised-access conversation records and lead details. The AI service is DeepSeek through OpenRouter: questions and limited conversation context are processed server-side, with email/phone patterns redacted and captured lead-contact fields excluded from the model payload. Lead forms may send submitted contact details to the configured TeleCRM workflow and necessary service providers. Do not promise that no data ever leaves WordPress or that data is shared with no service provider. Do not invent third-party advertising sales, additional destinations or retention periods.",
+    "text": "Chat and lead data are stored on the private WordPress backend; the Conversation Bridge keeps authorised-access conversation records and lead details. The configured AI provider is accessed through OpenRouter: questions and limited conversation context are processed server-side, with email/phone patterns redacted and captured lead-contact fields excluded from the model payload. Lead forms may send submitted contact details to the configured TeleCRM workflow and necessary service providers. Do not promise that no data ever leaves WordPress or that data is shared with no service provider. Do not invent third-party advertising sales, additional destinations or retention periods.",
     "source": "Actual WordPress chatbot/Conversation Bridge/TeleCRM implementation; user privacy intent, interpreted consistently with active processors.",
     "question_ids": [
       "C117",
@@ -816,8 +816,8 @@
   },
   {
     "id": "placement-details",
-    "text": "Published career preparation consists of portfolio guidance, resume preparation, mock interviews and trainer project feedback. The projects give learners work to explain in applications and interviews. This record describes those included benefits; it does not establish any additional individually assigned support or employer-arrangement terms. If a visitor asks for a specific arrangement beyond these published benefits, use only a separately confirmed fact for that arrangement.",
-    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "text": "Tech Leads IT's hiring team provides 100% placement assistance. Confirmed career preparation includes portfolio guidance, resume preparation, mock interviews and trainer project feedback. The three projects give learners practical work to explain in applications and interviews. These activities support learners preparing for marketing roles. For a specific arrangement beyond these confirmed benefits, such as referrals, current vacancies or interview commitments, use a separately confirmed fact rather than inventing details.",
+    "source": "Direct owner confirmation, 14 October 2026: hiring team and 100% placement assistance; team-completed worksheets, course landing page and supplied brochure",
     "question_ids": [
       "J23",
       "J24",
@@ -932,8 +932,8 @@
   },
   {
     "id": "brand-value",
-    "text": "Describe Tech Leads IT’s own confirmed strengths: structured learning, trainer guidance, practice, connected tool workflows, three portfolio projects and career preparation. Free resources can teach individual topics. Do not accuse competing institutes or free trainers of hiding knowledge, being worthless, misleading learners or providing inferior content without specific verified evidence. A good fit depends on the visitor’s goals and existing skills.",
-    "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
+    "text": "Describe Tech Leads IT’s own confirmed strengths: structured learning, trainer guidance, practice, connected tool workflows, three portfolio projects, career preparation and 100% placement assistance through its hiring team. Free resources can teach individual topics. Do not accuse competing institutes or free trainers of hiding knowledge, being worthless, misleading learners or providing inferior content without specific verified evidence. A good fit depends on the visitor’s goals and existing skills.",
+    "source": "Direct owner confirmation, 14 October 2026: hiring team and 100% placement assistance; team-completed worksheets, course landing page and supplied brochure",
     "question_ids": [
       "C026",
       "C036",

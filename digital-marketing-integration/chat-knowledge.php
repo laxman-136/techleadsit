@@ -9,14 +9,15 @@ function tlit_dm_ai_knowledge_topics() {
   'price'=>array('pattern'=>'/\b(fee\w*|feee\w*|price\w*|cost\w*|afford\w*|expensive|cheap\w*|worth|value|budget|discount\w*|scholarship\w*|offer\w*|tax\w*|gst|inclusive|exclusive|payable|total|entha|kitn[ai]|paisa|paise)\b/i','ids'=>array('price-value','session-offers','terms','tool-access','projects')),
   'payment'=>array('pattern'=>'/\b(pay\w*|paid|payment\w*|instal\w*|install\w*|emi|split|balance|remaining|second|month\w*|later|deadline\w*|interest|financ\w*|razorpay|invoice\w*|receipt\w*|family|relative|overdue|extension\w*|penalt\w*)\b/i','ids'=>array('payment-plan','payment-charges','payment-channel','terms')),
   'refund'=>array('pattern'=>'/\b(refund\w*|money\s+back|return\s+(?:my\s+)?money|withdraw\w*|cancel\w*|reschedul\w*|change\s+(?:my\s+)?mind|fourteen|14\s*days?|48\s*hours?)\b/i','ids'=>array('refund-window','batch-cancellation','payment-plan','payment-channel')),
-  'career'=>array('pattern'=>'/\b(job\w*|career\w*|placement\w*|placment\w*|hire\w*|hiring|recruit\w*|employ\w*|interview\w*|resume\w*|cv|portfolio|referral\w*|refer\w*|guarantee\w*|assur\w*|first\s+role|work\s+experience)\b/i','ids'=>array('placement-details','guarantee','projects','interview-evidence','role-paths','placement-eligibility','career-background')),
+  'career'=>array('pattern'=>'/\b(job\w*|career\w*|placement\w*|placment\w*|hire\w*|hiring|recruit\w*|employ\w*|interview\w*|resume\w*|cv|portfolio|referral\w*|refer\w*|first\s+role|work\s+experience)\b/i','ids'=>array('placement-details','projects','interview-evidence','role-paths','placement-eligibility','career-background')),
+  'outcome-certainty'=>array('pattern'=>'/\b(guarantee\w*|assur\w*|definitely|certainly|for\s+sure|sure\s+(?:job|placement|income|revenue)|pakka|promis\w*)\b|100\s*%(?!\s+(?:(?:placement|job|career)\s+)?assistance\b)/i','ids'=>array('guarantee','placement-details','placement-eligibility','projects','business')),
   'internship'=>array('pattern'=>'/\b(intern\w*|stipend\w*|apprentice\w*|paid\s+(?:work|experience))\b/i','ids'=>array('internship','certificate','placement-eligibility','guarantee')),
   'salary'=>array('pattern'=>'/\b(salary|salaries|package\w*|pakage\w*|ctc|lpa|lakh\w*|earn\w*|income|take\s*home|take-home|compensation|probation|bond\w*|wage\w*)\b/i','ids'=>array('salary-reference','job-terms','guarantee','role-paths')),
   'location'=>array('pattern'=>'/\b(remote|hybrid|abroad|overseas|hometown|relocat\w*|shift\w*|country|countries|visa|work\s+from\s+home|wfh)\b/i','ids'=>array('work-location','career-background','format','batch-options')),
   'certificate'=>array('pattern'=>'/\b(certificat\w*|credential\w*|attendance|96\s*%|ninety.six|accredit\w*|mock\s+(?:test|exam)|passing|pass\s+mark\w*|complete\s+(?:the\s+)?course)\b/i','ids'=>array('certificate','placement-eligibility','internship','interview-evidence')),
   'admission'=>array('pattern'=>'/\b(eligib\w*|admission\w*|prerequis\w*|qualifi\w*|degree\w*|graduate\w*|college|intermediate|school\w*|drop.?out\w*|ssc|sslc|hsc|education\w*|standard|class\s*(?:10|11|12)|grade\s*(?:10|11|12)|10th|11th|12th|tenth|eleventh|twelfth|age|backlog\w*|marks|beginner\w*|fresher\w*|zero|start\s+from|no\s+experience|without\s+experience|non.?technical|non.?marketing)\b/i','ids'=>array('admission','beginner','coding','learning-fit','career-background')),
   'fit'=>array('pattern'=>'/\b(fit|suit\w*|right\s+for|switch\w*|gap|working\s+professional|already\s+(?:work|know)|experienced|advance\w*|promotion|student\w*|studying|study|confiden\w*)\b/i','ids'=>array('learning-fit','experienced-fit','career-background','admission','beginner','projects','placement-details')),
-  'business'=>array('pattern'=>'/\b(business\w*|freelanc\w*|agency|agencies|client\w*|entrepreneur\w*|owner\w*|startup\w*|revenue|sales|customer\w*|lead\s+generation|generate\s+leads)\b/i','ids'=>array('business','freelance-agency','research-brand','projects','guarantee')),
+  'business'=>array('pattern'=>'/\b(business\w*|shops?|stores?|bakery|salon|boutique|retail\w*|small\s+business|freelanc\w*|agency|agencies|client\w*|entrepreneur\w*|owner\w*|startup\w*|revenue|sales|customer\w*|lead\s+generation|generate\s+leads)\b/i','ids'=>array('business','freelance-agency','research-brand','projects')),
   'schedule'=>array('pattern'=>'/\b(batch\w*|start\w*|timing\w*|timetable\w*|schedule\w*|duration|long|week\w*|hour\w*|daily|date\w*|weekend\w*|morning\w*|evening\w*|online|offline|classroom|zoom|sr\s*nagar|pause|transfer|break)\b/i','ids'=>array('duration','format','batch-options','batch-transfer','demo')),
   'learning-support'=>array('pattern'=>'/\b(record\w*|miss\w*|catch\s+up|fall\s+behind|material\w*|lms|support|help|doubt\w*|revision|one.to.one|personal\s+attention|class\s+size|group\s+size|feedback|mentor\w*)\b/i','ids'=>array('recording','support','class-experience','batch-transfer','format')),
   'language'=>array('pattern'=>'/\b(language\w*|telugu|hindi|english|tamil|kannada|fluenc\w*|communication|bol\w*|bhasha|accent|caption\w*|accessib\w*|deaf|hearing|disab\w*)\b/i','ids'=>array('language','accessibility','career-background','format')),
@@ -65,20 +66,36 @@ function tlit_dm_ai_select_knowledge($question,$history,$records,$memory=array()
    if(!is_array($turn)||($turn['role']??'')!=='user')continue;
    $previous=(string)($turn['content']??'');
    if(preg_match('/[^\x00-\x7F]/u',$previous))return $records;
-   foreach($topics as $topic)if(preg_match($topic['pattern'],$previous))foreach($topic['ids'] as $id)$wanted[$id]=true;
+   foreach($topics as $name=>$topic){
+    if($name==='career'&&isset($active['business'])&&!isset($active['career']))continue;
+    if($name==='business'&&isset($active['career'])&&!isset($active['business']))continue;
+    if(preg_match($topic['pattern'],$previous))foreach($topic['ids'] as $id)$wanted[$id]=true;
+   }
    break;
   }
  }
- // Preserve a stated goal only when the current query concerns fit/career/value.
- if(array_intersect(array_keys($active),array('fit','admission','career','business','price'))&&is_array($memory)){
-  $goal=isset($memory['goal'])&&is_string($memory['goal'])?$memory['goal']:'';
-  foreach(array('career','business','fit') as $name)if($goal!==''&&preg_match($topics[$name]['pattern'],$goal))foreach($topics[$name]['ids'] as $id)$wanted[$id]=true;
+ // Explicit visitor context enriches follow-ups; it never replaces the latest question.
+ // A targeted new policy/schedule question does not need old goals or concerns.
+ $contextual=array_intersect(array_keys($active),array('fit','admission','career','business','price'));
+ $topicChange=array_intersect(array_keys($active),array('refund','payment','certificate','schedule','privacy','brochure','outcome-certainty'));
+ if(is_array($memory)&&($contextual||($followup&&!$topicChange))){
+  $context='';
+  foreach(array('goal','background','target_role','concern') as $field)if(isset($memory[$field])&&is_string($memory[$field]))$context.=' '.$memory[$field];
+  foreach(array('career','business','fit','seo','ads','content','analytics','automation','tools','learning-support','price','payment') as $name){
+   // Explicit career/business direction in this turn takes precedence over older context.
+   if($name==='career'&&isset($active['business'])&&!isset($active['career']))continue;
+   if($name==='business'&&isset($active['career'])&&!isset($active['business']))continue;
+   if($context!==''&&preg_match($topics[$name]['pattern'],$context))foreach($topics[$name]['ids'] as $id)$wanted[$id]=true;
+  }
  }
 
  // Vocabulary overlap supplements topics; metadata is retrieval-only, never sent as facts.
  $queryTokens=tlit_dm_ai_knowledge_tokens($question);
  foreach($records as $record){
   if(!is_array($record)||empty($record['id']))continue;
+  // Support and certainty share words such as "placement" and "hiring team";
+  // vocabulary overlap alone must not turn an assistance question into a guarantee one.
+  if($record['id']==='guarantee'&&!isset($wanted['guarantee']))continue;
   $search=(string)($record['text']??'');
   if(isset($record['question_examples'])&&is_array($record['question_examples']))$search.=' '.implode(' ',array_filter($record['question_examples'],'is_string'));
   if(count(array_intersect($queryTokens,tlit_dm_ai_knowledge_tokens($search)))>=3)$wanted[$record['id']]=true;
