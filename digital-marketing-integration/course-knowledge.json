@@ -477,7 +477,7 @@
   },
   {
     "id": "refund-window",
-    "text": "The team explicitly confirmed a full refund when requested WITHIN 14 days of PAYMENT. Refund processing is within 48 hours. Change-of-mind or withdrawal requests after that 14-day window are not covered by this stated policy. Processing time does not establish the payment processor or bank’s settlement time. The AI cannot approve, issue or confirm a refund.",
+    "text": "The team explicitly confirmed a full refund when requested WITHIN 14 days of PAYMENT. Refund processing is within 48 hours. Change-of-mind or withdrawal requests after that 14-day window are not covered by this stated policy. Processing time does not establish the payment processor or bank’s settlement time.",
     "source": "Team-completed worksheets, clarified 14 October 2026; course landing page and supplied brochure",
     "question_ids": [
       "C028",
