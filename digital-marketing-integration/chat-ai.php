@@ -92,6 +92,7 @@ function tlit_dm_ai_validate($text,$records){
 function tlit_dm_ai_answer($request){
  $p=tlit_dm_body($request);
  if(!$p||!is_string($p['question']??null)||strlen($p['question'])>1800||trim($p['question'])===''||!empty($p['website']))return tlit_dm_error('Please enter a short course question.');
+ $request_id=array_key_exists('requestId',$p)?$p['requestId']:'';if(!is_string($request_id)||($request_id!==''&&!preg_match('/^[A-Za-z0-9_-]{16,80}$/D',$request_id)))return tlit_dm_error('Please retry your question.');
  if(!tlit_dm_ai_ready())return tlit_dm_error('AI answers are not connected yet. You can get the brochure or speak with the team on WhatsApp.',503);
  $token=$p['conversation']??'';if(!is_string($token)||($token!==''&&!preg_match('/^[a-f0-9]{48}$/D',$token)))return tlit_dm_error('Start a new chat to continue.');
  if($token==='')$token=bin2hex(random_bytes(24));
@@ -101,6 +102,13 @@ function tlit_dm_ai_answer($request){
   $language=tlit_dm_ai_language($p['language']??'English');$state['language']=$language;
   if(($p['action']??'')==='intro'){if(!tlit_dm_rate('chat-intro-'.($_SERVER['REMOTE_ADDR']??'unknown'),30,3600))return tlit_dm_error('Please try again later.',429);$captureError=tlit_dm_chat_capture($state,'name',$p['question']);if($captureError)return tlit_dm_error($captureError);set_transient($key,$state,86400);tlit_dm_archive_intro($token,$state,$p['question'],$language,$p['tracking']??array());return new WP_REST_Response(tlit_dm_chat_flow_reply($state,$token,$language),200);}
   $quotaLock=!empty($state['contact_complete'])?tlit_dm_lock($state['lead_quota_key']):'';if(!empty($state['contact_complete'])&&!$quotaLock)return tlit_dm_error('Please wait for the previous answer.',429);$stage=tlit_dm_chat_stage($state);
+  if(!in_array($p['action']??'',array('resume','contact'),true)){
+   $records=tlit_dm_ai_knowledge();$version=hash('sha256','lakshmi-v6-fee|'.$language.'|'.tlit_dm_ai_options()['model'].'|'.wp_json_encode($records));
+   // A new submission counts even when its text repeats; delivery retries reuse their confirmed answer.
+   if(($state['last']??'')===$question&&($state['version']??'')===$version&&isset($state['response'])&&($request_id===''||($state['last_request_id']??'')===$request_id)){
+    $result=array_merge($state['response'],tlit_dm_chat_flow_reply($state,$token,$language,$state['response']['answer']));$out=new WP_REST_Response($result,200);$out->header('Cache-Control','no-store');return $out;
+   }
+  }
   if(($p['action']??'')==='resume'||$stage!=='question'){
    
    if(in_array($stage,array('name','phone','email'),true)&&($p['action']??'')==='contact'&&($p['contactStage']??'')===$stage){
@@ -111,15 +119,12 @@ function tlit_dm_ai_answer($request){
    $result=tlit_dm_chat_flow_reply($state,$token,$language);set_transient($key,$state,86400);$out=new WP_REST_Response($result,200);$out->header('Cache-Control','no-store');return $out;
   }
   if(($p['action']??'')==='contact')return new WP_REST_Response(tlit_dm_chat_flow_reply($state,$token,$language),200);
-  $records=tlit_dm_ai_knowledge();$version=hash('sha256','lakshmi-v6-fee|'.$language.'|'.tlit_dm_ai_options()['model'].'|'.wp_json_encode($records));
-  // Network retries receive the existing answer without another paid request.
-  if(($state['last']??'')===$question&&($state['version']??'')===$version&&isset($state['response']))return new WP_REST_Response($state['response'],200);
   $o=tlit_dm_ai_options();
   if(!tlit_dm_rate('ai-ip-'.($_SERVER['REMOTE_ADDR']??'unknown'),30,3600)||!tlit_dm_rate('ai-day-'.gmdate('Y-m-d'),max(1,(int)$o['daily_limit']),86400))return tlit_dm_error('The course guide is busy. Please try later or contact the team on WhatsApp.',429);
   $archive_turn=(1+(int)($state['answers']??0)).':'.hash('sha256',$question);
   tlit_dm_archive($token,'question:'.$archive_turn,$state,$language,array(array('role'=>'visitor','type'=>'question','content'=>$p['question'])));
   $aiPayload=tlit_dm_ai_payload($question,$state['history'],$records,$language);
-  if((empty($state['contact_complete'])&&($state['answers']??0)===1)||($state['followup_answers']??0)>=9)$aiPayload['messages'][0]['content'].="\nFor this reply, answer directly without asking a follow-up question or requesting contact details. The interface supplies the next conversational step.";
+  if((empty($state['contact_complete'])&&($state['answers']??0)===tlit_dm_chat_initial_limit()-1)||($state['followup_answers']??0)>=9)$aiPayload['messages'][0]['content'].="\nFor this reply, answer directly without asking a follow-up question or requesting contact details. The interface supplies the next conversational step.";
   $response=wp_remote_post('https://openrouter.ai/api/v1/chat/completions',array('timeout'=>35,'redirection'=>0,'sslverify'=>true,'limit_response_size'=>65536,'headers'=>array('Authorization'=>'Bearer '.tlit_dm_ai_key(),'Content-Type'=>'application/json','HTTP-Referer'=>home_url(),'X-OpenRouter-Title'=>'Tech Leads IT Course Guide'),'body'=>wp_json_encode($aiPayload)));
   if(is_wp_error($response)||wp_remote_retrieve_response_code($response)!==200){tlit_dm_archive($token,'error:'.$archive_turn,$state,$language,array(array('role'=>'assistant','type'=>'error','content'=>'I could not check the course information right now. Please retry or use WhatsApp.')));return tlit_dm_error('I could not check the course information right now. Please retry or use WhatsApp.',503);}
   $body=json_decode(wp_remote_retrieve_body($response),true);$choice=$body['choices'][0]??array();$content=$choice['message']['content']??null;
@@ -138,7 +143,7 @@ function tlit_dm_ai_answer($request){
   $archive_messages=array(array('role'=>'assistant','type'=>'answer','content'=>$answer['answer']));
   if($result['stage']!=='question')$archive_messages[]=array('role'=>'assistant','type'=>$result['stage']==='limit'?'handoff':'capture_prompt','content'=>tlit_dm_chat_prompt($result['stage'],$language));
   tlit_dm_archive($token,'answer:'.$archive_turn,$state,$language,$archive_messages);
-  $state['last']=$question;$state['version']=$version;$state['response']=$result;set_transient($key,$state,86400);
+  $state['last']=$question;$state['last_request_id']=$request_id;$state['version']=$version;$state['response']=$result;set_transient($key,$state,86400);
   $out=new WP_REST_Response($result,200);$out->header('Cache-Control','no-store');return $out;
  }finally{if(!empty($quotaLock))delete_option($quotaLock);delete_option($lock);}
 }

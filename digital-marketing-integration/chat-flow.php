@@ -11,8 +11,9 @@ function tlit_dm_chat_unseal($data){
  $plain=openssl_decrypt(substr($raw,28),'aes-256-gcm',hash('sha256',wp_salt('auth').'chat-contact',true),OPENSSL_RAW_DATA,substr($raw,0,12),substr($raw,12,16));
  return $plain?json_decode($plain,true):array();
 }
+function tlit_dm_chat_initial_limit(){return 3;}
 function tlit_dm_chat_stage($state){
- if(($state['answers']??0)<2)return 'question';
+ if(($state['answers']??0)<tlit_dm_chat_initial_limit())return 'question';
  if(empty($state['contact_complete']))return 'phone';
  if(($state['followup_answers']??0)>=10||get_option($state['lead_quota_key'],0)>=10)return 'limit';
  return 'question';
@@ -25,7 +26,7 @@ function tlit_dm_chat_prompt($stage,$language){
  return ($messages[$language]??$messages['English'])[$stage]??'';
 }
 function tlit_dm_chat_flow_reply($state,$token,$language,$answer=''){
- $stage=tlit_dm_chat_stage($state);return array('success'=>true,'answer'=>$answer!==''?$answer:tlit_dm_chat_prompt($stage,$language),'conversation'=>$token,'stage'=>$stage,'remaining'=>!empty($state['contact_complete'])?max(0,10-max($state['followup_answers']??0,(int)get_option($state['lead_quota_key'],0))):max(0,2-($state['answers']??0)));
+ $stage=tlit_dm_chat_stage($state);return array('success'=>true,'answer'=>$answer!==''?$answer:tlit_dm_chat_prompt($stage,$language),'conversation'=>$token,'stage'=>$stage,'remaining'=>!empty($state['contact_complete'])?max(0,10-max($state['followup_answers']??0,(int)get_option($state['lead_quota_key'],0))):max(0,tlit_dm_chat_initial_limit()-($state['answers']??0)));
 }
 function tlit_dm_chat_capture(&$state,$stage,$value){
  $contact=tlit_dm_chat_unseal($state['contact_sealed']??'');if(!is_array($contact))$contact=array();
@@ -39,7 +40,7 @@ function tlit_dm_chat_capture(&$state,$stage,$value){
   if(strlen($value)>254||!filter_var($value,FILTER_VALIDATE_EMAIL))return 'Enter a valid email address.';
  }else return 'Please continue the current chat step.';
  $contact[$stage]=$value;$sealed=tlit_dm_chat_seal($contact);if(!$sealed)return 'Could not save this chat step. Please try again.';
- unset($state['last'],$state['response']);$state['contact_sealed']=$sealed;$state['capture_stage']='question';
+ unset($state['last'],$state['response'],$state['last_request_id']);$state['contact_sealed']=$sealed;$state['capture_stage']='question';
  if($stage==='phone'){$state['contact_complete']=true;$state['lead_quota_key']='tlit_dm_chat_quota_'.tlit_dm_hash($contact['phone']);$state['followup_answers']=(int)get_option($state['lead_quota_key'],0);}
  return '';
 }
