@@ -135,7 +135,7 @@ function tlit_dm_ai_answer($request){
   if(($p['action']??'')==='intro'){if(!tlit_dm_rate('chat-intro-'.($_SERVER['REMOTE_ADDR']??'unknown'),30,3600))return tlit_dm_error('Please try again later.',429);$captureError=tlit_dm_chat_capture($state,'name',$p['question']);if($captureError)return tlit_dm_error($captureError);set_transient($key,$state,86400);tlit_dm_archive_intro($token,$state,$p['question'],$language,$p['tracking']??array());return new WP_REST_Response(tlit_dm_chat_flow_reply($state,$token,$language),200);}
   $quotaLock=!empty($state['contact_complete'])?tlit_dm_lock($state['lead_quota_key']):'';if(!empty($state['contact_complete'])&&!$quotaLock)return tlit_dm_error('Please wait for the previous answer.',429);$stage=tlit_dm_chat_stage($state);
   if(!in_array($p['action']??'',array('resume','contact'),true)){
-   $records=tlit_dm_ai_knowledge();$version=hash('sha256','lakshmi-v8-haiku55-context|'.$language.'|'.tlit_dm_ai_options()['model'].'|'.wp_json_encode($records));
+   $records=tlit_dm_ai_knowledge();$version=hash('sha256','lakshmi-v8-haiku55-context|'.$language.'|'.tlit_dm_ai_options()['model'].'|'.wp_json_encode($records).'|'.tlit_dm_ai_instructions());
    // A new submission counts even when its text repeats; delivery retries reuse their confirmed answer.
    if(($state['last']??'')===$question&&($state['version']??'')===$version&&isset($state['response'])&&($request_id===''||($state['last_request_id']??'')===$request_id)){
     $result=array_merge($state['response'],tlit_dm_chat_flow_reply($state,$token,$language,$state['response']['answer']));$out=new WP_REST_Response($result,200);$out->header('Cache-Control','no-store');return tlit_dm_ai_model_header($out,$state['response_model']??'');
