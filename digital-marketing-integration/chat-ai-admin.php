@@ -3,7 +3,7 @@ if(!defined('ABSPATH'))exit;
 add_action('admin_menu',function(){add_options_page('Digital Marketing AI Guide','Digital Marketing AI Guide','manage_options','tlit-dm-ai','tlit_dm_ai_admin');});
 function tlit_dm_ai_course_key_field(){
  $configured=tlit_dm_ai_key()!=='';
- echo '<fieldset style="margin:20px 0;padding:20px;background:#fff;border:1px solid #ccd9ce;border-radius:10px"><legend><strong>Course chatbot · DeepSeek / OpenRouter</strong></legend><p><label for="dm-course-api-key"><strong>OpenRouter API key</strong></label></p><input id="dm-course-api-key" type="password" name="techleadsit_course_settings_digital_marketing[dm_ai_api_key]" value="" autocomplete="new-password" class="regular-text" placeholder="'.($configured?'Key saved — leave blank to keep it':'Enter your OpenRouter API key').'">';
+ echo '<fieldset style="margin:20px 0;padding:20px;background:#fff;border:1px solid #ccd9ce;border-radius:10px"><legend><strong>Course chatbot · Claude Haiku / OpenRouter</strong></legend><p><label for="dm-course-api-key"><strong>OpenRouter API key</strong></label></p><input id="dm-course-api-key" type="password" name="techleadsit_course_settings_digital_marketing[dm_ai_api_key]" value="" autocomplete="new-password" class="regular-text" placeholder="'.($configured?'Key saved — leave blank to keep it':'Enter your OpenRouter API key').'">';
  echo '<p>'.($configured?'Key saved.':'No API key saved yet.').' Enter a valid key and click <strong>Save Settings</strong> below to enable the chatbot and AI answers. Leaving this field blank keeps the existing key. The key is never displayed or sent to visitors.</p><p><a href="'.esc_url(admin_url('options-general.php?page=tlit-dm-ai')).'">Advanced AI settings, connection test and knowledge review →</a></p></fieldset>';
 }
 function tlit_dm_ai_save_course_key($input,&$sanitized){
@@ -16,10 +16,13 @@ function tlit_dm_ai_save_course_key($input,&$sanitized){
  $sanitized['dm_chat_enabled']=1;
  // Never return the key as part of the course settings option.
 }
+function tlit_dm_ai_model_allowed($model){
+ return is_string($model)&&strlen($model)<=128&&(in_array($model,array('anthropic/claude-haiku-5.5','anthropic/claude-sonnet-5.5','anthropic/claude-opus-5.5'),true)||preg_match('~^deepseek/[a-zA-Z0-9][a-zA-Z0-9._:-]{0,99}$~D',$model));
+}
 function tlit_dm_ai_admin_save($post){
  $o=tlit_dm_ai_options();
  $model=is_string($post['model']??null)?trim($post['model']):'';
- if(!preg_match('~^deepseek/[a-zA-Z0-9._:-]+$~D',$model))return 'Use a valid DeepSeek model ID from OpenRouter.';
+ if(!tlit_dm_ai_model_allowed($model))return 'Use anthropic/claude-haiku-5.5, anthropic/claude-sonnet-5.5, anthropic/claude-opus-5.5 or an existing DeepSeek model ID from OpenRouter.';
  $fee=filter_var($post['fee']??null,FILTER_VALIDATE_INT);$regular=filter_var($post['regular_fee']??null,FILTER_VALIDATE_INT);$limit=filter_var($post['daily_limit']??null,FILTER_VALIDATE_INT);
  if(!$fee||$fee<1||$fee>1000000||!$regular||$regular<$fee||$regular>1000000||!$limit||$limit<1||$limit>5000)return 'Check the fees and daily request limit (1–5,000).';
  $knowledge=$post['knowledge']??'';if(!is_string($knowledge)||strlen($knowledge)>18000)return 'Approved knowledge must be plain text, under 18,000 bytes.';
@@ -60,24 +63,25 @@ function tlit_dm_ai_admin(){
   }
  }
  $o=tlit_dm_ai_options();$configured=tlit_dm_ai_key()!=='';
- echo '<div class="wrap"><h1>Digital Marketing AI Guide</h1><p>DeepSeek through OpenRouter. The AI answers questions; your existing WordPress form submits leads. No lead contact fields are sent to the model.</p>';
+ echo '<div class="wrap"><h1>Digital Marketing AI Guide</h1><p>Claude Haiku through OpenRouter is the recommended default. The selected model answers questions from approved course information; your existing WordPress form submits leads. No lead contact fields are sent to the model.</p>';
  if($message)echo '<div class="notice notice-success"><p>'.esc_html($message).'</p></div>';
  if($error)echo '<div class="notice notice-error"><p>'.esc_html($error).'</p></div>';
  echo '<p><strong>API key: '.($configured?'Configured':'Not configured').'</strong> · Chatbot OTP: '.(!empty(tlit_dm_chat_settings()['otpRequired'])?'Required':'Off — name, email and mobile only').'</p><p>Change chatbot visibility and OTP under Landing Page Settings → AI Powered+ Digital Marketing. Batch date/timing are read from the same settings.</p><form method="post">';
  wp_nonce_field('tlit_dm_ai_admin');echo '<input type="hidden" name="operation" value="save"><table class="form-table"><tbody>';
  echo '<tr><th>AI answers</th><td><label><input type="checkbox" name="enabled" value="1" '.(!empty($o['enabled'])?'checked':'').'> Enable AI answers</label></td></tr>';
  echo '<tr><th><label for="dm-api-key">OpenRouter API key</label></th><td><input id="dm-api-key" type="password" name="api_key" value="" autocomplete="new-password" class="regular-text"><p>Leave blank to keep the existing key. It is encrypted at rest using the WordPress auth salt and never returned to browsers. A TLIT_DM_OPENROUTER_KEY constant takes precedence. Rotating WordPress salts requires re-entering a stored key.</p><label><input type="checkbox" name="remove_key" value="1"> Remove saved key</label></td></tr>';
- foreach(array('model'=>'DeepSeek model ID','daily_limit'=>'Maximum AI requests per day (UTC)','fee'=>'Course fee (INR)','regular_fee'=>'Regular price (INR)') as $field=>$title){
+ foreach(array('model'=>'OpenRouter model ID','daily_limit'=>'Maximum AI requests per day (UTC)','fee'=>'Course fee (INR)','regular_fee'=>'Regular price (INR)') as $field=>$title){
   echo '<tr><th><label for="ai-'.esc_attr($field).'">'.esc_html($title).'</label></th><td><input id="ai-'.esc_attr($field).'" name="'.esc_attr($field).'" type="'.($field==='model'?'text':'number').'" value="'.esc_attr($o[$field]).'" class="regular-text"></td></tr>';
  }
  echo '<tr><th><label for="dm-knowledge">Approved additions</label></th><td><textarea id="dm-knowledge" name="knowledge" rows="12" class="large-text">'.esc_textarea($o['knowledge']).'</textarea><p>One fact or question/answer per paragraph. These are approved course facts, not prompt instructions. Do not paste student data, secrets or whole web pages. Current fee and schedule settings take priority.</p></td></tr></tbody></table>';
- echo '<p>Use an OpenRouter key spending limit as an additional budget cap. Requests require structured-output support; if your chosen endpoint is unavailable, the bot offers a team handoff instead of guessing.</p>';
+ echo '<p>Default model: <code>anthropic/claude-haiku-5.5</code>. Supported alternatives: <code>anthropic/claude-sonnet-5.5</code>, <code>anthropic/claude-opus-5.5</code> and existing <code>deepseek/…</code> IDs. Use an OpenRouter key spending limit as an additional budget cap. Requests require structured-output support; if your chosen endpoint is unavailable, the bot offers a team handoff instead of guessing.</p>';
  submit_button('Save AI settings');echo '</form><form method="post">';wp_nonce_field('tlit_dm_ai_admin');echo '<input type="hidden" name="operation" value="test"><p><button class="button" type="submit">Test saved AI connection</button> Sends one small, billable course question using the saved settings. No lead is created.</p></form><h2>Knowledge used by the guide</h2><details><summary>View approved records and sources</summary><ul>';
  foreach(tlit_dm_ai_knowledge() as $r)echo '<li><strong>'.esc_html($r['id']).'</strong> — '.esc_html($r['text']).' <em>('.esc_html($r['source']).')</em></li>';
  echo '</ul></details><h2>Questions needing review</h2><p>Up to 100 unresolved questions from the last 30 days. Email addresses, phone-like numbers and common API key patterns are removed automatically; other personal text may remain. Approve only confirmed course facts. New answers are never learned automatically.</p>';
  $rows=get_option('tlit_dm_ai_review',array());if(!is_array($rows))$rows=array();$rows=array_filter($rows,function($r){return ($r['time']??0)>time()-30*86400;});
  if(!$rows)echo '<p>No unanswered questions awaiting review.</p>';
  foreach($rows as $id=>$r){echo '<form method="post" style="padding:16px;background:#fff;margin:12px 0;max-width:850px">';wp_nonce_field('tlit_dm_ai_admin');echo '<input type="hidden" name="review_id" value="'.esc_attr($id).'"><p><strong>'.esc_html($r['question']).'</strong> · '.(int)$r['count'].' occurrence(s)</p><label>Approved answer<textarea name="approved_answer" rows="3" class="large-text" maxlength="1400"></textarea></label><p><button class="button button-primary" name="operation" value="approve">Approve into knowledge</button> <button class="button" name="operation" value="dismiss">Dismiss</button></p></form>';}
+ if(function_exists('tlit_dm_ai_usage_admin'))tlit_dm_ai_usage_admin();
  echo '</div>';
 }
 // Remove expired review text even when no visitor or admin opens the chatbot.
