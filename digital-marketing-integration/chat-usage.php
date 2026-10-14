@@ -54,7 +54,7 @@ function tlit_dm_ai_record_usage($body,$requestedModel){
 function tlit_dm_ai_record_error($status,$providerCode=''){
  $status=tlit_dm_ai_usage_number($status,599);if($status===null||$status<100)$status=null;
  // Error messages and bodies can contain request data; accept only short identifiers.
- $safeCodes=array('invalid_api_key','insufficient_credits','rate_limit_exceeded','model_not_found','invalid_request_error','authentication_error','permission_error','insufficient_quota','timeout','request_timeout','provider_error','service_unavailable','unsupported_parameters','answer_validation');
+ $safeCodes=array('invalid_api_key','insufficient_credits','rate_limit_exceeded','model_not_found','invalid_request_error','authentication_error','permission_error','insufficient_quota','timeout','request_timeout','provider_error','service_unavailable','unsupported_parameters','answer_validation','network_limit','daily_budget','budget_lock','accounting_error');
  $code=is_string($providerCode)&&(in_array($providerCode,$safeCodes,true)||preg_match('/^[0-9]{3,6}$/D',$providerCode))?$providerCode:null;
  if(is_int($providerCode)&&$providerCode>=0&&$providerCode<=999999)$code=(string)$providerCode;
  $lock=tlit_dm_ai_usage_lock();if(!$lock)return false;

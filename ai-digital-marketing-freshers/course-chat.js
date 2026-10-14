@@ -35,7 +35,7 @@ async function respond(q){
 
   if(typeof result.answer!=='string'||!result.answer)throw Error('I could not confirm an answer. Please try again.');
   pendingQuestion=null;conversation=result.conversation||conversation;pending.remove();say(result.answer);applyStage(result.stage,!contact&&result.answer!==capturePrompt(result.stage));
- }catch(e){pending.remove();say(e.name==='AbortError'?'The answer took too long. Please retry or contact the team on WhatsApp.':e.message);}
+ }catch(e){pending.remove();say(e.name==='AbortError'?'The answer took too long. Please retry or contact the team on WhatsApp.':e.message);const input=compose.querySelector('input');if(!input.value)input.value=q;}
  finally{answerBusy=false;compose.setAttribute('aria-busy','false');compose.querySelector('button').disabled=false;widget.querySelectorAll('.chat-quick button').forEach(b=>b.disabled=false);}
 }
 compose.addEventListener('submit',e=>{e.preventDefault();const input=compose.querySelector('input'),q=input.value.trim();if(!q||answerBusy)return;input.value='';respond(q);});widget.querySelectorAll('.chat-quick button').forEach(b=>b.addEventListener('click',()=>respond(b.textContent)));

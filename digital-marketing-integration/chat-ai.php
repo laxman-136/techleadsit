@@ -6,6 +6,7 @@ require_once __DIR__.'/chat-archive.php';
 require_once __DIR__.'/chat-context.php';
 require_once __DIR__.'/chat-knowledge.php';
 require_once __DIR__.'/chat-usage.php';
+require_once __DIR__.'/chat-rate.php';
 
 function tlit_dm_ai_options(){
  $saved=get_option('tlit_dm_ai_settings',array());
@@ -111,6 +112,16 @@ function tlit_dm_ai_model_header($response,$model){
  if(is_string($model)&&preg_match('~^[a-zA-Z0-9._:/-]{1,120}$~D',$model))$response->header('X-TLIT-AI-Model',$model);
  return $response;
 }
+function tlit_dm_ai_rate_error($decision){
+ $reason=$decision['reason']??'accounting_error';$retry=max(1,min(86400,(int)($decision['retry_after']??5)));
+ $status=$reason==='accounting_error'?503:429;
+ tlit_dm_ai_record_error($status,$reason);
+ if($reason==='network_limit')$message='Please try again in about '.max(1,(int)ceil($retry/60)).' minute(s). You can also get the brochure or contact our course team.';
+ elseif($reason==='daily_budget')$message='Lakshmi is temporarily unavailable. You can still download the brochure or speak with our course team on WhatsApp.';
+ else $message='Please wait a few seconds and send your question again.';
+ $response=new WP_REST_Response(array('success'=>false,'message'=>$message,'code'=>'chat_temporarily_unavailable','retryAfter'=>$retry),$status);
+ $response->header('Retry-After',(string)$retry);$response->header('Cache-Control','no-store');return $response;
+}
 function tlit_dm_ai_validate($text,$records){
  $j=json_decode($text,true);
  if(!is_array($j)||!is_string($j['answer']??null)||strlen($j['answer'])>2400||trim($j['answer'])===''||!in_array($j['kind']??'',array('answer','marketing','clarify','handoff','greeting','out_of_scope'),true)||!is_array($j['source_ids']??null)||!is_string($j['goal']??null))return null;
@@ -152,7 +163,10 @@ function tlit_dm_ai_answer($request){
   }
   if(($p['action']??'')==='contact')return new WP_REST_Response(tlit_dm_chat_flow_reply($state,$token,$language),200);
   $o=tlit_dm_ai_options();
-  if(!tlit_dm_rate('ai-ip-'.($_SERVER['REMOTE_ADDR']??'unknown'),30,3600)||!tlit_dm_rate('ai-day-'.gmdate('Y-m-d'),max(1,(int)$o['daily_limit']),86400))return tlit_dm_error('The course guide is busy. Please try later or contact the team on WhatsApp.',429);
+  // Keep shared-network protection separate from the per-lead gate and paid daily budget.
+  // Never trust user-supplied forwarding headers as a way to get a fresh allowance.
+  $reservation=tlit_dm_ai_reserve_request($_SERVER['REMOTE_ADDR']??'unknown',max(1,(int)$o['daily_limit']));
+  if(!$reservation['allowed'])return tlit_dm_ai_rate_error($reservation);
   $archive_turn=(1+(int)($state['answers']??0)).':'.hash('sha256',$question);
   tlit_dm_archive($token,'question:'.$archive_turn,$state,$language,array(array('role'=>'visitor','type'=>'question','content'=>$p['question'])));
   $selected=tlit_dm_ai_select_knowledge($question,$state['history']??array(),$records,$state['memory']??array());
