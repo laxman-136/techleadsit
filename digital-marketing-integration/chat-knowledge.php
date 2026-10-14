@@ -9,8 +9,10 @@ function tlit_dm_ai_knowledge_topics() {
   'price'=>array('pattern'=>'/\b(fee\w*|feee\w*|price\w*|cost\w*|afford\w*|expensive|cheap\w*|worth|value|budget|discount\w*|scholarship\w*|offer\w*|tax\w*|gst|inclusive|exclusive|payable|total|entha|kitn[ai]|paisa|paise)\b/i','ids'=>array('price-value','session-offers','terms','tool-access','projects')),
   'payment'=>array('pattern'=>'/\b(pay\w*|paid|payment\w*|instal\w*|install\w*|emi|split|balance|remaining|second|month\w*|later|deadline\w*|interest|financ\w*|razorpay|invoice\w*|receipt\w*|family|relative|overdue|extension\w*|penalt\w*)\b/i','ids'=>array('payment-plan','payment-charges','payment-channel','terms')),
   'refund'=>array('pattern'=>'/\b(refund\w*|money\s+back|return\s+(?:my\s+)?money|withdraw\w*|cancel\w*|reschedul\w*|change\s+(?:my\s+)?mind|fourteen|14\s*days?|48\s*hours?)\b/i','ids'=>array('refund-window','batch-cancellation','payment-plan','payment-channel')),
-  'career'=>array('pattern'=>'/\b(job\w*|career\w*|placement\w*|placment\w*|hire\w*|hiring|recruit\w*|employ\w*|interview\w*|resume\w*|cv|portfolio|referral\w*|refer\w*|first\s+role|work\s+experience)\b/i','ids'=>array('placement-details','projects','interview-evidence','role-paths','placement-eligibility','career-background')),
-  'outcome-certainty'=>array('pattern'=>'/\b(guarantee\w*|assur\w*|definitely|certainly|for\s+sure|sure\s+(?:job|placement|income|revenue)|pakka|promis\w*)\b|100\s*%(?!\s+(?:(?:placement|job|career)\s+)?assistance\b)/i','ids'=>array('guarantee','placement-details','placement-eligibility','projects','business')),
+  'career'=>array('pattern'=>'/\b(job\w*|career\w*|placement\w*|placment\w*|hire\w*|hiring|recruit\w*|employ\w*|interview\w*|resume\w*|cv|portfolio|referral\w*|refer\w*|first\s+role|work\s+experience)\b/i','ids'=>array('placement-details','projects','interview-evidence')),
+  'role-direction'=>array('pattern'=>'/\b(roles?|positions?|executive|trainee|associate|specialist|career\s+(?:paths?|options?)|(?:which|what|types?\s+of)\s+(?:jobs?|careers?))\b/i','ids'=>array('role-paths','placement-details','projects','interview-evidence')),
+  'career-conditions'=>array('pattern'=>'/\b(vacanc\w*|openings?|referral\w*|refer\w*|hiring\s+partners?|employer\s+(?:partners?|requirements?|criteria)|assigned\s+(?:counsellor|mentor)|dedicated\s+(?:counsellor|mentor)|interview\s+(?:commitments?|counts?|opportunities)|(?:placement|job)\s+(?:eligib\w*|criteria|conditions?|requirements?|fees?|checklist|rules?)|(?:eligib\w*|criteria|conditions?|requirements?|rules?)\s+(?:for\s+)?(?:placement|jobs?)|declin\w*\s+(?:a\s+|an\s+)?(?:job\s+)?offer|resubmi\w*|late\s+participation)\b/i','ids'=>array('placement-details','career-arrangements','placement-eligibility','career-background','role-paths')),
+  'outcome-certainty'=>array('pattern'=>'/\b(guarantee\w*|assur\w*|definitely|certainly|for\s+sure|sure\s+(?:job|placement|income|revenue)|pakka|promis\w*)\b|100\s*%(?!\s+(?:(?:placement|job|career)\s+)?assistance\b)/i','ids'=>array('guarantee','placement-details','placement-eligibility','career-arrangements','career-background','role-paths','projects','business')),
   'internship'=>array('pattern'=>'/\b(intern\w*|stipend\w*|apprentice\w*|paid\s+(?:work|experience))\b/i','ids'=>array('internship','certificate','placement-eligibility','guarantee')),
   'salary'=>array('pattern'=>'/\b(salary|salaries|package\w*|pakage\w*|ctc|lpa|lakh\w*|earn\w*|income|take\s*home|take-home|compensation|probation|bond\w*|wage\w*)\b/i','ids'=>array('salary-reference','job-terms','guarantee','role-paths')),
   'location'=>array('pattern'=>'/\b(remote|hybrid|abroad|overseas|hometown|relocat\w*|shift\w*|country|countries|visa|work\s+from\s+home|wfh)\b/i','ids'=>array('work-location','career-background','format','batch-options')),
@@ -77,13 +79,13 @@ function tlit_dm_ai_select_knowledge($question,$history,$records,$memory=array()
  // Explicit visitor context enriches follow-ups; it never replaces the latest question.
  // A targeted new policy/schedule question does not need old goals or concerns.
  $contextual=array_intersect(array_keys($active),array('fit','admission','career','business','price'));
- $topicChange=array_intersect(array_keys($active),array('refund','payment','certificate','schedule','privacy','brochure','outcome-certainty'));
+ $topicChange=array_intersect(array_keys($active),array('refund','payment','certificate','schedule','privacy','brochure','outcome-certainty','career-conditions'));
  if(is_array($memory)&&($contextual||($followup&&!$topicChange))){
   $context='';
   foreach(array('goal','background','target_role','concern') as $field)if(isset($memory[$field])&&is_string($memory[$field]))$context.=' '.$memory[$field];
-  foreach(array('career','business','fit','seo','ads','content','analytics','automation','tools','learning-support','price','payment') as $name){
+  foreach(array('career','role-direction','career-conditions','business','fit','seo','ads','content','analytics','automation','tools','learning-support','price','payment') as $name){
    // Explicit career/business direction in this turn takes precedence over older context.
-   if($name==='career'&&isset($active['business'])&&!isset($active['career']))continue;
+   if(in_array($name,array('career','role-direction','career-conditions'),true)&&isset($active['business'])&&!isset($active['career']))continue;
    if($name==='business'&&isset($active['career'])&&!isset($active['business']))continue;
    if($context!==''&&preg_match($topics[$name]['pattern'],$context))foreach($topics[$name]['ids'] as $id)$wanted[$id]=true;
   }

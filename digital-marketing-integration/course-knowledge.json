@@ -816,7 +816,7 @@
   },
   {
     "id": "placement-details",
-    "text": "Tech Leads IT's hiring team provides 100% placement assistance. Confirmed career preparation includes portfolio guidance, resume preparation, mock interviews and trainer project feedback. The three projects give learners practical work to explain in applications and interviews. These activities support learners preparing for marketing roles. For a specific arrangement beyond these confirmed benefits, such as referrals, current vacancies or interview commitments, use a separately confirmed fact rather than inventing details.",
+    "text": "Tech Leads IT's hiring team provides 100% placement assistance. Career preparation includes portfolio guidance, resume preparation, mock interviews and trainer project feedback. The three projects give learners practical work to explain in applications and interviews. These activities support learners preparing for marketing roles.",
     "source": "Direct owner confirmation, 14 October 2026: hiring team and 100% placement assistance; team-completed worksheets, course landing page and supplied brochure",
     "question_ids": [
       "J23",
@@ -836,6 +836,24 @@
       "J45",
       "J46",
       "J54",
+      "J76",
+      "J77",
+      "J78"
+    ]
+  },
+  {
+    "id": "career-arrangements",
+    "text": "The hiring team and its placement-assistance services are confirmed in the placement-details record. Specific referrals, current vacancies, interview commitments, individually assigned support and exact assessment/review arrangements beyond those published benefits require a separately confirmed detail. The listed career roles are examples of relevant paths, not a promise of current job openings. Do not invent employer arrangements or availability.",
+    "source": "Direct owner confirmation, 14 October 2026: hiring team and 100% placement assistance; team-completed worksheets, course landing page and supplied brochure",
+    "question_ids": [
+      "J23",
+      "J24",
+      "J29",
+      "J30",
+      "J39",
+      "J40",
+      "J41",
+      "J42",
       "J76",
       "J77",
       "J78"
