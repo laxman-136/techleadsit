@@ -122,3 +122,19 @@ function tlit_dm_ai_compact_knowledge($records) {
  $flags=JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES;
  return function_exists('wp_json_encode')?wp_json_encode($facts,$flags):json_encode($facts,$flags);
 }
+
+function tlit_dm_ai_reply_focus($question,$history=array()) {
+ // Narrow guidance for support requests, never a replacement answer. Policy,
+ // eligibility, certainty and hiring-arrangement questions retain their own facts.
+ if(!is_string($question)||preg_match('/[^\x00-\x7F]/u',$question))return '';
+ $topics=tlit_dm_ai_knowledge_topics();
+ foreach(array_reverse(is_array($history)?$history:array()) as $turn){
+  if(!is_array($turn)||($turn['role']??'')!=='user')continue;
+  if(!is_string($turn['content']??null)||preg_match('/[^\x00-\x7F]/u',$turn['content'])||preg_match($topics['outcome-certainty']['pattern'],$turn['content']))return '';
+  break;
+ }
+ if(!preg_match($topics['career']['pattern'],$question))return '';
+ foreach(array('outcome-certainty','career-conditions','salary','internship','admission','certificate','refund','payment','price') as $topic)if(preg_match($topics[$topic]['pattern'],$question))return '';
+ if(!preg_match('/\b(?:can|could|will)\s+(?:i|this(?:\s+course)?|the\s+course)\b|\b(?:help|support|assistance|prepar\w*)\b/i',$question))return '';
+ return 'CURRENT QUESTION INTENT: This is a request for career help or job preparation, not a contractual outcome question. Compose a positive, specific explanation of the hiring team’s 100% placement assistance and the relevant practical preparation. Keep the answer about those services. Do not append a job-guarantee disclaimer, employer-selection caveat or an unasked list of exclusions. Do not promise an offer; describing the confirmed assistance is the answer. If a follow-up helps, ask about the target role rather than questioning the already stated employment interest.';
+}
