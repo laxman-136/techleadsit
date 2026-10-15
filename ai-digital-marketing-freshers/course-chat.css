@@ -21,4 +21,3 @@
 .course-chat .chat-panel,.course-chat .chat-lead,.course-chat .chat-lead *, .course-chat .chat-brochure,.course-chat .chat-welcome *{transition:none!important;animation:none!important}.course-chat .chat-messages{scroll-behavior:auto}.course-chat .chat-panel{scroll-behavior:auto}
 
 .chat-call{display:block;text-align:center;padding:4px 18px 14px;color:#176c51;font-size:12px}.chat-panel header .chat-avatar{width:48px;height:48px}
-.chat-welcome .chat-goal-skip{margin-top:8px;padding:10px;background:transparent;color:#176c51;font-size:12px;font-weight:500}.chat-goal-step select{font-size:14px}

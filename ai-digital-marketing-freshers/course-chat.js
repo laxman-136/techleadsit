@@ -13,18 +13,10 @@ let introduced=false,language='English',chatStage='question',previewCount=0,pend
 // its transcript and contact stage, can silently skip the mobile-number prompt.
 function say(text,who='bot'){const bubble=document.createElement('p');bubble.className='chat-message '+who;bubble.textContent=text;log.append(bubble);while(log.children.length>35)log.firstElementChild.remove();log.scrollTop=log.scrollHeight;}
 function close(){panel.hidden=true;launch.setAttribute('aria-expanded','false');launch.focus();document.body.classList.remove('course-chat-open');}
-launch.addEventListener('click',()=>{if(!panel.hidden){close();return;}panel.hidden=false;launch.setAttribute('aria-expanded','true');document.body.classList.add('course-chat-open');(introduced?compose.querySelector('input'):widget.querySelector(welcomeStep==='goal'?'#chat-learning-goal':values.name?'#chat-language':'#chat-name')).focus();window.courseTracking?.startGeo();});widget.querySelector('.chat-close').addEventListener('click',close);panel.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
+launch.addEventListener('click',()=>{if(!panel.hidden){close();return;}panel.hidden=false;launch.setAttribute('aria-expanded','true');document.body.classList.add('course-chat-open');(introduced?compose.querySelector('input'):widget.querySelector(values.name?'#chat-language':'#chat-name')).focus();window.courseTracking?.startGeo();});widget.querySelector('.chat-close').addEventListener('click',close);panel.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
 panel.classList.add('chat-welcome-mode');
 const welcome=widget.querySelector('.chat-welcome'),languageSelect=widget.querySelector('#chat-language'),otherLanguage=widget.querySelector('#chat-other-language');
 let welcomeStep='name';
-const goalCopy={
- English:{prompt:'What would you like to achieve with digital marketing?',placeholder:'Choose a goal (optional)',skip:'Ask a question first',continue:'Let’s chat →',choices:{first_job:'Get my first marketing job',career_growth:'Grow in my marketing career',freelance:'Start freelance marketing work',business:'Grow my business',exploring:'Explore digital marketing'}},
- Telugu:{prompt:'డిజిటల్ మార్కెటింగ్ నేర్చుకుని మీరు ఏమి సాధించాలనుకుంటున్నారు?',placeholder:'మీ లక్ష్యాన్ని ఎంచుకోండి (ఐచ్ఛికం)',skip:'ముందుగా ఒక ప్రశ్న అడుగుతాను',continue:'మాట్లాడుకుందాం →',choices:{first_job:'నా మొదటి మార్కెటింగ్ ఉద్యోగం పొందాలి',career_growth:'మార్కెటింగ్ కెరీర్‌లో ఎదగాలి',freelance:'ఫ్రీలాన్స్ మార్కెటింగ్ పని ప్రారంభించాలి',business:'నా వ్యాపారాన్ని పెంచాలి',exploring:'డిజిటల్ మార్కెటింగ్ గురించి తెలుసుకోవాలి'}},
- Hindi:{prompt:'डिजिटल मार्केटिंग सीखकर आप क्या करना चाहते हैं?',placeholder:'लक्ष्य चुनें (वैकल्पिक)',skip:'पहले एक सवाल पूछना है',continue:'बात शुरू करें →',choices:{first_job:'मार्केटिंग में पहली नौकरी पाना',career_growth:'मार्केटिंग करियर में आगे बढ़ना',freelance:'फ्रीलांस मार्केटिंग शुरू करना',business:'अपना व्यवसाय बढ़ाना',exploring:'डिजिटल मार्केटिंग को समझना'}}
-};
-const goalStep=document.createElement('div');goalStep.className='chat-goal-step';goalStep.hidden=true;goalStep.innerHTML='<label for="chat-learning-goal"></label><select id="chat-learning-goal"></select>';widget.querySelector('.chat-language-step').after(goalStep);
-const goalSelect=goalStep.querySelector('select'),skipGoal=document.createElement('button');skipGoal.type='button';skipGoal.className='chat-goal-skip';skipGoal.hidden=true;welcome.append(skipGoal);skipGoal.addEventListener('click',()=>{goalSelect.value='';welcome.requestSubmit();});
-function showGoalStep(){const copy=goalCopy[language]||goalCopy.English;welcomeStep='goal';widget.querySelector('.chat-language-step').hidden=true;goalStep.hidden=false;goalStep.querySelector('label').textContent=copy.prompt;goalSelect.replaceChildren();for(const [value,text] of [['',copy.placeholder],...Object.entries(copy.choices)]){const option=document.createElement('option');option.value=value;option.textContent=text;goalSelect.append(option);}skipGoal.textContent=copy.skip;skipGoal.hidden=false;welcome.querySelector('[type=submit]').textContent=copy.continue;goalSelect.focus();}
 languageSelect.addEventListener('change',()=>{const other=languageSelect.value==='Other';otherLanguage.hidden=!other;otherLanguage.required=other;widget.querySelector('.chat-other-label').hidden=!other;if(other)otherLanguage.focus();});
 welcome.addEventListener('submit',async e=>{
  e.preventDefault();if(!welcome.reportValidity())return;
@@ -36,19 +28,17 @@ welcome.addEventListener('submit',async e=>{
  if(welcomeStep==='language'){
   language=languageSelect.value==='Other'?otherLanguage.value.trim():languageSelect.value;
   if(!/^[\p{L}\p{M} ()-]{2,40}$/u.test(language)){otherLanguage.setCustomValidity('Please enter a language name.');otherLanguage.reportValidity();return;}
-  showGoalStep();return;
  }
- const button=welcome.querySelector('[type=submit]');if(button.disabled)return;button.disabled=true;skipGoal.disabled=true;goalSelect.disabled=true;widget.querySelector('.chat-welcome-error').textContent='';
+ const button=welcome.querySelector('[type=submit]');if(button.disabled)return;button.disabled=true;widget.querySelector('.chat-welcome-error').textContent='';
  try{
-  let stage='question';const goal=goalSelect.value,copy=goalCopy[language]||goalCopy.English;
+  let stage='question';
   if(window.COURSE_ENQUIRY_CONFIG?.mode!=='preview'){
-   const r=await api('chat-answer',{question:values.name,action:'intro',conversation,language,learning_goal:goal,tracking:window.courseTracking?.collect()||{}});conversation=r.conversation;stage=r.stage;try{sessionStorage.setItem('tlit_chat_conversation',conversation);}catch{}
+   const r=await api('chat-answer',{question:values.name,action:'intro',conversation,language,tracking:window.courseTracking?.collect()||{}});conversation=r.conversation;stage=r.stage;try{sessionStorage.setItem('tlit_chat_conversation',conversation);}catch{}
   }
   introduced=true;welcome.hidden=true;panel.classList.remove('chat-welcome-mode');
-  if(goal&&copy.choices[goal]){say(copy.prompt);say(copy.choices[goal],'user');}
   say(language==='Telugu'?`${values.name}, డిజిటల్ మార్కెటింగ్ గురించి ఏమి తెలుసుకోవాలనుకుంటున్నారు?`:language==='Hindi'?`${values.name}, आप डिजिटल मार्केटिंग के बारे में क्या जानना चाहते हैं?`:`${values.name}, what would you like to know about digital marketing?`);applyStage(stage);
  }catch(e){widget.querySelector('.chat-welcome-error').textContent=e.message;}
- finally{button.disabled=false;skipGoal.disabled=false;goalSelect.disabled=false;}
+ finally{button.disabled=false;}
 });
 function capturePrompt(stage){const copy={English:{phone:'I’d be happy to help you find the right next step. What’s your mobile number?',limit:'Let’s take the next step with our course team. Call or WhatsApp +91 81429 29394 to discuss your goals and the course.'},Telugu:{phone:'మీకు సరైన తదుపరి అడుగు ఎంచుకోవడంలో సహాయం చేస్తాను. మీ మొబైల్ నంబర్ చెప్పగలరా?',limit:'మీ లక్ష్యాలు, కోర్సు గురించి మా టీమ్‌తో మాట్లాడండి. +91 81429 29394 నంబర్‌కు కాల్ లేదా వాట్సాప్ చేయండి.'},Hindi:{phone:'आपके लिए सही अगला कदम चुनने में मदद करूँगी। आपका मोबाइल नंबर क्या है?',limit:'अपने लक्ष्य और कोर्स के बारे में हमारी टीम से बात करें। +91 81429 29394 पर कॉल या WhatsApp करें।'}};return (copy[language]||copy.English)[stage]||'';}
 function applyStage(stage,prompt=true){chatStage=stage||'question';const input=compose.querySelector('input');compose.hidden=chatStage==='limit';input.type=chatStage==='email'?'email':chatStage==='phone'?'tel':'text';input.autocomplete=chatStage==='name'?'name':chatStage==='phone'?'tel':chatStage==='email'?'email':'off';input.maxLength=chatStage==='phone'?16:chatStage==='email'?254:chatStage==='name'?80:400;input.placeholder=chatStage==='name'?'Your name':chatStage==='phone'?'10-digit mobile number':chatStage==='email'?'you@example.com':'Ask your question…';compose.querySelector('label').textContent=input.placeholder;widget.querySelector('.chat-quick').hidden=true;widget.querySelector('.chat-brochure').hidden=chatStage!=='question';if(prompt&&capturePrompt(chatStage))say(capturePrompt(chatStage));if(!compose.hidden)input.focus();}

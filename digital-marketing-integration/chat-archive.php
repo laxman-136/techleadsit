@@ -35,14 +35,8 @@ function tlit_dm_archive_intro($token, $state, $name, $language, $tracking = arr
         array('role'=>'assistant', 'type'=>'language', 'content'=>'Which language feels most comfortable?'),
         array('role'=>'visitor', 'type'=>'language', 'content'=>$language),
     );
-    $goal_choice = $state['intro_goal'] ?? '';
-    $goal_choices = tlit_dm_chat_goal_choices($language);
-    if (is_string($goal_choice) && isset($goal_choices[$goal_choice])) {
-        $messages[] = array('role'=>'assistant', 'type'=>'learning_goal', 'content'=>tlit_dm_chat_goal_prompt($language));
-        $messages[] = array('role'=>'visitor', 'type'=>'learning_goal', 'content'=>$goal_choices[$goal_choice]);
-    }
     $messages[] = array('role'=>'assistant', 'type'=>'introduction', 'content'=>$greeting);
-    tlit_dm_archive($token, 'intro:' . hash('sha256', $name . '|' . $language . '|' . (is_string($goal_choice) ? $goal_choice : '')), $state, $language, $messages, array('tracking'=>is_array($tracking)?$tracking:array()));
+    tlit_dm_archive($token, 'intro:' . hash('sha256', $name . '|' . $language . '|'), $state, $language, $messages, array('tracking'=>is_array($tracking)?$tracking:array()));
 }
 
 function tlit_dm_archive_brochure($payload, $reference) {

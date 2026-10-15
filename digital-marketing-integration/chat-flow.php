@@ -12,27 +12,6 @@ function tlit_dm_chat_unseal($data){
  return $plain?json_decode($plain,true):array();
 }
 function tlit_dm_chat_initial_limit(){return 3;}
-function tlit_dm_chat_goal_choices($language='English'){
- $choices=array(
-  'English'=>array('first_job'=>'Get my first marketing job','career_growth'=>'Grow in my marketing career','freelance'=>'Start freelance marketing work','business'=>'Grow my business','exploring'=>'Explore digital marketing'),
-  'Telugu'=>array('first_job'=>'నా మొదటి మార్కెటింగ్ ఉద్యోగం పొందాలి','career_growth'=>'మార్కెటింగ్ కెరీర్‌లో ఎదగాలి','freelance'=>'ఫ్రీలాన్స్ మార్కెటింగ్ పని ప్రారంభించాలి','business'=>'నా వ్యాపారాన్ని పెంచాలి','exploring'=>'డిజిటల్ మార్కెటింగ్ గురించి తెలుసుకోవాలి'),
-  'Hindi'=>array('first_job'=>'मार्केटिंग में पहली नौकरी पाना','career_growth'=>'मार्केटिंग करियर में आगे बढ़ना','freelance'=>'फ्रीलांस मार्केटिंग शुरू करना','business'=>'अपना व्यवसाय बढ़ाना','exploring'=>'डिजिटल मार्केटिंग को समझना'));
- return $choices[$language]??$choices['English'];
-}
-function tlit_dm_chat_goal_prompt($language='English'){
- return $language==='Telugu'?'డిజిటల్ మార్కెటింగ్ నేర్చుకుని మీరు ఏమి సాధించాలనుకుంటున్నారు?':($language==='Hindi'?'डिजिटल मार्केटिंग सीखकर आप क्या करना चाहते हैं?':'What would you like to achieve with digital marketing?');
-}
-/** Optional introduction choice. Only explicit, supported goals enter visitor memory. */
-function tlit_dm_chat_intro_goal(&$state,$value=''){
- if(!is_string($value))return 'Please choose a learning goal or skip this step.';
- $choices=tlit_dm_chat_goal_choices();
- if($value!==''&&!isset($choices[$value]))return 'Please choose a learning goal or skip this step.';
- $state['intro_goal']=$value;
- if($value==='')return '';
- $memory=is_array($state['memory']??null)?$state['memory']:array();
- $memory['goal']=$choices[$value];$state['memory']=$memory;$state['goal']=$memory['goal'];unset($state['goal_clear_confirmed']);
- return '';
-}
 function tlit_dm_chat_stage($state){
  if(($state['answers']??0)<tlit_dm_chat_initial_limit())return 'question';
  if(empty($state['contact_complete']))return 'phone';
