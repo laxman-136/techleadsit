@@ -37,7 +37,9 @@ final class TLIT_CB_Integrations {
         }
     }
     public static function options() {
-        return wp_parse_args(get_option('tlit_cb_connections', array()), array('webhook_enabled'=>0,'webhook_url'=>'','webhook_secret'=>'','telecrm_enabled'=>0,'include_transcript'=>0));
+        $options=wp_parse_args(get_option('tlit_cb_connections', array()), array('webhook_enabled'=>0,'webhook_url'=>'','webhook_secret'=>'','include_transcript'=>0));
+        unset($options['telecrm_enabled']);
+        return $options;
     }
     public static function seal($secret) {
         $iv=random_bytes(12); $tag='';
@@ -62,11 +64,13 @@ final class TLIT_CB_Integrations {
     public static function connections() {
         $o=self::options();
         $items=array(
-            'webhook'=>array('label'=>'Custom API / webhook','enabled'=>!empty($o['webhook_enabled']) && $o['webhook_url']!=='','send'=>array(__CLASS__,'send_webhook')),
-            'telecrm'=>array('label'=>'TeleCRM','enabled'=>!empty($o['telecrm_enabled']) && function_exists('tlit_dm_crm') && function_exists('tlit_dm_lead_fields') && function_exists('tlit_dm_crm_url') && tlit_dm_crm_url()!=='','send'=>array(__CLASS__,'send_telecrm'))
+            'webhook'=>array('label'=>'Custom API / webhook','enabled'=>!empty($o['webhook_enabled']) && $o['webhook_url']!=='','send'=>array(__CLASS__,'send_webhook'))
         );
         // Additional integrations are registered by trusted server-side plugins.
-        return apply_filters('tlit_cb_connections', $items);
+        $items=apply_filters('tlit_cb_connections', $items);
+        // Legacy manual delivery must never bypass counsellor qualification.
+        unset($items['telecrm']);
+        return $items;
     }
     public static function save() {
         if (!current_user_can('manage_options')) { wp_die('Access denied.', '', array('response'=>403)); }
@@ -86,7 +90,6 @@ final class TLIT_CB_Integrations {
         if (!empty($p['clear_secret'])) { $o['webhook_secret']=''; }
         $o['webhook_url']=$url;
         $o['webhook_enabled']=empty($p['webhook_enabled'])?0:1;
-        $o['telecrm_enabled']=empty($p['telecrm_enabled'])?0:1;
         $o['include_transcript']=empty($p['include_transcript'])?0:1;
         update_option('tlit_cb_connections',$o,false);
         wp_safe_redirect(admin_url('admin.php?page=tlit-chat-bridge&view=integrations&saved=1')); exit;
@@ -203,26 +206,6 @@ final class TLIT_CB_Integrations {
         if (is_wp_error($result)) { return array('success'=>false,'code'=>0); }
         $code=(int)wp_remote_retrieve_response_code($result); return array('success'=>$code>=200&&$code<300,'code'=>$code);
     }
-    public static function send_telecrm($payload,$key) {
-        if (($payload['course']??'')!=='digital_marketing' || !function_exists('tlit_dm_crm') || !function_exists('tlit_dm_lead_fields')) { return array('success'=>false); }
-        $raw_phone=$payload['phone']??'';
-        if (function_exists('tlit_dm_chat_phone_international')) {
-            $phone=is_string($raw_phone)&&substr(trim($raw_phone),0,1)==='+'?tlit_dm_chat_phone_international($raw_phone):tlit_dm_chat_phone($raw_phone,'IN');
-            if ($phone==='') { return array('success'=>false); }
-        } else {
-            // Compatibility with an older Landing Pages mapper: keep its Indian contract.
-            $phone=preg_replace('/\D/','',is_string($raw_phone)?$raw_phone:''); if (strlen($phone)===12 && substr($phone,0,2)==='91') { $phone=substr($phone,2); }
-            if (!preg_match('/^[6-9][0-9]{9}$/D',$phone)) { return array('success'=>false); }
-        }
-        $note='Conversation Bridge | #'.(int)$payload['conversation_id']."\nGoal: ".$payload['goal']."\nPreferred language: ".$payload['language']."\nPhone verification: Not verified by chat capture.\nReference: ".$key;
-        if (!empty($payload['brochure_requested'])) { $note.="\nPerson downloaded brochure — AI Powered Digital Marketing"; }
-        if (!empty($payload['messages'])) { foreach ($payload['messages'] as $m) { $note.="\n".$m['role'].': '.$m['content']; } }
-        $note=function_exists('mb_substr')?mb_substr($note,0,20000,'UTF-8'):wp_check_invalid_utf8(substr($note,0,20000),true);
-        $tracking=is_array($payload['tracking']??null)?$payload['tracking']:array();
-        $tracking['landing_page']=$payload['source_url'];
-        $fields=tlit_dm_lead_fields(array('tracking'=>$tracking),$payload['name'],$phone,$payload['email'],$payload['goal'],$note);
-        $success=tlit_dm_crm($fields,$note); return array('success'=>$success,'code'=>$success?200:0);
-    }
     private static $erased_jobs=array();
     public static function erase_payload($result,$conversation_id) {
         if ($result!==true) { return $result; }
@@ -254,13 +237,5 @@ final class TLIT_CB_Integrations {
 }
 
 function tlit_cb_render_integrations() {
-    if (!current_user_can('manage_options')) { return; }
-    $o=TLIT_CB_Integrations::options();
-    echo '<section class="tlit-cb-integration-settings"><h2>Connect when you are ready</h2><p>Conversations are saved locally first. These connections are off by default, and nothing is sent automatically. Configure a destination, then queue individual records from the inbox.</p>';
-    if (!empty($_GET['saved'])) { echo '<div class="notice notice-success inline"><p>Connection settings saved.</p></div>'; }
-    echo '<form method="post" action="'.esc_url(admin_url('admin-post.php')).'"><input type="hidden" name="action" value="tlit_cb_connection_save">'; wp_nonce_field('tlit_cb_connection_save');
-    echo '<h3>Custom API / webhook</h3><p><label><input type="checkbox" name="webhook_enabled" value="1" '.checked($o['webhook_enabled'],1,false).'> Enable manual webhook delivery</label></p><p><label for="tlit-cb-url">HTTPS endpoint</label><br><input class="large-text" type="url" id="tlit-cb-url" name="webhook_url" value="'.esc_attr($o['webhook_url']).'" placeholder="https://your-platform.example/webhook"></p>';
-    echo '<p><label for="tlit-cb-secret">Bearer token (optional)</label><br><input class="regular-text" type="password" id="tlit-cb-secret" name="webhook_secret" autocomplete="new-password" placeholder="'.($o['webhook_secret']!==''?'Token saved — leave blank to keep it':'Enter token').'" value=""></p><p><label><input type="checkbox" name="clear_secret" value="1"> Remove the saved token</label></p>';
-    echo '<h3>TeleCRM</h3><p>Uses the existing Landing Pages TeleCRM account and field mapping. It is available when that plugin is active and configured.</p><p><label><input type="checkbox" name="telecrm_enabled" value="1" '.checked($o['telecrm_enabled'],1,false).'> Enable manual TeleCRM delivery</label></p><h3>Data included</h3><p>Contact details, course, language, goal, source page and brochure status are included.</p><p><label><input type="checkbox" name="include_transcript" value="1" '.checked($o['include_transcript'],1,false).'> Also include the conversation transcript</label></p>';
-    echo '<p class="description">The webhook receives JSON with schema_version=1 and an Idempotency-Key header. Your receiving API should use that key to avoid duplicates. Saving these settings does not send any visitor data.</p><p><button class="button button-primary">Save connections</button></p></form></section>';
+    // Intentionally blank until the next integration design is supplied.
 }

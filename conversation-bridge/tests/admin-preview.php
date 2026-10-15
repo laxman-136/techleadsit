@@ -31,7 +31,7 @@ function selected($actual, $expected, $echo = true) { $value = (string) $actual 
 function checked($actual, $expected, $echo = true) { $value = (string) $actual === (string) $expected ? ' checked="checked"' : ''; if ($echo) echo $value; return $value; }
 function wp_nonce_field($action) { echo '<input type="hidden" name="_wpnonce" value="fixture-nonce">'; }
 function number_format_i18n($value) { return number_format($value); }
-function wp_timezone() { return new DateTimeZone('Asia/Kolkata'); }
+function wp_timezone() { return new DateTimeZone('UTC'); }
 function wp_date($format, $timestamp, $timezone) { return (new DateTimeImmutable('@' . $timestamp))->setTimezone($timezone)->format($format); }
 function do_action($action, $row = null) { if ($action === 'tlit_cb_conversation_actions' && class_exists('TLIT_CB_Integrations')) TLIT_CB_Integrations::actions($row); }
 function apply_filters($hook, $value) { return $value; }
@@ -110,6 +110,9 @@ if ($mode === '--test') {
     $assert(!isset(TLIT_CB_Admin::filters(array('date_from' => '2026-02-30'))['date_from']), 'Reject invalid calendar date.');
     $assert($filters['has_phone'] === 'yes' && !isset($filters['has_brochure']), 'Limit qualification filters to yes or no.');
     $html = fixture_render('inbox');
+    $time_view = new ReflectionMethod('TLIT_CB_Admin', 'day');
+    $time_view->setAccessible(true);
+    $assert($time_view->invoke(null, '2026-10-15 07:17:00', 'Y-m-d H:i:s') === '2026-10-15 12:47:00', 'Show IST timestamps even when the WordPress timezone is UTC.');
     $assert(substr_count($html, 'data-tlit-select-row') === 8, 'Render every selectable fixture record.');
     $assert(strpos($html, 'name="scope" value="filtered"') !== false && strpos($html, 'name="scope" value="selected"') !== false, 'Provide both bulk export scopes.');
     $assert(substr_count($html, '<form ') === substr_count($html, '</form>'), 'Balance inbox forms.');
@@ -128,7 +131,7 @@ if ($mode === '--test') {
     $assert(substr_count($html, '<article class="tlit-cb-message ') === 8, 'Render complete transcript.');
     $assert(strpos($html, 'name="scope" value="single"') !== false, 'Provide single document export.');
     $assert(strpos($html, 'tlit_cb_status') !== false, 'Provide review status action.');
-    $assert(strpos($html, 'Changing status does not send this conversation to a CRM.') !== false, 'Keep review status separate from dispatch.');
+    $assert(strpos($html, 'Review progress is separate from lead qualification above and does not change TeleCRM.') !== false, 'Keep review status separate from dispatch.');
     $assert(substr_count($html, '<form ') === substr_count($html, '</form>'), 'Balance detail forms.');
     $assert(strpos($html, 'Queue delivery') !== false && strpos($html, 'Custom API / webhook') !== false, 'Render the real integration delivery panel.');
     $assert(strpos($html, 'Attribution details') !== false && strpos($html, 'UTM campaign') !== false && strpos($html, 'fixture-google-click-id') !== false, 'Show captured attribution fields.');
@@ -140,7 +143,8 @@ if ($mode === '--test') {
     $assert(strpos($html, 'Transcript could not be loaded') !== false && strpos($html, 'No messages captured yet') === false, 'Do not confuse a transcript read failure with an empty transcript.');
     $assert(strpos($html, '0 messages') === false && strpos($html, 'Temporarily unavailable') !== false, 'Never show a zero message count on database read failure.');
     $html = fixture_render('integrations');
-    $assert(strpos($html, 'name="webhook_url"') !== false && strpos($html, 'Save connections') !== false, 'Render the real integration settings.');
+    $assert(strpos($html, 'name="webhook_url"') === false && strpos($html, 'Save connections') === false && strpos($html, '<form ') === false, 'Keep the Integrations tab empty.');
+    $assert(strpos($html, 'TeleCRM') === false && strpos($html, 'Custom API') === false && strpos($html, 'tlit-cb-footer') === false, 'No integration options or messages appear in the reserved tab.');
     $assert(strpos($html, 'fixture-token-never-displayed') === false, 'Never display the stored authorization token.');
     $assert(substr_count($html, '<form ') === substr_count($html, '</form>'), 'Balance integration forms.');
     $html = fixture_render('empty');

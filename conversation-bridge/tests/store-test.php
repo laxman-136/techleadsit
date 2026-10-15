@@ -3,7 +3,7 @@ if (PHP_SAPI !== 'cli') { http_response_code(404); exit; }
 /** Offline contract checks. Database transaction behavior is covered by the WP smoke test. */
 define('ABSPATH', __DIR__ . '/');
 define('ARRAY_A', 'ARRAY_A');
-$tlit_test_options = array('tlit_cb_db_version' => '3');
+$tlit_test_options = array('tlit_cb_db_version' => '4');
 $tlit_test_timezone = 'Asia/Kolkata';
 $tlit_test_schema = array();
 $tlit_test_erase_filter = null;
@@ -120,7 +120,7 @@ class TLIT_CB_Test_DB {
             return array_slice(array_keys($rows), 0, (int) $match[2]);
         }
         if ($this->columns_missing) { return array(); }
-        return array('id', 'session_hash', 'course', 'source_url', 'name', 'email', 'phone', 'language', 'goal', 'goal_analysis_json', 'tracking_json', 'stage', 'status', 'has_brochure', 'answer_count', 'created_at', 'updated_at', 'conversation_id', 'event_key', 'role', 'content', 'type');
+        return array('id', 'session_hash', 'course', 'source_url', 'name', 'email', 'phone', 'language', 'goal', 'goal_analysis_json', 'tracking_json', 'stage', 'status', 'lead_id', 'qualification_status', 'qualification_note', 'has_brochure', 'answer_count', 'created_at', 'updated_at', 'conversation_id', 'event_key', 'role', 'content', 'type');
     }
 }
 $wpdb = new TLIT_CB_Test_DB();
@@ -313,7 +313,7 @@ reset_db();
 $tlit_test_timezone = 'America/New_York';
 TLIT_CB_Store::query(array('date_from' => '2026-03-08', 'date_to' => '2026-03-08'));
 $sql = implode('\n', $wpdb->queries);
-check(strpos($sql, '2026-03-08 05:00:00') !== false && strpos($sql, '2026-03-09 04:00:00') !== false, 'Date filters respect DST changes rather than adding 24 hours');
+check(strpos($sql, '2026-03-07 18:30:00') !== false && strpos($sql, '2026-03-08 18:30:00') !== false, 'Bridge date filters stay in IST even when WordPress uses a different timezone');
 reset_db();
 TLIT_CB_Store::query(array('date_from' => '2026-02-30', 'status' => 'injected', 'order' => 'DROP TABLE'));
 check(strpos(implode('\n', $wpdb->queries), '1=0') !== false && strpos(implode('\n', $wpdb->queries), 'DROP TABLE') === false, 'Invalid filter values cannot broaden dates/status or inject ordering');

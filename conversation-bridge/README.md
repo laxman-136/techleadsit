@@ -10,7 +10,7 @@ Alternatively, upload the current Conversation Bridge plugin ZIP in **Plugins â†
 
 ## Conversations and downloads
 
-- Search by visitor name, phone or email. Filter by course, language, review status, mobile captured, brochure requested, and an inclusive custom start/end date. Dates use the WordPress site timezone; timestamps are stored in UTC.
+- Search by visitor name, phone or email. Filter by course, language, review status, mobile captured, brochure requested, and an inclusive custom start/end date. Display times, date filters and downloads use IST (Asia/Kolkata), regardless of the WordPress site timezone; database timestamps remain in UTC.
 - The inbox shows each conversation's learning-goal summary. Open a row to see the transcript, visitor details, goal analysis, source and attribution. Mark a conversation New, Reviewed, Contacted or Archived.
 - **Download DOCX** exports one conversation. **Download selected ZIP** exports up to 200 checked records from the current page. **Download filtered ZIP** exports every matching conversation, across pages, up to 2,000 records. Narrow the dates for larger inboxes.
 - A ZIP contains one `.docx` per conversation and a CSV manifest. Exports are generated on demand in private temporary storage and cleaned up after streaming. They are not public WordPress media attachments. Bulk output is bounded to 128 MiB; individual document content to 4 MiB.
@@ -25,15 +25,17 @@ Digital Marketing sessions receive one of four statuses: **Stated in chat**, **I
 
 On upgrade, bounded WordPress Cron batches analyse previously archived Digital Marketing sessions automatically. This backfill uses existing database transcripts; it makes no AI/API calls, sends no CRM deliveries, and does not change the conversation's activity timestamp or review status. WordPress Cron must run for historical backfill to finish. New captures are analysed immediately. The saved summary is also used in Word downloads, ZIP manifests and future integration payloads; Word documents include the analysis status and available evidence. Already sent or queued integration snapshots are unchanged.
 
-## Integrations
+## Counsellor qualification and TeleCRM
 
-Open **Conversation Bridge â†’ Integrations**. Connections start disabled. Saving a connection does not forward existing records or create automatic deliveries.
+Digital Marketing conversations have a **Lead qualification** panel, separate from the conversation's New / Reviewed / Contacted / Archived review status. The dropdown uses exact active TeleCRM status labels, with **New** and **Junk Lead** held locally. Select a status and save. New/Junk stays in WordPress. Saving any other status uses the existing Landing Page Settings TeleCRM account through the common lead service; no second API key or TeleCRM enable switch is required in the Bridge.
 
-- **TeleCRM:** reuses the Landing Pages plugin's existing account and mapping for Digital Marketing records. With the updated Landing Pages phone helper, it accepts supported international numbers in E.164 format and preserves their country code. Older Landing Pages versions retain the Indian-only mapping. An email-only record cannot use this adapter. Captured chat contact details are not treated as OTP-verified. Existing brochure submission behavior remains separate; avoid resending a brochure lead already submitted through that flow.
-- **Custom API / webhook:** accepts a public HTTPS URL and optional Bearer token. Tokens are encrypted at rest using the site's authentication salt and never shown in the interface. Re-enter the token if WordPress authentication salts change. Redirects and private/local endpoints are rejected.
-- Open a conversation and **Queue delivery**. Contact, course, language, goal, attribution and brochure status are sent. Full transcripts are included only when enabled in settings.
-- WP-Cron processes queued jobs. Configure a server cron if the site has low traffic or WordPress Cron is disabled. The delivery status shows pending, sending, sent or failed. Sent jobs are not sent again. Failed jobs reuse the original payload snapshot and reference when manually retried. Check the receiving platform before retrying an unconfirmed response; external systems must implement idempotency to guarantee duplicate-free handling.
-- Webhooks receive JSON `schema_version: 1` and an `Idempotency-Key` header. No AI keys, OTPs or session credentials are included. The AI model cannot enable connectors or dispatch data.
+A valid captured phone is required before qualification. Email remains optional for ordinary chatbot enquiries. Incomplete chats can still be marked New or Junk. The panel links to the canonical Landing Page Leads record and shows its delivery result. Later qualified status changes sync the same lead; unconfirmed responses require reconciliation instead of blind retries. Marking an already-sent lead Junk stops further automatic sending but does not delete it from TeleCRM.
+
+The first qualification or linked chatbot brochure request establishes one canonical lead. Subsequent brochure requests and reviews use the same server-resolved conversation identity. Captured goal/contact/attribution updates refresh that local record without sending to TeleCRM. Brochure downloads keep their existing verification policy and receipt proof. Legacy manual TeleCRM queue jobs cannot bypass this workflow.
+
+## Other integrations
+
+The **Integrations** tab is intentionally blank, reserved for the next design. It displays no TeleCRM, API or webhook setup. Existing connection records are preserved; automatic TeleCRM sync continues through counsellor review.
 
 ## Extend the bridge
 

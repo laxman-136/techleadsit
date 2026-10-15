@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Tech Leads IT — Landing Page Leads
  * Description: Bridge-first landing-page lead inbox with counsellor-controlled TeleCRM handoff.
- * Version: 0.2.0
+ * Version: 0.3.0
  * Requires PHP: 8.0
  */
 if (!defined('ABSPATH')) { exit; }
@@ -12,7 +12,7 @@ require_once __DIR__.'/api.php';
 require_once __DIR__.'/integration.php';
 final class TLIT_LP_Leads {
     use TLIT_LP_API, TLIT_LP_Integration;
-    const VERSION = '0.2.0';
+    const VERSION = '0.3.0';
     const OPTION = 'tlit_lp_integration';
     static function table() { global $wpdb; return $wpdb->prefix.'tlit_landing_leads'; }
     static function install() {
@@ -41,6 +41,9 @@ final class TLIT_LP_Leads {
             crm_message varchar(255) NOT NULL DEFAULT '',
             crm_attempts int unsigned NOT NULL DEFAULT 0,
             crm_payload longtext NULL,
+            crm_revision varchar(64) NOT NULL DEFAULT '',
+            crm_synced_revision varchar(64) NOT NULL DEFAULT '',
+            crm_remote_id varchar(100) NOT NULL DEFAULT '',
             advisor_note text NOT NULL,
             review_history longtext NULL,
             PRIMARY KEY  (id),
@@ -52,13 +55,12 @@ final class TLIT_LP_Leads {
             KEY crm_status (crm_status)
         ) ENGINE=InnoDB ".$wpdb->get_charset_collate().';');
         $columns=$wpdb->get_col("SHOW COLUMNS FROM $table");
-        if (is_array($columns) && !array_diff(['lead_status','page_variant','crm_payload','review_history'],$columns)) {
+        if (is_array($columns) && !array_diff(['lead_status','page_variant','crm_payload','crm_revision','crm_synced_revision','crm_remote_id','review_history'],$columns)) {
             update_option('tlit_lp_version',self::VERSION,false);
         }
     }
     static function boot() {
         if(get_option('tlit_lp_version')!==self::VERSION) { self::install(); }
-        self::migrate_legacy_secret();
         add_action('rest_api_init',[__CLASS__,'routes']);
         add_action('admin_menu',[__CLASS__,'menu'],30);
         add_action('admin_post_tlit_lp_action',[__CLASS__,'action']);
@@ -105,8 +107,34 @@ final class TLIT_LP_Leads {
             set_transient($key,$count+1,$seconds);return true;
         } finally { delete_option($lock); }
     }
-    static function labels() { return ['general'=>'General form','popup'=>'Popup form','brochure'=>'Brochure form','chatbot_brochure'=>'Chatbot brochure']; }
-    static function statuses() { return ['new'=>'New','junk'=>'Junk lead','potential'=>'Potential','high_potential'=>'High potential','intended_to_join'=>'Intended to join','enrolled'=>'Enrolled']; }
+    static function labels() { return ['general'=>'General form','popup'=>'Popup form','brochure'=>'Brochure form','chatbot_brochure'=>'Chatbot brochure','chatbot'=>'Chatbot conversation']; }
+    static function statuses() {
+        // Keep saved keys stable while displaying the account's exact TeleCRM labels.
+        return ['new'=>'New','junk'=>'Junk Lead',
+            'demo_interested'=>'Interested to join the Demo','intended_to_join'=>'Potential Lead 100',
+            'demo_attended'=>'Demo Attended','next_batch'=>'Looking for Next batch',
+            'call_not_answered'=>'Call not answered and Shared the Data',
+            'number_email'=>'Number is not working and sent an email',
+            'wrong_number'=>'Wrong Number &Number Not working','different_course'=>'Different Course',
+            'not_interested'=>'Not Interested','potential'=>'50 % Potential',
+            'below_50_potential'=>'below 50 % Potential','high_potential'=>'60-80 Potential',
+            'become_trainer'=>'Become Trainer','different_requirement'=>'Different Requirement',
+            'enrolled'=>'Enrolled','lost'=>'Lost'];
+    }
+    static function timezone() { return new DateTimeZone('Asia/Kolkata'); }
+    static function display_date($utc,$format='M j, Y · g:i a') {
+        if(!is_string($utc)||$utc==='') { return '—'; }
+        $timestamp=strtotime($utc.' UTC');
+        return $timestamp===false?'—':wp_date($format,$timestamp,self::timezone()).' IST';
+    }
+    static function date_bound($value,$next_day=false) {
+        if(!is_string($value)||!preg_match('/^\d{4}-\d{2}-\d{2}$/D',$value)) { return null; }
+        $date=DateTimeImmutable::createFromFormat('!Y-m-d',$value,self::timezone());
+        $errors=DateTimeImmutable::getLastErrors();
+        if(!$date||($errors!==false&&($errors['warning_count']||$errors['error_count']))||$date->format('Y-m-d')!==$value) { return null; }
+        if($next_day) { $date=$date->modify('+1 day'); }
+        return $date->setTimezone(new DateTimeZone('UTC'))->format('Y-m-d H:i:s');
+    }
     static function variants() { return ['v1'=>'Digital Marketing — V1','v2'=>'Digital Marketing — V2','v3'=>'Digital Marketing — V3']; }
     static function tracking_keys() { return explode(' ','utm_source utm_medium utm_campaign utm_adgroup utm_term utm_content utm_id gclid fbclid gbraid wbraid landing_page referrer fbp fbc ga_client_id session_id fb_ad fb_campaign fb_adset_name fb_adset_id fb_lead_id adset_id ad_id city state'); }
     static function url($value) {
@@ -140,7 +168,8 @@ final class TLIT_LP_Leads {
         $name=self::clean($p['name']??'',80);$phone=self::canonical_phone($p['phone']??'');
         $email=is_string($p['email']??null)?sanitize_email($p['email']):'';
         $source=$context['source']??($p['intent']??'');
-        if(!preg_match('/^[A-Za-z0-9_.:-]{8,80}$/D',$id)||strlen($name)<2||!$phone||!is_email($email)||strlen($email)>254||!isset(self::labels()[$source])) { return self::error('Please check the lead contact details.'); }
+        $optional_email=$source==='chatbot'&&$email==='';
+        if(!preg_match('/^[A-Za-z0-9_.:-]{8,80}$/D',$id)||strlen($name)<2||!$phone||(!$optional_email&&!is_email($email))||strlen($email)>254||!isset(self::labels()[$source])) { return self::error('Please check the lead contact details.'); }
         $tracking=[];
         foreach(self::tracking_keys() as $key) { $tracking[$key]=self::clean($p['tracking'][$key]??'',500); }
         foreach(['landing_page','referrer'] as $key) { $tracking[$key]=self::url($tracking[$key])?:($key==='referrer'?'direct':''); }
@@ -185,6 +214,57 @@ final class TLIT_LP_Leads {
     }
     static function download_token($id,$request_id) { return self::hash('brochure-download|'.(int)$id.'|'.$request_id); }
     static function get($id) { global $wpdb;return $wpdb->get_row($wpdb->prepare('SELECT * FROM '.self::table().' WHERE id=%d',absint($id))); }
+    /** Trusted Conversation Bridge adapter. Capturing/enriching a contact never sends to CRM. */
+    static function sync_conversation(array $p,$existing_lead_id=0) {
+        global $wpdb;
+        $request_id=self::clean($p['request_id']??'',80);
+        if(!preg_match('/^cb-conversation-([1-9][0-9]*)$/D',$request_id,$match)) { return self::error('A valid conversation reference is required.'); }
+        $conversation_id=(int)$match[1];$phone=self::canonical_phone($p['phone']??'');$name=self::clean($p['name']??'',80);
+        $email=is_string($p['email']??null)?sanitize_email($p['email']):'';
+        $source=($p['source']??'')==='chatbot_brochure'?'chatbot_brochure':'chatbot';
+        if(!$phone||strlen($name)<2||($email!==''&&!is_email($email))||strlen($email)>254||($source==='chatbot_brochure'&&$email==='')) { return self::error('A name and valid phone number are needed before this chat can be qualified.'); }
+        $conversation_lock=self::lock('conversation-link-'.$conversation_id);if(!$conversation_lock) { return self::error('This conversation contact is being updated. Please retry.',409); }
+        $lead_lock=false;
+        try {
+            $row=$existing_lead_id?self::get($existing_lead_id):$wpdb->get_row($wpdb->prepare('SELECT * FROM '.self::table().' WHERE request_id=%s',$request_id));
+            if($wpdb->last_error!=='') { return self::error('The conversation lead could not be loaded.',503); }
+            if($existing_lead_id&&!$row) { return self::error('The linked lead is unavailable. Reload the conversation before retrying.',409); }
+            if(!$row) {
+                $p['request_id']=$request_id;$p['phone']=$phone;$p['email']=$email;$p['name']=$name;
+                $p['details']=array_merge(is_array($p['details']??null)?$p['details']:[],['conversation_reference'=>'CB-'.$conversation_id,'conversation_id'=>(string)$conversation_id]);
+                return self::ingest($p,['source'=>$source,'otp_verified'=>!empty($p['otp_verified'])]);
+            }
+            // A stable, server-owned link is required. Never associate sessions by phone alone.
+            if(self::canonical_phone($row->phone)!==$phone) { return self::error('The conversation and linked lead have different phone numbers. Review the contact before syncing.',409); }
+            $lead_lock=self::lock('lead-review-'.(int)$row->id);if(!$lead_lock) { return self::error('This lead is being reviewed. Please retry.',409); }
+            $row=self::get($row->id);$data=json_decode($row->payload,true)?:[];
+            $existing_reference=$data['details']['conversation_reference']??'';
+            if($existing_reference!==''&&$existing_reference!=='CB-'.$conversation_id) { return self::error('This lead belongs to another conversation.',409); }
+            $data['details']=array_merge($data['details']??[],self::clean_details($p['details']??[]),['conversation_reference'=>'CB-'.$conversation_id,'conversation_id'=>(string)$conversation_id]);
+            if(array_key_exists('goal',$p)) { $data['goal']=self::clean($p['goal'],250); }
+            if(($p['marketingConsent']??false)===true) { $data['marketingConsent']=true;$data['consent_text']=self::clean($p['consent_text']??($data['consent_text']??''),500); }
+            foreach(self::tracking_keys() as $key) {
+                if(empty($data['tracking'][$key])&&!empty($p['tracking'][$key])) { $data['tracking'][$key]=self::clean($p['tracking'][$key],500); }
+            }
+            foreach(['landing_page','referrer'] as $key) { $data['tracking'][$key]=self::url($data['tracking'][$key]??'')?:($key==='referrer'?'direct':''); }
+            if(!empty($p['brochure_downloaded'])) { $data['brochure_downloaded']=true;if(empty($data['brochure_downloaded_at'])) { $data['brochure_downloaded_at']=gmdate('c'); } }
+            $patch=['name'=>$name,'payload'=>wp_json_encode($data),'updated_at'=>current_time('mysql',true)];
+            if($email!=='') { $patch['email']=$email; }
+            if($source==='chatbot_brochure'&&$row->source==='chatbot') { $patch['source']='chatbot_brochure'; }
+            if(!empty($p['otp_verified'])) { $patch['otp_verified']=1; }
+            // Preserve the original form/page attribution when linking a brochure receipt.
+            if($row->submission_url==='') { $patch['submission_url']=self::url($p['submission_url']??''); }
+            if($row->page_variant===''||$row->page_variant==='unknown') { $patch['page_variant']=self::variant($p['page_variant']??'',$patch['submission_url']??$row->submission_url); }
+            if($wpdb->update(self::table(),$patch,['id'=>$row->id])===false) { return self::error('The conversation contact could not be saved.',503); }
+            return ['success'=>true,'receipt'=>'LP-'.$row->id,'lead_id'=>(int)$row->id,'duplicate'=>true,'download_token'=>self::download_token($row->id,$row->request_id)];
+        } finally { if($lead_lock) { delete_option($lead_lock); }delete_option($conversation_lock); }
+    }
+    /** Called inside the Conversation Bridge privacy transaction; separate brochure records remain. */
+    static function erase_conversation_lead($id,$conversation_id) {
+        global $wpdb;$row=self::get($id);if(!$row) { return $wpdb->last_error===''; }
+        if($row->request_id!=='cb-conversation-'.absint($conversation_id)) { return true; }
+        return $wpdb->delete(self::table(),['id'=>(int)$id,'request_id'=>$row->request_id])!==false;
+    }
     static function backfill_sources() {
         global $wpdb;$lock=self::lock('source-backfill');if(!$lock) { return ['processed'=>0,'updated'=>0,'complete'=>false]; }
         try {
@@ -224,9 +304,13 @@ final class TLIT_LP_Leads {
         foreach(['source','crm_status','lead_status','page_variant'] as $key) {
             $value=self::clean($input[$key]??'',80);if($value!=='') { $sql.=" AND $key=%s";$values[]=$value; }
         }
-        foreach(['from'=>'>=','to'=>'<='] as $key=>$op) {
+        foreach(['from'=>'>=','to'=>'<'] as $key=>$op) {
             $value=self::clean($input[$key]??'',10);
-            if(preg_match('/^\d{4}-\d{2}-\d{2}$/D',$value)) { $sql.=" AND created_at $op %s";$values[]=$value.($key==='from'?' 00:00:00':' 23:59:59'); }
+            if($value!=='') {
+                $bound=self::date_bound($value,$key==='to');
+                if($bound===null) { $sql.=' AND 1=0'; }
+                else { $sql.=" AND created_at $op %s";$values[]=$bound; }
+            }
         }
         foreach(['utm_source','utm_campaign'] as $key) {
             $value=self::clean($input[$key]??'',200);
@@ -256,7 +340,7 @@ final class TLIT_LP_Leads {
             $history[]=['from'=>$row->lead_status,'to'=>$status,'actor'=>(int)$actor,'at'=>$now];$history=array_slice($history,-100);
             $saved=$wpdb->update(self::table(),['lead_status'=>$status,'advisor_note'=>substr(sanitize_textarea_field((string)$note),0,5000),'reviewed_by'=>absint($actor),'reviewed_at'=>$now,'updated_at'=>$now,'review_history'=>wp_json_encode($history)],['id'=>$row->id]);
             if($saved===false) { return self::error('The review could not be saved. TeleCRM was not contacted.',503); }
-            if($deliver && in_array($status,['potential','high_potential','intended_to_join','enrolled'],true)) { self::push($row->id); }
+            if($deliver && isset(self::crm_statuses()[$status])) { self::push_locked($row->id); }
             return self::get($row->id);
         } finally { delete_option($lock); }
     }
@@ -284,8 +368,8 @@ final class TLIT_LP_Leads {
     static function export() {
         self::admin();check_admin_referer('tlit_lp_export');global $wpdb;$id=absint($_GET['lead']??0);$where=$id?$wpdb->prepare(' WHERE id=%d',$id):self::filters();
         nocache_headers();header('Content-Type: text/csv; charset=utf-8');header('Content-Disposition: attachment; filename="landing-page-leads-'.gmdate('Ymd').'.csv"');
-        $out=fopen('php://output','w');fputcsv($out,array_merge(['Reference','Received UTC','Name','Phone','Email','Form','Page version','Submission URL','Goal','Profile','Timeline','Question','Brochure downloaded','Marketing consent','OTP verified','Counsellor status','TeleCRM status','Counsellor note'],self::tracking_keys(),['Details JSON']));$last=0;
-        do { $rows=$wpdb->get_results('SELECT * FROM '.self::table().$where.' AND id>'.(int)$last.' ORDER BY id ASC LIMIT 500');foreach($rows as $row) { $data=json_decode($row->payload,true)?:[];$cells=['LP-'.$row->id,$row->created_at,$row->name,$row->phone,$row->email,self::labels()[$row->source]??$row->source,$row->page_variant,$row->submission_url,$data['goal']??'',$data['status']??'',$data['timeline']??'',$data['question']??'',!empty($data['brochure_downloaded'])?'Yes':'No',!empty($data['marketingConsent'])?'Yes':'No',$row->otp_verified?'Yes':'No',self::statuses()[$row->lead_status]??$row->lead_status,$row->crm_status,$row->advisor_note];foreach(self::tracking_keys() as $tracking_key) { $cells[]=$data['tracking'][$tracking_key]??''; }$cells[]=wp_json_encode($data['details']??[]);fputcsv($out,array_map(function($v){$v=(string)$v;return preg_match('/^[\s]*[=+@-]/',$v)?"'".$v:$v;},$cells));$last=$row->id; } }while(count($rows)===500);fclose($out);exit;
+        $out=fopen('php://output','w');fputcsv($out,array_merge(['Reference','Received IST','Name','Phone','Email','Form','Page version','Submission URL','Goal','Profile','Timeline','Question','Brochure downloaded','Marketing consent','OTP verified','Counsellor status','TeleCRM status','Counsellor note'],self::tracking_keys(),['Details JSON']));$last=0;
+        do { $rows=$wpdb->get_results('SELECT * FROM '.self::table().$where.' AND id>'.(int)$last.' ORDER BY id ASC LIMIT 500');foreach($rows as $row) { $data=json_decode($row->payload,true)?:[];$cells=['LP-'.$row->id,self::display_date($row->created_at,'Y-m-d H:i:s'),$row->name,$row->phone,$row->email,self::labels()[$row->source]??$row->source,$row->page_variant,$row->submission_url,$data['goal']??'',$data['status']??'',$data['timeline']??'',$data['question']??'',!empty($data['brochure_downloaded'])?'Yes':'No',!empty($data['marketingConsent'])?'Yes':'No',$row->otp_verified?'Yes':'No',self::statuses()[$row->lead_status]??$row->lead_status,$row->crm_status,$row->advisor_note];foreach(self::tracking_keys() as $tracking_key) { $cells[]=$data['tracking'][$tracking_key]??''; }$cells[]=wp_json_encode($data['details']??[]);fputcsv($out,array_map(function($v){$v=(string)$v;return preg_match('/^[\s]*[=+@-]/',$v)?"'".$v:$v;},$cells));$last=$row->id; } }while(count($rows)===500);fclose($out);exit;
     }
 }
 if(function_exists('register_activation_hook')) { register_activation_hook(__FILE__,['TLIT_LP_Leads','install']); }

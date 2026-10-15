@@ -6,7 +6,7 @@ if (!defined('ABSPATH')) {
 require_once __DIR__ . '/goals.php';
 
 final class TLIT_CB_Store {
-    const DB_VERSION = '3';
+    const DB_VERSION = '4';
     const VERSION_OPTION = 'tlit_cb_db_version';
     const PRIVACY_PAGE_SIZE = 20;
     private static $read_failed = false;
@@ -52,6 +52,9 @@ final class TLIT_CB_Store {
                 tracking_json longtext NOT NULL,
                 stage varchar(48) NOT NULL DEFAULT '',
                 status varchar(20) NOT NULL DEFAULT 'new',
+                lead_id bigint(20) unsigned NOT NULL DEFAULT 0,
+                qualification_status varchar(24) NOT NULL DEFAULT 'new',
+                qualification_note text NOT NULL,
                 has_brochure tinyint(1) unsigned NOT NULL DEFAULT 0,
                 answer_count int(10) unsigned NOT NULL DEFAULT 0,
                 created_at datetime NOT NULL,
@@ -88,7 +91,7 @@ final class TLIT_CB_Store {
             $conversation_columns = $wpdb->get_col("SHOW COLUMNS FROM $conversations", 0);
             $message_columns = $wpdb->get_col("SHOW COLUMNS FROM $messages", 0);
             $event_columns = $wpdb->get_col("SHOW COLUMNS FROM $events", 0);
-            $required = array('id', 'session_hash', 'course', 'source_url', 'name', 'email', 'phone', 'language', 'goal', 'goal_analysis_json', 'tracking_json', 'stage', 'status', 'has_brochure', 'answer_count', 'created_at', 'updated_at');
+            $required = array('id', 'session_hash', 'course', 'source_url', 'name', 'email', 'phone', 'language', 'goal', 'goal_analysis_json', 'tracking_json', 'stage', 'status', 'lead_id', 'qualification_status', 'qualification_note', 'has_brochure', 'answer_count', 'created_at', 'updated_at');
             if (array_diff($required, (array) $conversation_columns) || array_diff(array('id', 'conversation_id', 'event_key', 'role', 'content', 'type', 'created_at'), (array) $message_columns) || array_diff(array('event_key', 'conversation_id', 'created_at'), (array) $event_columns)) {
                 return self::error('schema');
             }
@@ -237,8 +240,8 @@ final class TLIT_CB_Store {
                 return self::error('write');
             }
             $started = true;
-            $sql = "INSERT INTO $conversations (session_hash,course,source_url,name,email,phone,language,goal,tracking_json,stage,has_brochure,answer_count,created_at,updated_at,goal_analysis_json)
-                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%d,%d,%s,%s,'')
+            $sql = "INSERT INTO $conversations (session_hash,course,source_url,name,email,phone,language,goal,tracking_json,stage,has_brochure,answer_count,created_at,updated_at,goal_analysis_json,qualification_note)
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%d,%d,%s,%s,'','')
                 ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id),
                 source_url=IF(VALUES(source_url)<>'',VALUES(source_url),source_url),
                 name=IF(VALUES(name)<>'',VALUES(name),name),
@@ -400,7 +403,7 @@ final class TLIT_CB_Store {
         if (!is_string($value) || !preg_match('/^\d{4}-\d{2}-\d{2}$/D', $value)) {
             return null;
         }
-        $date = DateTimeImmutable::createFromFormat('!Y-m-d', $value, wp_timezone());
+        $date = DateTimeImmutable::createFromFormat('!Y-m-d', $value, new DateTimeZone('Asia/Kolkata'));
         $errors = DateTimeImmutable::getLastErrors();
         if (!$date || ($errors !== false && ($errors['warning_count'] || $errors['error_count'])) || $date->format('Y-m-d') !== $value) {
             return null;
@@ -505,6 +508,20 @@ final class TLIT_CB_Store {
         }
     }
 
+    /** Resolve a server-held chat token without exposing the token or trusting a submitted lead ID. */
+    public static function for_session($token) {
+        global $wpdb;
+        self::$read_failed=false;
+        if (!is_string($token) || !preg_match('/^[a-f0-9]{48}$/D', $token)) { return null; }
+        $hash=hash_hmac('sha256', 'tlit-cb-session|' . $token, wp_salt('auth'));
+        $previous=$wpdb->suppress_errors(true);
+        try {
+            $row=$wpdb->get_row($wpdb->prepare('SELECT * FROM '.self::table('conversations').' WHERE session_hash=%s',$hash),ARRAY_A);
+            self::$read_failed=$wpdb->last_error!=='';
+            return self::$read_failed?null:$row;
+        } finally { $wpdb->suppress_errors($previous); }
+    }
+
     public static function snapshot_max_id($filters = array()) {
         global $wpdb;
         self::$read_failed = false;
@@ -594,6 +611,39 @@ final class TLIT_CB_Store {
         }
     }
 
+    /** Internal linkage only; visitor events cannot supply qualification or CRM state. */
+    public static function with_locked_conversation($id, $callback) {
+        global $wpdb;
+        $previous=$wpdb->suppress_errors(true);$started=false;
+        try {
+            if ($wpdb->query('START TRANSACTION')===false) { return self::error('qualification_lock'); }
+            $started=true;
+            $row=$wpdb->get_row($wpdb->prepare('SELECT * FROM '.self::table('conversations').' WHERE id=%d FOR UPDATE',(int)$id),ARRAY_A);
+            if ($wpdb->last_error!=='' || !$row) { return self::error('qualification_read'); }
+            $result=call_user_func($callback,$row);
+            if (is_wp_error($result)) { return $result; }
+            if ($wpdb->query('COMMIT')===false) { return self::error('qualification_commit'); }
+            $started=false;
+            return $result;
+        } catch (Throwable $error) {
+            return self::error('qualification_write');
+        } finally {
+            if ($started) { $wpdb->query('ROLLBACK'); }
+            $wpdb->suppress_errors($previous);
+        }
+    }
+
+    public static function update_qualification($id, $lead_id, $status, $note) {
+        global $wpdb;
+        $statuses=is_callable(array('TLIT_CB_Qualification','statuses'))?array_keys(TLIT_CB_Qualification::statuses()):array('new','junk','potential','high_potential','intended_to_join','enrolled');
+        if ((int) $id < 1 || !in_array($status, $statuses, true)) { return false; }
+        $table = self::table('conversations');
+        $previous = $wpdb->suppress_errors(true);
+        try {
+            return $wpdb->query($wpdb->prepare("UPDATE $table SET lead_id=%d,qualification_status=%s,qualification_note=%s WHERE id=%d", max(0, (int) $lead_id), $status, self::clean_text($note, 4000, true), (int) $id)) !== false;
+        } finally { $wpdb->suppress_errors($previous); }
+    }
+
     public static function privacy_exporters($exporters) {
         $exporters['tlit-conversations'] = array('exporter_friendly_name' => 'TechLeads IT chatbot conversations', 'callback' => array(__CLASS__, 'privacy_export'));
         return $exporters;
@@ -615,7 +665,11 @@ final class TLIT_CB_Store {
         $data = array();
         foreach ($result['rows'] as $row) {
             $fields = array();
-            foreach (array('name' => 'Name', 'email' => 'Email', 'phone' => 'Phone', 'course' => 'Course', 'source_url' => 'Source page', 'language' => 'Language', 'goal' => 'Goal', 'stage' => 'Chat stage', 'status' => 'Review status', 'has_brochure' => 'Brochure downloaded', 'answer_count' => 'Answers', 'created_at' => 'Created (UTC)', 'updated_at' => 'Updated (UTC)') as $key => $label) {
+            if (class_exists('TLIT_CB_Qualification')) {
+                $lead=TLIT_CB_Qualification::lead($row);
+                if ($lead) { $row['qualification_status']=$lead->lead_status; $row['qualification_note']=$lead->advisor_note; }
+            }
+            foreach (array('name' => 'Name', 'email' => 'Email', 'phone' => 'Phone', 'course' => 'Course', 'source_url' => 'Source page', 'language' => 'Language', 'goal' => 'Goal', 'stage' => 'Chat stage', 'status' => 'Review status', 'lead_id' => 'Lead reference', 'qualification_status' => 'Lead qualification', 'qualification_note' => 'Counsellor note', 'has_brochure' => 'Brochure downloaded', 'answer_count' => 'Answers', 'created_at' => 'Created (UTC)', 'updated_at' => 'Updated (UTC)') as $key => $label) {
                 $fields[] = array('name' => $label, 'value' => isset($row[$key]) ? (string) $row[$key] : '');
             }
             $messages = self::messages($row['id']);

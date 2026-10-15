@@ -244,7 +244,7 @@ final class TLIT_CB_Export
             if (fwrite($manifest, "\xEF\xBB\xBF") !== 3) {
                 throw new RuntimeException('Cannot write archive manifest.');
             }
-            self::write_csv($manifest, array('File', 'Conversation ID', 'Name', 'Email', 'Phone', 'Language', 'Goal', 'Status', 'Stage', 'Course', 'Source page', 'Brochure requested', 'Answer count', 'Created (site time)', 'Updated (site time)'));
+            self::write_csv($manifest, array('File', 'Conversation ID', 'Name', 'Email', 'Phone', 'Language', 'Goal', 'Status', 'Stage', 'Course', 'Source page', 'Brochure requested', 'Answer count', 'Created (IST)', 'Updated (IST)'));
             $count = 0;
             $bytes = 0;
             $seen = array();
@@ -447,7 +447,7 @@ final class TLIT_CB_Export
     private static function display_date($date)
     {
         $timestamp = self::utc_timestamp($date);
-        return $timestamp !== false ? wp_date('d M Y, H:i:s T', $timestamp) : 'Not recorded';
+        return $timestamp !== false ? wp_date('d M Y, H:i:s T', $timestamp, new DateTimeZone('Asia/Kolkata')) : 'Not recorded';
     }
 
     private static function source_page($url)

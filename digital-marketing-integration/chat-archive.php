@@ -11,11 +11,22 @@ function tlit_dm_archive($token, $event_id, $state, $language, $messages = array
     $has_memory_goal = array_key_exists('goal', $memory) && (is_string($memory['goal']) || $memory['goal'] === null);
     $goal = $has_memory_goal ? ($memory['goal'] ?? '') : ($state['goal'] ?? '');
     $goal_authoritative = $has_memory_goal && ($goal !== '' || ($memory['goal'] === null && !empty($state['goal'])) || !empty($state['goal_clear_confirmed']));
+    $source='';
+    $tracking=is_array($extra['tracking']??null)?$extra['tracking']:array();
+    $candidate=$tracking['submission_url']??($tracking['landing_page']??'');
+    if(is_string($candidate)) {
+        $parts=wp_parse_url($candidate);$home=wp_parse_url(home_url());
+        $path=trim($parts['path']??'','/');
+        if(is_array($parts)&&($parts['host']??'')===($home['host']??'')&&($parts['scheme']??'')===($home['scheme']??'')&&in_array($path,array('ai-powered-digital-marketing','ai-powered-digital-marketing-course','ai-powered-digital-marketing-training'),true)) {
+            $source=rtrim(home_url(),'/').'/'.$path.'/';
+        }
+    }
     $event = array_merge(array(
         'session' => $token,
         'event_id' => $event_id,
         'course' => 'digital_marketing',
-        'source_url' => rtrim(home_url(), '/') . '/ai-powered-digital-marketing/',
+        // Follow-up events leave this blank so they preserve the captured page variant.
+        'source_url' => $source,
         'contact' => is_array($contact) ? $contact : array(),
         'language' => $language,
         'goal' => is_string($goal) ? $goal : '',

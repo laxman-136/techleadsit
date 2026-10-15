@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Tech Leads IT Conversation Bridge
  * Description: A private conversation inbox, DOCX exports and controlled integrations for course chatbots.
- * Version: 1.0.1
+ * Version: 1.1.0
  * Requires at least: 6.4
  * Requires PHP: 8.0
  * Author: Tech Leads IT
@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) { exit; }
 // The same module can be installed independently or bundled with Landing Pages.
 if (!defined('TLIT_CB_FILE')) {
 define('TLIT_CB_FILE', __FILE__);
-define('TLIT_CB_VERSION', '1.0.1');
+define('TLIT_CB_VERSION', '1.1.0');
 define('TLIT_CB_URL', plugin_dir_url(__FILE__));
 
 function tlit_cb_boot() {
@@ -21,9 +21,11 @@ function tlit_cb_boot() {
     require_once __DIR__ . '/includes/export.php';
     require_once __DIR__ . '/includes/admin.php';
     require_once __DIR__ . '/includes/integrations.php';
+    require_once __DIR__ . '/includes/qualification.php';
     TLIT_CB_Admin::register();
     TLIT_CB_Export::register();
     TLIT_CB_Integrations::register();
+    TLIT_CB_Qualification::register();
     TLIT_CB_Goal_Backfill::register();
     add_action('init', 'tlit_cb_install', 5);
     add_action('tlit_cb_capture', 'tlit_cb_capture', 10, 1);
@@ -46,6 +48,8 @@ function tlit_cb_capture($event) {
         $result = TLIT_CB_Store::capture($event);
         if (is_wp_error($result)) { update_option('tlit_cb_storage_error', time(), false); return; }
         delete_option('tlit_cb_storage_error');
+        // Qualification is an admin action. This only refreshes the private lead copy.
+        if (class_exists('TLIT_CB_Qualification')) { TLIT_CB_Qualification::capture($result, $event); }
     } catch (Throwable $error) {
         update_option('tlit_cb_storage_error', time(), false);
     }

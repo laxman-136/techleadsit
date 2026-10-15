@@ -35,6 +35,11 @@ function tlit_dm_store_lead($p,$name,$phone,$email,$goal,$request_id,$source,$ot
         'submission_url'=>is_string($p['submission_url']??null)?$p['submission_url']:($tracking['submission_url']??''),
         'page_variant'=>is_string($p['page_variant']??null)?$p['page_variant']:($tracking['page_variant']??'v1'),
         'marketingConsent'=>($p['emailMarketing']??false)===true);
+    if($source==='chatbot_brochure' && is_callable(array('TLIT_CB_Qualification','brochure'))) {
+        $payload['otp_verified']=(bool)$otp_verified;
+        $linked=TLIT_CB_Qualification::brochure($p['conversation']??'', $payload);
+        if($linked!==null)return $linked;
+    }
     return TLIT_LP_Leads::ingest($payload,array('source'=>$source,'otp_verified'=>$otp_verified));
 }
 function tlit_dm_crm_url(){

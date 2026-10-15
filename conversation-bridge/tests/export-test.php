@@ -29,7 +29,7 @@ function wp_unslash($value) { return $value; }
 function wp_verify_nonce($value, $action) { return $GLOBALS['nonce_valid'] && $value === 'test-nonce' && $action === 'tlit_cb_export'; }
 function wp_die($message, $title = '', $args = array()) { throw new TestWPDie($message, (int) ($args['response'] ?? 0)); }
 function esc_html($value) { return htmlspecialchars($value, ENT_QUOTES, 'UTF-8'); }
-function wp_date($format, $timestamp) { return (new DateTimeImmutable('@' . $timestamp))->setTimezone(new DateTimeZone('Asia/Kolkata'))->format($format); }
+function wp_date($format, $timestamp, $timezone = null) { return (new DateTimeImmutable('@' . $timestamp))->setTimezone($timezone ?? new DateTimeZone('UTC'))->format($format); }
 class TestWPDie extends RuntimeException {}
 
 final class TLIT_CB_Store

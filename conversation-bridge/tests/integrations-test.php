@@ -165,24 +165,12 @@ check(count($http_calls) === $http_before, 'corrupt secret does not send without
 $options['tlit_cb_connections']['webhook_secret'] = $sealed;
 $remote_response = array('response' => array('code' => 403), 'body' => 'secret-response-that-must-not-be-saved');
 check(TLIT_CB_Integrations::send_webhook($payload, 'delivery-key')['success'] === false, 'HTTP failure stays failure');
-$result = TLIT_CB_Integrations::send_telecrm($payload, 'delivery-key');
-check($result['success'] === true && count($crm_calls) === 1, 'existing TeleCRM field mapper called');
-list($fields, $note) = $crm_calls[0];
-foreach (array('name','phone','email','Course Name','Lead date','lead_date','leaddate','date','Your preferred time to call','City Name','State Name','Lead Source','Mode of Training','Exp Level','Remarks','gclid','gbraid','wbraid','fbclid','fbp','fbc','gaclientid','sessionid','landingpage','referrer','utmsource','utmmedium','utmcampaign','utmadgroup','utmterm','utmcontent','Facebook Campaign','Facebook Ad','Facebook Ad set Name','Facebook Ad set ID','Facebook Lead ID') as $field) {
-    check(array_key_exists($field, $fields), 'TeleCRM contract field ' . $field);
-}
-check($fields['phone'] === '+919876543210' && $fields['Lead Source'] === 'Google Ads', 'phone normalized and attribution retained');
-check($fields['sessionid'] === 'analytics-session' && $fields['gaclientid'] === 'ga-client', 'analytics aliases retained');
-check($fields['Facebook Ad set ID'] === 'fb-adset-id' && $fields['Facebook Lead ID'] === 'fb-lead-id', 'Facebook fields retained');
-check(strpos($note, 'Not verified') !== false && strpos($note, 'delivery-key') !== false && strpos($note, 'downloaded brochure') !== false, 'CRM note includes verification, reference, brochure');
-foreach (array('Course Enrollment date', 'Course 2 Enrollment Date', 'Fee', 'Payment') as $field) { check(!isset($fields[$field]), 'counselor field not auto-filled: ' . $field); }
-$wrong_course = $payload; $wrong_course['course'] = 'unrelated';
-check(TLIT_CB_Integrations::send_telecrm($wrong_course, 'delivery-key')['success'] === false, 'TeleCRM mapper rejects other courses');
-$international=$payload;$international['phone']='+447712345678';
-check(TLIT_CB_Integrations::send_telecrm($international,'international-delivery')['success']===true, 'International Bridge contact can use the existing TeleCRM mapper');
-check(end($crm_calls)[0]['phone']==='+447712345678', 'International CRM number keeps its actual country code');
-$international['phone']='+99912345678';$before_invalid=count($crm_calls);
-check(TLIT_CB_Integrations::send_telecrm($international,'invalid-international')['success']===false&&count($crm_calls)===$before_invalid, 'Unknown international code never reaches CRM');
+check(!isset(TLIT_CB_Integrations::connections()['telecrm']), 'legacy enabled setting does not expose a manual TeleCRM bypass');
+check(!is_callable(array('TLIT_CB_Integrations','send_telecrm')), 'legacy direct TeleCRM adapter removed');
+check(is_wp_error(TLIT_CB_Integrations::queue(7, 'telecrm')), 'manual TeleCRM queue is rejected even if old option was enabled');
+$wpdb->job = array('id'=>11,'conversation_id'=>7,'connector'=>'telecrm','state'=>'pending','payload'=>wp_json_encode($payload),'idempotency_key'=>'old-job');
+TLIT_CB_Integrations::deliver(11);
+check($wpdb->job['state']==='failed' && count($crm_calls)===0, 'legacy pending TeleCRM job cannot bypass qualification');
 $wpdb->job = array('id' => 11, 'conversation_id' => 7, 'connector' => 'webhook', 'state' => 'pending', 'payload' => wp_json_encode($payload), 'idempotency_key' => 'delivery-key');
 TLIT_CB_Integrations::deliver(11);
 check($wpdb->job['state'] === 'failed' && strpos(wp_json_encode($wpdb->updates), 'secret-response') === false, 'delivery history retains generic error only');

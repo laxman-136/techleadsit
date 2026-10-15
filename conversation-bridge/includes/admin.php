@@ -102,7 +102,7 @@ class TLIT_CB_Admin {
             return '—';
         }
         $timestamp = strtotime($utc . ' UTC');
-        return $timestamp === false ? '—' : wp_date($format, $timestamp, wp_timezone());
+        return $timestamp === false ? '—' : wp_date($format, $timestamp, new DateTimeZone('Asia/Kolkata'));
     }
 
     private static function badge($status) {
@@ -159,19 +159,16 @@ class TLIT_CB_Admin {
         if (class_exists('TLIT_LP_Leads')) { echo '<a href="'.esc_url(admin_url('admin.php?page=tlit-landing-leads')).'"><span class="dashicons dashicons-forms" aria-hidden="true"></span> Landing page leads</a>'; }
         echo '<a class="' . ($view === 'integrations' ? 'is-active' : '') . '" href="' . esc_url(self::url(array('view' => 'integrations'))) . '"' . ($view === 'integrations' ? ' aria-current="page"' : '') . '><span class="dashicons dashicons-admin-links" aria-hidden="true"></span> Integrations</a></nav>';
         if ($view === 'integrations') {
-            if (class_exists('TLIT_LP_Leads')) { echo '<p>For form enquiries and counsellor qualification, <a href="'.esc_url(admin_url('admin.php?page=tlit-landing-leads&view=integrations')).'">configure Landing page leads → TeleCRM</a>. The connections below apply to chat conversations.</p>'; }
-            if (function_exists('tlit_cb_render_integrations')) {
-                tlit_cb_render_integrations();
-            } else {
-                echo '<div class="tlit-cb-empty"><h2>Integrations are unavailable</h2><p>The integration settings could not be loaded. Check that all plugin files are installed.</p></div>';
-            }
+            // Reserved for the owner's next integration design. Leave the tab empty.
+            echo '</div>';
+            return;
         } elseif ($id) {
             self::detail($id, $filters);
         } else {
             if (class_exists('TLIT_CB_Goal_Admin')) { TLIT_CB_Goal_Admin::render(); }
             self::inbox($filters);
         }
-        echo '<footer class="tlit-cb-footer"><span>Conversation Bridge</span><span>Dates shown in ' . esc_html(wp_timezone()->getName()) . ' · Administrator access</span></footer></div>';
+        echo '<footer class="tlit-cb-footer"><span>Conversation Bridge</span><span>Dates shown in IST (Asia/Kolkata) · Administrator access</span></footer></div>';
     }
 
     private static function inbox($filters) {
@@ -222,7 +219,7 @@ class TLIT_CB_Admin {
     }
 
     private static function filter_form($filters, $per_page) {
-        $today = new DateTimeImmutable('today', wp_timezone());
+        $today = new DateTimeImmutable('today', new DateTimeZone('Asia/Kolkata'));
         echo '<section class="tlit-cb-filters" aria-labelledby="tlit-cb-filter-heading"><div class="tlit-cb-filter-heading"><h2 id="tlit-cb-filter-heading"><span class="dashicons dashicons-filter" aria-hidden="true"></span> Filter conversations</h2><div class="tlit-cb-date-shortcuts" aria-label="Quick date ranges">';
         foreach (array(0 => 'Today', 6 => 'Last 7 days', 29 => 'Last 30 days') as $days => $label) {
             $range = array('date_from' => $today->modify('-' . $days . ' days')->format('Y-m-d'), 'date_to' => $today->format('Y-m-d'));
@@ -239,7 +236,7 @@ class TLIT_CB_Admin {
         echo '<label class="tlit-cb-field"><span>From date</span><input type="date" name="date_from" value="' . esc_attr($filters['date_from'] ?? '') . '"></label><label class="tlit-cb-field"><span>Through date</span><input type="date" name="date_to" value="' . esc_attr($filters['date_to'] ?? '') . '"></label>';
         self::select_field('has_phone', 'Mobile number', array('yes' => 'Captured', 'no' => 'Not captured'), $filters, 'Any');
         self::select_field('has_brochure', 'Brochure', array('yes' => 'Requested', 'no' => 'Not requested'), $filters, 'Any');
-        echo '</div><div class="tlit-cb-filter-bottom"><p>Dates include the full day in ' . esc_html(wp_timezone()->getName()) . '.</p><div><a href="' . esc_url(self::url(array('per_page' => $per_page))) . '" class="tlit-cb-reset">Reset filters</a><button class="button button-primary tlit-cb-button" type="submit">Apply filters</button></div></div></form></section>';
+        echo '</div><div class="tlit-cb-filter-bottom"><p>Dates include the full day in ' . 'IST (Asia/Kolkata)' . '.</p><div><a href="' . esc_url(self::url(array('per_page' => $per_page))) . '" class="tlit-cb-reset">Reset filters</a><button class="button button-primary tlit-cb-button" type="submit">Apply filters</button></div></div></form></section>';
     }
 
     private static function distinct_options($column, $filters) {
@@ -362,6 +359,7 @@ class TLIT_CB_Admin {
         }
         echo '</section>';
         self::attribution($row);
+        if (class_exists('TLIT_CB_Qualification')) { TLIT_CB_Qualification::panel($row); }
         echo '<section class="tlit-cb-side-panel"><h3>Review status</h3><form method="post" action="' . esc_url(admin_url('admin-post.php')) . '">';
         self::hidden('action', 'tlit_cb_status');
         self::hidden('id', $id);
@@ -370,7 +368,7 @@ class TLIT_CB_Admin {
         self::hidden_filters($filters);
         wp_nonce_field('tlit_cb_status');
         self::select_field('status', 'Conversation status', self::statuses(), array('status' => self::value($row, 'status', 'new')), 'Choose status');
-        echo '<button class="button tlit-cb-button tlit-cb-status-save" type="submit">Save status</button><p class="tlit-cb-help">For your team’s records. Changing status does not send this conversation to a CRM.</p></form></section>';
+        echo '<button class="button tlit-cb-button tlit-cb-status-save" type="submit">Save review status</button><p class="tlit-cb-help">Review progress is separate from lead qualification above and does not change TeleCRM.</p></form></section>';
         do_action('tlit_cb_conversation_actions', $row);
         echo '</aside></div>';
     }
