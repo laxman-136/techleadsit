@@ -205,8 +205,15 @@ final class TLIT_CB_Integrations {
     }
     public static function send_telecrm($payload,$key) {
         if (($payload['course']??'')!=='digital_marketing' || !function_exists('tlit_dm_crm') || !function_exists('tlit_dm_lead_fields')) { return array('success'=>false); }
-        $phone=preg_replace('/\D/','',$payload['phone']??''); if (strlen($phone)===12 && substr($phone,0,2)==='91') { $phone=substr($phone,2); }
-        if (!preg_match('/^[6-9][0-9]{9}$/D',$phone)) { return array('success'=>false); }
+        $raw_phone=$payload['phone']??'';
+        if (function_exists('tlit_dm_chat_phone_international')) {
+            $phone=is_string($raw_phone)&&substr(trim($raw_phone),0,1)==='+'?tlit_dm_chat_phone_international($raw_phone):tlit_dm_chat_phone($raw_phone,'IN');
+            if ($phone==='') { return array('success'=>false); }
+        } else {
+            // Compatibility with an older Landing Pages mapper: keep its Indian contract.
+            $phone=preg_replace('/\D/','',is_string($raw_phone)?$raw_phone:''); if (strlen($phone)===12 && substr($phone,0,2)==='91') { $phone=substr($phone,2); }
+            if (!preg_match('/^[6-9][0-9]{9}$/D',$phone)) { return array('success'=>false); }
+        }
         $note='Conversation Bridge | #'.(int)$payload['conversation_id']."\nGoal: ".$payload['goal']."\nPreferred language: ".$payload['language']."\nPhone verification: Not verified by chat capture.\nReference: ".$key;
         if (!empty($payload['brochure_requested'])) { $note.="\nPerson downloaded brochure — AI Powered Digital Marketing"; }
         if (!empty($payload['messages'])) { foreach ($payload['messages'] as $m) { $note.="\n".$m['role'].': '.$m['content']; } }

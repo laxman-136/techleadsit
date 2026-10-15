@@ -115,6 +115,37 @@ class TLIT_CB_Admin {
         return ucwords(str_replace(array('_', '-'), ' ', $key));
     }
 
+    /** Read analysis without writing from an admin GET or fetching transcripts per inbox row. */
+    private static function goal_analysis($row, $messages = null) {
+        $analysis = json_decode(self::value($row, 'goal_analysis_json'), true);
+        if (is_array($analysis) && !empty($analysis['summary']) && is_string($analysis['summary'])) {
+            return $analysis;
+        }
+        $goal = self::value($row, 'goal');
+        if ($messages !== null && self::value($row, 'course') === 'digital_marketing' && class_exists('TLIT_CB_Goals')) {
+            return TLIT_CB_Goals::analyze($messages, TLIT_CB_Goals::is_fallback($goal) ? '' : $goal);
+        }
+        return array('summary' => $goal, 'status' => $goal !== '' ? (stripos($goal, 'Likely') === 0 ? 'inferred' : 'stated') : (self::value($row, 'course') === 'digital_marketing' ? 'pending' : 'unrecorded'));
+    }
+
+    private static function goal_label($status) {
+        return array('stated' => 'Stated in chat', 'inferred' => 'Inferred from chat', 'interest' => 'Course interest', 'insufficient' => 'More context needed', 'pending' => 'Analysis pending', 'unrecorded' => 'Not recorded')[$status] ?? 'Conversation analysis';
+    }
+
+    private static function goal_detail($row, $messages, $messages_error) {
+        $analysis = self::goal_analysis($row, $messages_error ? null : $messages);
+        $summary = self::value($analysis, 'summary');
+        $status = self::value($analysis, 'status', 'pending');
+        echo '<div class="tlit-cb-goal-detail"><dt>Learning goal</dt><dd>';
+        echo '<span class="tlit-cb-goal-label">' . esc_html(self::goal_label($status)) . '</span>';
+        echo '<span class="tlit-cb-goal-summary">' . esc_html($summary ?: ($status === 'unrecorded' ? 'No learning goal recorded.' : ($messages_error ? 'Waiting for the transcript to load.' : 'Saved conversations are being analysed in the background.'))) . '</span>';
+        $evidence = self::value($analysis, 'evidence');
+        if ($evidence !== '') {
+            echo '<span class="tlit-cb-goal-evidence">Based on: “' . esc_html($evidence) . '”</span>';
+        }
+        echo '</dd></div>';
+    }
+
     public static function render() {
         if (!current_user_can('manage_options')) {
             wp_die(esc_html__('You do not have permission to view conversations.', 'tlit-conversation-bridge'), '', array('response' => 403));
@@ -124,8 +155,11 @@ class TLIT_CB_Admin {
         $id = self::integer($_GET['conversation'] ?? 0);
         echo '<div class="wrap tlit-cb">';
         echo '<header class="tlit-cb-header"><div><p class="tlit-cb-eyebrow">TECHLEADS IT <span aria-hidden="true">/</span> CHATBOT WORKSPACE</p><h1>Conversation Bridge</h1><p class="tlit-cb-intro">Every conversation, ready for your next step.</p></div><span class="tlit-cb-admin-label"><span class="dashicons dashicons-lock" aria-hidden="true"></span> Admin workspace</span></header>';
-        echo '<nav class="tlit-cb-tabs" aria-label="Conversation Bridge sections"><a class="' . ($view !== 'integrations' ? 'is-active' : '') . '" href="' . esc_url(self::url()) . '"' . ($view !== 'integrations' ? ' aria-current="page"' : '') . '><span class="dashicons dashicons-format-chat" aria-hidden="true"></span> Conversations</a><a class="' . ($view === 'integrations' ? 'is-active' : '') . '" href="' . esc_url(self::url(array('view' => 'integrations'))) . '"' . ($view === 'integrations' ? ' aria-current="page"' : '') . '><span class="dashicons dashicons-admin-links" aria-hidden="true"></span> Integrations</a></nav>';
+        echo '<nav class="tlit-cb-tabs" aria-label="Conversation Bridge sections"><a class="' . ($view !== 'integrations' ? 'is-active' : '') . '" href="' . esc_url(self::url()) . '"' . ($view !== 'integrations' ? ' aria-current="page"' : '') . '><span class="dashicons dashicons-format-chat" aria-hidden="true"></span> Conversations</a>';
+        if (class_exists('TLIT_LP_Leads')) { echo '<a href="'.esc_url(admin_url('admin.php?page=tlit-landing-leads')).'"><span class="dashicons dashicons-forms" aria-hidden="true"></span> Landing page leads</a>'; }
+        echo '<a class="' . ($view === 'integrations' ? 'is-active' : '') . '" href="' . esc_url(self::url(array('view' => 'integrations'))) . '"' . ($view === 'integrations' ? ' aria-current="page"' : '') . '><span class="dashicons dashicons-admin-links" aria-hidden="true"></span> Integrations</a></nav>';
         if ($view === 'integrations') {
+            if (class_exists('TLIT_LP_Leads')) { echo '<p>For form enquiries and counsellor qualification, <a href="'.esc_url(admin_url('admin.php?page=tlit-landing-leads&view=integrations')).'">configure Landing page leads → TeleCRM</a>. The connections below apply to chat conversations.</p>'; }
             if (function_exists('tlit_cb_render_integrations')) {
                 tlit_cb_render_integrations();
             } else {
@@ -134,6 +168,7 @@ class TLIT_CB_Admin {
         } elseif ($id) {
             self::detail($id, $filters);
         } else {
+            if (class_exists('TLIT_CB_Goal_Admin')) { TLIT_CB_Goal_Admin::render(); }
             self::inbox($filters);
         }
         echo '<footer class="tlit-cb-footer"><span>Conversation Bridge</span><span>Dates shown in ' . esc_html(wp_timezone()->getName()) . ' · Administrator access</span></footer></div>';
@@ -169,7 +204,7 @@ class TLIT_CB_Admin {
         self::export_fields('selected', $filters);
         echo '<div class="tlit-cb-table-toolbar"><div class="tlit-cb-selection-summary" aria-live="polite"><span data-tlit-selection-count>0</span> selected <span class="tlit-cb-muted">on this page</span></div><button type="submit" class="button tlit-cb-button tlit-cb-button-small" data-tlit-download-selected><span class="dashicons dashicons-download" aria-hidden="true"></span> Download selected ZIP</button></div>';
         if ($rows) {
-            echo '<div class="tlit-cb-table-scroll"><table class="tlit-cb-table"><caption class="screen-reader-text">Captured chatbot conversations. Select records to download Word documents in a ZIP.</caption><thead><tr><td class="tlit-cb-check"><input type="checkbox" data-tlit-select-all aria-label="Select all conversations on this page"></td><th scope="col">Visitor</th><th scope="col">Course &amp; language</th><th scope="col">Progress</th><th scope="col">Status</th><th scope="col">Created</th><th scope="col"><span class="screen-reader-text">Open conversation</span></th></tr></thead><tbody>';
+            echo '<div class="tlit-cb-table-scroll"><table class="tlit-cb-table"><caption class="screen-reader-text">Captured chatbot conversations. Select records to download Word documents in a ZIP.</caption><thead><tr><td class="tlit-cb-check"><input type="checkbox" data-tlit-select-all aria-label="Select all conversations on this page"></td><th scope="col">Visitor</th><th scope="col">Course &amp; language</th><th scope="col">Learning goal</th><th scope="col">Progress</th><th scope="col">Status</th><th scope="col">Created</th><th scope="col"><span class="screen-reader-text">Open conversation</span></th></tr></thead><tbody>';
             foreach ($rows as $row) {
                 self::table_row($row, $filters, $page, $per_page);
             }
@@ -240,7 +275,8 @@ class TLIT_CB_Admin {
         if ($email) {
             echo '<span class="tlit-cb-person-email">' . esc_html($email) . '</span>';
         }
-        echo '</div></div></td><td><span class="tlit-cb-course">' . esc_html(self::label(self::value($row, 'course', 'Unspecified'))) . '</span><span class="tlit-cb-cell-secondary">' . esc_html(self::label(self::value($row, 'language') ?: 'Not specified')) . '</span></td><td><span class="tlit-cb-stage">' . esc_html(self::label(self::value($row, 'stage') ?: 'Started')) . '</span><span class="tlit-cb-cell-secondary">' . esc_html(number_format_i18n((int) ($row['answer_count'] ?? 0))) . ' answers' . (!empty($row['has_brochure']) ? ' <span class="tlit-cb-brochure" title="Brochure requested"><span class="dashicons dashicons-media-document" aria-hidden="true"></span><span class="screen-reader-text">Brochure requested</span></span>' : '') . '</span></td><td>' . self::badge(self::value($row, 'status', 'new')) . '</td><td class="tlit-cb-date-cell"><span>' . esc_html(self::day(self::value($row, 'created_at'))) . '</span><span class="tlit-cb-cell-secondary">' . esc_html(self::day(self::value($row, 'created_at'), 'g:i a')) . '</span></td><td><a class="tlit-cb-open" href="' . esc_url($url) . '" aria-label="' . esc_attr('Open conversation with ' . $name) . '"><span class="dashicons dashicons-arrow-right-alt2" aria-hidden="true"></span></a></td></tr>';
+        $analysis = self::goal_analysis($row);
+        echo '</div></div></td><td><span class="tlit-cb-course">' . esc_html(self::label(self::value($row, 'course', 'Unspecified'))) . '</span><span class="tlit-cb-cell-secondary">' . esc_html(self::label(self::value($row, 'language') ?: 'Not specified')) . '</span></td><td class="tlit-cb-goal-cell"><span class="tlit-cb-goal-label">' . esc_html(self::goal_label(self::value($analysis, 'status'))) . '</span><span class="tlit-cb-goal-summary">' . esc_html(self::value($analysis, 'summary') ?: (self::value($analysis, 'status') === 'unrecorded' ? '—' : 'Waiting for analysis')) . '</span></td><td><span class="tlit-cb-stage">' . esc_html(self::label(self::value($row, 'stage') ?: 'Started')) . '</span><span class="tlit-cb-cell-secondary">' . esc_html(number_format_i18n((int) ($row['answer_count'] ?? 0))) . ' answers' . (!empty($row['has_brochure']) ? ' <span class="tlit-cb-brochure" title="Brochure requested"><span class="dashicons dashicons-media-document" aria-hidden="true"></span><span class="screen-reader-text">Brochure requested</span></span>' : '') . '</span></td><td>' . self::badge(self::value($row, 'status', 'new')) . '</td><td class="tlit-cb-date-cell"><span>' . esc_html(self::day(self::value($row, 'created_at'))) . '</span><span class="tlit-cb-cell-secondary">' . esc_html(self::day(self::value($row, 'created_at'), 'g:i a')) . '</span></td><td><a class="tlit-cb-open" href="' . esc_url($url) . '" aria-label="' . esc_attr('Open conversation with ' . $name) . '"><span class="dashicons dashicons-arrow-right-alt2" aria-hidden="true"></span></a></td></tr>';
     }
 
     private static function pagination($filters, $page, $per_page, $total) {
@@ -307,13 +343,14 @@ class TLIT_CB_Admin {
             echo '</div></article>';
         }
         echo '</div></section><aside class="tlit-cb-sidebar" aria-label="Visitor details and actions"><section class="tlit-cb-side-panel"><h3>Visitor details</h3><dl class="tlit-cb-details">';
-        foreach (array('name' => 'Name', 'phone' => 'Mobile number', 'email' => 'Email', 'course' => 'Course', 'language' => 'Language', 'goal' => 'Learning goal') as $key => $label) {
+        foreach (array('name' => 'Name', 'phone' => 'Mobile number', 'email' => 'Email', 'course' => 'Course', 'language' => 'Language') as $key => $label) {
             $value = self::value($row, $key);
             if (in_array($key, array('course', 'language'), true)) {
                 $value = self::label($value);
             }
             echo '<div><dt>' . esc_html($label) . '</dt><dd' . (!$value ? ' class="tlit-cb-muted"' : '') . '>' . esc_html($value ?: 'Not provided') . '</dd></div>';
         }
+        self::goal_detail($row, $messages, $messages_error);
         echo '</dl></section><section class="tlit-cb-side-panel"><h3>Conversation progress</h3><dl class="tlit-cb-details tlit-cb-details-compact">';
         foreach (array('Stage' => self::label(self::value($row, 'stage') ?: 'Started'), 'Answers' => number_format_i18n((int) ($row['answer_count'] ?? 0)), 'Brochure' => !empty($row['has_brochure']) ? 'Requested' : 'Not requested', 'Last activity' => self::day(self::value($row, 'updated_at'), 'M j, Y · g:i a')) as $label => $value) {
             echo '<div><dt>' . esc_html($label) . '</dt><dd>' . esc_html($value) . '</dd></div>';

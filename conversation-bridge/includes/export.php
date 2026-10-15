@@ -513,6 +513,17 @@ final class TLIT_CB_Export
         foreach ($labels as $key => $label) {
             $details[$label] = self::field($row, $key) !== '' ? self::field($row, $key) : 'Not recorded';
         }
+        $analysis = json_decode(self::field($row, 'goal_analysis_json'), true);
+        if (is_array($analysis)) {
+            $status = self::field($analysis, 'status');
+            $statuses = array('stated' => 'Stated in chat', 'inferred' => 'Inferred from chat', 'interest' => 'Course interest', 'insufficient' => 'More context needed');
+            if (isset($statuses[$status])) {
+                $details['Goal analysis'] = $statuses[$status];
+            }
+            if (self::field($analysis, 'evidence') !== '') {
+                $details['Goal evidence'] = self::field($analysis, 'evidence');
+            }
+        }
         $details['Source page'] = self::source_page(self::field($row, 'source_url')) ?: 'Not recorded';
         $details['Brochure requested'] = self::field($row, 'has_brochure') ? 'Yes' : 'No';
         $details['Answers provided'] = (string) (int) self::field($row, 'answer_count');

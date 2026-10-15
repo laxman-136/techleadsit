@@ -20,7 +20,7 @@ const brochureDownload=document.querySelector('#thank-you-brochure');
 const downloadNotice=document.createElement('p');downloadNotice.setAttribute('role','status');downloadNotice.textContent='Your brochure download will start automatically. If it does not, use the Download course brochure button.';brochureDownload.parentElement.after(downloadNotice);
 window.addEventListener('load',()=>{brochureDownload.click();},{once:true});
 document.querySelector('#thank-you-brochure').addEventListener('click',()=>{
-  // Download stays direct; reuse existing verification only to record the CRM remark.
-  try {const proof=JSON.parse(sessionStorage.getItem('tlit_verified_enquiry')||'null');if(proof)fetch('/wp-json/tlit-dm/v1/brochure',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify(proof),keepalive:true}).catch(()=>{});}catch{}
+  // Record that this download was started; the direct file link remains available.
+  try {const bridge=JSON.parse(sessionStorage.getItem('tlit_landing_download')||'null');if(bridge){fetch('/wp-json/tlit-leads/v1/download',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify(bridge),keepalive:true}).catch(()=>{});return;}const proof=JSON.parse(sessionStorage.getItem('tlit_verified_enquiry')||'null');if(proof)fetch('/wp-json/tlit-dm/v1/brochure',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify(proof),keepalive:true}).catch(()=>{});}catch{}
 });
 </script></body></html>

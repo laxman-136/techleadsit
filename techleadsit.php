@@ -2,7 +2,7 @@
 /**
  * Plugin Name: TechLeadsIT Landing Pages
  * Description: Serves high-performance custom HTML landing pages at clean URLs and handles secure lead routing to TeleCRM.
- * Version: 1.0.0
+ * Version: 1.1.0
  * Author: TechLeadsIT
  */
 
@@ -85,6 +85,8 @@ function techleadsit_route_landing_pages() {
         'ai-powered-digital-marketing' => 'ai-digital-marketing-freshers/index.html',
         'ai-powered-digital-marketing-course' => 'ai-powered-digital-marketing-course/index.html',
         'ai-powered-digital-marketing-course/thank-you' => 'ai-powered-digital-marketing-course/thank-you.html',
+        'ai-powered-digital-marketing-training' => 'ai-powered-digital-marketing-training/index.html',
+        'ai-powered-digital-marketing-training/thank-you' => 'ai-powered-digital-marketing-training/thank-you.html',
         'scm-demo' => 'scm-demo/index.html',
         'scm-demo-v2' => 'scm-demo-v2/index.html',
         'rise-v1' => 'rise-v1/index.html',
@@ -118,8 +120,10 @@ function techleadsit_route_landing_pages() {
             
             if (file_exists($html_filepath)) {
                 $html_content = file_get_contents($html_filepath);
-                if (in_array($slug,array('ai-powered-digital-marketing-course','ai-powered-digital-marketing-course/thank-you'),true)) {
-                    $page=tlit_dm_v2_render($html_content,plugin_dir_url(__FILE__).'ai-powered-digital-marketing-course/',techleadsit_get_course_options('digital_marketing'));
+                if (in_array($slug,array('ai-powered-digital-marketing-course','ai-powered-digital-marketing-course/thank-you','ai-powered-digital-marketing-training','ai-powered-digital-marketing-training/thank-you'),true)) {
+                    $variant=str_starts_with($slug,'ai-powered-digital-marketing-training')?'v3':'v2';
+                    $page_slug=$variant==='v3'?'ai-powered-digital-marketing-training':'ai-powered-digital-marketing-course';
+                    $page=tlit_dm_v2_render($html_content,plugin_dir_url(__FILE__).$page_slug.'/',techleadsit_get_course_options('digital_marketing'),$variant,$page_slug);
                     status_header(200);nocache_headers();header('Content-Type: text/html; charset=utf-8');header('X-Robots-Tag: noindex, nofollow');
                     if (($_SERVER['REQUEST_METHOD']??'GET')!=='HEAD') echo $page;
                     exit;
@@ -1572,7 +1576,7 @@ function techleadsit_get_courses_registry() {
         'digital_marketing' => array(
             'id'=>'digital_marketing','name'=>'AI Powered+ Digital Marketing','icon'=>'dashicons-megaphone','badge_color'=>'#176c4d',
             'default_template'=>'ai-digital-marketing-freshers/index.html',
-            'slugs'=>array('ai-powered-digital-marketing'=>'ai-digital-marketing-freshers/index.html','ai-powered-digital-marketing-course'=>'ai-powered-digital-marketing-course/index.html'),
+            'slugs'=>array('ai-powered-digital-marketing'=>'ai-digital-marketing-freshers/index.html','ai-powered-digital-marketing-course'=>'ai-powered-digital-marketing-course/index.html','ai-powered-digital-marketing-training'=>'ai-powered-digital-marketing-training/index.html'),
             'defaults'=>array('countdown_enabled'=>1,'countdown_text'=>'Next batch: 30 November 2026','countdown_target_datetime'=>'2026-11-30T20:00','countdown_seats_count'=>'67','batch_section_enabled'=>1,'batch_title'=>'Classes that fit into a real week.','batch_subtitle'=>'Live online, taught in English','batch_start_date'=>'30 November 2026','batch_timing'=>'Monday–Friday, 8–9 PM IST','batch_pills'=>'English, recordings for 6 months','batch_seats_left'=>'67','base_visitor_floor'=>'0','otp_verification_enabled'=>1,'otp_required_hero'=>1,'otp_required_modal'=>1,'otp_required_gate'=>1,'otp_disabled_slugs'=>array(),'dm_live_enabled'=>1,'dm_chat_enabled'=>1,'dm_chat_otp_required'=>0,'dm_gtm_enabled'=>1,'dm_geo_enabled'=>1,'dm_clarity_enabled'=>0,'dm_seats_enabled'=>1)
         ),
         'hcm' => array(
@@ -1876,8 +1880,8 @@ function techleadsit_render_multi_course_settings_page() {
             <?php settings_fields('techleadsit_course_group_' . $active_tab); ?>
             <?php if($active_tab==='digital_marketing'): ?>
             <fieldset style="background:white;padding:20px;margin:20px 0;border:1px solid #ccd8ce"><legend><strong>Digital Marketing integration</strong></legend>
-            <p>Connected URL: <a href="<?php echo esc_url(home_url('/ai-powered-digital-marketing/')); ?>">AI Powered Digital Marketing</a> · <a href="<?php echo esc_url(home_url('/ai-powered-digital-marketing-course/')); ?>">AI Powered Digital Marketing Course (V2)</a>. Banner visibility/date/seats and schedule controls are below. Zero seats means full.</p>
-            <?php foreach(array('dm_chat_enabled'=>'Show course chatbot','dm_chat_otp_required'=>'Require SMS OTP for chatbot brochure leads (turning off accepts unverified phone numbers)','dm_live_enabled'=>'Enable live enquiries (requires SMS OTP and TeleCRM)','dm_seats_enabled'=>'Show seats remaining','dm_gtm_enabled'=>'Load existing GTM4WP container','dm_geo_enabled'=>'Detect approximate city/state through existing ipapi provider when the demo opens','dm_clarity_enabled'=>'Load existing Clarity project (leave off if GTM already loads Clarity)') as $field=>$label): ?>
+            <p>Connected URL: <a href="<?php echo esc_url(home_url('/ai-powered-digital-marketing/')); ?>">AI Powered Digital Marketing</a> · <a href="<?php echo esc_url(home_url('/ai-powered-digital-marketing-course/')); ?>">AI Powered Digital Marketing Course (V2)</a> · <a href="<?php echo esc_url(home_url('/ai-powered-digital-marketing-training/')); ?>">AI Powered Digital Marketing Training (V3)</a>. Banner visibility/date/seats and schedule controls are below. Zero seats means full.</p>
+            <?php foreach(array('dm_chat_enabled'=>'Show course chatbot','dm_chat_otp_required'=>'Require SMS OTP for chatbot brochure leads (turning off accepts unverified phone numbers)','dm_live_enabled'=>'Enable live enquiries (requires SMS OTP and WordPress lead storage)','dm_seats_enabled'=>'Show seats remaining','dm_gtm_enabled'=>'Load existing GTM4WP container','dm_geo_enabled'=>'Detect approximate city/state through existing ipapi provider when the demo opens','dm_clarity_enabled'=>'Load existing Clarity project (leave off if GTM already loads Clarity)') as $field=>$label): ?>
             <p><label><input type="checkbox" name="techleadsit_course_settings_digital_marketing[<?php echo esc_attr($field); ?>]" value="1" <?php checked(1,(int)($opts[$field]??0)); ?>> <?php echo esc_html($label); ?></label></p>
             <?php endforeach; ?><p>Demo and brochure-popup enquiries require OTP. The chatbot has its own OTP switch; when off, its phone numbers are marked unverified. Counsellor enrolment/payment fields remain untouched.</p></fieldset>
             <?php tlit_dm_ai_course_key_field(); ?>

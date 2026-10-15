@@ -48,7 +48,7 @@ class TLIT_CB_Store {
     private static $read_failed = false;
     public static function fixtures() {
         return array(
-            array('id' => 1048, 'course' => 'AI Powered Digital Marketing', 'source_url' => 'https://example.com/ai-digital-marketing/', 'name' => 'Pranav Reddy', 'email' => 'pranav@example.com', 'phone' => '+91 90000 01048', 'language' => 'English', 'goal' => 'Build practical marketing skills and move into a growth role.', 'stage' => 'handoff', 'status' => 'new', 'has_brochure' => 1, 'answer_count' => 8, 'created_at' => '2026-10-13 05:14:00', 'updated_at' => '2026-10-13 05:21:00', 'tracking_json' => json_encode(array('utm_source' => 'google', 'utm_medium' => 'cpc', 'utm_campaign' => 'Digital Marketing | Career Growth', 'utm_content' => '<script>attributionUnsafe()</script>', 'gclid' => 'fixture-google-click-id', 'city' => 'Hyderabad', 'state' => 'Telangana', 'api_key' => 'fixture-credential-never-shown', 'session_hash' => 'fixture-private-session-never-shown'))),
+            array('id' => 1048, 'course' => 'AI Powered Digital Marketing', 'source_url' => 'https://example.com/ai-digital-marketing/', 'name' => 'Pranav Reddy', 'email' => 'pranav@example.com', 'phone' => '+91 90000 01048', 'language' => 'English', 'goal' => 'Likely: Move from sales into a digital marketing role.', 'goal_analysis_json' => json_encode(array('summary' => 'Likely: Move from sales into a digital marketing role.', 'status' => 'inferred', 'source' => 'model', 'evidence' => 'I work in sales right now. Can this help me move into digital marketing?', 'version' => 1)), 'stage' => 'handoff', 'status' => 'new', 'has_brochure' => 1, 'answer_count' => 8, 'created_at' => '2026-10-13 05:14:00', 'updated_at' => '2026-10-13 05:21:00', 'tracking_json' => json_encode(array('utm_source' => 'google', 'utm_medium' => 'cpc', 'utm_campaign' => 'Digital Marketing | Career Growth', 'utm_content' => '<script>attributionUnsafe()</script>', 'gclid' => 'fixture-google-click-id', 'city' => 'Hyderabad', 'state' => 'Telangana', 'api_key' => 'fixture-credential-never-shown', 'session_hash' => 'fixture-private-session-never-shown'))),
             array('id' => 1047, 'course' => 'Oracle Fusion SCM', 'name' => 'Nandini Rao', 'email' => 'nandini@example.com', 'phone' => '+91 90000 01047', 'language' => 'Telugu', 'stage' => 'course_details', 'status' => 'reviewed', 'has_brochure' => 1, 'answer_count' => 5, 'created_at' => '2026-10-13 04:48:00'),
             array('id' => 1046, 'course' => 'AI Powered Digital Marketing', 'name' => 'Arjun Mehta', 'email' => 'arjun@example.com', 'phone' => '+91 90000 01046', 'language' => 'Hindi', 'stage' => 'career_goal', 'status' => 'contacted', 'has_brochure' => 0, 'answer_count' => 6, 'created_at' => '2026-10-13 04:22:00'),
             array('id' => 1045, 'course' => 'Oracle Fusion HCM', 'name' => 'Sneha Nair', 'email' => 'sneha@example.com', 'phone' => '', 'language' => 'English', 'stage' => 'started', 'status' => 'new', 'has_brochure' => 0, 'answer_count' => 2, 'created_at' => '2026-10-13 03:53:00'),
@@ -67,8 +67,8 @@ class TLIT_CB_Store {
         self::$read_failed = self::$failure === 'transcript-error';
         if (self::$read_failed) return array();
         return array(
-            array('role' => 'assistant', 'content' => 'Hi Pranav! I can help you explore the AI Powered Digital Marketing course. What would you like to achieve?', 'type' => 'text', 'created_at' => '2026-10-13 05:14:00'),
-            array('role' => 'visitor', 'content' => 'I work in sales right now and want to move into digital marketing. Is this suitable for someone without experience?', 'type' => 'text', 'created_at' => '2026-10-13 05:15:00'),
+            array('role' => 'assistant', 'content' => 'Hi Pranav! I can help you explore the AI Powered Digital Marketing course. What would you like to know?', 'type' => 'text', 'created_at' => '2026-10-13 05:14:00'),
+            array('role' => 'visitor', 'content' => 'I work in sales right now. Can this help me move into digital marketing? Is this suitable for someone without experience?', 'type' => 'text', 'created_at' => '2026-10-13 05:15:00'),
             array('role' => 'assistant', 'content' => "Yes. The course starts with the fundamentals and moves into practical campaign work. You’ll learn SEO, paid advertising, analytics, and how to use AI tools in your workflow.\n\nWould you like the curriculum brochure?", 'type' => 'text', 'created_at' => '2026-10-13 05:15:00'),
             array('role' => 'visitor', 'content' => 'Yes, please share the brochure. I’d also like to understand the weekday batch timings.', 'type' => 'text', 'created_at' => '2026-10-13 05:17:00'),
             array('role' => 'system', 'content' => 'Visitor requested the course brochure.', 'type' => 'brochure_request', 'created_at' => '2026-10-13 05:17:00'),
@@ -78,6 +78,7 @@ class TLIT_CB_Store {
         );
     }
 }
+require dirname(__DIR__) . '/includes/goals.php';
 require dirname(__DIR__) . '/includes/admin.php';
 require dirname(__DIR__) . '/includes/integrations.php';
 $wpdb = new class {
@@ -112,6 +113,17 @@ if ($mode === '--test') {
     $assert(substr_count($html, 'data-tlit-select-row') === 8, 'Render every selectable fixture record.');
     $assert(strpos($html, 'name="scope" value="filtered"') !== false && strpos($html, 'name="scope" value="selected"') !== false, 'Provide both bulk export scopes.');
     $assert(substr_count($html, '<form ') === substr_count($html, '</form>'), 'Balance inbox forms.');
+    $assert(strpos($html, '<th scope="col">Learning goal</th>') !== false, 'Surface learning goals directly in the inbox.');
+    $goal_view = new ReflectionMethod('TLIT_CB_Admin', 'goal_detail');
+    $goal_view->setAccessible(true);
+    $goal_row = array('course' => 'digital_marketing', 'goal' => '', 'goal_analysis_json' => '');
+    ob_start(); $goal_view->invoke(null, $goal_row, array(array('role' => 'visitor', 'type' => 'question', 'content' => 'Will I get a job after this course?')), false); $goal_html = ob_get_clean();
+    $assert(strpos($goal_html, 'Inferred from chat') !== false && strpos($goal_html, 'finding a digital marketing job') !== false && strpos($goal_html, 'Based on:') !== false, 'A legacy blank detail shows evidence-backed analysis while background persistence is pending.');
+    ob_start(); $goal_view->invoke(null, $goal_row, array(), false); $goal_html = ob_get_clean();
+    $assert(strpos($goal_html, 'More context needed') !== false && strpos($goal_html, 'Not provided') === false, 'Intro-only sessions have an honest analysis status instead of a missing field.');
+    $goal_row['goal_analysis_json'] = json_encode(array('summary' => 'Likely: Grow their business', 'status' => 'inferred', 'evidence' => '<script>goalUnsafe()</script>'));
+    ob_start(); $goal_view->invoke(null, $goal_row, array(), false); $goal_html = ob_get_clean();
+    $assert(strpos($goal_html, '<script>goalUnsafe()</script>') === false && strpos($goal_html, '&lt;script&gt;goalUnsafe()&lt;/script&gt;') !== false, 'Escape persisted evidence rather than interpreting visitor text as HTML.');
     $html = fixture_render('detail');
     $assert(substr_count($html, '<article class="tlit-cb-message ') === 8, 'Render complete transcript.');
     $assert(strpos($html, 'name="scope" value="single"') !== false, 'Provide single document export.');

@@ -13,7 +13,7 @@ function tlit_dm_chat_settings(){
  $o=tlit_dm_options();$otp=!empty($o['dm_chat_otp_required']);
  $enabled=!isset($o['dm_chat_enabled'])||!empty($o['dm_chat_enabled']);
  $live=defined('TLIT_DM_ENABLED')?TLIT_DM_ENABLED:!empty($o['dm_live_enabled']);
- return array('enabled'=>$enabled,'otpRequired'=>$otp,'aiReady'=>tlit_dm_ai_ready(),'ready'=>$enabled&&$live&&tlit_dm_crm_url()!==''&&(!$otp||tlit_dm_ready()),'batch'=>$o['batch_start_date']??'30 November 2026','schedule'=>$o['batch_timing']??'Monday–Friday, 8–9 PM IST');
+ return array('enabled'=>$enabled,'otpRequired'=>$otp,'aiReady'=>tlit_dm_ai_ready(),'ready'=>$enabled&&$live&&tlit_dm_inbox_ready()&&(!$otp||tlit_dm_ready()),'batch'=>$o['batch_start_date']??'30 November 2026','schedule'=>$o['batch_timing']??'Monday–Friday, 8–9 PM IST');
 }
 function tlit_dm_chat_permission($request){
  $parts=wp_parse_url(home_url());$origin=$parts['scheme'].'://'.$parts['host'].(isset($parts['port'])?':'.$parts['port']:'');
@@ -29,7 +29,7 @@ function tlit_dm_chat_submit($request){
  // The server, not a browser flag, decides whether OTP can be skipped.
  if(tlit_dm_chat_settings()['otpRequired'])return tlit_dm_error('Phone verification is required. Request an OTP.',403);
  $p=tlit_dm_body($request);if(!$p||!empty($p['website']))return tlit_dm_error('Invalid request.');
- $phone=tlit_dm_phone($p['phone']??'');$name=is_string($p['name']??null)?sanitize_text_field($p['name']):'';$email=is_string($p['email']??null)?sanitize_email($p['email']):'';
+ $phone=tlit_dm_chat_phone($p['phone']??'',$p['country']??'IN');$name=is_string($p['name']??null)?sanitize_text_field($p['name']):'';$email=is_string($p['email']??null)?sanitize_email($p['email']):'';
  $pain=is_string($p['painPoint']??null)?substr(sanitize_text_field($p['painPoint']),0,600):'';
  $conversation=$p['conversation']??'';
  if(is_string($conversation)&&preg_match('/^[a-f0-9]{48}$/D',$conversation)){
@@ -38,15 +38,18 @@ function tlit_dm_chat_submit($request){
  }
  $id=$p['requestId']??'';if(!$phone||strlen($name)<2||strlen($name)>80||!is_email($email)||strlen($email)>254||!is_string($id)||!preg_match('/^[a-zA-Z0-9-]{20,64}$/D',$id))return tlit_dm_error('Check your name, email and mobile number.');
  if($pain==='')$pain='Not provided';
- $key='chat-submit-'.tlit_dm_hash($id.'|'.$phone);$lock=tlit_dm_lock($key);if(!$lock)return tlit_dm_error('Please wait before retrying.',409);
+ // Keep the existing Indian idempotency/rate keys across the international upgrade.
+ $phone_key=preg_match('/^\+91[6-9][0-9]{9}$/D',$phone)?substr($phone,3):$phone;
+ $key='chat-submit-'.tlit_dm_hash($id.'|'.$phone_key);$lock=tlit_dm_lock($key);if(!$lock)return tlit_dm_error('Please wait before retrying.',409);
  try{
   $done=get_transient($key);if($done)return new WP_REST_Response($done,200);
-  if(!tlit_dm_rate('chat-ip-'.($_SERVER['REMOTE_ADDR']??'unknown'),5,3600)||!tlit_dm_rate('chat-phone-'.$phone,3,3600))return tlit_dm_error('Too many requests. Please try later.',429);
-  $reference='DM-'.strtoupper(substr(tlit_dm_hash($id.'|'.$phone),0,10));
+  if(!tlit_dm_rate('chat-ip-'.($_SERVER['REMOTE_ADDR']??'unknown'),5,3600)||!tlit_dm_rate('chat-phone-'.$phone_key,3,3600))return tlit_dm_error('Too many requests. Please try later.',429);
+  $reference='DM-'.strtoupper(substr(tlit_dm_hash($id.'|'.$phone_key),0,10));
   $note="Person downloaded brochure — AI Powered Digital Marketing\nEnquiry channel: Course chatbot\nPain point / goal: ".$pain."\nPhone verification: Not performed (chatbot OTP disabled in WordPress)\nEmail marketing consent: No\nReference: ".$reference;
-  $fields=tlit_dm_lead_fields($p,$name,$phone,$email,$pain,$note);
-  if(!tlit_dm_crm($fields,$note))return tlit_dm_error('Your enquiry could not be confirmed. Please retry.',502);
+  $stored=tlit_dm_store_lead($p,$name,$phone,$email,$pain,'dm-chat-'.$id,'chatbot_brochure',false);
+  if(is_wp_error($stored))return tlit_dm_error('Your enquiry could not be saved. Please retry.',503);
+  $p['phone']=$phone;
   tlit_dm_archive_brochure($p,$reference);
-  $done=array('success'=>true,'receipt'=>$reference);set_transient($key,$done,1800);return new WP_REST_Response($done,200);
+  $done=array('success'=>true,'receipt'=>$reference,'bridgeReceipt'=>$stored['receipt'],'downloadToken'=>$stored['download_token']??'');set_transient($key,$done,1800);return new WP_REST_Response($done,200);
  }finally{delete_option($lock);}
 }

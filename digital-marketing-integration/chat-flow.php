@@ -1,5 +1,6 @@
 <?php
 if(!defined('ABSPATH'))exit;
+require_once __DIR__.'/chat-phone.php';
 // Contact capture is held only in the private conversation transient for 24 hours.
 // It is never forwarded to OpenRouter or TeleCRM by this flow.
 function tlit_dm_chat_seal($data){
@@ -28,19 +29,22 @@ function tlit_dm_chat_prompt($stage,$language){
 function tlit_dm_chat_flow_reply($state,$token,$language,$answer=''){
  $stage=tlit_dm_chat_stage($state);return array('success'=>true,'answer'=>$answer!==''?$answer:tlit_dm_chat_prompt($stage,$language),'conversation'=>$token,'stage'=>$stage,'remaining'=>!empty($state['contact_complete'])?max(0,10-max($state['followup_answers']??0,(int)get_option($state['lead_quota_key'],0))):max(0,tlit_dm_chat_initial_limit()-($state['answers']??0)));
 }
-function tlit_dm_chat_capture(&$state,$stage,$value){
+function tlit_dm_chat_capture(&$state,$stage,$value,$country='IN'){
  $contact=tlit_dm_chat_unseal($state['contact_sealed']??'');if(!is_array($contact))$contact=array();
  if($stage==='name'){
   $value=sanitize_text_field($value);if(strlen($value)<2||strlen($value)>240||preg_match('/^[0-9\s]+$/D',$value))return 'Please enter your name.';
  }elseif($stage==='phone'){
-  if(!preg_match('/^[+0-9 ()-]+$/D',$value))return 'Enter a valid 10-digit Indian mobile number.';
-  $value=preg_replace('/\D/','',$value);if(strlen($value)===12&&substr($value,0,2)==='91')$value=substr($value,2);
-  if(!preg_match('/^[6-9][0-9]{9}$/D',$value))return 'Enter a valid 10-digit Indian mobile number.';
+  $value=tlit_dm_chat_phone($value,$country);
+  if($value==='')return 'Choose your country code and enter a valid mobile number.';
  }elseif($stage==='email'){
   if(strlen($value)>254||!filter_var($value,FILTER_VALIDATE_EMAIL))return 'Enter a valid email address.';
  }else return 'Please continue the current chat step.';
  $contact[$stage]=$value;$sealed=tlit_dm_chat_seal($contact);if(!$sealed)return 'Could not save this chat step. Please try again.';
  unset($state['last'],$state['response'],$state['last_request_id']);$state['contact_sealed']=$sealed;$state['capture_stage']='question';
- if($stage==='phone'){$state['contact_complete']=true;$state['lead_quota_key']='tlit_dm_chat_quota_'.tlit_dm_hash($contact['phone']);$state['followup_answers']=(int)get_option($state['lead_quota_key'],0);}
+ if($stage==='phone'){
+  // Keep the historical Indian number key so adding a country selector cannot reset a lead's quota.
+  $quotaPhone=preg_match('/^\+91[6-9][0-9]{9}$/D',$contact['phone'])?substr($contact['phone'],3):$contact['phone'];
+  $state['contact_complete']=true;$state['lead_quota_key']='tlit_dm_chat_quota_'.tlit_dm_hash($quotaPhone);$state['followup_answers']=(int)get_option($state['lead_quota_key'],0);
+ }
  return '';
 }

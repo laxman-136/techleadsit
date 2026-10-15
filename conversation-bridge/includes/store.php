@@ -3,9 +3,10 @@
 if (!defined('ABSPATH')) {
     exit;
 }
+require_once __DIR__ . '/goals.php';
 
 final class TLIT_CB_Store {
-    const DB_VERSION = '2';
+    const DB_VERSION = '3';
     const VERSION_OPTION = 'tlit_cb_db_version';
     const PRIVACY_PAGE_SIZE = 20;
     private static $read_failed = false;
@@ -25,6 +26,7 @@ final class TLIT_CB_Store {
     public static function install() {
         global $wpdb;
         if (get_option(self::VERSION_OPTION) === self::DB_VERSION) {
+            if (class_exists('TLIT_CB_Goal_Backfill')) { TLIT_CB_Goal_Backfill::schedule(); }
             return true;
         }
         if (!function_exists('dbDelta')) {
@@ -46,6 +48,7 @@ final class TLIT_CB_Store {
                 phone varchar(32) NOT NULL DEFAULT '',
                 language varchar(32) NOT NULL DEFAULT '',
                 goal text NOT NULL,
+                goal_analysis_json longtext NOT NULL,
                 tracking_json longtext NOT NULL,
                 stage varchar(48) NOT NULL DEFAULT '',
                 status varchar(20) NOT NULL DEFAULT 'new',
@@ -85,11 +88,12 @@ final class TLIT_CB_Store {
             $conversation_columns = $wpdb->get_col("SHOW COLUMNS FROM $conversations", 0);
             $message_columns = $wpdb->get_col("SHOW COLUMNS FROM $messages", 0);
             $event_columns = $wpdb->get_col("SHOW COLUMNS FROM $events", 0);
-            $required = array('id', 'session_hash', 'course', 'source_url', 'name', 'email', 'phone', 'language', 'goal', 'tracking_json', 'stage', 'status', 'has_brochure', 'answer_count', 'created_at', 'updated_at');
+            $required = array('id', 'session_hash', 'course', 'source_url', 'name', 'email', 'phone', 'language', 'goal', 'goal_analysis_json', 'tracking_json', 'stage', 'status', 'has_brochure', 'answer_count', 'created_at', 'updated_at');
             if (array_diff($required, (array) $conversation_columns) || array_diff(array('id', 'conversation_id', 'event_key', 'role', 'content', 'type', 'created_at'), (array) $message_columns) || array_diff(array('event_key', 'conversation_id', 'created_at'), (array) $event_columns)) {
                 return self::error('schema');
             }
             update_option(self::VERSION_OPTION, self::DB_VERSION, false);
+            if (class_exists('TLIT_CB_Goal_Backfill')) { TLIT_CB_Goal_Backfill::schedule(); }
             return true;
         } finally {
             $wpdb->suppress_errors($previous);
@@ -233,8 +237,8 @@ final class TLIT_CB_Store {
                 return self::error('write');
             }
             $started = true;
-            $sql = "INSERT INTO $conversations (session_hash,course,source_url,name,email,phone,language,goal,tracking_json,stage,has_brochure,answer_count,created_at,updated_at)
-                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%d,%d,%s,%s)
+            $sql = "INSERT INTO $conversations (session_hash,course,source_url,name,email,phone,language,goal,tracking_json,stage,has_brochure,answer_count,created_at,updated_at,goal_analysis_json)
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%d,%d,%s,%s,'')
                 ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id),
                 source_url=IF(VALUES(source_url)<>'',VALUES(source_url),source_url),
                 name=IF(VALUES(name)<>'',VALUES(name),name),
@@ -301,6 +305,10 @@ final class TLIT_CB_Store {
                     return self::error('write');
                 }
             }
+            if ($course === 'digital_marketing') {
+                $goal_result = self::refresh_goal($id, $event);
+                if (is_wp_error($goal_result)) { return $goal_result; }
+            }
             if ($wpdb->query('COMMIT') === false) {
                 return self::error('write');
             }
@@ -310,6 +318,80 @@ final class TLIT_CB_Store {
             if ($started) {
                 $wpdb->query('ROLLBACK');
             }
+            $wpdb->suppress_errors($previous);
+        }
+    }
+
+    /** Caller already owns the conversation row lock. Do not change business timestamps. */
+    private static function refresh_goal($id, $event = array(), $row = null) {
+        global $wpdb;
+        $conversations = self::table('conversations');
+        if (!is_array($row)) {
+            $row = $wpdb->get_row($wpdb->prepare("SELECT id,course,goal,goal_analysis_json FROM $conversations WHERE id=%d", (int) $id), ARRAY_A);
+        }
+        if ($wpdb->last_error !== '' || !is_array($row)) { return self::error('goal_read'); }
+        if (($row['course'] ?? '') !== 'digital_marketing') { return true; }
+        $meta = json_decode((string) ($row['goal_analysis_json'] ?? ''), true);
+        $meta = is_array($meta) ? $meta : array();
+        $session = isset($event['session']) && is_string($event['session']) ? $event['session'] : '';
+        $incoming = self::clean_text($event['goal'] ?? '', 4000, true, $session);
+        $cleared = ($event['goal_authoritative'] ?? false) === true && $incoming === '';
+        $cutoff = max(0, (int) ($meta['cleared_through_message_id'] ?? 0));
+        // The goal in a partial event can be absent because the transient expired.
+        // Preserve a prior model/legacy goal, but never feed our fallback back as model evidence.
+        $model_goal = $incoming;
+        if ($model_goal === '' && !$cleared && !TLIT_CB_Goals::is_fallback((string) ($row['goal'] ?? '')) && (!isset($meta['source']) || $meta['source'] === 'model')) {
+            $model_goal = (string) ($row['goal'] ?? '');
+        }
+        if ($incoming !== '') { $cutoff = 0; }
+        $messages = self::table('messages');
+        $history = $wpdb->get_results($wpdb->prepare("SELECT id,role,content,type FROM $messages WHERE conversation_id=%d AND role='visitor' AND id>%d ORDER BY id DESC LIMIT 200", (int) $id, $cutoff), ARRAY_A);
+        if ($wpdb->last_error !== '') { return self::error('goal_read'); }
+        $history = is_array($history) ? array_reverse($history) : array();
+        if ($cleared) {
+            foreach ($history as $message) { $cutoff = max($cutoff, (int) ($message['id'] ?? 0)); }
+        }
+        $analysis = TLIT_CB_Goals::analyze($history, $model_goal, $cleared);
+        // The analyzer emits only a bounded classification and excerpts, never credentials.
+        $analysis['summary'] = self::clean_text($analysis['summary'], 4000, true, $session);
+        $analysis['evidence'] = self::clean_text($analysis['evidence'] ?? '', 400, true, $session);
+        if ($cutoff > 0) { $analysis['cleared_through_message_id'] = $cutoff; }
+        if ($wpdb->query($wpdb->prepare("UPDATE $conversations SET goal=%s,goal_analysis_json=%s WHERE id=%d", $analysis['summary'], wp_json_encode($analysis), (int) $id)) === false) {
+            return self::error('goal_write');
+        }
+        return true;
+    }
+
+    /** One bounded historical pass; no model calls, CRM events or timestamp mutations. */
+    public static function backfill_goals($after_id = 0, $limit = 20) {
+        global $wpdb;
+        $table = self::table('conversations');
+        $limit = min(50, max(1, (int) $limit));
+        $result = array('last_id' => max(0, (int) $after_id), 'processed' => 0, 'has_more' => false);
+        $previous = $wpdb->suppress_errors(true);
+        $started = false;
+        try {
+            $ids = $wpdb->get_col($wpdb->prepare("SELECT id FROM $table WHERE course='digital_marketing' AND id>%d AND goal_analysis_json='' ORDER BY id ASC LIMIT %d", $result['last_id'], $limit));
+            if ($wpdb->last_error !== '') { return self::error('goal_read'); }
+            foreach ((array) $ids as $id) {
+                if ($wpdb->query('START TRANSACTION') === false) { return self::error('goal_write'); }
+                $started = true;
+                $row = $wpdb->get_row($wpdb->prepare("SELECT id,course,goal,goal_analysis_json FROM $table WHERE id=%d FOR UPDATE", (int) $id), ARRAY_A);
+                if ($wpdb->last_error !== '') { return self::error('goal_read'); }
+                // A new capture may have populated the analysis since the batch selected this ID.
+                if (is_array($row) && ($row['course'] ?? '') === 'digital_marketing' && ($row['goal_analysis_json'] ?? '') === '') {
+                    $saved = self::refresh_goal((int) $id, array(), $row);
+                    if (is_wp_error($saved)) { return $saved; }
+                    $result['processed']++;
+                }
+                if ($wpdb->query('COMMIT') === false) { return self::error('goal_write'); }
+                $started = false;
+                $result['last_id'] = max($result['last_id'], (int) $id);
+            }
+            $result['has_more'] = count((array) $ids) === $limit;
+            return $result;
+        } finally {
+            if ($started) { $wpdb->query('ROLLBACK'); }
             $wpdb->suppress_errors($previous);
         }
     }

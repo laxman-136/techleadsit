@@ -109,6 +109,7 @@ final class IntegrationDB {
 }
 $wpdb = new IntegrationDB();
 require dirname(__DIR__, 2) . '/digital-marketing-integration/lead-schema.php';
+require dirname(__DIR__, 2) . '/digital-marketing-integration/chat-phone.php';
 require dirname(__DIR__) . '/includes/integrations.php';
 TLIT_CB_Integrations::register();
 check(isset($hooks['admin_post_tlit_cb_connection_save'], $hooks['admin_post_tlit_cb_send']), 'only authenticated actions registered');
@@ -177,6 +178,11 @@ check(strpos($note, 'Not verified') !== false && strpos($note, 'delivery-key') !
 foreach (array('Course Enrollment date', 'Course 2 Enrollment Date', 'Fee', 'Payment') as $field) { check(!isset($fields[$field]), 'counselor field not auto-filled: ' . $field); }
 $wrong_course = $payload; $wrong_course['course'] = 'unrelated';
 check(TLIT_CB_Integrations::send_telecrm($wrong_course, 'delivery-key')['success'] === false, 'TeleCRM mapper rejects other courses');
+$international=$payload;$international['phone']='+447712345678';
+check(TLIT_CB_Integrations::send_telecrm($international,'international-delivery')['success']===true, 'International Bridge contact can use the existing TeleCRM mapper');
+check(end($crm_calls)[0]['phone']==='+447712345678', 'International CRM number keeps its actual country code');
+$international['phone']='+99912345678';$before_invalid=count($crm_calls);
+check(TLIT_CB_Integrations::send_telecrm($international,'invalid-international')['success']===false&&count($crm_calls)===$before_invalid, 'Unknown international code never reaches CRM');
 $wpdb->job = array('id' => 11, 'conversation_id' => 7, 'connector' => 'webhook', 'state' => 'pending', 'payload' => wp_json_encode($payload), 'idempotency_key' => 'delivery-key');
 TLIT_CB_Integrations::deliver(11);
 check($wpdb->job['state'] === 'failed' && strpos(wp_json_encode($wpdb->updates), 'secret-response') === false, 'delivery history retains generic error only');

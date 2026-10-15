@@ -1,56 +1,293 @@
 <?php
 /**
  * Plugin Name: Tech Leads IT — Landing Page Leads
- * Description: Landing page lead inbox for Conversation Bridge, verified forms and manual TeleCRM handoff.
- * Version: 0.1.0
+ * Description: Bridge-first landing-page lead inbox with counsellor-controlled TeleCRM handoff.
+ * Version: 0.2.0
  * Requires PHP: 8.0
  */
-if (!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) { exit; }
 if (!class_exists('TLIT_LP_Leads')) {
 require_once __DIR__.'/lead-schema.php';
-class TLIT_LP_Leads {
- const OPTION='tlit_lp_integration';
- static function table(){global $wpdb;return $wpdb->prefix.'tlit_landing_leads';}
- static function install(){global $wpdb;require_once ABSPATH.'wp-admin/includes/upgrade.php';dbDelta('CREATE TABLE '.self::table()." (
- id bigint unsigned NOT NULL AUTO_INCREMENT,
- request_id varchar(40) NOT NULL,
- fingerprint varchar(64) NOT NULL,
- created_at datetime NOT NULL,
- name varchar(80) NOT NULL,
- phone varchar(20) NOT NULL,
- email varchar(254) NOT NULL,
- source varchar(20) NOT NULL,
- payload longtext NOT NULL,
- otp_verified tinyint NOT NULL DEFAULT 0,
- crm_status varchar(20) NOT NULL DEFAULT 'pending',
- crm_updated datetime DEFAULT NULL,
- crm_message varchar(255) NOT NULL DEFAULT '',
- advisor_note text NOT NULL,
- PRIMARY KEY (id), UNIQUE KEY request_id (request_id), KEY created_at (created_at), KEY source (source), KEY crm_status (crm_status)
- ) ".$wpdb->get_charset_collate().';');update_option('tlit_lp_version','0.1.0',false);}
- static function boot(){if(get_option('tlit_lp_version')!=='0.1.0')self::install();add_action('rest_api_init',[__CLASS__,'routes']);add_action('admin_menu',[__CLASS__,'menu'],30);add_action('admin_post_tlit_lp_action',[__CLASS__,'action']);add_action('admin_post_tlit_lp_export',[__CLASS__,'export']);}
- static function error($m,$s=400){return new WP_Error('lead_error',$m,['status'=>$s]);}
- static function hash($s){return hash_hmac('sha256',$s,wp_salt('auth'));}
- static function lock($s){$key='tlit_lp_lock_'.self::hash($s);if(!add_option($key,time(),'','no'))return false;return $key;}
- static function rate($s,$max,$seconds){$lock=self::lock('rate'.$s);if(!$lock)return false;try{$key='tlit_lp_rate_'.self::hash($s);$count=(int)get_transient($key);if($count>=$max)return false;set_transient($key,$count+1,$seconds);return true;}finally{delete_option($lock);}}
- static function phone($v){if(!is_string($v))return '';$n=preg_replace('/\D/','',$v);if(strlen($n)===12&&str_starts_with($n,'91'))$n=substr($n,2);return preg_match('/^[6-9][0-9]{9}$/D',$n)?$n:'';}
- static function permission($r){$origin=rtrim($r->get_header('origin'),'/');$u=wp_parse_url(home_url());$expected=$u['scheme'].'://'.$u['host'].(isset($u['port'])?':'.$u['port']:'');if($origin!==$expected)return self::error('Please use the course form on this website.',403);return true;}
- static function routes(){foreach(['otp','submit'] as $route)register_rest_route('tlit-leads/v1','/'.$route,['methods'=>'POST','permission_callback'=>[__CLASS__,'permission'],'callback'=>[__CLASS__,$route]]);}
- static function body($r){if(strlen($r->get_body())>16000)return [];return (array)$r->get_json_params();}
- static function otp($r){$p=self::body($r);$phone=self::phone($p['phone']??'');$name=is_string($p['name']??null)?sanitize_text_field($p['name']):'';if(!$phone||strlen($name)<2||strlen($name)>80||!in_array($p['intent']??'', ['general','popup'],true))return self::error('Check your name and mobile number.');if(!function_exists('techleadsit_send_vispl_sms'))return self::error('SMS verification is not configured. Please call the career advisor.',503);if(!self::rate('ip-'.($_SERVER['REMOTE_ADDR']??''),10,3600)||!self::rate('phone-'.$phone,3,600))return self::error('Too many code requests. Please try later.',429);$lock=self::lock('sms'.$phone);if(!$lock)return self::error('A code request is already in progress.',409);try{$cool='tlit_lp_cool_'.self::hash($phone);if(get_transient($cool))return self::error('Wait 30 seconds before requesting another code.',429);set_transient($cool,1,30);$code=(string)random_int(1000,9999);$challenge=bin2hex(random_bytes(24));$sent=techleadsit_send_vispl_sms($phone,$code,$name);if(empty($sent['success']))return self::error('We couldn’t send the code. Please try again.',502);$active='tlit_lp_active_'.self::hash($phone);$old=get_transient($active);if($old)delete_transient('tlit_lp_otp_'.self::hash($old));set_transient('tlit_lp_otp_'.self::hash($challenge),['phone'=>$phone,'intent'=>$p['intent'],'hash'=>self::hash($challenge.'|'.$code),'tries'=>0,'expires'=>time()+300],300);set_transient($active,$challenge,300);return ['success'=>true,'challenge'=>$challenge];}finally{delete_option($lock);}}
- static function submit($r){global $wpdb;$p=self::body($r);$name=is_string($p['name']??null)?sanitize_text_field($p['name']):'';$phone=self::phone($p['phone']??'');$email=is_string($p['email']??null)?sanitize_email($p['email']):'';$source=$p['intent']??'';$id=$p['request_id']??'';$goals=['Get my first marketing job','Grow in my marketing career','Start freelancing','Grow my business'];if(strlen($name)<2||strlen($name)>80||!$phone||!is_email($email)||strlen($email)>254||!in_array($source,['general','popup','brochure'],true)||!is_string($id)||!preg_match('/^[a-f0-9-]{36}$/D',$id)||!in_array($p['goal']??'', $goals,true))return self::error('Please check your contact details and career goal.');$data=['goal'=>$p['goal'],'marketingConsent'=>($p['marketingConsent']??false)===true,'consent_text'=>'Course news and marketing messages on WhatsApp and email; opt out anytime.','request_permission'=>'Contact requested about course enquiry or brochure','tracking'=>[]];$options=['status'=>['I’m currently studying','I’ve recently graduated','I’m working and exploring a change','I’m freelancing or running a business'],'timeline'=>['As soon as possible','Within one month','In one to three months','I’m exploring for now'],'question'=>['Fees and payment options','Jobs and career support','Classes, schedule and learning','Projects, tools and practical skills']];foreach($options as $k=>$allowed){if($source==='general'&&!in_array($p[$k]??'',$allowed,true))return self::error('Please complete the course questions.');$data[$k]=$source==='general'?$p[$k]:'';}foreach(['utm_source','utm_medium','utm_campaign','utm_adgroup','utm_term','utm_content','utm_id','gclid','fbclid','gbraid','wbraid','landing_page','referrer','fbp','fbc','ga_client_id','session_id','fb_ad','fb_campaign','fb_adset_name','fb_adset_id','fb_lead_id','adset_id','ad_id','city','state'] as $k){$v=$p['tracking'][$k]??'';if(is_string($v))$data['tracking'][$k]=substr(sanitize_text_field($v),0,500);}$fp=self::hash(wp_json_encode([$name,$phone,$email,$source,$data]));$lock=self::lock('submit'.$id);if(!$lock)return self::error('Your request is being saved. Please retry shortly.',409);$otpLock=false;try{$existing=$wpdb->get_row($wpdb->prepare('SELECT * FROM '.self::table().' WHERE request_id=%s',$id));if($existing){if(!hash_equals($existing->fingerprint,$fp))return self::error('This request has already been submitted with different details.',409);return ['success'=>true,'receipt'=>'LP-'.$existing->id];}if(!self::rate('submit-'.($_SERVER['REMOTE_ADDR']??''),30,3600))return self::error('Too many requests. Please try later.',429);if($source!=='brochure'){$challenge=$p['challenge']??'';$code=$p['otp']??'';if(!is_string($challenge)||!preg_match('/^[a-f0-9]{48}$/D',$challenge)||!is_string($code)||!preg_match('/^[0-9]{4}$/D',$code))return self::error('Enter the four-digit verification code.');$otpLock=self::lock('verify'.$challenge);if(!$otpLock)return self::error('Verification in progress.',409);$key='tlit_lp_otp_'.self::hash($challenge);$state=get_transient($key);if(!$state||$state['phone']!==$phone||$state['intent']!==$source||$state['expires']<time()||$state['tries']>=5)return self::error('Code expired. Request a new code.');if(!hash_equals($state['hash'],self::hash($challenge.'|'.$code))){$state['tries']++;set_transient($key,$state,max(1,$state['expires']-time()));return self::error('Incorrect code. Please check and try again.');}}$data['captured_at']=gmdate('c');$ok=$wpdb->insert(self::table(),['request_id'=>$id,'fingerprint'=>$fp,'created_at'=>current_time('mysql',true),'name'=>$name,'phone'=>'+91'.$phone,'email'=>$email,'source'=>$source,'payload'=>wp_json_encode($data),'otp_verified'=>$source!=='brochure'?1:0,'advisor_note'=>'']);if(!$ok)return self::error('Your request could not be saved. Please retry.',503);$receipt='LP-'.$wpdb->insert_id;if($source!=='brochure')delete_transient($key);return ['success'=>true,'receipt'=>$receipt];}finally{if($otpLock)delete_option($otpLock);delete_option($lock);}}
- static function menu(){add_submenu_page('tlit-chat-bridge','Landing Page Leads','Landing Page Leads','manage_options','tlit-landing-leads',[__CLASS__,'render']);if(!class_exists('TLIT_CB_Admin'))add_menu_page('Landing Page Leads','Landing Page Leads','manage_options','tlit-landing-leads',[__CLASS__,'render'],'dashicons-forms',59);}
- static function labels(){return ['general'=>'General form','popup'=>'Popup form','brochure'=>'Downloaded brochure'];}
- static function filters(){global $wpdb;$sql=' WHERE 1=1';$values=[];foreach(['source','crm_status'] as $key){$v=sanitize_text_field(wp_unslash($_GET[$key]??''));if($v){$sql.=" AND $key=%s";$values[]=$v;}}foreach(['from'=>'>=','to'=>'<='] as $key=>$op){$v=sanitize_text_field(wp_unslash($_GET[$key]??''));if(preg_match('/^\d{4}-\d{2}-\d{2}$/D',$v)){$sql.=" AND created_at $op %s";$values[]=$v.($key==='from'?' 00:00:00':' 23:59:59');}}$search=sanitize_text_field(wp_unslash($_GET['search']??''));if($search){$sql.=' AND (name LIKE %s OR phone LIKE %s OR email LIKE %s)';$v='%'.$wpdb->esc_like($search).'%';array_push($values,$v,$v,$v);}return $values?$wpdb->prepare($sql,$values):$sql;}
- static function admin(){if(!current_user_can('manage_options'))wp_die('Access denied.',403);}
- static function form_start($action,$id=0){echo '<form method="post" action="'.esc_url(admin_url('admin-post.php')).'"><input type="hidden" name="action" value="tlit_lp_action"><input type="hidden" name="operation" value="'.esc_attr($action).'"><input type="hidden" name="id" value="'.(int)$id.'">';wp_nonce_field('tlit_lp_action');}
- static function render(){self::admin();global $wpdb;$o=get_option(self::OPTION,[]);echo '<div class="wrap"><h1>Landing Page Leads</h1><p>Review the enquiry, contact the learner, then send the lead to TeleCRM when ready.</p><nav class="nav-tab-wrapper"><a class="nav-tab" href="'.esc_url(admin_url('admin.php?page=tlit-chat-bridge')).'">Chat conversations</a><a class="nav-tab nav-tab-active">Landing page leads</a></nav><style>.lp-panel{background:white;padding:24px;margin:20px 0;border:1px solid #dce3e9;border-radius:12px}.lp-grid{display:flex;gap:12px;flex-wrap:wrap;align-items:end}.lp-grid label{display:grid;gap:5px}.lp-panel textarea{width:100%;max-width:900px}.lp-panel td{vertical-align:top}.lp-detail{white-space:pre-wrap;overflow-wrap:anywhere}.lp-panel code{overflow-wrap:anywhere}.lp-note{color:#526171}</style>';
- $id=absint($_GET['lead']??0);if($id){$lead=$wpdb->get_row($wpdb->prepare('SELECT * FROM '.self::table().' WHERE id=%d',$id));if(!$lead){echo '<p>Lead not found.</p></div>';return;}$data=json_decode($lead->payload,true);echo '<section class="lp-panel"><h2>'.esc_html($lead->name).' · LP-'.(int)$id.'</h2><p><a href="tel:'.esc_attr($lead->phone).'">'.esc_html($lead->phone).'</a> · '.esc_html($lead->email).'</p><p>Source: '.esc_html(self::labels()[$lead->source]).' · OTP: '.($lead->otp_verified?'Verified':'Not required for brochure').' · CRM: '.esc_html($lead->crm_status).'</p><div class="lp-detail">';foreach(['goal','status','timeline','question','captured_at'] as $k)echo '<p><strong>'.esc_html(ucwords(str_replace('_',' ',$k))).':</strong> '.esc_html($data[$k]??'').'</p>';echo '<p><strong>WhatsApp and email marketing consent:</strong> '.(!empty($data['marketingConsent'])?'Yes':'No').'</p><h3>Attribution</h3>';foreach(($data['tracking']??[]) as $k=>$v)if($v!=='')echo '<p>'.esc_html($k).': '.esc_html($v).'</p>';echo '</div>';self::form_start('note',$id);echo '<label><strong>Counsellor notes</strong><br><textarea rows="4" name="note">'.esc_textarea($lead->advisor_note).'</textarea></label><p><button class="button">Save review notes</button></p></form>';self::form_start('push',$id);echo '<p><button class="button button-primary" '.(in_array($lead->crm_status,['sent','sending','uncertain'])?'disabled':'').'>Push lead to TeleCRM</button></p></form><p class="lp-note">'.esc_html($lead->crm_message).'</p>';if(in_array($lead->crm_status,['sending','uncertain'])){self::form_start('resolve',$id);echo '<p>Check TeleCRM before retrying to avoid duplicates.</p><label><input type="checkbox" name="confirmed" value="1" required> I checked TeleCRM and this lead was not received.</label><p><button class="button">Allow manual retry</button></p></form>';}echo '<a class="button" href="'.esc_url(wp_nonce_url(admin_url('admin-post.php?action=tlit_lp_export&lead='.$id),'tlit_lp_export')).'">Download lead CSV</a></section>';}
- echo '<section class="lp-panel"><form method="get" class="lp-grid"><input type="hidden" name="page" value="tlit-landing-leads">';foreach(['from'=>'From (UTC)','to'=>'To (UTC)'] as $k=>$label)echo '<label>'.esc_html($label).'<input type="date" name="'.$k.'" value="'.esc_attr($_GET[$k]??'').'"></label>';echo '<label>Form source<select name="source"><option value="">All forms</option>';foreach(self::labels() as $k=>$v)echo '<option value="'.$k.'" '.selected($_GET['source']??'',$k,false).'>'.esc_html($v).'</option>';echo '</select></label><label>CRM status<select name="crm_status"><option value="">All statuses</option>';foreach(['pending','sent','failed','sending','uncertain'] as $s)echo '<option '.selected($_GET['crm_status']??'',$s,false).'>'.$s.'</option>';echo '</select></label><label>Name, phone or email<input name="search" value="'.esc_attr($_GET['search']??'').'"></label><button class="button button-primary">Filter leads</button></form>';$where=self::filters();$count=(int)$wpdb->get_var('SELECT COUNT(*) FROM '.self::table().$where);$page=max(1,absint($_GET['paged']??1));$rows=$wpdb->get_results('SELECT * FROM '.self::table().$where.' ORDER BY id DESC LIMIT 25 OFFSET '.(($page-1)*25));$args=[];foreach(['from','to','source','crm_status','search'] as $k)$args[$k]=sanitize_text_field(wp_unslash($_GET[$k]??''));$export=wp_nonce_url(add_query_arg(array_merge($args,['action'=>'tlit_lp_export']),admin_url('admin-post.php')),'tlit_lp_export');echo '<p>'.(int)$count.' leads · <a href="'.esc_url($export).'">Download filtered range (CSV)</a></p><table class="widefat striped"><thead><tr><th>Received (UTC)</th><th>Learner</th><th>Contact</th><th>Source</th><th>Career goal</th><th>CRM</th><th></th></tr></thead><tbody>';foreach($rows as $row){$d=json_decode($row->payload,true);echo '<tr><td>'.esc_html($row->created_at).'</td><td>'.esc_html($row->name).'</td><td>'.esc_html($row->phone).'<br>'.esc_html($row->email).'</td><td>'.esc_html(self::labels()[$row->source]).'</td><td>'.esc_html($d['goal']??'').'</td><td>'.esc_html($row->crm_status).'</td><td><a class="button" href="'.esc_url(admin_url('admin.php?page=tlit-landing-leads&lead='.$row->id)).'">Review lead</a></td></tr>';}if(!$rows)echo '<tr><td colspan="7">No leads match these filters.</td></tr>';echo '</tbody></table><p>';for($i=max(1,$page-2);$i<=min((int)ceil($count/25),$page+2);$i++)echo '<a class="button" href="'.esc_url(add_query_arg('paged',$i)).'">'.$i.'</a> ';echo '</p></section><section class="lp-panel"><h2>TeleCRM integration</h2><p>Leads stay in this inbox until a counsellor explicitly pushes them. Credentials are stored server-side.</p>';self::form_start('settings');echo '<p><label>TeleCRM enterprise ID<br><input class="regular-text" name="enterprise" value="'.esc_attr($o['enterprise']??'').'"></label></p><p><label>API bearer token<br><input class="regular-text" type="password" autocomplete="new-password" name="token" value="" placeholder="'.(!empty($o['token'])?'Saved — leave blank to keep':'Paste token').'"></label></p><p><label><input type="checkbox" name="clear_token" value="1"> Remove saved token</label></p><p><label>Custom field mapping (JSON: CRM field name → lead field)<br><textarea name="mapping" rows="5">'.esc_textarea(wp_json_encode($o['mapping']??['Remarks'=>'remarks'],JSON_PRETTY_PRINT)).'</textarea></label></p><p class="lp-note">Available: goal, status, timeline, question, source, remarks, marketingConsent and UTM fields. Name, phone and email are always included.</p><button class="button button-primary">Save integration settings</button></form></section></div>';}
- static function action(){self::admin();check_admin_referer('tlit_lp_action');global $wpdb;$op=sanitize_key($_POST['operation']??'');$id=absint($_POST['id']??0);if($op==='settings'){$old=get_option(self::OPTION,[]);$enterprise=sanitize_text_field(wp_unslash($_POST['enterprise']??''));if($enterprise&&!preg_match('/^[a-zA-Z0-9_-]+$/D',$enterprise))wp_die('Invalid enterprise ID.');$mapping=json_decode(wp_unslash($_POST['mapping']??'{}'),true);if(!is_array($mapping))wp_die('Field mapping must be a JSON object.');$allowed=['goal','status','timeline','question','source','remarks','marketingConsent','utm_source','utm_medium','utm_campaign','utm_term','utm_content','utm_id','gclid','fbclid','gbraid','wbraid','landing_page','referrer'];$clean=[];foreach($mapping as $k=>$v){if(!is_string($k)||!is_string($v)||!in_array($v,$allowed,true))wp_die('Unsupported mapping.');$clean[substr(sanitize_text_field($k),0,100)]=$v;}$token=trim(wp_unslash($_POST['token']??''));if(preg_match('/[\r\n]/',$token))wp_die('Invalid token.');update_option(self::OPTION,['enterprise'=>$enterprise,'token'=>!empty($_POST['clear_token'])?'':($token?:($old['token']??'')),'mapping'=>$clean],false);}elseif($op==='note')$wpdb->update(self::table(),['advisor_note'=>substr(sanitize_textarea_field(wp_unslash($_POST['note']??'')),0,5000)],['id'=>$id]);elseif($op==='resolve'&&!empty($_POST['confirmed']))$wpdb->query($wpdb->prepare("UPDATE ".self::table()." SET crm_status='pending',crm_message='Counsellor checked CRM and authorised retry.' WHERE id=%d AND crm_status IN ('sending','uncertain')",$id));elseif($op==='push')self::push($id);wp_safe_redirect(admin_url('admin.php?page=tlit-landing-leads'.($id?'&lead='.$id:'')));exit;}
- static function push($id){global $wpdb;$o=get_option(self::OPTION,[]);if(empty($o['enterprise'])||empty($o['token'])){$wpdb->update(self::table(),['crm_message'=>'Save the enterprise ID and API token before sending.'],['id'=>$id]);return;}if(!$wpdb->query($wpdb->prepare("UPDATE ".self::table()." SET crm_status='sending',crm_updated=%s WHERE id=%d AND crm_status IN ('pending','failed')",current_time('mysql',true),$id)))return;$row=$wpdb->get_row($wpdb->prepare('SELECT * FROM '.self::table().' WHERE id=%d',$id));$d=json_decode($row->payload,true);$note='Landing page lead LP-'.$id.' | '.self::labels()[$row->source].' | Goal: '.$d['goal'].' | Marketing consent: '.(!empty($d['marketingConsent'])?'Yes':'No').' | Advisor: '.$row->advisor_note;foreach(['status','timeline','question'] as $k)if(!empty($d[$k]))$note.=' | '.$k.': '.$d[$k];$data=array_merge($d,$d['tracking']??[],['source'=>self::labels()[$row->source],'remarks'=>$note,'marketingConsent'=>!empty($d['marketingConsent'])?'Yes':'No']);$fields=tlit_lp_schema_lead_fields(['tracking'=>$d['tracking']??[],'details'=>['student_status'=>$d['status']??'']],$row->name,substr($row->phone,3),$row->email,$d['goal'],$note); foreach(($o['mapping']??[]) as $crm=>$key)$fields[$crm]=$data[$key]??'';$url='https://next.telecrm.in/api/b1/enterprise/'.rawurlencode($o['enterprise']).'/autoupdatelead';$r=wp_remote_post($url,['timeout'=>20,'redirection'=>0,'headers'=>['Content-Type'=>'application/json','Authorization'=>'Bearer '.$o['token']],'body'=>wp_json_encode(['fields'=>$fields,'actions'=>[['type'=>'SYSTEM_NOTE','text'=>$note]]])]);$status='uncertain';$message='Delivery could not be confirmed. Check TeleCRM before retrying.';if(!is_wp_error($r)){$code=wp_remote_retrieve_response_code($r);$body=json_decode(wp_remote_retrieve_body($r),true);if($code>=200&&$code<300&&!(is_array($body)&&(isset($body['error'])||($body['success']??true)===false))){$status='sent';$message='Successfully sent to TeleCRM.';}elseif($code>=400&&$code<500){$status='failed';$message='TeleCRM rejected the request (HTTP '.$code.'). Check credentials and mappings.';}}$wpdb->update(self::table(),['crm_status'=>$status,'crm_message'=>$message,'crm_updated'=>current_time('mysql',true)],['id'=>$id]);}
- static function export(){self::admin();check_admin_referer('tlit_lp_export');global $wpdb;$id=absint($_GET['lead']??0);$where=$id?$wpdb->prepare(' WHERE id=%d',$id):self::filters();nocache_headers();header('Content-Type: text/csv; charset=utf-8');header('Content-Disposition: attachment; filename="landing-page-leads-'.gmdate('Ymd').'.csv"');$out=fopen('php://output','w');fputcsv($out,['Reference','Received UTC','Name','Phone','Email','Source','Goal','Current status','Joining timeline','Course question','Marketing consent','OTP verified','CRM status','Advisor note','Attribution JSON']);$last=0;do{$rows=$wpdb->get_results('SELECT * FROM '.self::table().$where.' AND id>'.(int)$last.' ORDER BY id ASC LIMIT 500');foreach($rows as $row){$d=json_decode($row->payload,true);$cells=['LP-'.$row->id,$row->created_at,$row->name,$row->phone,$row->email,self::labels()[$row->source],$d['goal'],$d['status'],$d['timeline'],$d['question'],!empty($d['marketingConsent'])?'Yes':'No',$row->otp_verified?'Yes':'No',$row->crm_status,$row->advisor_note,wp_json_encode($d['tracking'])];$cells=array_map(function($v){$v=(string)$v;return preg_match('/^[\s]*[=+@-]/',$v)?"'".$v:$v;},$cells);fputcsv($out,$cells);$last=$row->id;}}while(count($rows)===500);fclose($out);exit;}
+require_once __DIR__.'/api.php';
+require_once __DIR__.'/integration.php';
+final class TLIT_LP_Leads {
+    use TLIT_LP_API, TLIT_LP_Integration;
+    const VERSION = '0.2.0';
+    const OPTION = 'tlit_lp_integration';
+    static function table() { global $wpdb; return $wpdb->prefix.'tlit_landing_leads'; }
+    static function install() {
+        global $wpdb;
+        require_once ABSPATH.'wp-admin/includes/upgrade.php';
+        $table=self::table();
+        dbDelta("CREATE TABLE $table (
+            id bigint unsigned NOT NULL AUTO_INCREMENT,
+            request_id varchar(80) NOT NULL,
+            fingerprint varchar(64) NOT NULL,
+            created_at datetime NOT NULL,
+            updated_at datetime NOT NULL,
+            name varchar(80) NOT NULL,
+            phone varchar(20) NOT NULL,
+            email varchar(254) NOT NULL,
+            source varchar(24) NOT NULL,
+            page_variant varchar(80) NOT NULL DEFAULT '',
+            submission_url varchar(2000) NOT NULL DEFAULT '',
+            payload longtext NOT NULL,
+            otp_verified tinyint NOT NULL DEFAULT 0,
+            lead_status varchar(24) NOT NULL DEFAULT 'new',
+            reviewed_by bigint unsigned NOT NULL DEFAULT 0,
+            reviewed_at datetime DEFAULT NULL,
+            crm_status varchar(20) NOT NULL DEFAULT 'pending',
+            crm_updated datetime DEFAULT NULL,
+            crm_message varchar(255) NOT NULL DEFAULT '',
+            crm_attempts int unsigned NOT NULL DEFAULT 0,
+            crm_payload longtext NULL,
+            advisor_note text NOT NULL,
+            review_history longtext NULL,
+            PRIMARY KEY  (id),
+            UNIQUE KEY request_id (request_id),
+            KEY created_at (created_at),
+            KEY source (source),
+            KEY page_variant (page_variant),
+            KEY lead_status (lead_status),
+            KEY crm_status (crm_status)
+        ) ENGINE=InnoDB ".$wpdb->get_charset_collate().';');
+        $columns=$wpdb->get_col("SHOW COLUMNS FROM $table");
+        if (is_array($columns) && !array_diff(['lead_status','page_variant','crm_payload','review_history'],$columns)) {
+            update_option('tlit_lp_version',self::VERSION,false);
+        }
+    }
+    static function boot() {
+        if(get_option('tlit_lp_version')!==self::VERSION) { self::install(); }
+        self::migrate_legacy_secret();
+        add_action('rest_api_init',[__CLASS__,'routes']);
+        add_action('admin_menu',[__CLASS__,'menu'],30);
+        add_action('admin_post_tlit_lp_action',[__CLASS__,'action']);
+        add_action('admin_post_tlit_lp_export',[__CLASS__,'export']);
+        add_action('tlit_lp_backfill_sources',[__CLASS__,'backfill_sources']);
+        if(get_option('tlit_lp_sources_backfill')!=='1'&&!wp_next_scheduled('tlit_lp_backfill_sources')) { wp_schedule_single_event(time()+10,'tlit_lp_backfill_sources'); }
+        if (is_file(__DIR__.'/admin.php')) { require_once __DIR__.'/admin.php'; }
+    }
+    static function error($message,$status=400) { return new WP_Error('tlit_landing_lead',$message,['status'=>$status]); }
+    static function hash($value) { return hash_hmac('sha256',$value,wp_salt('auth')); }
+    static function clean($value,$length=500) { return is_scalar($value)?substr(sanitize_text_field((string)$value),0,$length):''; }
+    static function phone($value) {
+        if(!is_string($value)||!preg_match('/^[+0-9 ()-]+$/D',$value)) { return ''; }
+        $n=preg_replace('/\D/','',$value);
+        if(strlen($n)===12&&str_starts_with($n,'91')) { $n=substr($n,2); }
+        return preg_match('/^[6-9][0-9]{9}$/D',$n)?$n:'';
+    }
+    static function canonical_phone($value) {
+        if (!is_string($value)) { return ''; }
+        if (function_exists('tlit_dm_chat_phone_international') && str_starts_with(trim($value),'+')) {
+            return tlit_dm_chat_phone_international(trim($value));
+        }
+        $india=self::phone($value);
+        if($india) { return '+91'.$india; }
+        // Trusted server-side adapters validate international numbers before ingest.
+        return preg_match('/^\+[1-9][0-9]{6,14}$/D',$value)?$value:'';
+    }
+    static function lock($value) {
+        global $wpdb;
+        $key='tlit_lp_lock_'.self::hash($value);
+        $old=get_option($key);
+        if($old && (int)$old<time()) {
+            $wpdb->query($wpdb->prepare("DELETE FROM {$wpdb->options} WHERE option_name=%s AND option_value=%s",$key,(string)$old));
+            wp_cache_delete($key,'options');
+        }
+        return add_option($key,time()+90,'','no')?$key:false;
+    }
+    static function rate($value,$maximum,$seconds) {
+        $lock=self::lock('rate'.$value);
+        if(!$lock) { return false; }
+        try {
+            $key='tlit_lp_rate_'.self::hash($value);$count=(int)get_transient($key);
+            if($count>=$maximum) { return false; }
+            set_transient($key,$count+1,$seconds);return true;
+        } finally { delete_option($lock); }
+    }
+    static function labels() { return ['general'=>'General form','popup'=>'Popup form','brochure'=>'Brochure form','chatbot_brochure'=>'Chatbot brochure']; }
+    static function statuses() { return ['new'=>'New','junk'=>'Junk lead','potential'=>'Potential','high_potential'=>'High potential','intended_to_join'=>'Intended to join','enrolled'=>'Enrolled']; }
+    static function variants() { return ['v1'=>'Digital Marketing — V1','v2'=>'Digital Marketing — V2','v3'=>'Digital Marketing — V3']; }
+    static function tracking_keys() { return explode(' ','utm_source utm_medium utm_campaign utm_adgroup utm_term utm_content utm_id gclid fbclid gbraid wbraid landing_page referrer fbp fbc ga_client_id session_id fb_ad fb_campaign fb_adset_name fb_adset_id fb_lead_id adset_id ad_id city state'); }
+    static function url($value) {
+        $value=self::clean($value,2000);$parts=wp_parse_url($value);
+        if(!is_array($parts)||!in_array($parts['scheme']??'',['https','http'],true)||empty($parts['host'])||isset($parts['user'])||isset($parts['pass'])) { return ''; }
+        // Query attribution is stored in dedicated fields, never URL contact parameters.
+        return $parts['scheme'].'://'.$parts['host'].(isset($parts['port'])?':'.$parts['port']:'').($parts['path']??'/');
+    }
+    static function variant($value,$url='') {
+        $value=self::clean($value,80);
+        if (in_array($value,['v1','v2','v3'],true)) { return $value; }
+        $path=trim((string)wp_parse_url($url,PHP_URL_PATH),'/');
+        if($path==='ai-powered-digital-marketing-course') { return 'v2'; }
+        if($path==='ai-powered-digital-marketing-training') { return 'v3'; }
+        if(str_contains($path,'digital-marketing-v3')||str_contains($path,'digital-marketing-3')) { return 'v3'; }
+        if(str_contains($path,'digital-marketing-v2')||str_contains($path,'digital-marketing-2')) { return 'v2'; }
+        if($path==='ai-powered-digital-marketing') { return 'v1'; }
+        return $value?:'unknown';
+    }
+    static function clean_details($details) {
+        $clean=[];
+        foreach(is_array($details)?array_slice($details,0,40,true):[] as $key=>$value) {
+            if(is_string($key)&&is_scalar($value)) { $clean[sanitize_key($key)]=self::clean($value,1000); }
+        }
+        ksort($clean);return $clean;
+    }
+    /** Called only after the owning form adapter has validated its verification policy. Never sends to CRM. */
+    static function ingest(array $p,array $context=[]) {
+        global $wpdb;
+        $id=self::clean($p['request_id']??'',80);
+        $name=self::clean($p['name']??'',80);$phone=self::canonical_phone($p['phone']??'');
+        $email=is_string($p['email']??null)?sanitize_email($p['email']):'';
+        $source=$context['source']??($p['intent']??'');
+        if(!preg_match('/^[A-Za-z0-9_.:-]{8,80}$/D',$id)||strlen($name)<2||!$phone||!is_email($email)||strlen($email)>254||!isset(self::labels()[$source])) { return self::error('Please check the lead contact details.'); }
+        $tracking=[];
+        foreach(self::tracking_keys() as $key) { $tracking[$key]=self::clean($p['tracking'][$key]??'',500); }
+        foreach(['landing_page','referrer'] as $key) { $tracking[$key]=self::url($tracking[$key])?:($key==='referrer'?'direct':''); }
+        $url=self::url($p['submission_url']??($p['tracking']['submission_url']??''))?:$tracking['landing_page'];
+        $variant=self::variant($context['page_variant']??($p['page_variant']??($p['tracking']['page_variant']??'')),$url);
+        $data=['goal'=>self::clean($p['goal']??'',250),'details'=>self::clean_details($p['details']??[]),'status'=>self::clean($p['status']??'',250),'timeline'=>self::clean($p['timeline']??'',250),'question'=>self::clean($p['question']??'',500),'marketingConsent'=>($p['marketingConsent']??false)===true,'consent_text'=>self::clean($p['consent_text']??'Course news and marketing messages on WhatsApp and email; opt out anytime.',500),'request_permission'=>'Contact requested about course enquiry or brochure','tracking'=>$tracking,'page_variant'=>$variant,'submission_url'=>$url,'brochure_downloaded'=>($p['brochure_downloaded']??false)===true];
+        $verified=!empty($context['otp_verified']);
+        $fingerprint=self::hash(wp_json_encode([$name,$phone,$email,$source,$data,$verified]));
+        $previous=$wpdb->suppress_errors(true);
+        try {
+            $existing=$wpdb->get_row($wpdb->prepare('SELECT * FROM '.self::table().' WHERE request_id=%s',$id));
+            if($wpdb->last_error!=='') { return self::error('Your request could not be saved. Please retry.',503); }
+            if($existing) { return self::existing($existing,$fingerprint,[$name,$phone,$email,$source,$data,$p]); }
+            $now=current_time('mysql',true);$data['captured_at']=gmdate('c');
+            $ok=$wpdb->insert(self::table(),['request_id'=>$id,'fingerprint'=>$fingerprint,'created_at'=>$now,'updated_at'=>$now,'name'=>$name,'phone'=>$phone,'email'=>$email,'source'=>$source,'page_variant'=>$variant,'submission_url'=>$url,'payload'=>wp_json_encode($data),'otp_verified'=>$verified?1:0,'advisor_note'=>'','review_history'=>'[]']);
+            if($ok===1) { return ['success'=>true,'receipt'=>'LP-'.$wpdb->insert_id,'lead_id'=>(int)$wpdb->insert_id,'duplicate'=>false,'download_token'=>self::download_token($wpdb->insert_id,$id)]; }
+            // A competing request can win the unique request_id insertion.
+            $existing=$wpdb->get_row($wpdb->prepare('SELECT * FROM '.self::table().' WHERE request_id=%s',$id));
+            if($existing) { return self::existing($existing,$fingerprint,[$name,$phone,$email,$source,$data,$p]); }
+            return self::error('Your request could not be saved. Please retry.',503);
+        } finally { $wpdb->suppress_errors($previous); }
+    }
+    static function existing($row,$fingerprint,$incoming=[]) {
+        $matches=hash_equals($row->fingerprint,$fingerprint);
+        // v0.1 receipts remain replayable after the schema upgrade. Reconstruct only
+        // their old field set; never create a second row or send it to TeleCRM.
+        if(!$matches && !array_key_exists('details',json_decode($row->payload,true)?:[]) && count($incoming)===6) {
+            [$name,$phone,$email,$source,$data,$raw]=$incoming;
+            $old=json_decode($row->payload,true)?:[];unset($old['captured_at']);
+            $candidate=[];
+            foreach($old as $key=>$value) {
+                if($key==='tracking') {
+                    $candidate[$key]=[];
+                    foreach($value as $tracking_key=>$tracking_value) { $candidate[$key][$tracking_key]=self::clean($raw['tracking'][$tracking_key]??'',500); }
+                } else { $candidate[$key]=$data[$key]??null; }
+            }
+            $legacy_phone=str_starts_with($phone,'+91')?substr($phone,3):$phone;
+            $matches=hash_equals($row->fingerprint,self::hash(wp_json_encode([$name,$legacy_phone,$email,$source,$candidate])));
+        }
+        if(!$matches) { return self::error('This request was already saved with different details.',409); }
+        return ['success'=>true,'receipt'=>'LP-'.$row->id,'lead_id'=>(int)$row->id,'duplicate'=>true,'download_token'=>self::download_token($row->id,$row->request_id)];
+    }
+    static function download_token($id,$request_id) { return self::hash('brochure-download|'.(int)$id.'|'.$request_id); }
+    static function get($id) { global $wpdb;return $wpdb->get_row($wpdb->prepare('SELECT * FROM '.self::table().' WHERE id=%d',absint($id))); }
+    static function backfill_sources() {
+        global $wpdb;$lock=self::lock('source-backfill');if(!$lock) { return ['processed'=>0,'updated'=>0,'complete'=>false]; }
+        try {
+            $cursor=(int)get_option('tlit_lp_sources_cursor',0);
+            $rows=$wpdb->get_results($wpdb->prepare('SELECT * FROM '.self::table().' WHERE id>%d ORDER BY id ASC LIMIT 100',$cursor));
+            if($wpdb->last_error!=='') { return ['processed'=>0,'updated'=>0,'complete'=>false]; }
+            $updated=0;
+            foreach($rows as $row) {
+                $data=json_decode($row->payload,true)?:[];$patch=[];
+                $url=$row->submission_url?:self::url($data['submission_url']??($data['tracking']['submission_url']??($data['tracking']['landing_page']??'')));
+                if($row->submission_url===''&&$url!=='') { $patch['submission_url']=$url; }
+                if($row->page_variant===''||$row->page_variant==='unknown') {
+                    $variant=self::variant($data['page_variant']??($data['tracking']['page_variant']??''),$url);
+                    if(in_array($variant,['v1','v2','v3'],true)) { $patch['page_variant']=$variant; }
+                }
+                if($patch) { if($wpdb->update(self::table(),$patch,['id'=>$row->id])===false) { return ['processed'=>0,'updated'=>$updated,'complete'=>false]; }$updated++; }
+                $cursor=(int)$row->id;
+            }
+            update_option('tlit_lp_sources_cursor',$cursor,false);$complete=count($rows)<100;
+            if($complete) { update_option('tlit_lp_sources_backfill','1',false); }
+            elseif(!wp_next_scheduled('tlit_lp_backfill_sources')) { wp_schedule_single_event(time()+10,'tlit_lp_backfill_sources'); }
+            return ['processed'=>count($rows),'updated'=>$updated,'complete'=>$complete];
+        } finally { delete_option($lock); }
+    }
+    static function update_details($id,array $updates) {
+        global $wpdb;$lock=self::lock('lead-review-'.absint($id));if(!$lock) { return self::error('This lead is being updated. Please retry.',409); }
+        try {
+            $row=self::get($id);if(!$row) { return self::error('Lead not found.',404); }
+            $data=json_decode($row->payload,true)?:[];
+            $data['details']=array_merge($data['details']??[],self::clean_details($updates['details']??[]));
+            if(!empty($updates['brochure_downloaded'])) { $data['brochure_downloaded']=true;$data['brochure_downloaded_at']=gmdate('c'); }
+            return $wpdb->update(self::table(),['payload'=>wp_json_encode($data),'updated_at'=>current_time('mysql',true)],['id'=>$row->id])!==false?true:self::error('The details could not be saved.',503);
+        } finally { delete_option($lock); }
+    }
+    static function filters($input=null) {
+        global $wpdb;$input=is_array($input)?$input:wp_unslash($_GET);$sql=' WHERE 1=1';$values=[];
+        foreach(['source','crm_status','lead_status','page_variant'] as $key) {
+            $value=self::clean($input[$key]??'',80);if($value!=='') { $sql.=" AND $key=%s";$values[]=$value; }
+        }
+        foreach(['from'=>'>=','to'=>'<='] as $key=>$op) {
+            $value=self::clean($input[$key]??'',10);
+            if(preg_match('/^\d{4}-\d{2}-\d{2}$/D',$value)) { $sql.=" AND created_at $op %s";$values[]=$value.($key==='from'?' 00:00:00':' 23:59:59'); }
+        }
+        foreach(['utm_source','utm_campaign'] as $key) {
+            $value=self::clean($input[$key]??'',200);
+            if($value!=='') { $sql.=" AND JSON_UNQUOTE(JSON_EXTRACT(payload,'$.tracking.$key'))=%s";$values[]=$value; }
+        }
+        $search=self::clean($input['search']??'',200);
+        if($search!=='') { $sql.=' AND (name LIKE %s OR phone LIKE %s OR email LIKE %s)';$value='%'.$wpdb->esc_like($search).'%';array_push($values,$value,$value,$value); }
+        return $values?$wpdb->prepare($sql,$values):$sql;
+    }
+    static function query($filters=[],$page=1,$per_page=25) {
+        global $wpdb;$page=max(1,(int)$page);$per_page=max(1,min(100,(int)$per_page));$where=self::filters($filters);
+        $rows=$wpdb->get_results('SELECT * FROM '.self::table().$where.' ORDER BY id DESC LIMIT '.$per_page.' OFFSET '.(($page-1)*$per_page));
+        if($wpdb->last_error!=='') { return self::error('The lead inbox could not be loaded.',503); }
+        $total=(int)$wpdb->get_var('SELECT COUNT(*) FROM '.self::table().$where);
+        if($wpdb->last_error!=='') { return self::error('The lead count could not be loaded.',503); }
+        return ['rows'=>$rows,'total'=>$total,'page'=>$page,'per_page'=>$per_page];
+    }
+    static function counts($filters=[]) { global $wpdb;$rows=$wpdb->get_results('SELECT lead_status,COUNT(*) AS total FROM '.self::table().self::filters($filters).' GROUP BY lead_status');$counts=array_fill_keys(array_keys(self::statuses()),0);foreach($rows as $row) { $counts[$row->lead_status]=(int)$row->total; }return $counts; }
+    static function save_note($id,$note) { $row=self::get($id);return $row?self::save_status($id,$row->lead_status,$note,get_current_user_id(),false):self::error('Lead not found.',404); }
+    static function save_status($id,$status,$note,$actor=0,$deliver=true) {
+        global $wpdb;
+        if(!isset(self::statuses()[$status])) { return self::error('Choose a valid counsellor status.'); }
+        $lock=self::lock('lead-review-'.absint($id));if(!$lock) { return self::error('This lead is being reviewed. Please retry.',409); }
+        try {
+            $row=self::get($id);if(!$row) { return self::error('Lead not found.',404); }
+            $history=json_decode($row->review_history??'[]',true)?:[];$now=current_time('mysql',true);
+            $history[]=['from'=>$row->lead_status,'to'=>$status,'actor'=>(int)$actor,'at'=>$now];$history=array_slice($history,-100);
+            $saved=$wpdb->update(self::table(),['lead_status'=>$status,'advisor_note'=>substr(sanitize_textarea_field((string)$note),0,5000),'reviewed_by'=>absint($actor),'reviewed_at'=>$now,'updated_at'=>$now,'review_history'=>wp_json_encode($history)],['id'=>$row->id]);
+            if($saved===false) { return self::error('The review could not be saved. TeleCRM was not contacted.',503); }
+            if($deliver && in_array($status,['potential','high_potential','intended_to_join','enrolled'],true)) { self::push($row->id); }
+            return self::get($row->id);
+        } finally { delete_option($lock); }
+    }
+    static function menu() {
+        add_submenu_page('tlit-chat-bridge','Landing Page Leads','Landing Page Leads','manage_options','tlit-landing-leads',[__CLASS__,'render']);
+        if(!class_exists('TLIT_CB_Admin')) { add_menu_page('Landing Page Leads','Landing Page Leads','manage_options','tlit-landing-leads',[__CLASS__,'render'],'dashicons-forms',59); }
+    }
+    static function admin() { if(!current_user_can('manage_options')) { wp_die('Access denied.','',['response'=>403]); } }
+    static function render() { self::admin();if(class_exists('TLIT_LP_Admin')) { TLIT_LP_Admin::render(); }else { echo '<div class="wrap"><h1>Landing Page Leads</h1><p>The lead inbox interface is unavailable.</p></div>'; } }
+    static function form_start($operation,$id=0) { echo '<form method="post" action="'.esc_url(admin_url('admin-post.php')).'"><input type="hidden" name="action" value="tlit_lp_action"><input type="hidden" name="operation" value="'.esc_attr($operation).'"><input type="hidden" name="id" value="'.(int)$id.'">';wp_nonce_field('tlit_lp_action'); }
+    static function action() {
+        self::admin();if(($_SERVER['REQUEST_METHOD']??'')!=='POST') { wp_die('Use the review form.','',['response'=>405]); }check_admin_referer('tlit_lp_action');
+        $p=wp_unslash($_POST);$operation=sanitize_key($p['operation']??'');$id=absint($p['id']??0);$result=true;
+        if($operation==='settings') { $result=self::save_settings($p); }
+        elseif($operation==='test_connection') { $result=self::test_connection(); }
+        elseif($operation==='status') { $result=self::save_status($id,sanitize_key($p['lead_status']??($p['status']??'')),$p['note']??'',get_current_user_id()); }
+        elseif($operation==='note') { $result=self::save_note($id,$p['note']??''); }
+        elseif($operation==='resolve' && !empty($p['confirmed'])) { $result=self::reconcile($id,($p['resolution']??'')==='received'); }
+        elseif($operation==='push') { $row=self::get($id);$result=$row?self::save_status($id,$row->lead_status,$row->advisor_note,get_current_user_id()):self::error('Lead not found.',404); }
+        else { $result=self::error('Unknown action.'); }
+        if(is_wp_error($result)) { wp_die(esc_html($result->get_error_message())); }
+        $notice=$operation==='test_connection'?'configuration_checked':'saved';
+        wp_safe_redirect(admin_url('admin.php?page=tlit-landing-leads'.($id?'&lead='.$id:'').($operation==='settings'||$operation==='test_connection'?'&view=integrations':'').'&notice='.$notice));exit;
+    }
+    static function export() {
+        self::admin();check_admin_referer('tlit_lp_export');global $wpdb;$id=absint($_GET['lead']??0);$where=$id?$wpdb->prepare(' WHERE id=%d',$id):self::filters();
+        nocache_headers();header('Content-Type: text/csv; charset=utf-8');header('Content-Disposition: attachment; filename="landing-page-leads-'.gmdate('Ymd').'.csv"');
+        $out=fopen('php://output','w');fputcsv($out,array_merge(['Reference','Received UTC','Name','Phone','Email','Form','Page version','Submission URL','Goal','Profile','Timeline','Question','Brochure downloaded','Marketing consent','OTP verified','Counsellor status','TeleCRM status','Counsellor note'],self::tracking_keys(),['Details JSON']));$last=0;
+        do { $rows=$wpdb->get_results('SELECT * FROM '.self::table().$where.' AND id>'.(int)$last.' ORDER BY id ASC LIMIT 500');foreach($rows as $row) { $data=json_decode($row->payload,true)?:[];$cells=['LP-'.$row->id,$row->created_at,$row->name,$row->phone,$row->email,self::labels()[$row->source]??$row->source,$row->page_variant,$row->submission_url,$data['goal']??'',$data['status']??'',$data['timeline']??'',$data['question']??'',!empty($data['brochure_downloaded'])?'Yes':'No',!empty($data['marketingConsent'])?'Yes':'No',$row->otp_verified?'Yes':'No',self::statuses()[$row->lead_status]??$row->lead_status,$row->crm_status,$row->advisor_note];foreach(self::tracking_keys() as $tracking_key) { $cells[]=$data['tracking'][$tracking_key]??''; }$cells[]=wp_json_encode($data['details']??[]);fputcsv($out,array_map(function($v){$v=(string)$v;return preg_match('/^[\s]*[=+@-]/',$v)?"'".$v:$v;},$cells));$last=$row->id; } }while(count($rows)===500);fclose($out);exit;
+    }
 }
-if(function_exists('register_activation_hook'))register_activation_hook(__FILE__,['TLIT_LP_Leads','install']);add_action('plugins_loaded',['TLIT_LP_Leads','boot'],20);
-
+if(function_exists('register_activation_hook')) { register_activation_hook(__FILE__,['TLIT_LP_Leads','install']); }
+add_action('plugins_loaded',['TLIT_LP_Leads','boot'],20);
 }

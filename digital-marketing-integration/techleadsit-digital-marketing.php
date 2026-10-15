@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Tech Leads IT — Digital Marketing Enquiries
- * Description: Isolated phone verification and TeleCRM routing for the fresher course.
+ * Description: Phone verification and durable WordPress lead capture for the fresher course.
  * Version: 1.0.0
  */
 if (!defined('ABSPATH')) exit;
@@ -22,7 +22,20 @@ function tlit_dm_options(){return function_exists('techleadsit_get_course_option
 function tlit_dm_ready() {
     $o=tlit_dm_options();$enabled=defined('TLIT_DM_ENABLED')?TLIT_DM_ENABLED:!empty($o['dm_live_enabled']);
     $otp=(!isset($o['otp_verification_enabled'])||!empty($o['otp_verification_enabled'])) && empty($o['otp_disabled_slugs']['ai-powered-digital-marketing']) && (!isset($o['otp_required_modal'])||!empty($o['otp_required_modal']));
-    return $enabled && $otp && tlit_dm_crm_url()!=='' && function_exists('techleadsit_send_vispl_sms');
+    return $enabled && $otp && tlit_dm_inbox_ready() && function_exists('techleadsit_send_vispl_sms');
+}
+function tlit_dm_inbox_ready(){return class_exists('TLIT_LP_Leads')&&is_callable(array('TLIT_LP_Leads','ingest'));}
+// Validated form data is saved locally before the visitor receives a success screen.
+// Counsellor classification in Landing Page Leads owns all subsequent CRM delivery.
+function tlit_dm_store_lead($p,$name,$phone,$email,$goal,$request_id,$source,$otp_verified){
+    if(!tlit_dm_inbox_ready())return new WP_Error('inbox_unavailable','Your enquiry could not be saved. Please retry.',array('status'=>503));
+    $tracking=is_array($p['tracking']??null)?$p['tracking']:array();
+    $payload=array('request_id'=>$request_id,'name'=>$name,'phone'=>$phone,'email'=>$email,'goal'=>$goal,
+        'details'=>is_array($p['details']??null)?$p['details']:array(),'tracking'=>$tracking,
+        'submission_url'=>is_string($p['submission_url']??null)?$p['submission_url']:($tracking['submission_url']??''),
+        'page_variant'=>is_string($p['page_variant']??null)?$p['page_variant']:($tracking['page_variant']??'v1'),
+        'marketingConsent'=>($p['emailMarketing']??false)===true);
+    return TLIT_LP_Leads::ingest($payload,array('source'=>$source,'otp_verified'=>$otp_verified));
 }
 function tlit_dm_crm_url(){
     if(defined('TLIT_DM_TELECRM_URL'))$url=TLIT_DM_TELECRM_URL;
@@ -56,7 +69,7 @@ function tlit_dm_body($request) {
     if(strlen($request->get_body())>16000) return null;
     $p=$request->get_json_params();return is_array($p)?$p:null;
 }
-// Atomic option locks prevent duplicate SMS/CRM calls and counter races.
+// Atomic option locks prevent duplicate SMS/storage calls and counter races.
 function tlit_dm_lock($id) {
     $key='tlit_dm_lock_'.tlit_dm_hash($id);$old=get_option($key);
     if($old && (int)$old<time()) delete_option($key);
@@ -107,7 +120,7 @@ function tlit_dm_submit($request) {
         if(!$state||$state['phone']!==$phone)return tlit_dm_error('Code expired. Request a new code.');
         if(!empty($state['complete'])) {
             if(!hash_equals($state['code'],tlit_dm_hash($challenge.'|'.$otp)))return tlit_dm_error('Invalid verification code.');
-            return new WP_REST_Response(array('success'=>true,'receipt'=>$state['receipt'],'leadToken'=>$state['token']),200);
+            return new WP_REST_Response(array('success'=>true,'receipt'=>$state['receipt'],'leadToken'=>$state['token'],'bridgeReceipt'=>$state['bridge_receipt']??'','downloadToken'=>$state['download_token']??''),200);
         }
         if($state['expires']<time()||$state['tries']>=5)return tlit_dm_error('Code expired or attempt limit reached. Request a new code.');
         if(!hash_equals($state['code'],tlit_dm_hash($challenge.'|'.$otp))){$state['tries']++;set_transient($key,$state,max(1,$state['expires']-time()));return tlit_dm_error('Incorrect code. Check the SMS or request a new code.');}
@@ -122,12 +135,13 @@ function tlit_dm_submit($request) {
         $note=(in_array(($p['intent']??''),array('brochure','chatbot_brochure'),true)?'Person downloaded brochure — AI Powered Digital Marketing | Request type: brochure download | ':'').$note;
         if(($p['intent']??'')==='chatbot_brochure')$note.=' | Enquiry channel: Course chatbot | Pain point / goal: '.substr(sanitize_text_field(is_string($p['painPoint']??null)?$p['painPoint']:''),0,600);
         $note=str_replace(' | ',"\n",$note);
-        $fields=tlit_dm_lead_fields($p,$name,$phone,$email,$goal,$note);
-        if(!tlit_dm_crm($fields,$note))return tlit_dm_error('Your phone is verified, but the enquiry could not be confirmed. Please retry; do not close this page.',502);
-        $token=bin2hex(random_bytes(24));$state['complete']=true;$state['receipt']=$reference;$state['token']=$token;
-        set_transient($key,$state,1800);set_transient('tlit_dm_receipt_'.tlit_dm_hash($reference),array('phone'=>$phone,'token'=>tlit_dm_hash($token),'remarks'=>$note),1800);
+        $source=in_array(($p['intent']??''),array('brochure','chatbot_brochure'),true)?$p['intent']:'general';
+        $stored=tlit_dm_store_lead($p,$name,'+91'.$phone,$email,$goal,'dm-verified-'.$challenge,$source,true);
+        if(is_wp_error($stored))return tlit_dm_error('Your phone is verified, but the enquiry could not be saved. Please retry; do not close this page.',503);
+        $token=bin2hex(random_bytes(24));$state['complete']=true;$state['receipt']=$reference;$state['token']=$token;$state['bridge_receipt']=$stored['receipt'];$state['download_token']=$stored['download_token']??'';
+        set_transient($key,$state,1800);set_transient('tlit_dm_receipt_'.tlit_dm_hash($reference),array('phone'=>$phone,'token'=>tlit_dm_hash($token),'remarks'=>$note,'lead_id'=>$stored['lead_id']),1800);
         if(($p['intent']??'')==='chatbot_brochure')tlit_dm_archive_brochure($p,$reference);
-        return new WP_REST_Response(array('success'=>true,'receipt'=>$reference,'leadToken'=>$token),200);
+        return new WP_REST_Response(array('success'=>true,'receipt'=>$reference,'leadToken'=>$token,'bridgeReceipt'=>$stored['receipt'],'downloadToken'=>$stored['download_token']??''),200);
     }finally{delete_option($lock);}
 }
 function tlit_dm_followup($request) {
@@ -142,11 +156,11 @@ function tlit_dm_followup($request) {
     $note='Digital Marketing counselling | '.$receipt.' | '.implode(' | ',$parts);
     $fingerprint='tlit_dm_followup_'.tlit_dm_hash($note);if(get_transient($fingerprint))return new WP_REST_Response(array('success'=>true),200);
     if(!tlit_dm_rate('followup-'.$receipt,3,1800))return tlit_dm_error('Please discuss any further changes on your call.',429);
-    if(!tlit_dm_crm(array('phone'=>'+91'.$phone),$note))return tlit_dm_error('Could not save optional details. Your original demo request is still received.',502);
+    if(empty($state['lead_id'])||!is_callable(array('TLIT_LP_Leads','update_details'))||is_wp_error(TLIT_LP_Leads::update_details((int)$state['lead_id'],array('details'=>$details))))return tlit_dm_error('Could not save optional details. Your original enquiry is still received. Please share these details with your counsellor.',503);
     set_transient($fingerprint,1,1800);return new WP_REST_Response(array('success'=>true),200);
 }
 
-// Reuse a verified, CRM-confirmed session; never accept a client-only verified flag.
+// Reuse a verified, locally stored session; never accept a client-only verified flag.
 function tlit_dm_brochure($request) {
     $p=tlit_dm_body($request);if(!$p)return tlit_dm_error('Invalid request.');
     $receipt=$p['receipt']??'';$token=$p['leadToken']??'';$phone=tlit_dm_phone($p['phone']??'');
@@ -157,7 +171,9 @@ function tlit_dm_brochure($request) {
     try {
         if(empty($state['brochure'])) {
             $note='Person downloaded brochure — AI Powered Digital Marketing';
-            if(!tlit_dm_crm(array('phone'=>'+91'.$phone,'Remarks'=>($state['remarks']??'')."\n".$note),$note.' | Reference: '.$receipt))return tlit_dm_error('Could not confirm your brochure request. Please try again.',502);
+            if(!empty($state['lead_id'])){
+                if(!is_callable(array('TLIT_LP_Leads','update_details'))||is_wp_error(TLIT_LP_Leads::update_details((int)$state['lead_id'],array('brochure_downloaded'=>true))))return tlit_dm_error('Could not save your brochure request. Please try again.',503);
+            }
             $state['brochure']=true;set_transient('tlit_dm_receipt_'.tlit_dm_hash($receipt),$state,1800);
         }
         return new WP_REST_Response(array('success'=>true,'url'=>plugins_url('../ai-digital-marketing-freshers/assets/digital-marketing-brochure.pdf',__FILE__)),200);

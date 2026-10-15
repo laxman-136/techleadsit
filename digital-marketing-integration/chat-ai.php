@@ -59,8 +59,8 @@ function tlit_dm_ai_knowledge(){
  $records[]=array('id'=>'current-schedule','text'=>'Current website batch start: '.($batch!==''?$batch:'not yet confirmed').'. Current batch class timing: '.($timing!==''?$timing:'not yet confirmed').'. These current batch-specific settings take precedence over a general class-duration or older timetable description. A free Live Session has a separately confirmed date, time and joining link. Do not claim that an alternative morning, weekend or classroom batch is currently available without a confirmed listing.','source'=>'Current WordPress batch settings');
  $normalOtp=(!isset($o['otp_verification_enabled'])||!empty($o['otp_verification_enabled']))&&empty($o['otp_disabled_slugs']['ai-powered-digital-marketing'])&&(!isset($o['otp_required_modal'])||!empty($o['otp_required_modal']));
  $normalFlow=$normalOtp?'The normal Live Session enquiry and standard brochure-popup forms require SMS OTP verification.':'The normal Live Session enquiry and standard brochure-popup forms are currently unavailable because their required SMS-verification flow is disabled; this does not create an unverified normal-form route.';
- $chatFlow=!empty($o['dm_chat_otp_required'])?'SMS OTP is required for the separate chatbot brochure request.':'No OTP is currently required for the separate chatbot brochure request.';
- $records[]=array('id'=>'brochure-contact','text'=>'Use the separate Get brochure button to enter name, email and Indian mobile number. Chat conversation asks for name, preferred language and mobile through the interface; email is not required to keep chatting, but is required for brochure delivery. '.$normalFlow.' '.$chatFlow.' A confirmed normal enquiry/brochure submission redirects to the thank-you page, which automatically starts the brochure download when a valid completed lead is recognised; its download button does not ask for the same details again. A confirmed chatbot brochure submission also redirects to the same thank-you page for the automatic brochure download. Contact the course team on WhatsApp or call +91 81429 29394. The bot cannot book appointments, process payments, send an OTP, download a file or submit a lead through generated chat answers; those actions belong to the controlled website forms.','source'=>'Current lead flow');
+ $chatFlow=!empty($o['dm_chat_otp_required'])?'SMS OTP is required for the separate chatbot brochure request. That SMS-verification service currently supports Indian mobile numbers only.':'No OTP is currently required for the separate chatbot brochure request; international mobile numbers are accepted with their country code.';
+ $records[]=array('id'=>'brochure-contact','text'=>'Use the separate Get brochure button to enter name, email and mobile number with its country code. Chat conversation asks for name, preferred language and mobile through the interface; email is not required to keep chatting, but is required for brochure delivery. '.$normalFlow.' '.$chatFlow.' A confirmed normal enquiry/brochure submission redirects to the thank-you page, which automatically starts the brochure download when a valid completed lead is recognised; its download button does not ask for the same details again. A confirmed chatbot brochure submission also redirects to the same thank-you page for the automatic brochure download. Contact the course team on WhatsApp or call +91 81429 29394. The bot cannot book appointments, process payments, send an OTP, download a file or submit a lead through generated chat answers; those actions belong to the controlled website forms.','source'=>'Current lead flow');
  $records[]=array('id'=>'current-privacy','text'=>'The WordPress Conversation Bridge privately stores the conversation and captured contact details for authorised staff. Captured name, mobile and email are kept separately from model history; common phone/email and API-key patterns in free-text questions are redacted before OpenRouter processes the AI conversation. Necessary service processors are used: OpenRouter provides AI answers; completed website enquiry/brochure forms route the lead to TeleCRM for follow-up, subject to the form choices and consent. Email marketing consent is separate. Do not claim that no information is ever shared with a platform or that a brochure request automatically grants email-marketing consent. Ask the course team on +91 81429 29394 for help or a deletion request; do not claim that an AI answer has deleted data.','source'=>'Implemented WordPress chat archive, redaction, lead routing and consent flow');
  $extra=preg_split('/\R\s*\R/',trim($a['knowledge']));
  foreach(array_slice($extra,0,40) as $i=>$text)if(trim($text)!=='')$records[]=array('id'=>'approved-'.($i+1),'text'=>substr($text,0,1600),'source'=>'Team-approved additional course information');
@@ -152,6 +152,13 @@ function tlit_dm_ai_answer($request){
   $language=tlit_dm_ai_language($p['language']??'English');$state['language']=$language;
   if(($p['action']??'')==='intro'){if(!tlit_dm_rate('chat-intro-'.($_SERVER['REMOTE_ADDR']??'unknown'),30,3600))return tlit_dm_error('Please try again later.',429);unset($state['intro_goal']);$captureError=tlit_dm_chat_capture($state,'name',$p['question']);if($captureError)return tlit_dm_error($captureError);set_transient($key,$state,86400);tlit_dm_archive_intro($token,$state,$p['question'],$language,$p['tracking']??array());return new WP_REST_Response(tlit_dm_chat_flow_reply($state,$token,$language),200);}
   $quotaLock=!empty($state['contact_complete'])?tlit_dm_lock($state['lead_quota_key']):'';if(!empty($state['contact_complete'])&&!$quotaLock)return tlit_dm_error('Please wait for the previous answer.',429);$stage=tlit_dm_chat_stage($state);
+  if(($p['action']??'')==='contact'&&($p['contactStage']??'')==='phone'&&!empty($state['contact_complete'])){
+   $incomingPhone=tlit_dm_chat_phone($p['question'],$p['country']??'IN');$savedContact=tlit_dm_chat_unseal($state['contact_sealed']??'');$savedPhone=$savedContact['phone']??'';
+   if(preg_match('/^[6-9][0-9]{9}$/D',$savedPhone))$savedPhone='+91'.$savedPhone;
+   if($incomingPhone===''||!hash_equals($savedPhone,$incomingPhone))return tlit_dm_error('Please use the mobile number already saved for this conversation.');
+   // A lost contact response must be safely retryable before the client resumes its pending question.
+   $result=tlit_dm_chat_flow_reply($state,$token,$language);$result['contactAccepted']=true;$out=new WP_REST_Response($result,200);$out->header('Cache-Control','no-store');return tlit_dm_ai_model_header($out,$state['response_model']??'');
+  }
   if(!in_array($p['action']??'',array('resume','contact'),true)){
    $records=tlit_dm_ai_knowledge();$version=hash('sha256','lakshmi-v9-intent-context|'.$language.'|'.tlit_dm_ai_options()['model'].'|'.wp_json_encode($records).'|'.tlit_dm_ai_prompt_fingerprint());
    // A new submission counts even when its text repeats; delivery retries reuse their confirmed answer.
@@ -160,13 +167,19 @@ function tlit_dm_ai_answer($request){
    }
   }
   if(($p['action']??'')==='resume'||$stage!=='question'){
-   
+   $contactAccepted=false;
    if(in_array($stage,array('name','phone','email'),true)&&($p['action']??'')==='contact'&&($p['contactStage']??'')===$stage){
     if(!tlit_dm_rate('chat-capture-'.($_SERVER['REMOTE_ADDR']??'unknown'),30,3600))return tlit_dm_error('Please try again later.',429);
-    $captureError=tlit_dm_chat_capture($state,$stage,$p['question']);if($captureError)return tlit_dm_error($captureError);
-    tlit_dm_archive($token,'contact:'.$stage.':'.hash('sha256',$p['question']),$state,$language,array(array('role'=>'visitor','type'=>'contact_'.$stage,'content'=>$p['question']),array('role'=>'assistant','type'=>'capture_prompt','content'=>tlit_dm_chat_prompt(tlit_dm_chat_stage($state),$language))));
+    $captureError=tlit_dm_chat_capture($state,$stage,$p['question'],$p['country']??'IN');if($captureError)return tlit_dm_error($captureError);
+    $contactAccepted=true;$captured=tlit_dm_chat_unseal($state['contact_sealed']);$capturedValue=$captured[$stage];
+    tlit_dm_archive($token,'contact:'.$stage.':'.hash('sha256',$capturedValue),$state,$language,array(array('role'=>'visitor','type'=>'contact_'.$stage,'content'=>$capturedValue),array('role'=>'assistant','type'=>'capture_prompt','content'=>tlit_dm_chat_prompt(tlit_dm_chat_stage($state),$language))));
    }
-   $result=tlit_dm_chat_flow_reply($state,$token,$language);set_transient($key,$state,86400);$out=new WP_REST_Response($result,200);$out->header('Cache-Control','no-store');return tlit_dm_ai_model_header($out,$state['response_model']??'');
+   $result=tlit_dm_chat_flow_reply($state,$token,$language);
+   if($contactAccepted)$result['contactAccepted']=true;
+   // The client can retain this unanswered question and retry it after contact capture.
+   // Do not archive or count it until it actually reaches the answer engine.
+   if($stage==='phone'&&!in_array($p['action']??'',array('resume','contact'),true))$result['questionDeferred']=true;
+   set_transient($key,$state,86400);$out=new WP_REST_Response($result,200);$out->header('Cache-Control','no-store');return tlit_dm_ai_model_header($out,$state['response_model']??'');
   }
   if(($p['action']??'')==='contact')return new WP_REST_Response(tlit_dm_chat_flow_reply($state,$token,$language),200);
   $o=tlit_dm_ai_options();
@@ -195,7 +208,9 @@ function tlit_dm_ai_answer($request){
    $priorMemory=tlit_dm_ai_memory_update(array_key_exists('goal',$storedMemory)?array():($state['goal']??''),$storedMemory);
    $patch=$answer['memory']??array();
    if($answer['goal']!==''&&(!array_key_exists('goal',$patch)||$patch['goal']===''))$patch['goal']=$answer['goal'];
-   if(array_key_exists('goal',$patch)&&$patch['goal']===null)$state['goal_clear_confirmed']=true;elseif(!empty($patch['goal']))unset($state['goal_clear_confirmed']);
+   // Null with no previous objective means unknown, not a visitor retraction.
+   unset($state['goal_clear_confirmed']);
+   if(array_key_exists('goal',$patch)&&$patch['goal']===null&&!empty($priorMemory['goal']))$state['goal_clear_confirmed']=true;
    $state['memory']=tlit_dm_ai_memory_update($priorMemory,$patch);$state['goal']=$state['memory']['goal'];
   }
   $state['response_model']=is_string($body['model']??null)?$body['model']:'';
@@ -210,6 +225,8 @@ function tlit_dm_ai_answer($request){
   $archive_messages=array(array('role'=>'assistant','type'=>'answer','content'=>$answer['answer']));
   if($result['stage']!=='question')$archive_messages[]=array('role'=>'assistant','type'=>$result['stage']==='limit'?'handoff':'capture_prompt','content'=>tlit_dm_chat_prompt($result['stage'],$language));
   tlit_dm_archive($token,'answer:'.$archive_turn,$state,$language,$archive_messages);
+  // Send a retraction once; Bridge retains its cutoff without clearing future evidence.
+  unset($state['goal_clear_confirmed']);
   $state['last']=$question;$state['last_request_id']=$request_id;$state['version']=$version;$state['response']=$result;set_transient($key,$state,86400);
   $out=new WP_REST_Response($result,200);$out->header('Cache-Control','no-store');return tlit_dm_ai_model_header($out,$state['response_model']??'');
  }finally{if(!empty($quotaLock))delete_option($quotaLock);delete_option($lock);}
