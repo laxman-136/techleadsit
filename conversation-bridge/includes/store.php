@@ -221,6 +221,11 @@ final class TLIT_CB_Store {
         $conversations = self::table('conversations');
         $messages = self::table('messages');
         $events = self::table('events');
+        // New adapters can replace the goal with an empty value after a visitor
+        // retracts it. Legacy or partial events keep the existing nonblank value.
+        $goal_update = ($event['goal_authoritative'] ?? false) === true
+            ? 'goal=VALUES(goal),'
+            : "goal=IF(VALUES(goal)<>'',VALUES(goal),goal),";
         $previous = $wpdb->suppress_errors(true);
         $started = false;
         try {
@@ -236,7 +241,7 @@ final class TLIT_CB_Store {
                 email=IF(VALUES(email)<>'',VALUES(email),email),
                 phone=IF(VALUES(phone)<>'',VALUES(phone),phone),
                 language=IF(VALUES(language)<>'',VALUES(language),language),
-                goal=IF(VALUES(goal)<>'',VALUES(goal),goal),
+                $goal_update
                 stage=IF(VALUES(stage)<>'',VALUES(stage),stage),
                 has_brochure=GREATEST(has_brochure,VALUES(has_brochure)),
                 answer_count=GREATEST(answer_count,VALUES(answer_count)),updated_at=VALUES(updated_at)";

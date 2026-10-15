@@ -86,7 +86,7 @@ function tlit_dm_ai_review($question){
 }
 function tlit_dm_ai_payload($question,$history,$records,$language='English',$goal='',$memory=array()){
  $model=tlit_dm_ai_options()['model'];$claude=strpos($model,'anthropic/claude-')===0;
- $schema=array('type'=>'object','additionalProperties'=>false,'properties'=>array('answer'=>array('type'=>'string'),'kind'=>array('type'=>'string','enum'=>array('answer','marketing','clarify','handoff','greeting','out_of_scope')),'source_ids'=>array('type'=>'array','items'=>array('type'=>'string')),'goal'=>array('type'=>'string'),'memory'=>tlit_dm_ai_memory_schema()),'required'=>array('answer','kind','source_ids','goal','memory'));
+ $schema=array('type'=>'object','additionalProperties'=>false,'properties'=>array('answer'=>array('type'=>'string','description'=>'Only the visitor-facing answer: one short sentence for a fact; normally 1–2 sentences and 20–45 words. Up to 70 words for multiple questions or necessary conditions, up to 120 only for explicitly requested detail. No unrelated additions. Keep memory updates outside this text.'),'kind'=>array('type'=>'string','enum'=>array('answer','marketing','clarify','handoff','greeting','out_of_scope')),'source_ids'=>array('type'=>'array','items'=>array('type'=>'string')),'goal'=>array('type'=>'string'),'memory'=>tlit_dm_ai_memory_schema()),'required'=>array('answer','kind','source_ids','goal','memory'));
  $hasStructuredGoal=is_array($memory)&&array_key_exists('goal',$memory);
  $memory=tlit_dm_ai_memory_update(array(),is_array($memory)?$memory:array());
  if(!$hasStructuredGoal&&is_string($goal)&&$goal!=='')$memory=tlit_dm_ai_memory_update($memory,array('goal'=>$goal));
@@ -148,7 +148,7 @@ function tlit_dm_ai_answer($request){
  try{
   $question=tlit_dm_ai_redact($p['question']);$state=get_transient($key);if(!is_array($state))$state=array('history'=>array(),'goal'=>'');
   $language=tlit_dm_ai_language($p['language']??'English');$state['language']=$language;
-  if(($p['action']??'')==='intro'){if(!tlit_dm_rate('chat-intro-'.($_SERVER['REMOTE_ADDR']??'unknown'),30,3600))return tlit_dm_error('Please try again later.',429);$captureError=tlit_dm_chat_capture($state,'name',$p['question']);if($captureError)return tlit_dm_error($captureError);set_transient($key,$state,86400);tlit_dm_archive_intro($token,$state,$p['question'],$language,$p['tracking']??array());return new WP_REST_Response(tlit_dm_chat_flow_reply($state,$token,$language),200);}
+  if(($p['action']??'')==='intro'){if(!tlit_dm_rate('chat-intro-'.($_SERVER['REMOTE_ADDR']??'unknown'),30,3600))return tlit_dm_error('Please try again later.',429);$goalError=tlit_dm_chat_intro_goal($state,$p['learning_goal']??'');if($goalError)return tlit_dm_error($goalError);$captureError=tlit_dm_chat_capture($state,'name',$p['question']);if($captureError)return tlit_dm_error($captureError);set_transient($key,$state,86400);tlit_dm_archive_intro($token,$state,$p['question'],$language,$p['tracking']??array());return new WP_REST_Response(tlit_dm_chat_flow_reply($state,$token,$language),200);}
   $quotaLock=!empty($state['contact_complete'])?tlit_dm_lock($state['lead_quota_key']):'';if(!empty($state['contact_complete'])&&!$quotaLock)return tlit_dm_error('Please wait for the previous answer.',429);$stage=tlit_dm_chat_stage($state);
   if(!in_array($p['action']??'',array('resume','contact'),true)){
    $records=tlit_dm_ai_knowledge();$version=hash('sha256','lakshmi-v9-intent-context|'.$language.'|'.tlit_dm_ai_options()['model'].'|'.wp_json_encode($records).'|'.tlit_dm_ai_prompt_fingerprint());
@@ -189,6 +189,7 @@ function tlit_dm_ai_answer($request){
    $priorMemory=tlit_dm_ai_memory_update(array_key_exists('goal',$storedMemory)?array():($state['goal']??''),$storedMemory);
    $patch=$answer['memory']??array();
    if($answer['goal']!==''&&(!array_key_exists('goal',$patch)||$patch['goal']===''))$patch['goal']=$answer['goal'];
+   if(array_key_exists('goal',$patch)&&$patch['goal']===null)$state['goal_clear_confirmed']=true;elseif(!empty($patch['goal']))unset($state['goal_clear_confirmed']);
    $state['memory']=tlit_dm_ai_memory_update($priorMemory,$patch);$state['goal']=$state['memory']['goal'];
   }
   $state['response_model']=is_string($body['model']??null)?$body['model']:'';
