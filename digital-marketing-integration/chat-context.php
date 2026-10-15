@@ -35,7 +35,7 @@ function tlit_dm_ai_composition_note(){
 }
 
 function tlit_dm_ai_prompt_fingerprint(){
- return hash('sha256',tlit_dm_ai_instructions().'|'.tlit_dm_ai_composition_note());
+ return hash('sha256',tlit_dm_ai_instructions().'|'.tlit_dm_ai_composition_note().'|concise-scope-v1');
 }
 
 function tlit_dm_ai_memory_schema(){

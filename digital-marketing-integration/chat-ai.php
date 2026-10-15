@@ -179,6 +179,7 @@ function tlit_dm_ai_answer($request){
   $selected=tlit_dm_ai_select_knowledge($question,$state['history']??array(),$records,$state['memory']??array());
   $aiPayload=tlit_dm_ai_payload($question,$state['history']??array(),$selected,$language,$state['goal']??'',$state['memory']??array());
   $replyFocus=tlit_dm_ai_reply_focus($question,$state['history']??array());if($replyFocus!=='')tlit_dm_ai_payload_note($aiPayload,$replyFocus);
+  $requestScope=tlit_dm_ai_concise_scope($question);if($requestScope)tlit_dm_ai_payload_note($aiPayload,$requestScope['note']);
   if((empty($state['contact_complete'])&&($state['answers']??0)===tlit_dm_chat_initial_limit()-1)||($state['followup_answers']??0)>=9)tlit_dm_ai_payload_note($aiPayload,'For this reply, answer directly without a follow-up question or contact request; the interface supplies the next step.');
   $providerStarted=microtime(true);
   $response=wp_remote_post('https://openrouter.ai/api/v1/chat/completions',array('timeout'=>35,'redirection'=>0,'sslverify'=>true,'limit_response_size'=>65536,'headers'=>array('Authorization'=>'Bearer '.tlit_dm_ai_key(),'Content-Type'=>'application/json','HTTP-Referer'=>home_url(),'X-OpenRouter-Title'=>'Tech Leads IT Course Guide'),'body'=>wp_json_encode($aiPayload)));
