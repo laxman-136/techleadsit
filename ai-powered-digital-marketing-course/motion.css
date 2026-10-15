@@ -1,0 +1,54 @@
+/* V2 motion system: measured reference timings, native scroll and visible fallbacks. */
+:root{--motion-ease:cubic-bezier(.2,.7,.2,1)}
+.motion-ready .hero .launch-pill,.motion-ready .hero .hero-eyebrow,.motion-ready .hero h1,.motion-ready .hero .hero-copy,.motion-ready .hero .hero-actions,.motion-ready .hero .cta-note,.motion-ready .hero .mentor-chip{animation:v2-rise .9s var(--motion-ease) both}
+.motion-ready .hero .hero-eyebrow{animation-delay:.08s}.motion-ready .hero h1{animation-delay:.22s}.motion-ready .hero .hero-copy{animation-delay:.32s}.motion-ready .hero .hero-actions{animation-delay:.4s}.motion-ready .hero .cta-note{animation-delay:.46s}.motion-ready .hero .mentor-chip{animation-delay:.55s}
+.motion-ready .portfolio-scene{animation:v2-rise 1s var(--motion-ease) .55s both}
+[data-reveal]{--reveal-x:0px;--reveal-y:26px;--reveal-scale:1;--reveal-delay:0ms}
+.motion-ready [data-reveal].reveal-waiting{opacity:0;translate:var(--reveal-x) var(--reveal-y);scale:var(--reveal-scale)}
+.motion-ready [data-reveal]{transition:opacity .8s var(--motion-ease) var(--reveal-delay),translate .8s var(--motion-ease) var(--reveal-delay),scale .8s var(--motion-ease) var(--reveal-delay)}
+.motion-ready [data-reveal].reveal-shown{opacity:1;translate:0 0;scale:1}
+[data-reveal=left]{--reveal-x:-26px;--reveal-y:10px}[data-reveal=right]{--reveal-x:26px;--reveal-y:10px}[data-reveal=frame]{--reveal-y:34px;--reveal-scale:.97}
+.motion-replay[data-reveal].reveal-shown .gold::after{animation:v2-button-sheen 1.1s var(--motion-ease) .2s both}
+.hero-orbit{position:absolute;width:550px;height:550px;border-radius:50%;top:140px;left:calc(50% - 275px);background:radial-gradient(circle,#92d75112,transparent 68%);pointer-events:none;animation:v2-breathe 4.5s ease-in-out infinite}
+.hero{position:relative}.hero-content{position:relative;z-index:1}.hero .status-dot,.live-dot{position:relative}
+.hero .status-dot::after,.live-dot::after{content:'';position:absolute;inset:-5px;border:1px solid #c6f68988;border-radius:50%;animation:v2-ring 2.6s var(--motion-ease) infinite;pointer-events:none}
+.portfolio-window{position:relative}.portfolio-window::before{content:'';position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 28px #c6f68915;opacity:.25;pointer-events:none;animation:v2-frame-glow 4.5s ease-in-out infinite}
+.note-left{animation:v2-note-float 6s ease-in-out infinite}.note-right{animation:v2-note-float 6.8s ease-in-out -.8s infinite}
+.calendar-cells i{animation:v2-calendar-pulse 6s ease-in-out infinite;animation-delay:var(--cell-delay,0s)}
+.mini-flow>div{animation:v2-flow-focus 6s ease-in-out infinite}.mini-flow>div:nth-of-type(2){animation-delay:2s}.mini-flow>div:nth-of-type(3){animation-delay:4s}
+.mini-flow>i{animation:v2-flow-arrow 2s ease-in-out infinite}
+.project-grid{position:relative;isolation:isolate}.project-card{position:relative;z-index:1}.project-route{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:visible}.project-route .path-bed{fill:none;stroke:#c6f68913;stroke-width:13}.project-route .path-dots{fill:none;stroke:#b5dc82;stroke-width:2.5;stroke-dasharray:2 10;stroke-linecap:round;animation:v2-path-flow 1.6s linear infinite}
+.project-book{animation:v2-book-float 6s ease-in-out infinite}.art-content .project-book{animation-delay:-2s}.art-growth .project-book{animation-delay:-4s}
+.project-art::after{content:'';position:absolute;width:70%;height:25px;bottom:10px;left:15%;border-radius:50%;background:#0004;filter:blur(12px);z-index:-1}
+.tool-tile{transition:translate .3s var(--motion-ease),border-color .3s,background .3s}.tool-tile img{transition:transform .4s var(--motion-ease)}
+.gold{position:relative;overflow:hidden;isolation:isolate}.gold::after{content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(110deg,transparent 25%,#fff5 48%,transparent 70%);transform:translateX(-130%)}
+.button>span{display:inline-block;transition:transform .25s var(--motion-ease)}
+.faq-list details{transition:background .25s,border-color .25s}.faq-list summary::after{transition:transform .35s var(--motion-ease)}.faq-list details[open] summary::after{transform:rotate(180deg)}.faq-list details[open] .detail-body{animation:v2-answer-in .35s var(--motion-ease)}
+#faq{position:relative;isolation:isolate}.faq-current{position:absolute;right:0;top:40px;width:100%;height:220px;pointer-events:none;z-index:-1;opacity:.35}.faq-current path{fill:none;stroke:#81aa51;stroke-width:2;stroke-dasharray:2 11;stroke-linecap:round;animation:v2-path-flow 1.6s linear infinite}
+.session-showcase .showcase-orbit{animation:v2-orbit-breathe 4.5s ease-in-out infinite}.rail-preview{animation:v2-note-float 6s ease-in-out infinite}.rail-preview:nth-child(2){animation-delay:-3s}.rail-right .rail-preview{animation-delay:-1.5s}.rail-right .rail-preview:nth-child(2){animation-delay:-4.5s}
+.session-agenda>div{transition:opacity .5s,translate .5s}.session-agenda>div[data-reveal]{--reveal-y:12px}.rail-calendar i{animation:v2-calendar-pulse 6s ease-in-out infinite;animation-delay:var(--cell-delay,0s)}.rail-chart i{transform-origin:bottom;animation:v2-bar-build 4.5s var(--motion-ease) infinite;animation-delay:var(--cell-delay,0s)}
+.story-scene.is-active .scene-bars i{transform-origin:bottom;animation:v2-bar-enter .65s var(--motion-ease) both}.story-scene.is-active .scene-bars i:nth-child(2){animation-delay:.08s}.story-scene.is-active .scene-bars i:nth-child(3){animation-delay:.16s}.story-scene.is-active .scene-bars i:nth-child(4){animation-delay:.24s}
+.story-scene.is-active .scene-calendar span{animation:v2-cell-enter .4s cubic-bezier(.3,1.5,.5,1) both;animation-delay:var(--cell-delay,0s)}
+.section-motion-paused *,.section-motion-paused *::before,.section-motion-paused *::after{animation-play-state:paused!important}
+.page-motion-paused *, .page-motion-paused *::before,.page-motion-paused *::after{animation-play-state:paused!important}
+@keyframes v2-rise{from{opacity:0;translate:0 26px}to{opacity:1;translate:0 0}}
+@keyframes v2-breathe{0%,100%{scale:1;opacity:.6}50%{scale:1.08;opacity:1}}
+@keyframes v2-ring{0%{scale:.7;opacity:.65}100%{scale:2.1;opacity:0}}
+@keyframes v2-frame-glow{0%,100%{opacity:.25}50%{opacity:.85}}
+@keyframes v2-note-float{0%,100%{translate:0 0}50%{translate:0 -9px}}
+@keyframes v2-book-float{0%,100%{translate:0 0}50%{translate:0 -7px}}
+@keyframes v2-calendar-pulse{0%,12%,100%{filter:brightness(1)}20%,35%{filter:brightness(1.12);box-shadow:inset 0 0 0 1px #427e2560}}
+@keyframes v2-flow-focus{0%,8%,38%,100%{box-shadow:0 0 0 0 transparent}15%,30%{box-shadow:0 0 0 2px #72a64560}}
+@keyframes v2-flow-arrow{0%,100%{translate:0 -2px;opacity:.45}50%{translate:0 2px;opacity:1}}
+@keyframes v2-path-flow{to{stroke-dashoffset:-26}}
+@keyframes v2-button-sheen{from{transform:translateX(-130%)}to{transform:translateX(130%)}}
+@keyframes v2-answer-in{from{opacity:0;translate:0 8px}to{opacity:1;translate:0 0}}
+@keyframes v2-orbit-breathe{0%,100%{opacity:.45;scale:1}50%{opacity:1;scale:1.03}}
+@keyframes v2-bar-build{0%,100%{scale:1 .55;opacity:.75}40%,70%{scale:1 1;opacity:1}}
+@keyframes v2-bar-enter{from{scale:1 .1}to{scale:1 1}}
+@keyframes v2-cell-enter{from{opacity:0;scale:.7}to{opacity:1;scale:1}}
+@media(hover:hover) and (pointer:fine){.tool-tile:hover{translate:0 -4px;border-color:#7eab54;background:#1a2c19}.tool-tile:hover img{transform:rotate(-7deg) scale(1.08)}.button:hover>span{transform:translate(3px,-2px)}.gold:hover::after{animation:v2-button-sheen .65s var(--motion-ease)}.project-card:hover .project-book{translate:0 -8px}.journey-route button:hover>span{transform:rotate(0) scale(1.1)}}
+@media(max-width:760px){.motion-ready [data-reveal]{--reveal-x:0px;--reveal-y:18px;--reveal-scale:1;transition-duration:.65s;transition-delay:0ms}.hero-orbit{width:300px;height:300px;left:calc(50% - 150px)}.project-book{animation-duration:7s}.project-route .path-dots{stroke-width:2}.faq-current{height:130px;opacity:.2}.motion-ready .hero h1{animation-duration:.8s}.rail-preview{animation:none}}
+@media(max-height:560px) and (min-width:761px){.journey-preview{top:95px}.journey-preview .scene-canvas{height:220px;min-height:220px}.story-scene .scene-sheet{transform:rotate(-3deg) scale(.6)}.journey-preview .scene-caption{padding:10px 5px}.journey-preview .scene-caption strong{font-size:15px}.journey-preview .scene-caption p,.scene-disclaimer{font-size:9px}}
+@media(prefers-reduced-motion:reduce){.motion-ready [data-reveal],.motion-ready [data-reveal].reveal-waiting{opacity:1;translate:none;scale:1;transition:none}.motion-ready .hero *, .hero-orbit,.project-book,.route-flow,.path-dots,.faq-current path,.rail-preview,.rail-chart i,.rail-calendar i,.showcase-orbit{animation:none!important}.hero .status-dot::after,.live-dot::after,.portfolio-window::before{animation:none;display:none}}
+@media print{[data-reveal]{opacity:1!important;translate:none!important;scale:1!important}.journey-step{opacity:1!important}}
