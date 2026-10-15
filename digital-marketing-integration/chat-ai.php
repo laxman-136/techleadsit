@@ -7,6 +7,7 @@ require_once __DIR__.'/chat-context.php';
 require_once __DIR__.'/chat-knowledge.php';
 require_once __DIR__.'/chat-usage.php';
 require_once __DIR__.'/chat-rate.php';
+require_once __DIR__.'/chat-concise.php';
 
 function tlit_dm_ai_options(){
  $saved=get_option('tlit_dm_ai_settings',array());
@@ -86,7 +87,7 @@ function tlit_dm_ai_review($question){
 }
 function tlit_dm_ai_payload($question,$history,$records,$language='English',$goal='',$memory=array()){
  $model=tlit_dm_ai_options()['model'];$claude=strpos($model,'anthropic/claude-')===0;
- $schema=array('type'=>'object','additionalProperties'=>false,'properties'=>array('answer'=>array('type'=>'string','description'=>'Only the visitor-facing answer: one short sentence for a fact; normally 1–2 sentences and 20–45 words. Up to 70 words for multiple questions or necessary conditions, up to 120 only for explicitly requested detail. No unrelated additions. Keep memory updates outside this text.'),'kind'=>array('type'=>'string','enum'=>array('answer','marketing','clarify','handoff','greeting','out_of_scope')),'source_ids'=>array('type'=>'array','items'=>array('type'=>'string')),'goal'=>array('type'=>'string'),'memory'=>tlit_dm_ai_memory_schema()),'required'=>array('answer','kind','source_ids','goal','memory'));
+ $schema=array('type'=>'object','additionalProperties'=>false,'properties'=>array('answer'=>array('type'=>'string','description'=>'Only the visitor-facing answer: one short sentence for a fact; normally 1–2 sentences and 20–45 words. Up to 70 words for multiple questions or necessary conditions, up to 120 only for explicitly requested detail. No unrelated additions. Keep memory updates outside this text.'),'reply_depth'=>array('type'=>'string','enum'=>array('brief','multiple','detailed'),'description'=>'Classify the visitor request, not your draft length. brief by default, including a general how-will-this-help question; multiple only for several distinct questions or essential policy terms; detailed only for explicitly requested detail, steps or comparison.'),'kind'=>array('type'=>'string','enum'=>array('answer','marketing','clarify','handoff','greeting','out_of_scope')),'source_ids'=>array('type'=>'array','items'=>array('type'=>'string')),'goal'=>array('type'=>'string'),'memory'=>tlit_dm_ai_memory_schema()),'required'=>array('answer','reply_depth','kind','source_ids','goal','memory'));
  $hasStructuredGoal=is_array($memory)&&array_key_exists('goal',$memory);
  $memory=tlit_dm_ai_memory_update(array(),is_array($memory)?$memory:array());
  if(!$hasStructuredGoal&&is_string($goal)&&$goal!=='')$memory=tlit_dm_ai_memory_update($memory,array('goal'=>$goal));
@@ -129,6 +130,7 @@ function tlit_dm_ai_validate($text,$records){
  $j=json_decode($text,true);
  if(!is_array($j)||!is_string($j['answer']??null)||strlen($j['answer'])>2400||trim($j['answer'])===''||!in_array($j['kind']??'',array('answer','marketing','clarify','handoff','greeting','out_of_scope'),true)||!is_array($j['source_ids']??null)||!is_string($j['goal']??null))return null;
  $ids=array_column($records,'id');foreach($j['source_ids'] as $id)if(!is_string($id)||!in_array($id,$ids,true))return null;
+ if(isset($j['reply_depth'])&&!in_array($j['reply_depth'],array('brief','multiple','detailed'),true))return null;
  if($j['kind']==='answer'&&!$j['source_ids'])return null;
  if($j['kind']==='out_of_scope')return array('answer'=>'I can help with this digital marketing course, its brochure, and digital marketing questions. What would you like to know about those?','kind'=>'out_of_scope','source_ids'=>array(),'goal'=>'');
  if(isset($j['memory'])&&(!is_array($j['memory'])||array_diff(array_keys($j['memory']),array('goal','background','target_role','concern','next_step'))))return null;
@@ -178,11 +180,14 @@ function tlit_dm_ai_answer($request){
   $aiPayload=tlit_dm_ai_payload($question,$state['history']??array(),$selected,$language,$state['goal']??'',$state['memory']??array());
   $replyFocus=tlit_dm_ai_reply_focus($question,$state['history']??array());if($replyFocus!=='')tlit_dm_ai_payload_note($aiPayload,$replyFocus);
   if((empty($state['contact_complete'])&&($state['answers']??0)===tlit_dm_chat_initial_limit()-1)||($state['followup_answers']??0)>=9)tlit_dm_ai_payload_note($aiPayload,'For this reply, answer directly without a follow-up question or contact request; the interface supplies the next step.');
+  $providerStarted=microtime(true);
   $response=wp_remote_post('https://openrouter.ai/api/v1/chat/completions',array('timeout'=>35,'redirection'=>0,'sslverify'=>true,'limit_response_size'=>65536,'headers'=>array('Authorization'=>'Bearer '.tlit_dm_ai_key(),'Content-Type'=>'application/json','HTTP-Referer'=>home_url(),'X-OpenRouter-Title'=>'Tech Leads IT Course Guide'),'body'=>wp_json_encode($aiPayload)));
   if(is_wp_error($response)||wp_remote_retrieve_response_code($response)!==200){tlit_dm_ai_record_error(is_wp_error($response)?0:(int)wp_remote_retrieve_response_code($response));tlit_dm_archive($token,'error:'.$archive_turn,$state,$language,array(array('role'=>'assistant','type'=>'error','content'=>'I could not check the course information right now. Please retry or use WhatsApp.')));return tlit_dm_error('I could not check the course information right now. Please retry or use WhatsApp.',503);}
   $body=json_decode(wp_remote_retrieve_body($response),true);if(is_array($body))tlit_dm_ai_record_usage($body,$aiPayload['model']);$choice=$body['choices'][0]??array();$content=$choice['message']['content']??null;
   $answer=is_string($content)&&($choice['finish_reason']??'')==='stop'?tlit_dm_ai_validate($content,$selected):null;
   if(!$answer){tlit_dm_ai_record_error(502,'answer_validation');tlit_dm_archive($token,'unconfirmed:'.$archive_turn,$state,$language,array(array('role'=>'assistant','type'=>'error','content'=>'I could not confirm a reliable answer. Please rephrase or ask the team on WhatsApp.')));tlit_dm_ai_review($question);return tlit_dm_error('I could not confirm a reliable answer. Please rephrase or ask the team on WhatsApp.',502);}
+  $concise=tlit_dm_ai_concise_reply($answer,$aiPayload,$selected,max(1,(int)$o['daily_limit']),$providerStarted);$answer=$concise['answer'];
+  if($concise['model']!=='')$body['model']=$concise['model'];
   if($answer['kind']==='handoff')tlit_dm_ai_review($question);
   if($answer['kind']!=='out_of_scope'){
    $storedMemory=is_array($state['memory']??null)?$state['memory']:array();
