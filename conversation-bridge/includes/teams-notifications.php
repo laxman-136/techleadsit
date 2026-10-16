@@ -163,6 +163,7 @@ final class TLIT_Teams_Notifications {
         $stamp=strtotime(($lead['created']??'').' UTC');
         $facts=array('Name'=>$lead['name'],'Mobile'=>$lead['phone'],'Course'=>'AI Powered Digital Marketing','Page version'=>strtoupper($lead['variant']??''),'Enquiry'=>$lead['source'],'Submitted (IST)'=>$stamp===false?'Not recorded':wp_date('d M Y, g:i a',$stamp,new DateTimeZone('Asia/Kolkata')));
         foreach(array('Email'=>'email','Language'=>'language','Learning goal'=>'goal','Submitted from'=>'page') as $label=>$key) { if(!empty($lead[$key])) { $facts[$label]=$lead[$key]; } }
+        if(!empty($lead['team_pin'])) { $facts['Bridge PIN']=$lead['team_pin'];$facts['Bridge access until (IST)']=$lead['team_expires']; }
         foreach(array('Campaign source'=>'utm_source','Campaign'=>'utm_campaign') as $label=>$key) { if(!empty($lead['tracking'][$key])) { $facts[$label]=$lead['tracking'][$key]; } }
         $facts['Mobile verification']=!empty($lead['verified'])?'OTP verified':'Not OTP verified';
         $facts['Reference']=$lead['reference'];$facts['Notification ID']=$notification_id;
@@ -188,6 +189,11 @@ final class TLIT_Teams_Notifications {
             if(!$lead) { $patch['state']='cancelled';$patch['last_error']='The contact is missing or no longer has a valid mobile number.'; }
             elseif(!self::enabled($job['entity_type'])||$url===''||!hash_equals($job['endpoint_key'],self::endpoint_key($url))) { $patch['state']='held';$patch['last_error']='Settings changed or alerts were disabled. Review before retrying.'; }
             else {
+                if(class_exists('TLIT_CB_Team_Access')) {
+                    $prepared=TLIT_CB_Team_Access::for_notification($lead);
+                    if(is_wp_error($prepared)) { $wpdb->update($table,array('state'=>'held','last_error'=>'The private Bridge link could not be prepared. Check team access settings before retrying.','updated_at'=>$now),array('id'=>$id,'state'=>'sending'));return; }
+                    $lead=$prepared;
+                }
                 $response=self::post($url,self::card($lead,$job['notification_id']),$job['notification_id']);
                 if(!is_wp_error($response)) {
                     $code=(int)wp_remote_retrieve_response_code($response);$patch['response_code']=$code;

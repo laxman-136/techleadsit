@@ -238,4 +238,5 @@ final class TLIT_CB_Integrations {
 
 function tlit_cb_render_integrations() {
     if (class_exists('TLIT_Teams_Notifications')) { TLIT_Teams_Notifications::render(); }
+    if (class_exists('TLIT_CB_Team_Access')) { TLIT_CB_Team_Access::settings_view(); }
 }
