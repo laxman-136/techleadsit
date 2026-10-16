@@ -35,7 +35,11 @@ The first qualification or linked chatbot brochure request establishes one canon
 
 ## Other integrations
 
-The **Integrations** tab is intentionally blank, reserved for the next design. It displays no TeleCRM, API or webhook setup. Existing connection records are preserved; automatic TeleCRM sync continues through counsellor review.
+**Conversation Bridge → Integrations** contains Microsoft Teams new-lead notifications. Save your Power Automate webhook URL, send a synthetic connection test, then enable form alerts, chatbot alerts or both. [Power Automate setup guide](TEAMS-SETUP.md).
+
+Successful general/popup/brochure saves on all three Digital Marketing pages queue an alert. Chatbot alerts start when a valid mobile number is saved, with email optional. Alerts are independent of counsellor qualification: the notification service never calls TeleCRM. A chatbot session and its linked brochure request share one alert identity; form retries reuse the original receipt's alert. Existing historical leads are not broadcast on enable.
+
+The signed Microsoft webhook URL is encrypted, left blank to retain, and never shown after saving. Outbox records contain references and delivery metadata rather than contact snapshots or transcripts. WordPress Cron wakes delivery asynchronously and runs a one-minute recovery/sweep. HTTP 2xx means accepted by the workflow, with the final Teams post visible in Power Automate run history. Throttling retries automatically; uncertain deliveries need a history check before manual retry. The existing generic connector backend remains available for trusted extensions, outside the Teams settings UI.
 
 ## Extend the bridge
 

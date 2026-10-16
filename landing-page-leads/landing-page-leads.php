@@ -185,7 +185,13 @@ final class TLIT_LP_Leads {
             if($existing) { return self::existing($existing,$fingerprint,[$name,$phone,$email,$source,$data,$p]); }
             $now=current_time('mysql',true);$data['captured_at']=gmdate('c');
             $ok=$wpdb->insert(self::table(),['request_id'=>$id,'fingerprint'=>$fingerprint,'created_at'=>$now,'updated_at'=>$now,'name'=>$name,'phone'=>$phone,'email'=>$email,'source'=>$source,'page_variant'=>$variant,'submission_url'=>$url,'payload'=>wp_json_encode($data),'otp_verified'=>$verified?1:0,'advisor_note'=>'','review_history'=>'[]']);
-            if($ok===1) { return ['success'=>true,'receipt'=>'LP-'.$wpdb->insert_id,'lead_id'=>(int)$wpdb->insert_id,'duplicate'=>false,'download_token'=>self::download_token($wpdb->insert_id,$id)]; }
+            if($ok===1) {
+                $lead_id=(int)$wpdb->insert_id;
+                // Alert failures never undo a successfully saved enquiry. Listeners
+                // only enqueue; a parent conversation transaction may still be open.
+                try { do_action('tlit_lp_lead_created',$lead_id); } catch(Throwable $error) { update_option('tlit_teams_queue_error',1,false); }
+                return ['success'=>true,'receipt'=>'LP-'.$lead_id,'lead_id'=>$lead_id,'duplicate'=>false,'download_token'=>self::download_token($lead_id,$id)];
+            }
             // A competing request can win the unique request_id insertion.
             $existing=$wpdb->get_row($wpdb->prepare('SELECT * FROM '.self::table().' WHERE request_id=%s',$id));
             if($existing) { return self::existing($existing,$fingerprint,[$name,$phone,$email,$source,$data,$p]); }
