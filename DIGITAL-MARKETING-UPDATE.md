@@ -1,4 +1,4 @@
-# Digital Marketing release — 15 October 2026
+# Digital Marketing release — 16 October 2026
 
 This package updates all three Digital Marketing variants and the bundled Conversation Bridge. Publishing from WP Pusher remains the site owner's step.
 
@@ -23,6 +23,8 @@ Counsellor enrolment dates and payment fields remain manual in TeleCRM. Brochure
 
 Version 3 has its own WordPress Pages entry, course-settings registry entry and thank-you route. All three remain `noindex`. The chatbot has international country selection (India by default) and resumes the pending question after phone capture.
 
+Version **1.2.1** also creates an ordinary **AI Powered Digital Marketing (Original)** Pages entry for V1 on the next administrator visit. The exact Digital Marketing routes run before WordPress canonical and old-slug redirects, so the original URL serves V1 rather than being redirected to the similarly named V2. This early handler is restricted to the three course routes and the V2/V3 thank-you routes; other WordPress URLs retain their existing routing.
+
 ## Learning-goal interpretation
 
 Goals are based on visitor conversation evidence. Bridge distinguishes stated goals, inferred goals, course interest and insufficient context. An introductory greeting or a fee question alone does not establish a career ambition. Previously uncaptured conversations cannot be reconstructed.
@@ -31,4 +33,6 @@ If a separately installed Conversation Bridge plugin is active, it must also use
 
 ## Verification boundary
 
-The earlier release was checked with offline form/browser tests and an isolated local WordPress/MariaDB database. Follow-up live verification confirmed goal analysis and V2/V3 brochure persistence, but found that the V1 URL redirects to V2; that routing issue is separate from this CRM update. The automatic status-sync revision is tested locally with intercepted HTTP requests. Live TeleCRM delivery and legacy-endpoint acceptance of native statuses must be verified after deployment with an authorised real qualified lead; no test contact is sent to TeleCRM by configuration checks.
+The earlier release was checked with offline form/browser tests and an isolated local WordPress/MariaDB database. Follow-up live verification confirmed goal analysis and V2/V3 brochure persistence. V1 returned a WordPress-issued 301 to V2 before the 1.2.1 routing repair. The routing regression uses isolated WordPress/MariaDB to check distinct page entries, distinct rendered templates, HTTP 200 without redirect, variant attribution, query strings, HEAD requests, thank-you pages and preservation of ordinary WordPress routing. Run `php digital-marketing-integration/tests/routing-wordpress-test.php /path/to/isolated-wordpress/wp-load.php`. Verify live responses after updating the plugin and clearing cached redirects.
+
+The automatic status-sync revision is tested locally with intercepted HTTP requests. Live TeleCRM delivery and legacy-endpoint acceptance of native statuses must be verified after deployment with an authorised real qualified lead; no test contact is sent to TeleCRM by configuration checks.

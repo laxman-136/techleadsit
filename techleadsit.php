@@ -2,7 +2,7 @@
 /**
  * Plugin Name: TechLeadsIT Landing Pages
  * Description: Serves high-performance custom HTML landing pages at clean URLs and handles secure lead routing to TeleCRM.
- * Version: 1.2.0
+ * Version: 1.2.1
  * Author: TechLeadsIT
  */
 
@@ -18,6 +18,18 @@ require_once __DIR__.'/digital-marketing-integration/v2-render.php';
 
 // 1. DYNAMIC ROUTING: Intercept clean URLs and serve HTML landing pages
 add_action('template_redirect', 'techleadsit_route_landing_pages');
+
+// Serve our exact Digital Marketing routes before WordPress guesses a canonical
+// destination for V1's previously virtual URL (such as the similarly named V2).
+add_action('template_redirect', 'techleadsit_route_digital_marketing_early', 0);
+function techleadsit_route_digital_marketing_early() {
+    $path=wp_parse_url($_SERVER['REQUEST_URI']??'',PHP_URL_PATH);
+    if(!is_string($path)) { return; }
+    $path=rtrim($path,'/');
+    if(in_array($path,array('/ai-powered-digital-marketing','/ai-powered-digital-marketing-course','/ai-powered-digital-marketing-course/thank-you','/ai-powered-digital-marketing-training','/ai-powered-digital-marketing-training/thank-you'),true)) {
+        techleadsit_route_landing_pages();
+    }
+}
 
 function techleadsit_route_landing_pages() {
     $request_uri = $_SERVER['REQUEST_URI'];
