@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Tech Leads IT Conversation Bridge
  * Description: A private conversation inbox, DOCX exports and controlled integrations for course chatbots.
- * Version: 1.2.0
+ * Version: 1.1.0
  * Requires at least: 6.4
  * Requires PHP: 8.0
  * Author: Tech Leads IT
@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) { exit; }
 // The same module can be installed independently or bundled with Landing Pages.
 if (!defined('TLIT_CB_FILE')) {
 define('TLIT_CB_FILE', __FILE__);
-define('TLIT_CB_VERSION', '1.2.0');
+define('TLIT_CB_VERSION', '1.1.0');
 define('TLIT_CB_URL', plugin_dir_url(__FILE__));
 
 function tlit_cb_boot() {
@@ -22,12 +22,10 @@ function tlit_cb_boot() {
     require_once __DIR__ . '/includes/admin.php';
     require_once __DIR__ . '/includes/integrations.php';
     require_once __DIR__ . '/includes/qualification.php';
-    require_once __DIR__ . '/includes/teams-notifications.php';
     TLIT_CB_Admin::register();
     TLIT_CB_Export::register();
     TLIT_CB_Integrations::register();
     TLIT_CB_Qualification::register();
-    TLIT_Teams_Notifications::register();
     TLIT_CB_Goal_Backfill::register();
     add_action('init', 'tlit_cb_install', 5);
     add_action('tlit_cb_capture', 'tlit_cb_capture', 10, 1);
@@ -37,7 +35,6 @@ function tlit_cb_install() {
     $result = TLIT_CB_Store::install();
     if (is_wp_error($result)) { update_option('tlit_cb_storage_error', time(), false); return; }
     TLIT_CB_Integrations::install();
-    if (class_exists('TLIT_Teams_Notifications')) { TLIT_Teams_Notifications::install(); }
 }
 function tlit_cb_activate() {
     require_once __DIR__ . '/includes/store.php';
@@ -53,7 +50,6 @@ function tlit_cb_capture($event) {
         delete_option('tlit_cb_storage_error');
         // Qualification is an admin action. This only refreshes the private lead copy.
         if (class_exists('TLIT_CB_Qualification')) { TLIT_CB_Qualification::capture($result, $event); }
-        do_action('tlit_cb_contact_saved', $result);
     } catch (Throwable $error) {
         update_option('tlit_cb_storage_error', time(), false);
     }

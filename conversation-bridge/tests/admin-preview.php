@@ -40,7 +40,6 @@ function get_option($name, $default = false) {
     return $name === 'tlit_cb_connections' ? array('webhook_enabled' => 1, 'webhook_url' => 'https://example.com/conversations', 'webhook_secret' => 'fixture-token-never-displayed', 'telecrm_enabled' => 0, 'include_transcript' => 0) : $default;
 }
 function is_wp_error($result) { return false; }
-function absint($value) { return abs((int)$value); }
 function wp_die($message, $title = '', $args = array()) { throw new RuntimeException($message); }
 
 class TLIT_CB_Store {
@@ -82,12 +81,10 @@ class TLIT_CB_Store {
 require dirname(__DIR__) . '/includes/goals.php';
 require dirname(__DIR__) . '/includes/admin.php';
 require dirname(__DIR__) . '/includes/integrations.php';
-require dirname(__DIR__) . '/includes/teams-notifications.php';
 $wpdb = new class {
     public $prefix = 'wp_';
-    public $last_error = '';
     public function prepare($query, ...$args) { return $query; }
-    public function get_results($query, $format) { if(strpos($query,'tlit_teams_notifications')!==false)return array();return array(array('connector' => 'webhook', 'state' => 'sent', 'attempts' => 1, 'response_code' => 200, 'last_error' => '', 'updated_at' => '2026-10-13 05:25:00')); }
+    public function get_results($query, $format) { return array(array('connector' => 'webhook', 'state' => 'sent', 'attempts' => 1, 'response_code' => 200, 'last_error' => '', 'updated_at' => '2026-10-13 05:25:00')); }
 };
 
 function fixture_render($mode) {
@@ -146,8 +143,8 @@ if ($mode === '--test') {
     $assert(strpos($html, 'Transcript could not be loaded') !== false && strpos($html, 'No messages captured yet') === false, 'Do not confuse a transcript read failure with an empty transcript.');
     $assert(strpos($html, '0 messages') === false && strpos($html, 'Temporarily unavailable') !== false, 'Never show a zero message count on database read failure.');
     $html = fixture_render('integrations');
-    $assert(strpos($html, 'name="webhook_url"') !== false && strpos($html, 'Save notification settings') !== false && strpos($html, 'Send test notification') !== false, 'Show Teams notification settings and a synthetic connection test.');
-    $assert(strpos($html, 'name="telecrm_enabled"') === false && strpos($html, 'name="webhook_secret"') === false && strpos($html, 'Custom API') === false, 'Keep TeleCRM and generic connector configuration outside Teams notification settings.');
+    $assert(strpos($html, 'name="webhook_url"') === false && strpos($html, 'Save connections') === false && strpos($html, '<form ') === false, 'Keep the Integrations tab empty.');
+    $assert(strpos($html, 'TeleCRM') === false && strpos($html, 'Custom API') === false && strpos($html, 'tlit-cb-footer') === false, 'No integration options or messages appear in the reserved tab.');
     $assert(strpos($html, 'fixture-token-never-displayed') === false, 'Never display the stored authorization token.');
     $assert(substr_count($html, '<form ') === substr_count($html, '</form>'), 'Balance integration forms.');
     $html = fixture_render('empty');

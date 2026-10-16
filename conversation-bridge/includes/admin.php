@@ -159,7 +159,9 @@ class TLIT_CB_Admin {
         if (class_exists('TLIT_LP_Leads')) { echo '<a href="'.esc_url(admin_url('admin.php?page=tlit-landing-leads')).'"><span class="dashicons dashicons-forms" aria-hidden="true"></span> Landing page leads</a>'; }
         echo '<a class="' . ($view === 'integrations' ? 'is-active' : '') . '" href="' . esc_url(self::url(array('view' => 'integrations'))) . '"' . ($view === 'integrations' ? ' aria-current="page"' : '') . '><span class="dashicons dashicons-admin-links" aria-hidden="true"></span> Integrations</a></nav>';
         if ($view === 'integrations') {
-            if (function_exists('tlit_cb_render_integrations')) { tlit_cb_render_integrations(); }
+            // Reserved for the owner's next integration design. Leave the tab empty.
+            echo '</div>';
+            return;
         } elseif ($id) {
             self::detail($id, $filters);
         } else {

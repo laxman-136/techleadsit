@@ -2,10 +2,6 @@
 
 This package updates all three Digital Marketing variants and the bundled Conversation Bridge. Publishing from WP Pusher remains the site owner's step.
 
-## Teams notifications — 1.3.0
-
-The Integrations tab now contains Microsoft Teams notifications, with a saved encrypted Power Automate webhook URL, form/chatbot source switches, a synthetic test, and delivery history. It queues new form receipts on V1/V2/V3 and chatbot contacts after valid phone capture. Alerts do not qualify leads or invoke TeleCRM. Notification retries, contact erasure, recipient-URL changes and missed queue inserts are handled separately from CRM review. See [the Teams setup guide](conversation-bridge/TEAMS-SETUP.md). Notifications remain off until configured and enabled in WordPress.
-
 ## Update in WordPress
 
 1. Update **TechLeadsIT Landing Pages** from the GitHub `master` branch using WP Pusher, then clear any page/cache plugin cache.
@@ -15,7 +11,7 @@ The Integrations tab now contains Microsoft Teams notifications, with a saved en
 5. After calling the learner, choose one of the exact TeleCRM status labels and save to sync that lead. Later qualified status changes update the same lead; unchanged saves do not duplicate an update. **New** and **Junk lead** do not send. If delivery is uncertain, check whether the latest attempted qualification/notes were applied in TeleCRM before resolving it.
 6. Chatbot conversations have the same counsellor qualification workflow, separate from their existing New/Reviewed/Contacted/Archived conversation-review labels. Phone is required for TeleCRM; email remains optional for chat. Qualified conversations and brochure requests share a canonical lead rather than creating separate copies.
 
-Approved native status mapping: **Potential → 50 % Potential**, **High potential → 60-80 Potential**, **Intended to join → Potential Lead 100**, **Enrolled → Enrolled**. The Integrations tab contains Teams notifications in version 1.3.0. Counsellor dropdowns include all active TeleCRM status names; New and Junk Lead remain local. Received times, date filters and downloads use IST regardless of the WordPress timezone.
+Approved native status mapping: **Potential → 50 % Potential**, **High potential → 60-80 Potential**, **Intended to join → Potential Lead 100**, **Enrolled → Enrolled**. The Integrations tab is intentionally blank. Counsellor dropdowns include all active TeleCRM status names; New and Junk Lead remain local. Received times, date filters and downloads use IST regardless of the WordPress timezone.
 
 Counsellor enrolment dates and payment fields remain manual in TeleCRM. Brochure requests and recorded download starts are shown separately; download tracking cannot prove that a browser saved a PDF successfully.
 

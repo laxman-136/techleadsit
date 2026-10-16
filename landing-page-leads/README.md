@@ -35,8 +35,6 @@ Received times, sync times, date filters and CSV downloads use **IST (Asia/Kolka
 
 `TLIT_LP_Leads::ingest($payload, $context)` is server-side only. The caller validates its OTP/consent policy before invoking it. A stable `request_id` is mandatory. A successful result contains `lead_id`, `receipt` and `duplicate`; a database error returns `WP_Error` and must prevent a success screen.
 
-After a new insert, `tlit_lp_lead_created` receives the saved ID. Teams notifications only enqueue work from this hook; failures never turn a durable enquiry into an unsuccessful form response. The original receipt ID is retained even when a listener inserts its own outbox record. An enclosing chatbot transaction can still roll back the enqueue; delivery runs later, after commit.
-
 `TLIT_LP_Leads::update_details($lead_id, $updates)` stores verified follow-up details and brochure activity without a CRM request. The calling adapter must authorize the receipt before using it.
 
 The existing `/tlit-leads/v1/otp` and `/submit` routes preserve V2/V3 phone verification and response contracts. Existing saved V2 receipts remain replayable after the schema upgrade.

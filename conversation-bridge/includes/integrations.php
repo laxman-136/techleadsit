@@ -237,5 +237,5 @@ final class TLIT_CB_Integrations {
 }
 
 function tlit_cb_render_integrations() {
-    if (class_exists('TLIT_Teams_Notifications')) { TLIT_Teams_Notifications::render(); }
+    // Intentionally blank until the next integration design is supplied.
 }
