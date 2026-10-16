@@ -7,6 +7,7 @@ class WP_Error { public $message; function __construct($code,$message){$this->me
 class Stop extends RuntimeException {}
 function is_wp_error($v){return $v instanceof WP_Error;}
 function add_action($a,$b,$p=10,$n=1){$GLOBALS['hooks'][$a]=$b;}
+function do_action($name,...$args){$GLOBALS['review_events'][]=array($name,$args);}
 function add_filter($a,$b,$p=10,$n=1){$GLOBALS['hooks'][$a]=$b;}
 function current_user_can($c){return $c==='manage_options'&&$GLOBALS['allowed'];}
 function check_admin_referer($a){if(!$GLOBALS['nonce'])throw new Stop('nonce',403);}

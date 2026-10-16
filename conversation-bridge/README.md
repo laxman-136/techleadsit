@@ -10,6 +10,8 @@ Alternatively, upload the current Conversation Bridge plugin ZIP in **Plugins â†
 
 ## Conversations and downloads
 
+The **Dashboard** tab combines captured Digital Marketing form and chatbot leads, source breakdowns, ownership, PIN opening status, filters, CSV exports and activity history. See [Dashboard operations](DASHBOARD.md) for team setup, counting rules and the review-only CRM boundary.
+
 - Search by visitor name, phone or email. Filter by course, language, review status, mobile captured, brochure requested, and an inclusive custom start/end date. Display times, date filters and downloads use IST (Asia/Kolkata), regardless of the WordPress site timezone; database timestamps remain in UTC.
 - The inbox shows each conversation's learning-goal summary. Open a row to see the transcript, visitor details, goal analysis, source and attribution. Mark a conversation New, Reviewed, Contacted or Archived.
 - **Download DOCX** exports one conversation. **Download selected ZIP** exports up to 200 checked records from the current page. **Download filtered ZIP** exports every matching conversation, across pages, up to 2,000 records. Narrow the dates for larger inboxes.

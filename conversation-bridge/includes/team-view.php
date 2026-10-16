@@ -34,7 +34,7 @@ final class TLIT_CB_Team_View {
         self::end();
     }
 
-    public static function detail($grant, $row, $session, $url, $error, $saved) {
+    public static function detail($grant, $row, $session, $url, $error, $saved, $claimed = false) {
         $chat = $grant['entity_type'] === 'chatbot';
         $data = $chat ? array() : (json_decode($row['payload'], true) ?: array());
         $linked = $chat ? TLIT_CB_Qualification::lead($row) : (object) $row;
@@ -55,6 +55,7 @@ final class TLIT_CB_Team_View {
         self::hidden('operation', 'logout'); self::hidden('csrf', $session['csrf']);
         echo '<button class="team-button team-button-secondary" type="submit">Lock this lead</button></form></div>';
         self::message($error); self::message($saved ? 'Review saved. The latest TeleCRM result is shown below.' : '', true);
+        self::message($claimed ? 'This lead is now assigned to you. TeleCRM was not changed.' : '', true);
         echo '<div class="team-contact-bar"><a href="' . esc_url('tel:' . $row['phone']) . '">' . esc_html($row['phone'] ?: 'Mobile not provided') . '</a>';
         if (!empty($row['email'])) { echo '<a href="' . esc_url('mailto:' . $row['email']) . '">' . esc_html($row['email']) . '</a>'; }
         echo '<span class="team-tag">' . esc_html($statuses[$status] ?? 'New') . '</span></div><div class="team-layout"><div class="team-content"><section class="team-panel"><div class="team-panel-head"><h2>Learner context</h2><span>' . esc_html(strtoupper($variant)) . '</span></div><div class="team-panel-body"><div class="team-goal"><p class="team-eyebrow">LEARNING GOAL</p><h3>' . esc_html($goal ?: 'More context needed to identify a learning goal.') . '</h3>';
@@ -77,7 +78,20 @@ final class TLIT_CB_Team_View {
         echo '<details class="team-panel team-attribution"><summary>Page and campaign details</summary><div class="team-panel-body">';
         $fields = array('Submitted from' => $source_url);
         foreach (array('utm_source' => 'Campaign source', 'utm_medium' => 'Medium', 'utm_campaign' => 'Campaign', 'utm_content' => 'Ad content', 'city' => 'City', 'state' => 'State') as $key => $label) { if (!empty($tracking[$key]) && is_scalar($tracking[$key])) { $fields[$label] = (string) $tracking[$key]; } }
-        self::fields($fields); echo '</div></details></div><aside class="team-review"><section class="team-panel"><div class="team-panel-head"><h2>Counsellor review</h2></div><div class="team-panel-body"><p class="team-help">Contact the learner, then save the next step.</p><form method="post" action="' . esc_url($url) . '">';
+        self::fields($fields); echo '</div></details></div><aside class="team-review">';
+        if (class_exists('TLIT_CB_Lead_Ops')) {
+            $ops=TLIT_CB_Lead_Ops::state(TLIT_CB_Lead_Ops::reference($grant['entity_type'],$grant['entity_id']));$members=TLIT_CB_Lead_Ops::members();
+            echo '<section class="team-panel"><div class="team-panel-head"><h2>Lead ownership</h2></div><div class="team-panel-body"><h3>'.esc_html($ops['owner_name']?:'Unassigned').'</h3>';
+            if ($ops['owner_key']!=='') { echo '<p class="team-help">Assigned by '.esc_html($ops['assigned_by']).' · '.esc_html(self::date($ops['assigned_at'])).'</p>'; }
+            elseif ($members) {
+                echo '<p class="team-help">Opening this lead does not assign it. Select your name to take responsibility.</p><form method="post" action="'.esc_url($url).'">';self::hidden('operation','claim');self::hidden('csrf',$session['csrf']);self::hidden('version',(string)$ops['version']);
+                echo '<label for="team-member">Your name</label><select id="team-member" name="member" required><option value="">Select your name</option>';
+                foreach ($members as $key=>$name) { echo '<option value="'.esc_attr($key).'">'.esc_html($name).'</option>'; }
+                echo '</select><p class="team-help">Your selected name is self-reported.</p><button class="team-button" type="submit">Take this lead</button></form>';
+            } else { echo '<p class="team-help">No owner selected. An administrator can add counsellors and assign this lead in the Bridge dashboard.</p>'; }
+            echo '</div></section>';
+        }
+        echo '<section class="team-panel"><div class="team-panel-head"><h2>Counsellor review</h2></div><div class="team-panel-body"><p class="team-help">Contact the learner, then save the next step.</p><form method="post" action="' . esc_url($url) . '">';
         self::hidden('operation', 'review'); self::hidden('csrf', $session['csrf']);
         echo '<label for="team-reviewer">Counsellor name <span>(optional)</span></label><input id="team-reviewer" name="reviewer" maxlength="80" autocomplete="name" value="' . esc_attr($reviewer) . '"><label for="team-status">Lead qualification</label><select id="team-status" name="lead_status">';
         foreach ($statuses as $value => $label) { echo '<option value="' . esc_attr($value) . '"' . selected($status, $value, false) . '>' . esc_html($label) . '</option>'; }

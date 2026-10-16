@@ -216,6 +216,16 @@ final class TLIT_CB_Team_Access {
 
     public static function logout($token) { if (is_string($token)) { delete_transient('tlit_bt_session_' . self::hash($token)); } }
 
+    public static function claim($grant, $token, array $input) {
+        $session = self::session($grant, $token);
+        if (!$session || !hash_equals($session['csrf'], self::scalar($input['csrf'] ?? ''))) { return self::error('Your session has expired. Enter this lead’s PIN again.', 403); }
+        $grant = self::fresh($grant);
+        if (!$grant || !self::record($grant) || !class_exists('TLIT_CB_Lead_Ops')) { return self::error('This lead is unavailable.', 404); }
+        $member = self::scalar($input['member'] ?? ''); $members = TLIT_CB_Lead_Ops::members();
+        if (!isset($members[$member])) { return self::error('Select your name before taking this lead.'); }
+        return TLIT_CB_Lead_Ops::assign(TLIT_CB_Lead_Ops::reference($grant['entity_type'],$grant['entity_id']), $member, $members[$member] . ' (self-reported PIN user)', absint($input['version'] ?? 0), true);
+    }
+
     public static function review($grant, $token, array $input) {
         $session = self::session($grant, $token);
         if (!$session || !hash_equals($session['csrf'], self::scalar($input['csrf'] ?? ''))) { return self::error('Your session has expired. Open the lead link and enter its PIN again.', 403); }
@@ -277,6 +287,10 @@ final class TLIT_CB_Team_Access {
             } elseif ($operation === 'logout') {
                 if ($session && hash_equals($session['csrf'], self::scalar($p['csrf'] ?? ''))) { self::logout($session_token); self::cookie($cookie, '', time() - 3600); wp_safe_redirect(self::url($raw), 303); exit; }
                 $error = 'Your session has expired. Enter this lead’s PIN again.'; status_header(403);
+            } elseif ($operation === 'claim') {
+                $result = self::claim($grant, $session_token, $p);
+                if (is_wp_error($result)) { $error = $result->get_error_message(); status_header($result->get_error_data()['status'] ?? 409); }
+                else { wp_safe_redirect(add_query_arg('claimed', '1', self::url($raw)), 303); exit; }
             } elseif ($operation === 'review') {
                 $result = self::review($grant, $session_token, $p);
                 if (is_wp_error($result)) { $error = $result->get_error_message(); status_header($result->get_error_data()['status'] ?? 400); }
@@ -290,7 +304,8 @@ final class TLIT_CB_Team_Access {
         } else {
             $record = self::record($grant);
             if (!$record) { status_header(404); TLIT_CB_Team_View::unavailable(); exit; }
-            TLIT_CB_Team_View::detail($grant, $record, $session, self::url($raw), $error, isset($_GET['saved']) && $_GET['saved'] === '1');
+            if ($method === 'GET' && class_exists('TLIT_CB_Lead_Ops')) { TLIT_CB_Lead_Ops::viewed($grant, $session); }
+            TLIT_CB_Team_View::detail($grant, $record, $session, self::url($raw), $error, isset($_GET['saved']) && $_GET['saved'] === '1', isset($_GET['claimed']) && $_GET['claimed'] === '1');
         }
         exit;
     }

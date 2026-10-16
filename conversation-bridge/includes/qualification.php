@@ -97,7 +97,7 @@ final class TLIT_CB_Qualification {
         // Recheck linkage under the same parent lock as a concurrent brochure save.
         // New/Junk must also hold an existing canonical lead, even with incomplete contact data.
         if (in_array($status,array('new','junk'),true)) {
-            return TLIT_CB_Store::with_locked_conversation($id,function($current) use($status,$note,$actor) {
+            $saved_review = TLIT_CB_Store::with_locked_conversation($id,function($current) use($status,$note,$actor) {
                 $lead_id=(int)($current['lead_id']??0);
                 if ($lead_id) {
                     if (!self::ready()) { return self::error('Update the Landing Page Leads module before changing this linked lead.'); }
@@ -106,6 +106,8 @@ final class TLIT_CB_Qualification {
                 }
                 return TLIT_CB_Store::update_qualification($current['id'],$lead_id,$status,$note) ? true : self::error('The qualification could not be saved.');
             });
+            if (!is_wp_error($saved_review)) { do_action('tlit_cb_review_saved',$id,$status,(int)$actor); }
+            return $saved_review;
         }
         $synced=self::sync($row);
         if (is_wp_error($synced)) { return $synced; }

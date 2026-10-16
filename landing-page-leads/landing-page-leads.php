@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Tech Leads IT — Landing Page Leads
  * Description: Bridge-first landing-page lead inbox with counsellor-controlled TeleCRM handoff.
- * Version: 0.3.0
+ * Version: 0.4.0
  * Requires PHP: 8.0
  */
 if (!defined('ABSPATH')) { exit; }
@@ -12,7 +12,7 @@ require_once __DIR__.'/api.php';
 require_once __DIR__.'/integration.php';
 final class TLIT_LP_Leads {
     use TLIT_LP_API, TLIT_LP_Integration;
-    const VERSION = '0.3.0';
+    const VERSION = '0.4.0';
     const OPTION = 'tlit_lp_integration';
     static function table() { global $wpdb; return $wpdb->prefix.'tlit_landing_leads'; }
     static function install() {
@@ -347,6 +347,7 @@ final class TLIT_LP_Leads {
             $saved=$wpdb->update(self::table(),['lead_status'=>$status,'advisor_note'=>substr(sanitize_textarea_field((string)$note),0,5000),'reviewed_by'=>absint($actor),'reviewed_at'=>$now,'updated_at'=>$now,'review_history'=>wp_json_encode($history)],['id'=>$row->id]);
             if($saved===false) { return self::error('The review could not be saved. TeleCRM was not contacted.',503); }
             if($deliver && isset(self::crm_statuses()[$status])) { self::push_locked($row->id); }
+            do_action('tlit_lp_review_saved',$row->id,$status,(int)$actor);
             return self::get($row->id);
         } finally { delete_option($lock); }
     }

@@ -43,7 +43,7 @@ final class TLIT_LP_Admin {
         TLIT_LP_Leads::admin();
         wp_enqueue_style('tlit-lp-admin',plugin_dir_url(__FILE__).'admin.css',array(),'1.0.0');
         echo '<div class="wrap lp-workspace"><header class="lp-header"><div><p class="lp-eyebrow">TECH LEADS IT / COUNSELLOR WORKSPACE</p><h1>Landing page leads</h1><p>Every enquiry in one place. Review, call and qualify before syncing with TeleCRM.</p></div><span class="lp-private"><span class="dashicons dashicons-lock" aria-hidden="true"></span> Private workspace</span></header>';
-        echo '<nav class="lp-tabs" aria-label="Bridge sections"><a href="'.esc_url(admin_url('admin.php?page=tlit-chat-bridge')).'">Conversations</a><a class="is-active" href="'.esc_url(self::url()).'" aria-current="page">Landing page leads</a><a href="'.esc_url(admin_url('admin.php?page=tlit-chat-bridge&view=integrations')).'">Integrations</a></nav>';
+        echo '<nav class="lp-tabs" aria-label="Bridge sections"><a href="'.esc_url(admin_url('admin.php?page=tlit-chat-bridge&view=dashboard')).'">Dashboard</a><a href="'.esc_url(admin_url('admin.php?page=tlit-chat-bridge')).'">Conversations</a><a class="is-active" href="'.esc_url(self::url()).'" aria-current="page">Landing page leads</a><a href="'.esc_url(admin_url('admin.php?page=tlit-chat-bridge&view=integrations')).'">Integrations</a></nav>';
         $notice = self::input('notice');
         $notices = array('saved'=>'Your review has been saved. Check the TeleCRM sync status for the result.','configuration_checked'=>'The existing connection is available. Authentication is confirmed during an actual qualified lead sync.');
         if (isset($notices[$notice])) { echo '<div class="lp-notice" role="status">'.esc_html($notices[$notice]).'</div>'; }

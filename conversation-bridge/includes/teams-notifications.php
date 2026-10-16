@@ -207,7 +207,7 @@ final class TLIT_Teams_Notifications {
                 }
             }
         } catch(Throwable $error) { /* Never log a webhook secret, response body or contact data. */ }
-        $wpdb->update($table,$patch,array('id'=>$id,'state'=>'sending'));
+        if ($wpdb->update($table,$patch,array('id'=>$id,'state'=>'sending')) !== false) { do_action('tlit_teams_delivery_updated',$job['entity_type'],(int)$job['entity_id'],$patch['state']); }
     }
     public static function sweep() {
         self::repair_queue();
