@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Tech Leads IT — Digital Marketing Enquiries
  * Description: Phone verification and durable WordPress lead capture for the fresher course.
- * Version: 1.0.0
+ * Version: 1.1.0
  */
 if (!defined('ABSPATH')) exit;
 require_once __DIR__.'/lead-schema.php';

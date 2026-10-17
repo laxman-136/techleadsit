@@ -176,9 +176,14 @@ function tlit_dm_ai_answer($request){
    }
    $result=tlit_dm_chat_flow_reply($state,$token,$language);
    if($contactAccepted)$result['contactAccepted']=true;
-   // The client can retain this unanswered question and retry it after contact capture.
-   // Do not archive or count it until it actually reaches the answer engine.
-   if($stage==='phone'&&!in_array($p['action']??'',array('resume','contact'),true))$result['questionDeferred']=true;
+   // Preserve the visitor's question before phone capture so the first Teams alert
+   // includes its intent. The answer engine reuses this event ID after capture;
+   // archiving the question does not consume an answer or repeat its transcript.
+   if($stage==='phone'&&!in_array($p['action']??'',array('resume','contact'),true)){
+    $deferredTurn=(1+(int)($state['answers']??0)).':'.hash('sha256',$question);
+    tlit_dm_archive($token,'question:'.$deferredTurn,$state,$language,array(array('role'=>'visitor','type'=>'question','content'=>$p['question'])));
+    $result['questionDeferred']=true;
+   }
    set_transient($key,$state,86400);$out=new WP_REST_Response($result,200);$out->header('Cache-Control','no-store');return tlit_dm_ai_model_header($out,$state['response_model']??'');
   }
   if(($p['action']??'')==='contact')return new WP_REST_Response(tlit_dm_chat_flow_reply($state,$token,$language),200);
@@ -208,10 +213,11 @@ function tlit_dm_ai_answer($request){
    $priorMemory=tlit_dm_ai_memory_update(array_key_exists('goal',$storedMemory)?array():($state['goal']??''),$storedMemory);
    $patch=$answer['memory']??array();
    if($answer['goal']!==''&&(!array_key_exists('goal',$patch)||$patch['goal']===''))$patch['goal']=$answer['goal'];
-   // Null with no previous objective means unknown, not a visitor retraction.
+   // A provider null on a fee/timing question must not erase an established objective.
    unset($state['goal_clear_confirmed']);
-   if(array_key_exists('goal',$patch)&&$patch['goal']===null&&!empty($priorMemory['goal']))$state['goal_clear_confirmed']=true;
-   $state['memory']=tlit_dm_ai_memory_update($priorMemory,$patch);$state['goal']=$state['memory']['goal'];
+   $resolvedMemory=tlit_dm_ai_reconcile_memory($priorMemory,$patch,$state['history']??array(),$question);
+   if($resolvedMemory['cleared'])$state['goal_clear_confirmed']=true;
+   $state['memory']=$resolvedMemory['memory'];$state['goal']=$state['memory']['goal'];
   }
   $state['response_model']=is_string($body['model']??null)?$body['model']:'';
   $state['history'][]=array('role'=>'user','content'=>$question);$state['history'][]=array('role'=>'assistant','content'=>$answer['answer']);$state['history']=array_slice($state['history'],-12);

@@ -10,7 +10,7 @@ function tlit_dm_archive($token, $event_id, $state, $language, $messages = array
     $memory = is_array($state['memory'] ?? null) ? $state['memory'] : array();
     $has_memory_goal = array_key_exists('goal', $memory) && (is_string($memory['goal']) || $memory['goal'] === null);
     $goal = $has_memory_goal ? ($memory['goal'] ?? '') : ($state['goal'] ?? '');
-    $goal_authoritative = $has_memory_goal && ($goal !== '' || ($memory['goal'] === null && !empty($state['goal'])) || !empty($state['goal_clear_confirmed']));
+    $goal_authoritative = $has_memory_goal && ($goal !== '' || !empty($state['goal_clear_confirmed']));
     $source='';
     $tracking=is_array($extra['tracking']??null)?$extra['tracking']:array();
     $candidate=$tracking['submission_url']??($tracking['landing_page']??'');

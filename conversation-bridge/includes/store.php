@@ -228,11 +228,11 @@ final class TLIT_CB_Store {
         $conversations = self::table('conversations');
         $messages = self::table('messages');
         $events = self::table('events');
-        // New adapters can replace the goal with an empty value after a visitor
-        // retracts it. Legacy or partial events keep the existing nonblank value.
-        $goal_update = ($event['goal_authoritative'] ?? false) === true
+        // Digital Marketing reconciles the durable goal against the locked
+        // transcript below. Other adapters retain their existing update contract.
+        $goal_update = $course === 'digital_marketing' ? 'goal=goal,' : (($event['goal_authoritative'] ?? false) === true
             ? 'goal=VALUES(goal),'
-            : "goal=IF(VALUES(goal)<>'',VALUES(goal),goal),";
+            : "goal=IF(VALUES(goal)<>'',VALUES(goal),goal),");
         $previous = $wpdb->suppress_errors(true);
         $started = false;
         try {
@@ -338,23 +338,23 @@ final class TLIT_CB_Store {
         $meta = is_array($meta) ? $meta : array();
         $session = isset($event['session']) && is_string($event['session']) ? $event['session'] : '';
         $incoming = self::clean_text($event['goal'] ?? '', 4000, true, $session);
-        $cleared = ($event['goal_authoritative'] ?? false) === true && $incoming === '';
         $cutoff = max(0, (int) ($meta['cleared_through_message_id'] ?? 0));
-        // The goal in a partial event can be absent because the transient expired.
-        // Preserve a prior model/legacy goal, but never feed our fallback back as model evidence.
-        $model_goal = $incoming;
-        if ($model_goal === '' && !$cleared && !TLIT_CB_Goals::is_fallback((string) ($row['goal'] ?? '')) && (!isset($meta['source']) || $meta['source'] === 'model')) {
-            $model_goal = (string) ($row['goal'] ?? '');
-        }
-        if ($incoming !== '') { $cutoff = 0; }
         $messages = self::table('messages');
-        $history = $wpdb->get_results($wpdb->prepare("SELECT id,role,content,type FROM $messages WHERE conversation_id=%d AND role='visitor' AND id>%d ORDER BY id DESC LIMIT 200", (int) $id, $cutoff), ARRAY_A);
+        $history = $wpdb->get_results($wpdb->prepare("SELECT id,role,content,type FROM $messages WHERE conversation_id=%d AND role='visitor' AND id>%d ORDER BY id DESC LIMIT 200", (int) $id, 0), ARRAY_A);
         if ($wpdb->last_error !== '') { return self::error('goal_read'); }
         $history = is_array($history) ? array_reverse($history) : array();
-        if ($cleared) {
-            foreach ($history as $message) { $cutoff = max($cutoff, (int) ($message['id'] ?? 0)); }
+        // Version 1 trusted model nulls. Recheck old cutoffs against actual visitor retractions.
+        if($cutoff>0&&(int)($meta['version']??0)<TLIT_CB_Goals::VERSION){
+            $before=array_values(array_filter($history,function($message)use($cutoff){return (int)$message['id']<=$cutoff;}));
+            if(!TLIT_CB_Goals::confirms_retraction($before)){$cutoff=0;}
         }
-        $analysis = TLIT_CB_Goals::analyze($history, $model_goal, $cleared);
+        if($incoming!==''&&!TLIT_CB_Goals::is_fallback($incoming)){$cutoff=0;}
+        $eligible=$cutoff>0?array_values(array_filter($history,function($message)use($cutoff){return (int)$message['id']>$cutoff;})):$history;
+        $prior=$meta;$prior['summary']=(string)($row['goal']??'');
+        $analysis = TLIT_CB_Goals::reconcile($eligible,$incoming,$prior);
+        if($analysis['summary']===TLIT_CB_Goals::REVISED_SUMMARY&&TLIT_CB_Goals::confirms_retraction($eligible,$prior['summary'])){
+            foreach($eligible as $message){$cutoff=max($cutoff,(int)($message['id']??0));}
+        }
         // The analyzer emits only a bounded classification and excerpts, never credentials.
         $analysis['summary'] = self::clean_text($analysis['summary'], 4000, true, $session);
         $analysis['evidence'] = self::clean_text($analysis['evidence'] ?? '', 400, true, $session);
@@ -374,7 +374,8 @@ final class TLIT_CB_Store {
         $previous = $wpdb->suppress_errors(true);
         $started = false;
         try {
-            $ids = $wpdb->get_col($wpdb->prepare("SELECT id FROM $table WHERE course='digital_marketing' AND id>%d AND goal_analysis_json='' ORDER BY id ASC LIMIT %d", $result['last_id'], $limit));
+            $stale="(goal_analysis_json='' OR COALESCE(JSON_EXTRACT(IF(JSON_VALID(goal_analysis_json),goal_analysis_json,'{}'),'$.version'),0)<".(int)TLIT_CB_Goals::VERSION.")";
+            $ids = $wpdb->get_col($wpdb->prepare("SELECT id FROM $table WHERE course='digital_marketing' AND id>%d AND $stale ORDER BY id ASC LIMIT %d", $result['last_id'], $limit));
             if ($wpdb->last_error !== '') { return self::error('goal_read'); }
             foreach ((array) $ids as $id) {
                 if ($wpdb->query('START TRANSACTION') === false) { return self::error('goal_write'); }
@@ -382,7 +383,8 @@ final class TLIT_CB_Store {
                 $row = $wpdb->get_row($wpdb->prepare("SELECT id,course,goal,goal_analysis_json FROM $table WHERE id=%d FOR UPDATE", (int) $id), ARRAY_A);
                 if ($wpdb->last_error !== '') { return self::error('goal_read'); }
                 // A new capture may have populated the analysis since the batch selected this ID.
-                if (is_array($row) && ($row['course'] ?? '') === 'digital_marketing' && ($row['goal_analysis_json'] ?? '') === '') {
+                $analysis_meta=is_array($row)?json_decode($row['goal_analysis_json']??'',true):null;
+                if (is_array($row) && ($row['course'] ?? '') === 'digital_marketing' && (int)($analysis_meta['version']??0)<TLIT_CB_Goals::VERSION) {
                     $saved = self::refresh_goal((int) $id, array(), $row);
                     if (is_wp_error($saved)) { return $saved; }
                     $result['processed']++;

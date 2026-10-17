@@ -22,7 +22,7 @@ class TLIT_CB_Admin {
             return;
         }
         wp_enqueue_style('tlit-cb-admin', TLIT_CB_URL . 'assets/admin.css', array(), TLIT_CB_VERSION);
-        if (($_GET['view'] ?? '') === 'dashboard') { wp_enqueue_style('tlit-cb-dashboard', TLIT_CB_URL . 'assets/dashboard.css', array('tlit-cb-admin'), TLIT_CB_VERSION); }
+        if (($_GET['view'] ?? '') === 'dashboard') { wp_enqueue_style('tlit-cb-dashboard', TLIT_CB_URL . 'assets/dashboard.css', array('tlit-cb-admin'), TLIT_CB_VERSION . '-desk2'); }
         wp_enqueue_script('tlit-cb-admin', TLIT_CB_URL . 'assets/admin.js', array(), TLIT_CB_VERSION, true);
     }
 
@@ -154,8 +154,8 @@ class TLIT_CB_Admin {
         $filters = self::filters();
         $view = isset($_GET['view']) && is_string($_GET['view']) ? sanitize_key(wp_unslash($_GET['view'])) : '';
         $id = self::integer($_GET['conversation'] ?? 0);
-        echo '<div class="wrap tlit-cb">';
-        echo '<header class="tlit-cb-header"><div><p class="tlit-cb-eyebrow">TECHLEADS IT <span aria-hidden="true">/</span> CHATBOT WORKSPACE</p><h1>Conversation Bridge</h1><p class="tlit-cb-intro">Every conversation, ready for your next step.</p></div><span class="tlit-cb-admin-label"><span class="dashicons dashicons-lock" aria-hidden="true"></span> Admin workspace</span></header>';
+        echo '<div class="wrap tlit-cb'.($view==='dashboard'?' tlit-cb--dashboard':'').'">';
+        echo '<header class="tlit-cb-header"><div><p class="tlit-cb-eyebrow">TECH LEADS IT <span aria-hidden="true">/</span> '.($view==='dashboard'?'TEAM WORKSPACE':'CHATBOT WORKSPACE').'</p><h1>'.($view==='dashboard'?'Lead dashboard':'Conversation Bridge').'</h1><p class="tlit-cb-intro">'.($view==='dashboard'?'Every enquiry, its owner and the next step.':'Every conversation, ready for your next step.').'</p></div><span class="tlit-cb-admin-label"><span class="dashicons dashicons-lock" aria-hidden="true"></span> Admin workspace</span></header>';
         echo '<nav class="tlit-cb-tabs" aria-label="Conversation Bridge sections"><a class="'.($view==='dashboard'?'is-active':'').'" href="'.esc_url(self::url(array('view'=>'dashboard'))).'"'.($view==='dashboard'?' aria-current="page"':'').'><span class="dashicons dashicons-chart-area" aria-hidden="true"></span> Dashboard</a><a class="' . (!in_array($view,array('dashboard','integrations'),true) ? 'is-active' : '') . '" href="' . esc_url(self::url()) . '"' . (!in_array($view,array('dashboard','integrations'),true) ? ' aria-current="page"' : '') . '><span class="dashicons dashicons-format-chat" aria-hidden="true"></span> Conversations</a>';
         if (class_exists('TLIT_LP_Leads')) { echo '<a href="'.esc_url(admin_url('admin.php?page=tlit-landing-leads')).'"><span class="dashicons dashicons-forms" aria-hidden="true"></span> Landing page leads</a>'; }
         echo '<a class="' . ($view === 'integrations' ? 'is-active' : '') . '" href="' . esc_url(self::url(array('view' => 'integrations'))) . '"' . ($view === 'integrations' ? ' aria-current="page"' : '') . '><span class="dashicons dashicons-admin-links" aria-hidden="true"></span> Integrations</a></nav>';

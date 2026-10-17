@@ -28,47 +28,126 @@ final class TLIT_CB_Dashboard {
         if(is_wp_error($result)) { wp_die(esc_html($result->get_error_message()).' Use Back, reload the dashboard, and try again.','',array('response'=>409)); }
         wp_safe_redirect(self::url(array('notice'=>$op==='members'?'members':'assigned','record'=>$op==='assign'?$ref:'')));exit;
     }
-    public static function render() {
-        wp_enqueue_style('tlit-cb-dashboard',TLIT_CB_URL.'assets/dashboard.css',array('tlit-cb-admin'),TLIT_CB_VERSION);
-        echo '<div class="cb-dash"><div class="cb-dash-title"><div><p class="cb-dash-eyebrow">LEAD OPERATIONS</p><h2>Your team’s lead desk</h2><p>See what arrived, what was opened and who owns the next step.</p></div><a class="button" href="'.esc_url(self::url()).'">Refresh dashboard</a></div>';
-        if(!TLIT_CB_Dashboard_Data::ready()) { echo '<div class="cb-dash-panel"><h3>Dashboard setup is incomplete</h3><p>Update the Bridge and Landing Page Leads modules and check the database connection.</p></div></div>';return; }
-        $filters=TLIT_CB_Dashboard_Data::filters(wp_unslash($_GET));
-        if(isset($_GET['notice'])) { echo '<p class="cb-dash-notice" role="status">'.esc_html($_GET['notice']==='members'?'Team members saved. Existing assignments are preserved.':'Assignment saved. Qualification and TeleCRM were not changed.').'</p>'; }
-        if(!empty($filters['record'])) { self::detail($filters['record']);echo '</div>';return; }
-        $result=TLIT_CB_Dashboard_Data::query($filters,max(1,absint($_GET['paged']??1)));$overview=TLIT_CB_Dashboard_Data::overview($filters);
-        if(is_wp_error($result)||is_wp_error($overview)) { echo '<p class="cb-dash-notice">'.esc_html(is_wp_error($result)?$result->get_error_message():$overview->get_error_message()).'</p></div>';return; }
-        $s=$overview['stats'];
-        echo '<div class="cb-dash-metrics">';
-        foreach(array('total'=>'Captured leads','unassigned'=>'Unassigned','unopened'=>'Not opened with PIN','awaiting_review'=>'Awaiting review','opened'=>'Opened with PIN','qualified'=>'Qualified / reviewed','synced'=>'Synced to TeleCRM','enrolled'=>'Enrolled') as $key=>$label) {
-            $quick=$filters;if($key==='unassigned'){$quick['owner']='unassigned';}elseif(in_array($key,array('opened','unopened'),true)){$quick['viewed']=$key;}elseif($key==='awaiting_review'){$quick['qualification']='new';}elseif($key==='qualified'){$quick['qualification']='qualified';}elseif($key==='enrolled'){$quick['qualification']='enrolled';}elseif($key==='synced'){$quick['crm']='sent';}
-            echo '<a class="cb-dash-metric'.(in_array($key,array('unassigned','unopened'),true)?' cb-dash-attention':'').'" href="'.esc_url(self::url($quick)).'"><span>'.esc_html($label).'</span><strong>'.esc_html(number_format_i18n((int)($s[$key]??0))).'</strong></a>';
-        }echo '</div><p class="cb-dash-caption">Totals follow the filters below. Linked chatbot and form records count once. Chats without a captured name and mobile stay in Conversations. '.(int)($s['unknown_views']??0).' older leads have no prior PIN view history.</p>';
-        echo '<section class="cb-dash-panel"><form method="get" class="cb-dash-filters"><input type="hidden" name="page" value="tlit-chat-bridge"><input type="hidden" name="view" value="dashboard"><label>Search<input type="search" name="search" placeholder="Name, phone, email or reference" value="'.esc_attr($filters['search']??'').'"></label><label>From (IST)<input type="date" name="from" value="'.esc_attr($filters['from']??'').'"></label><label>To (IST)<input type="date" name="to" value="'.esc_attr($filters['to']??'').'"></label>';
-        self::select('variant','Landing page',array('v1'=>'V1 · Original','v2'=>'V2 · Course','v3'=>'V3 · Training','unknown'=>'Not recorded'),$filters['variant']??'','All pages');
-        self::select('source','Capture source',self::sources(),$filters['source']??'','All sources');self::select('traffic','Traffic source',self::traffic(),$filters['traffic']??'','All traffic');
-        echo '<label>UTM campaign<input name="campaign" value="'.esc_attr($filters['campaign']??'').'" placeholder="Exact campaign name"></label>';
-        $members=TLIT_CB_Lead_Ops::members();$owners=array_merge(array('unassigned'=>'Unassigned'),$members);global $wpdb;
-        foreach((array)$wpdb->get_results('SELECT DISTINCT owner_key,owner_name FROM '.TLIT_CB_Lead_Ops::table()." WHERE owner_key<>''",ARRAY_A) as $owner) { if(!isset($owners[$owner['owner_key']])){$owners[$owner['owner_key']]=$owner['owner_name'].' (former member)';} }
-        self::select('owner','Assigned to',$owners,$filters['owner']??'','All ownership');self::select('viewed','PIN access',array('opened'=>'Opened','unopened'=>'Not opened','unknown'=>'Earlier views unknown'),$filters['viewed']??'','All access');self::select('qualification','Qualification',array_merge(array('qualified'=>'All reviewed statuses except New / Junk'),TLIT_LP_Leads::statuses()),$filters['qualification']??'','All statuses');
-        self::select('crm','TeleCRM',array('pending'=>'Not sent','held'=>'Held','sending'=>'Syncing','sent'=>'Synced','failed'=>'Failed','uncertain'=>'Check delivery'),$filters['crm']??'','All sync states');
-        echo '<div class="cb-dash-filter-actions"><button class="button button-primary">Apply filters</button><a href="'.esc_url(self::url()).'">Reset</a></div></form></section>';
-        echo '<div class="cb-dash-sources"><section class="cb-dash-panel"><h3>Where leads are coming from</h3><p class="cb-dash-caption">Capture type and page version</p>';
-        foreach($overview['sources'] as $source) { self::bar((self::sources()[$source['source']]??$source['source']).' · '.strtoupper($source['page_variant']),$source['total'],$s['total']); }
-        if(!$overview['sources']) { echo '<p>No leads match these filters.</p>'; }echo '</section><section class="cb-dash-panel"><h3>Traffic attribution</h3><p class="cb-dash-caption">Recorded campaign and referral information</p>';
-        foreach($overview['traffic'] as $traffic) { self::bar(self::traffic()[$traffic['traffic']]??$traffic['traffic'],$traffic['total'],$s['total']); }echo '</section></div>';
-        $export=wp_nonce_url(add_query_arg(array_merge($filters,array('action'=>'tlit_cb_dashboard_export')),admin_url('admin-post.php')),'tlit_cb_dashboard_export');
-        echo '<section class="cb-dash-panel cb-dash-inbox"><div class="cb-dash-panel-heading"><h3>All captured leads <span>'.(int)$result['total'].'</span></h3><a class="button" href="'.esc_url($export).'">Download filtered CSV</a></div><div class="cb-dash-table-wrap"><table class="cb-dash-table"><thead><tr><th>Lead</th><th>Source / page</th><th>PIN access</th><th>Ownership</th><th>Qualification / CRM</th><th>Received (IST)</th><th>Activity</th></tr></thead><tbody>';
-        foreach($result['rows'] as $row) {
-            $url=self::url(array('record'=>$row['reference']));echo '<tr><td><a class="cb-dash-name" href="'.esc_url($url).'">'.esc_html($row['name']).'</a><span>'.esc_html($row['phone']).'</span><small>'.esc_html($row['reference']).'</small></td><td><strong>'.esc_html(self::sources()[$row['source']]??$row['source']).' · '.esc_html(strtoupper($row['page_variant'])).'</strong><span>'.esc_html(self::traffic()[$row['traffic']]??$row['traffic']).'</span><small>'.esc_html($row['campaign']?:'No campaign recorded').'</small></td><td><span class="cb-dash-pill cb-dash-'.esc_attr($row['viewed']).'">'.esc_html(self::viewed($row)).'</span><small>'.esc_html($row['first_view_at']?self::date($row['first_view_at']):'').'</small></td><td><strong class="'.($row['owner_key']===''?'cb-dash-unassigned':'').'">'.esc_html($row['owner_name']?:'Unassigned').'</strong><small>'.esc_html($row['assigned_by']?'By '.$row['assigned_by']:'No owner selected').'</small></td><td><strong>'.esc_html(TLIT_LP_Leads::statuses()[$row['qualification']]??$row['qualification']).'</strong><span>'.esc_html(TLIT_CB_Lead_Ops::crm_label($row['crm_status'])).'</span></td><td>'.esc_html(self::date($row['created_at'])).'</td><td><a class="button" href="'.esc_url($url).'">Manage lead →</a></td></tr>';
-        }
-        if(!$result['rows']) { echo '<tr><td colspan="7"><h3>No matching leads</h3><p>Clear a filter or choose a different date range.</p></td></tr>'; }
-        echo '</tbody></table></div><div class="cb-dash-pagination"><span>'.(int)$result['total'].' leads · page '.(int)$result['page'].' of '.max(1,(int)ceil($result['total']/25)).'</span><div>';
-        if($result['page']>1){echo '<a class="button" href="'.esc_url(self::url(array_merge($filters,array('paged'=>$result['page']-1)))).'">Previous</a> ';}
-        if($result['page']*25<$result['total']){echo '<a class="button" href="'.esc_url(self::url(array_merge($filters,array('paged'=>$result['page']+1)))).'">Next</a>'; }echo '</div></div></section>';
-        echo '<div class="cb-dash-bottom"><section class="cb-dash-panel"><h3>Recent activity</h3>';self::history(TLIT_CB_Dashboard_Data::recent($filters));echo '</section><section class="cb-dash-panel"><h3>Your counsellor team</h3><p>Add one name per line. Team PIN users select their name when taking a lead; this is self-reported, not a verified login.</p>';
-        self::form('members');echo '<label class="screen-reader-text" for="cb-members">Team members</label><textarea id="cb-members" name="members" rows="6" placeholder="Veera&#10;Counsellor name">'.esc_textarea(implode("\n",$members)).'</textarea><p><button class="button button-primary">Save team members</button></p></form><p class="cb-dash-caption">PIN access tracking began '.esc_html(self::date(get_option('tlit_cb_ops_started_at'))).'. Old views cannot be reconstructed. Viewing and assignment never send a lead to TeleCRM.</p></section></div></div>';
+    public static function queue_url($filters, $bucket) {
+        return self::url(TLIT_CB_Dashboard_Data::bucket_filters($filters, $bucket)) . '#bridge-leads';
     }
-    private static function bar($label,$count,$total) { echo '<div class="cb-dash-source"><div><span>'.esc_html($label).'</span><strong>'.(int)$count.'</strong></div><progress max="'.max(1,(int)$total).'" value="'.(int)$count.'">'.(int)$count.'</progress></div>'; }
+
+    private static function form_filters($filters) {
+        $defaults = array(
+            'unassigned'=>array('owner'=>'unassigned'), 'awaiting_review'=>array('qualification'=>'new'),
+            'unopened'=>array('viewed'=>'unopened'), 'opened'=>array('viewed'=>'opened'),
+            'qualified'=>array('qualification'=>'qualified'), 'synced'=>array('crm'=>'sent'),
+            'enrolled'=>array('qualification'=>'enrolled'),
+        );
+        return array_merge($defaults[$filters['bucket']??'all']??array(), $filters);
+    }
+
+    public static function render() {
+        wp_enqueue_style('tlit-cb-dashboard', TLIT_CB_URL.'assets/dashboard.css', array('tlit-cb-admin'), TLIT_CB_VERSION.'-desk2');
+        echo '<div class="cb-dash">';
+        if (!TLIT_CB_Dashboard_Data::ready()) {
+            echo '<section class="cb-dash-panel"><h2>Dashboard setup is incomplete</h2><p>Update the Bridge and Landing Page Leads modules and check the database connection.</p></section></div>';
+            return;
+        }
+        $filters = TLIT_CB_Dashboard_Data::filters(wp_unslash($_GET));
+        if (isset($_GET['notice'])) {
+            echo '<p class="cb-dash-notice" role="status">'.esc_html($_GET['notice']==='members'?'Team members saved.':'Assignment saved. Qualification and TeleCRM were not changed.').'</p>';
+        }
+        if (!empty($filters['record'])) { self::detail($filters['record']); echo '</div>'; return; }
+        $result = TLIT_CB_Dashboard_Data::query($filters, max(1,absint($_GET['paged']??1)));
+        $context = TLIT_CB_Dashboard_Data::bucket_filters($filters, 'all');
+        $overview = TLIT_CB_Dashboard_Data::overview($context);
+        if (is_wp_error($result) || is_wp_error($overview)) {
+            echo '<p class="cb-dash-notice cb-dash-error" role="alert">'.esc_html(is_wp_error($result)?$result->get_error_message():$overview->get_error_message()).'</p></div>';
+            return;
+        }
+        $bucket = $filters['bucket']??(array_intersect_key($filters,array_flip(array('owner','viewed','qualification','crm')))?'custom':'all');
+        $stats = $overview['stats'];
+        echo '<div class="cb-dash-toolbar"><p><strong>'.esc_html(self::date_range($filters)).'</strong><span>All times in IST</span></p><div><a href="#bridge-team">Manage team</a><a class="button" href="'.esc_url(self::url($filters)).'">Refresh</a></div></div>';
+        echo '<nav class="cb-dash-metrics" aria-label="Lead queues">';
+        foreach (TLIT_CB_Dashboard_Data::buckets() as $key=>$definition) {
+            $active = $bucket===$key;
+            echo '<a class="cb-dash-metric'.($active?' is-active':'').'" href="'.esc_url(self::queue_url($filters,$key)).'" aria-controls="bridge-leads"'.($active?' aria-current="page"':'').'><span>'.esc_html($definition[1]).'</span><strong>'.esc_html(number_format_i18n((int)($stats[$definition[0]]??0))).'</strong><span class="cb-dash-metric-action" aria-hidden="true">View leads <span>→</span></span></a>';
+        }
+        echo '</nav><p class="cb-dash-caption cb-dash-metric-note">Counts use your search, date and source filters. Choose a count to open that lead list.</p>';
+        self::filters_view($filters);
+        self::inbox($filters,$result,$bucket);
+        echo '<details class="cb-dash-panel cb-dash-disclosure"><summary>Source breakdown <span>Pages, forms and campaigns</span></summary><div class="cb-dash-sources"><section><h2>Capture source</h2>';
+        foreach ($overview['sources'] as $source) {
+            $label=(self::sources()[$source['source']]??$source['source']).' · '.self::variant($source['page_variant']);
+            $args=$context; $args['source']=$source['source']; $args['variant']=$source['page_variant'];
+            self::bar($label,$source['total'],$stats['total'],self::url($args).'#bridge-leads');
+        }
+        if (!$overview['sources']) { echo '<p>No leads match this date and source selection.</p>'; }
+        echo '</section><section><h2>Traffic attribution</h2>';
+        foreach ($overview['traffic'] as $traffic) {
+            $args=$context; $args['traffic']=$traffic['traffic'];
+            self::bar(self::traffic()[$traffic['traffic']]??$traffic['traffic'],$traffic['total'],$stats['total'],self::url($args).'#bridge-leads');
+        }
+        echo '</section></div></details>';
+        echo '<section class="cb-dash-panel cb-dash-activity"><div class="cb-dash-panel-heading"><h2>Recent activity</h2><span>For the current lead list</span></div>';
+        self::history(TLIT_CB_Dashboard_Data::recent($filters)); echo '</section>';
+        $members=TLIT_CB_Lead_Ops::members();
+        echo '<details id="bridge-team" class="cb-dash-panel cb-dash-disclosure"><summary>Counsellor team <span>'.count($members).' members</span></summary><div class="cb-dash-team"><p>Add one counsellor name per line. Team PIN users select their name when taking a lead; the selected name is self-reported.</p>';
+        self::form('members'); echo '<label for="cb-members">Team members</label><textarea id="cb-members" name="members" rows="5" placeholder="One counsellor name per line">'.esc_textarea(implode("\n",$members)).'</textarea><button class="button button-primary">Save team members</button></form></div></details>';
+        echo '<p class="cb-dash-caption cb-dash-footnote">Linked chatbot and form records count once. Conversations without a captured name and mobile remain in Conversations. PIN tracking began '.esc_html(self::date(get_option('tlit_cb_ops_started_at'))).'; '.(int)($stats['unknown_views']??0).' earlier leads have unknown prior view history.</p></div>';
+    }
+
+    private static function date_range($filters) {
+        if (!empty($filters['from'])&&!empty($filters['to'])) { return $filters['from'].' — '.$filters['to']; }
+        if (!empty($filters['from'])) { return 'From '.$filters['from']; }
+        if (!empty($filters['to'])) { return 'Until '.$filters['to']; }
+        return 'All time';
+    }
+
+    private static function variant($value) {
+        return array('v1'=>'V1 · Original','v2'=>'V2 · Course','v3'=>'V3 · Training')[$value]??'Page not recorded';
+    }
+
+    private static function filters_view($filters) {
+        $values=self::form_filters($filters);
+        $advanced=array('variant','source','traffic','campaign','owner','viewed','qualification','crm');
+        $active=count(array_filter(array_intersect_key($values,array_flip($advanced)),function($v){return $v!=='';}));
+        echo '<section class="cb-dash-panel cb-dash-filter-panel" aria-label="Filter leads"><form method="get" action="'.esc_url(admin_url('admin.php')).'#bridge-leads"><input type="hidden" name="page" value="tlit-chat-bridge"><input type="hidden" name="view" value="dashboard"><div class="cb-dash-filter-primary"><label class="cb-dash-search">Search leads<input type="search" name="search" placeholder="Name, phone, email or reference" value="'.esc_attr($values['search']??'').'"></label><label>From (IST)<input type="date" name="from" value="'.esc_attr($values['from']??'').'"></label><label>To (IST)<input type="date" name="to" value="'.esc_attr($values['to']??'').'"></label><button class="button button-primary">Apply filters</button></div>';
+        echo '<details class="cb-dash-more-filters"'.($active?' open':'').'><summary>More filters'.($active?' <span>'.$active.' active</span>':'').'</summary><div class="cb-dash-filter-grid">';
+        self::select('variant','Landing page',array('v1'=>'V1 · Original','v2'=>'V2 · Course','v3'=>'V3 · Training','unknown'=>'Not recorded'),$values['variant']??'','All pages');
+        self::select('source','Capture source',self::sources(),$values['source']??'','All sources');
+        self::select('traffic','Traffic source',self::traffic(),$values['traffic']??'','All traffic');
+        echo '<label>UTM campaign<input name="campaign" value="'.esc_attr($values['campaign']??'').'" placeholder="Exact campaign name"></label>';
+        $owners=array_merge(array('unassigned'=>'Unassigned'),TLIT_CB_Lead_Ops::members()); global $wpdb;
+        foreach ((array)$wpdb->get_results('SELECT DISTINCT owner_key,owner_name FROM '.TLIT_CB_Lead_Ops::table()." WHERE owner_key<>''",ARRAY_A) as $owner) { if(!isset($owners[$owner['owner_key']])){$owners[$owner['owner_key']]=$owner['owner_name'].' (former member)';} }
+        self::select('owner','Assigned to',$owners,$values['owner']??'','All ownership');
+        self::select('viewed','PIN access',array('opened'=>'Opened','unopened'=>'Not opened','unknown'=>'Earlier views unknown'),$values['viewed']??'','All access');
+        self::select('qualification','Qualification',array_merge(array('qualified'=>'Reviewed: except New / Junk'),TLIT_LP_Leads::statuses()),$values['qualification']??'','All statuses');
+        self::select('crm','TeleCRM',array('pending'=>'Not sent','held'=>'Held','sending'=>'Syncing','sent'=>'Synced','failed'=>'Failed','uncertain'=>'Check delivery'),$values['crm']??'','All sync states');
+        echo '</div><button class="button cb-dash-apply-extra">Apply filters</button></details><div class="cb-dash-filter-bottom"><div class="cb-dash-date-shortcuts" aria-label="Quick date range">';
+        $today=new DateTimeImmutable('now',new DateTimeZone('Asia/Kolkata'));
+        foreach(array(1=>'Today',7=>'Last 7 days',30=>'Last 30 days') as $days=>$label){$args=$filters;unset($args['record']);$args['from']=$today->modify('-'.($days-1).' days')->format('Y-m-d');$args['to']=$today->format('Y-m-d');echo '<a href="'.esc_url(self::url($args).'#bridge-leads').'">'.esc_html($label).'</a>';}
+        echo '</div><a href="'.esc_url(self::url()).'">Clear all filters</a></div></form></section>';
+    }
+
+    private static function inbox($filters,$result,$bucket) {
+        $definition=TLIT_CB_Dashboard_Data::buckets()[$bucket]??null;
+        $title=$definition?$definition[2]:'Filtered leads';
+        $export=wp_nonce_url(add_query_arg(array_merge($filters,array('action'=>'tlit_cb_dashboard_export')),admin_url('admin-post.php')),'tlit_cb_dashboard_export');
+        echo '<section id="bridge-leads" tabindex="-1" class="cb-dash-panel cb-dash-inbox"><div class="cb-dash-panel-heading"><div><h2>'.esc_html($title).' <span class="cb-dash-count">'.(int)$result['total'].'</span></h2><p>Newest enquiries first</p></div><a class="button" href="'.esc_url($export).'">Download CSV</a></div>';
+        if($bucket!=='all'){echo '<div class="cb-dash-list-context"><span>Showing '.esc_html(strtolower($title)).'</span><a href="'.esc_url(self::queue_url($filters,'all')).'">Show all captured leads →</a></div>';}
+        echo '<div class="cb-dash-table-wrap"><table class="cb-dash-table"><caption class="screen-reader-text">'.esc_html($title).' with source, access, ownership and qualification.</caption><thead><tr><th scope="col">Lead</th><th scope="col">Source</th><th scope="col">Ownership</th><th scope="col">PIN access</th><th scope="col">Qualification</th><th scope="col">Received (IST)</th><th scope="col"><span class="screen-reader-text">Actions</span></th></tr></thead><tbody>';
+        foreach ($result['rows'] as $row) {
+            $url=self::url(array('record'=>$row['reference']));
+            echo '<tr><td data-label="Lead" class="cb-dash-lead-cell"><a class="cb-dash-name" href="'.esc_url($url).'">'.esc_html($row['name']).'</a><span>'.esc_html($row['phone']).'</span><small>'.esc_html($row['reference']).'</small></td><td data-label="Source"><strong>'.esc_html(self::sources()[$row['source']]??$row['source']).'</strong><span>'.esc_html(self::variant($row['page_variant'])).'</span><small>'.esc_html($row['campaign']?:self::traffic()[$row['traffic']]??$row['traffic']).'</small></td><td data-label="Ownership"><strong class="'.($row['owner_key']===''?'cb-dash-unassigned':'').'">'.esc_html($row['owner_name']?:'Unassigned').'</strong><small>'.esc_html($row['assigned_by']?'By '.$row['assigned_by']:'No owner selected').'</small></td><td data-label="PIN access"><span class="cb-dash-pill cb-dash-'.esc_attr($row['viewed']).'">'.esc_html(self::viewed($row)).'</span><small>'.esc_html($row['first_view_at']?self::date($row['first_view_at']):'').'</small></td><td data-label="Qualification"><strong>'.esc_html(TLIT_LP_Leads::statuses()[$row['qualification']]??$row['qualification']).'</strong><small>'.esc_html(TLIT_CB_Lead_Ops::crm_label($row['crm_status'])).'</small></td><td data-label="Received (IST)"><time>'.esc_html(self::date($row['created_at'])).'</time></td><td data-label="Action" class="cb-dash-action-cell"><a class="button" href="'.esc_url($url).'" aria-label="Manage '.esc_attr($row['name']).'">Manage lead</a></td></tr>';
+        }
+        if (!$result['rows']) { echo '<tr class="cb-dash-empty"><td colspan="7"><h3>No leads in this list</h3><p>Try another count or adjust the date and source filters.</p><a class="button" href="'.esc_url(self::queue_url($filters,'all')).'">View all captured leads</a></td></tr>'; }
+        echo '</tbody></table></div><div class="cb-dash-pagination"><span>'.(int)$result['total'].' leads · Page '.(int)$result['page'].' of '.max(1,(int)ceil($result['total']/25)).'</span><nav aria-label="Lead list pages">';
+        if ($result['page']>1) { echo '<a class="button" href="'.esc_url(self::url(array_merge($filters,array('paged'=>$result['page']-1))).'#bridge-leads').'">Previous</a>'; }
+        if ($result['page']*25<$result['total']) { echo '<a class="button" href="'.esc_url(self::url(array_merge($filters,array('paged'=>$result['page']+1))).'#bridge-leads').'">Next</a>'; }
+        echo '</nav></div></section>';
+    }
+
+    private static function bar($label,$count,$total,$url='') {
+        echo '<a class="cb-dash-source" href="'.esc_url($url).'"><span>'.esc_html($label).'</span><strong>'.(int)$count.'</strong><progress max="'.max(1,(int)$total).'" value="'.(int)$count.'">'.(int)$count.'</progress></a>';
+    }
+
     public static function history($rows) {
         echo '<ol class="cb-dash-history">';foreach($rows as $row){echo '<li><span class="cb-dash-event">'.esc_html(str_replace('_',' ',$row['kind'])).'</span><p>'.esc_html($row['summary']).'</p><small>'.esc_html($row['reference'].' · '.$row['actor'].' · '.self::date($row['created_at'])).'</small></li>';}
         if(!$rows){echo '<li>No recorded activity yet. New openings, assignments and reviews will appear here.</li>';}echo '</ol>';

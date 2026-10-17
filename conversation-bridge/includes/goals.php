@@ -1,13 +1,62 @@
 <?php
 /** Conservative, dependency-free fallback for sessions without an AI learning-goal summary. */
 final class TLIT_CB_Goals {
-    const VERSION = 1;
+    const VERSION = 2;
     const EMPTY_SUMMARY = 'Not enough conversation yet to identify a learning goal.';
     const REVISED_SUMMARY = 'Learning goal not yet clear — the visitor revised their direction.';
 
     public static function is_fallback($goal) {
         $goal = self::clean($goal);
         return $goal === '' || preg_match('/^(?:Not provided|Not enough conversation|Learning goal not yet clear|Exploring course details|Exploring digital marketing topics|General course enquiry|Undecided|Unknown|Not yet (?:known|clear|identified))\b/iu', $goal) === 1;
+    }
+
+    private static function questions($messages) {
+        $out=array();
+        foreach(is_array($messages)?$messages:array() as $message){
+            $message=(array)$message;
+            if(in_array($message['role']??'',array('user','visitor'),true)&&in_array($message['type']??'message',array('question','learning_goal','message','text'),true)&&self::clean($message['content']??'')!==''){$out[]=$message;}
+        }
+        return $out;
+    }
+
+    /** A model's null is not evidence that the visitor changed their mind. */
+    public static function confirms_retraction($messages,$prior='') {
+        $questions=self::questions($messages);if(!$questions){return false;}
+        $latest=self::clean(end($questions)['content']);$external=false;
+        foreach($questions as $question){$text=self::clean($question['content']);if(self::external_context($text)){$external=true;}elseif(preg_match('/\b(?:for myself|personally|my own|as for me|in my case|about me)\b/iu',$text)){$external=false;}}
+        if($external){return false;}
+        $analysis=self::analyze($questions);
+        if($analysis['summary']===self::REVISED_SUMMARY&&$analysis['evidence']!==''&&strpos($latest,$analysis['evidence'])!==false){return true;}
+        return self::rejects($latest,self::goal_kind($prior));
+    }
+
+    private static function goal_kind($summary) {
+        foreach(array('freelance'=>'freelanc|ఫ్రీలాన్|फ्रीलां|फ्रीलैं','business'=>'business|shop|bakery|వ్యాపార|दुकान','career'=>'career|upskill','job'=>'job|employ|placement|ఉద్యోగ|नौकरी','skills'=>'skills|learn') as $key=>$pattern){if(preg_match('/'.$pattern.'/iu',self::clean($summary))){return $key;}}return '';
+    }
+
+    /** Reconcile semantic AI updates with visitor evidence and the last durable goal. */
+    public static function reconcile($messages,$candidate='',$prior=array()) {
+        $prior=is_array($prior)?$prior:self::analyze(array(),$prior);
+        $previous=self::clean($prior['summary']??'');$candidate=self::clean($candidate);
+        $local=self::analyze($messages);$questions=self::questions($messages);$latest=$questions?self::clean(end($questions)['content']):'';
+        $direct=in_array($local['status'],array('stated','inferred'),true)&&$local['evidence']!==''&&strpos($latest,$local['evidence'])!==false;
+        $new_direction=$direct&&(self::is_fallback($previous)||self::goal_kind($local['summary'])!==self::goal_kind($previous));
+        $retracted=self::confirms_retraction($messages,$previous);
+        // A stale model echo must not restore a goal the visitor explicitly rejected.
+        if($local['summary']===self::REVISED_SUMMARY&&($retracted||(!self::is_fallback($candidate)&&self::goal_kind($local['evidence'])!==''&&self::rejects($local['evidence'],self::goal_kind($candidate))))){return $local;}
+        if($retracted&&(self::is_fallback($candidate)||$candidate===$previous||self::confirms_retraction($messages,$candidate))){
+            if(in_array($local['status'],array('stated','inferred'),true)){return $local;}
+            return self::result(self::REVISED_SUMMARY,'insufficient','transcript',$latest);
+        }
+        if(!self::is_fallback($candidate)){
+            if($candidate===$previous&&$new_direction){return $local;}
+            return self::analyze(array(),$candidate);
+        }
+        if($new_direction){return $local;}
+        if(!self::is_fallback($previous)){
+            $prior['summary']=$previous;$prior['version']=self::VERSION;return array_intersect_key($prior,array_flip(array('summary','status','source','evidence','version')))+array('status'=>'inferred','source'=>'model','evidence'=>'');
+        }
+        return $local;
     }
 
     /** Messages are ordered oldest first. Only visitor-authored question content is evidence. */
@@ -143,8 +192,8 @@ final class TLIT_CB_Goals {
         if (!$explicit_drop && !preg_match('/\b(?:i|my|me)\b|నాకు|నేను|मुझे|मैं/iu', $text)) { return false; }
         if (preg_match('/\b(?:changed my mind|not sure what|no longer sure|still deciding|do not know what|don\x27t know what)\b/iu', $text)) { return true; }
         if (!$explicit_drop && !preg_match('/\b(?:not|never|no longer|don\x27t|dont|do not|don\x{2019}t)\s+(?:(?:really|actually|any\s+longer)\s+)?(?:want|need|seek|plan|looking|interested|pursu\w*|my\s+goal|for\s+me)|వద్దు|नहीं चाहिए|नही चाहिए/iu', $text)) { return false; }
-        $kinds = array('job' => 'job|jobs|employment|placement|work', 'career' => 'career|switch|job', 'freelance' => 'freelanc\w*', 'business' => 'business|shop|store|sales', 'skills' => 'learn|skills');
-        return $kind !== '' && isset($kinds[$kind]) && preg_match('/\b(?:' . $kinds[$kind] . ')\b/iu', $text);
+        $kinds = array('job' => 'job|jobs|employment|placement|work|ఉద్యోగం|జాబ్|नौकरी|जॉब', 'career' => 'career|switch|job', 'freelance' => 'freelanc\w*|ఫ్రీలాన్సింగ్|फ्रीलांसिंग', 'business' => 'business|shop|store|sales|వ్యాపారం|दुकान', 'skills' => 'learn|skills');
+        return $kind !== '' && isset($kinds[$kind]) && preg_match('/(?:' . $kinds[$kind] . ')/iu', $text);
     }
 
     private static function topics($text) {

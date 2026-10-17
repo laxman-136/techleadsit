@@ -78,7 +78,7 @@ class TLIT_CB_Test_DB {
         if (strpos($sql, 'INSERT INTO wp_tlit_cb_conversations') === 0) {
             $row = $this->goal_rows[17] ?? array('id' => 17, 'goal' => '', 'goal_analysis_json' => '');
             $row['course'] = $args[1];
-            if ($args[7] !== '' || strpos($sql, 'goal=VALUES(goal),') !== false) { $row['goal'] = $args[7]; }
+            if (strpos($sql,'goal=goal,')===false&&($args[7] !== '' || strpos($sql, 'goal=VALUES(goal),') !== false)) { $row['goal'] = $args[7]; }
             $this->goal_rows[17] = $row;
         }
         if (strpos($sql, 'INSERT INTO wp_tlit_cb_messages') === 0) {
@@ -115,7 +115,7 @@ class TLIT_CB_Test_DB {
     public function get_col($sql, $column = 0) {
         $this->query($sql);
         if (preg_match('/SELECT id FROM wp_tlit_cb_conversations.*id>(\d+).*LIMIT (\d+)/', $sql, $match)) {
-            $rows = array_filter($this->goal_rows, function ($row) use ($match) { return $row['id'] > (int) $match[1] && $row['course'] === 'digital_marketing' && $row['goal_analysis_json'] === ''; });
+            $rows = array_filter($this->goal_rows, function ($row) use ($match) { $meta=json_decode($row['goal_analysis_json'],true);return $row['id'] > (int) $match[1] && $row['course'] === 'digital_marketing' && (int)($meta['version']??0)<TLIT_CB_Goals::VERSION; });
             ksort($rows);
             return array_slice(array_keys($rows), 0, (int) $match[2]);
         }
@@ -184,17 +184,17 @@ reset_db();
 $clear_goal = array_merge($event, array('event_id' => 'goal-retracted', 'goal' => '', 'goal_authoritative' => true));
 check(TLIT_CB_Store::capture($clear_goal) === 17, 'Explicit learning goal retraction is accepted');
 $goal_call = prepared_for('INSERT INTO wp_tlit_cb_conversations')[0];
-check($goal_call['args'][7] === '' && strpos($goal_call['sql'], 'goal=VALUES(goal),') !== false, 'Confirmed empty goal clears the stored goal instead of reviving an old one');
+check($goal_call['args'][7] === '' && strpos($goal_call['sql'], 'goal=goal,') !== false, 'DM goal is reconciled from visitor evidence instead of overwritten by a null');
 reset_db();
 $partial_event = array_merge($event, array('event_id' => 'brochure-after-state-expired', 'goal' => ''));
 TLIT_CB_Store::capture($partial_event);
 $goal_call = prepared_for('INSERT INTO wp_tlit_cb_conversations')[0];
-check(strpos($goal_call['sql'], "goal=IF(VALUES(goal)<>'',VALUES(goal),goal),") !== false, 'Partial events without confirmed goal state preserve the stored learning goal');
+check(strpos($goal_call['sql'], 'goal=goal,') !== false, 'Partial events preserve the durable learning goal for reconciliation');
 reset_db();
 $partial_event['goal_authoritative'] = 'true';
 TLIT_CB_Store::capture($partial_event);
 $goal_call = prepared_for('INSERT INTO wp_tlit_cb_conversations')[0];
-check(strpos($goal_call['sql'], "goal=IF(VALUES(goal)<>'',VALUES(goal),goal),") !== false, 'Malformed clear marker cannot clear a saved goal');
+check(strpos($goal_call['sql'], 'goal=goal,') !== false, 'Malformed clear marker cannot overwrite a saved goal');
 reset_db();
 TLIT_CB_Store::capture($event);
 $again = prepared_for('INSERT INTO wp_tlit_cb_messages');
@@ -225,7 +225,7 @@ $goal_event['messages'] = array(array('role' => 'visitor', 'type' => 'question',
 TLIT_CB_Store::capture($goal_event);
 $goal_meta = json_decode($wpdb->goal_rows[17]['goal_analysis_json'], true);
 check($goal_meta['status'] === 'inferred' && $goal_meta['source'] === 'transcript' && stripos($wpdb->goal_rows[17]['goal'], 'job') !== false, 'Transcript intent replaces an earlier broad interest summary');
-check($goal_meta['evidence'] !== '' && $goal_meta['version'] === 1, 'Evidence and version are stored beside the canonical goal');
+check($goal_meta['evidence'] !== '' && $goal_meta['version'] === TLIT_CB_Goals::VERSION, 'Evidence and version are stored beside the canonical goal');
 $goal_event['event_id'] = 'clear';
 $goal_event['goal'] = null;
 $goal_event['goal_authoritative'] = true;
@@ -271,7 +271,7 @@ check($backfilled['processed'] === 1 && $wpdb->goal_rows[2]['goal'] === 'Build p
 check(TLIT_CB_Store::backfill_goals(0, 20)['processed'] === 0 && count($tlit_test_erased_actions) === $actions_before, 'Repeated historical passes are idempotent and emit no integration actions');
 check(strpos(implode('\n', $wpdb->queries), 'FOR UPDATE') !== false, 'Historical rows are locked before analysis to avoid racing fresh chat events');
 $wpdb->goal_rows[4] = array_merge($historical, array('id' => 4));
-$wpdb->before_goal_lock = function ($db, $id) { $db->goal_rows[$id]['goal'] = 'Newly captured model goal'; $db->goal_rows[$id]['goal_analysis_json'] = '{"version":1,"source":"model"}'; };
+$wpdb->before_goal_lock = function ($db, $id) { $db->goal_rows[$id]['goal'] = 'Newly captured model goal'; $db->goal_rows[$id]['goal_analysis_json'] = json_encode(array('version'=>TLIT_CB_Goals::VERSION,'source'=>'model')); };
 check(TLIT_CB_Store::backfill_goals(0, 20)['processed'] === 0 && $wpdb->goal_rows[4]['goal'] === 'Newly captured model goal', 'A fresh capture that wins the race is never overwritten by backfill');
 
 reset_db();
@@ -286,7 +286,7 @@ TLIT_CB_Goal_Backfill::run();
 check(get_option(TLIT_CB_Goal_Backfill::CURSOR_OPTION) === 20 && isset($tlit_test_cron[TLIT_CB_Goal_Backfill::HOOK]) && get_option(TLIT_CB_Goal_Backfill::VERSION_OPTION) === false, 'Cron processes only twenty sessions then schedules the next batch');
 $tlit_test_cron = array();
 TLIT_CB_Goal_Backfill::run();
-check(get_option(TLIT_CB_Goal_Backfill::VERSION_OPTION) === 1 && get_option(TLIT_CB_Goal_Backfill::CURSOR_OPTION) === false && !$tlit_test_cron, 'Cron records completion after the remaining session');
+check(get_option(TLIT_CB_Goal_Backfill::VERSION_OPTION) === TLIT_CB_Goals::VERSION && get_option(TLIT_CB_Goal_Backfill::CURSOR_OPTION) === false && !$tlit_test_cron, 'Cron records completion after the remaining session');
 $writes = count(prepared_for('SET goal='));
 TLIT_CB_Goal_Backfill::run();
 TLIT_CB_Goal_Backfill::schedule();

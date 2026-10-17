@@ -65,6 +65,27 @@ try {
     dash_check(TLIT_CB_Lead_Ops::reference('form',$chat['lead_id'])==='CB-'.$cid,'linked form reviews resolve to canonical chat history');
     $overview=TLIT_CB_Dashboard_Data::overview($filtered);
     dash_check(!is_wp_error($overview)&&(int)$overview['stats']['total']===4&&(int)$overview['stats']['synced']===2,'aggregate totals match filtered canonical rows');
+    TLIT_LP_Leads::save_status($c,'enrolled','Local QA',0);
+    $overview=TLIT_CB_Dashboard_Data::overview($filtered);
+    $expected=array('all'=>4,'unassigned'=>3,'awaiting_review'=>1,'unopened'=>2,'opened'=>1,'qualified'=>3,'synced'=>3,'enrolled'=>1);
+    $conflicting=array_merge($filtered,array('owner'=>$keys[1],'viewed'=>'opened','qualification'=>'junk','crm'=>'failed','record'=>'LP-'.$a,'bucket'=>'opened'));
+    foreach(TLIT_CB_Dashboard_Data::buckets() as $bucket=>$definition){
+        $queue=TLIT_CB_Dashboard_Data::bucket_filters($conflicting,$bucket);$list=TLIT_CB_Dashboard_Data::query($queue);
+        dash_check($list['total']===$expected[$bucket]&&(int)$overview['stats'][$definition[0]]===$expected[$bucket],$bucket.' count opens exactly its matching leads and replaces conflicting workflow filters');
+    }
+    dash_check(TLIT_CB_Dashboard_Data::query(array_merge($filtered,array('bucket'=>'not-a-queue')))['total']===0,'unknown queue fails closed');
+    $context=TLIT_CB_Dashboard_Data::bucket_filters(array_merge($conflicting,array('search'=>'Dashboard QA','from'=>'2026-10-01','to'=>'2026-10-31','source'=>'general','variant'=>'v1','traffic'=>'google_ads')),'all');
+    dash_check(count($context)===8&&$context['campaign']===$run&&!isset($context['owner'])&&!isset($context['record']),'queue links preserve acquisition and date context only');
+    $before_render_calls=$calls;$old_get=$_GET;$_GET=array_merge(array('page'=>'tlit-chat-bridge','view'=>'dashboard'),$filtered,array('bucket'=>'unassigned'));
+    try{ob_start();TLIT_CB_Dashboard::render();$dashboard=ob_get_clean();}finally{$_GET=$old_get;}
+    $dom=new DOMDocument();@$dom->loadHTML('<?xml encoding="UTF-8">'.$dashboard);$xpath=new DOMXPath($dom);
+    $tiles=$xpath->query('//nav[@aria-label="Lead queues"]/a');
+    dash_check($tiles->length===8,'all eight metric boxes are accessible links');
+    foreach($tiles as $tile){$href=html_entity_decode($tile->getAttribute('href'));parse_str(parse_url($href,PHP_URL_QUERY),$args);dash_check(($args['campaign']??'')===$run&&isset($expected[$args['bucket']??''])&&parse_url($href,PHP_URL_FRAGMENT)==='bridge-leads','metric link targets its filtered list and keeps campaign context');}
+    dash_check($xpath->query('//section[@id="bridge-leads"]')->length===1&&$xpath->query('//td[@data-label="Ownership"]')->length===3,'lead results expose an anchor and responsive cell labels');
+    dash_check($xpath->query('//select[@name="owner"]/option[@value="unassigned"][@selected]')->length===1,'queue state is visible in its corresponding filter');
+    dash_check($xpath->query('//form[@method="get"]//input[@name="bucket"]')->length===0,'manual filters do not carry a contradictory hidden queue');
+    dash_check($calls===$before_render_calls,'dashboard navigation and rendering never call CRM or notification services');
     require_once dirname(__DIR__).'/includes/team-view.php';ob_start();TLIT_CB_Team_View::detail($grant,(array)TLIT_LP_Leads::get($a),$session,$invite['url'],'',false);$html=ob_get_clean();
     dash_check(str_contains($html,'QA B')&&!str_contains($html,'name="operation" value="claim"'),'private lead page shows owner without offering to steal assignment');
     dash_check(!str_contains(wp_json_encode(TLIT_CB_Lead_Ops::history('LP-'.$a)),$invite['pin'])&&!str_contains(wp_json_encode(TLIT_CB_Lead_Ops::history('LP-'.$a)),$parts['tlit_team_bridge']),'activity never stores PIN or private URL');

@@ -13,7 +13,7 @@ function goal_contains($result, $text) { return strpos($result['summary'], $text
 
 $result = analyze_goal(array());
 goal_check($result['status'] === 'insufficient' && $result['summary'] !== '', 'Empty conversation has an honest nonblank status');
-goal_check(array_keys($result) === array('summary', 'status', 'source', 'evidence', 'version') && $result['version'] === 1, 'Stable analysis contract');
+goal_check(array_keys($result) === array('summary', 'status', 'source', 'evidence', 'version') && $result['version'] === TLIT_CB_Goals::VERSION, 'Stable analysis contract');
 goal_check(analyze_goal(array('Hi', 'Thank you'))['status'] === 'insufficient', 'Greeting-only conversation does not invent intent');
 $contact = array(visitor('Jobs Business', 'contact_name'), visitor('person@example.com', 'contact_email'), visitor('9876543210', 'contact_phone'), visitor('English', 'language'), array('role' => 'assistant', 'type' => 'question', 'content' => 'You want to start a business and get a job.'));
 goal_check(TLIT_CB_Goals::analyze($contact)['status'] === 'insufficient', 'Contact fields and assistant replies never become evidence');

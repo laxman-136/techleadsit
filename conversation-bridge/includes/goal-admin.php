@@ -13,9 +13,10 @@ final class TLIT_CB_Goal_Admin {
     public static function counts() {
         global $wpdb;
         $table = $wpdb->prefix . 'tlit_cb_conversations';
-        $fields = array('COUNT(*) AS total', "COALESCE(SUM(goal_analysis_json=''),0) AS pending", "COALESCE(SUM(TRIM(goal)=''),0) AS blank_goal");
+        $current="(COALESCE(JSON_EXTRACT(IF(JSON_VALID(goal_analysis_json),goal_analysis_json,'{}'),'$.version'),0)=".(int)TLIT_CB_Goals::VERSION.")";
+        $fields = array('COUNT(*) AS total', "COALESCE(SUM(NOT $current),0) AS pending", "COALESCE(SUM(TRIM(goal)=''),0) AS blank_goal");
         foreach (array('stated', 'inferred', 'interest', 'insufficient') as $status) {
-            $fields[] = "COALESCE(SUM(CASE WHEN JSON_VALID(goal_analysis_json) THEN JSON_UNQUOTE(JSON_EXTRACT(goal_analysis_json,'$.status'))='$status' ELSE 0 END),0) AS $status";
+            $fields[] = "COALESCE(SUM(CASE WHEN JSON_VALID(goal_analysis_json) AND $current THEN JSON_UNQUOTE(JSON_EXTRACT(goal_analysis_json,'$.status'))='$status' ELSE 0 END),0) AS $status";
         }
         $previous = $wpdb->suppress_errors(true);
         try {

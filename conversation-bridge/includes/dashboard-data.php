@@ -16,10 +16,18 @@ final class TLIT_CB_Dashboard_Data {
     }
     public static function filters($input) {
         $out=array();
-        foreach(array('search','from','to','source','variant','traffic','campaign','owner','viewed','qualification','crm','record') as $key) {
-            if(isset($input[$key])&&is_string($input[$key])) { $out[$key]=substr(sanitize_text_field($input[$key]),0,200); }
+        foreach(array('search','from','to','source','variant','traffic','campaign','owner','viewed','qualification','crm','record','bucket') as $key) {
+            if(isset($input[$key])&&is_string($input[$key])&&trim($input[$key])!=='') { $out[$key]=substr(sanitize_text_field($input[$key]),0,200); }
         }
         return $out;
+    }
+    public static function buckets() {
+        return array('all'=>array('total','Captured leads','All captured leads','1=1'),'unassigned'=>array('unassigned','Unassigned','Unassigned leads',"d.owner_key=''"),'awaiting_review'=>array('awaiting_review','Awaiting review','Leads awaiting review',"d.qualification='new'"),'unopened'=>array('unopened','Not opened with PIN','Leads not opened with PIN',"d.viewed='unopened'"),'opened'=>array('opened','Opened with PIN','Leads opened with PIN',"d.viewed='opened'"),'qualified'=>array('qualified','Reviewed leads','Reviewed leads',"d.qualification NOT IN ('new','junk')"),'synced'=>array('synced','Synced to TeleCRM','Leads synced to TeleCRM',"d.crm_status='sent'"),'enrolled'=>array('enrolled','Enrolled','Enrolled leads',"d.qualification='enrolled'"));
+    }
+    /** Summary navigation keeps acquisition/date context, and replaces conflicting workflow filters. */
+    public static function bucket_filters($filters,$bucket='all') {
+        $out=array_intersect_key(self::filters($filters),array_flip(array('search','from','to','source','variant','traffic','campaign')));
+        $out['bucket']=isset(self::buckets()[$bucket])?$bucket:'all';return $out;
     }
     private static function bound($day,$next=false) {
         if(!preg_match('/^(\d{4})-(\d{2})-(\d{2})$/D',$day,$m)||!checkdate((int)$m[2],(int)$m[3],(int)$m[1])) { return false; }
@@ -28,6 +36,7 @@ final class TLIT_CB_Dashboard_Data {
     }
     public static function where($filters) {
         global $wpdb;$out=array('1=1');
+        if(isset($filters['bucket'])){$out[]=self::buckets()[$filters['bucket']][3]??'1=0';}
         foreach(array('source'=>'source','variant'=>'page_variant','traffic'=>'traffic','campaign'=>'campaign','viewed'=>'viewed','qualification'=>'qualification','crm'=>'crm_status','record'=>'reference') as $key=>$column) {
             if(($filters[$key]??'')!=='') { $out[]=$key==='qualification'&&$filters[$key]==='qualified'?"d.qualification NOT IN ('new','junk')":$wpdb->prepare("d.$column=%s",$filters[$key]); }
         }

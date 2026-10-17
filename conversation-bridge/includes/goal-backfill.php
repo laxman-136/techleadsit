@@ -8,6 +8,7 @@ final class TLIT_CB_Goal_Backfill {
     const VERSION_OPTION = 'tlit_cb_goal_backfill_version';
     const CURSOR_OPTION = 'tlit_cb_goal_backfill_cursor';
     const ERROR_OPTION = 'tlit_cb_goal_backfill_error';
+    const RUN_VERSION_OPTION = 'tlit_cb_goal_backfill_run_version';
     const BATCH_SIZE = 20;
 
     public static function register() {
@@ -18,6 +19,7 @@ final class TLIT_CB_Goal_Backfill {
     /** Installation only queues work; never scan the transcript archive in a page request. */
     public static function schedule($delay = 10) {
         if ((int) get_option(self::VERSION_OPTION, 0) === TLIT_CB_Goals::VERSION || !function_exists('wp_next_scheduled') || !function_exists('wp_schedule_single_event')) { return; }
+        if((int)get_option(self::RUN_VERSION_OPTION,0)!==TLIT_CB_Goals::VERSION){delete_option(self::CURSOR_OPTION);update_option(self::RUN_VERSION_OPTION,TLIT_CB_Goals::VERSION,false);}
         if (!wp_next_scheduled(self::HOOK)) {
             wp_schedule_single_event(time() + max(10, (int) $delay), self::HOOK);
         }
