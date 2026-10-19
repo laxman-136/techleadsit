@@ -113,6 +113,8 @@ if ($mode === '--test') {
     $assert(!isset(TLIT_CB_Admin::filters(array('date_from' => '2026-02-30'))['date_from']), 'Reject invalid calendar date.');
     $assert($filters['has_phone'] === 'yes' && !isset($filters['has_brochure']), 'Limit qualification filters to yes or no.');
     $html = fixture_render('inbox');
+    $assert(strpos($html, 'data-tlit-theme-root') !== false, 'Mark the private workspace as the theme scope.');
+    $assert(strpos($html, 'data-tlit-theme-toggle') !== false && strpos($html, 'aria-label="Switch to light theme"') !== false, 'Render an accessible light and dark theme control.');
     $time_view = new ReflectionMethod('TLIT_CB_Admin', 'day');
     $time_view->setAccessible(true);
     $assert($time_view->invoke(null, '2026-10-15 07:17:00', 'Y-m-d H:i:s') === '2026-10-15 12:47:00', 'Show IST timestamps even when the WordPress timezone is UTC.');

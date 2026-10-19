@@ -84,6 +84,9 @@ try {
     foreach($tiles as $tile){$href=html_entity_decode($tile->getAttribute('href'));parse_str(parse_url($href,PHP_URL_QUERY),$args);dash_check(($args['campaign']??'')===$run&&isset($expected[$args['bucket']??''])&&parse_url($href,PHP_URL_FRAGMENT)==='bridge-leads','metric link targets its filtered list and keeps campaign context');}
     dash_check($xpath->query('//section[@id="bridge-leads"]')->length===1&&$xpath->query('//td[@data-label="Ownership"]')->length===3,'lead results expose an anchor and responsive cell labels');
     dash_check($xpath->query('//select[@name="owner"]/option[@value="unassigned"][@selected]')->length===1,'queue state is visible in its corresponding filter');
+    dash_check($xpath->query('//button[contains(@class,"cb-dash-filter-toggle")][@aria-expanded="false"][@aria-controls="cb-dash-advanced-filters"]')->length===1,'advanced filters use a compact accessible disclosure control');
+    dash_check($xpath->query('//div[@id="cb-dash-advanced-filters"][@aria-hidden="true"]')->length===1,'advanced filter drawer starts closed even when a workflow filter is active');
+    dash_check($xpath->query('//div[contains(@class,"cb-dash-active-filters")]/span[contains(text(),"Owner: Unassigned")]')->length===1,'closed filter rail keeps the active workflow filter visible');
     dash_check($xpath->query('//form[@method="get"]//input[@name="bucket"]')->length===0,'manual filters do not carry a contradictory hidden queue');
     dash_check($calls===$before_render_calls,'dashboard navigation and rendering never call CRM or notification services');
     require_once dirname(__DIR__).'/includes/team-view.php';ob_start();TLIT_CB_Team_View::detail($grant,(array)TLIT_LP_Leads::get($a),$session,$invite['url'],'',false);$html=ob_get_clean();

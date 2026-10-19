@@ -41,8 +41,9 @@ final class TLIT_LP_Admin {
     }
     public static function render() {
         TLIT_LP_Leads::admin();
-        wp_enqueue_style('tlit-lp-admin',plugin_dir_url(__FILE__).'admin.css',array(),'1.0.0');
-        echo '<div class="wrap lp-workspace"><header class="lp-header"><div><p class="lp-eyebrow">TECH LEADS IT / COUNSELLOR WORKSPACE</p><h1>Landing page leads</h1><p>Every enquiry in one place. Review, call and qualify before syncing with TeleCRM.</p></div><span class="lp-private"><span class="dashicons dashicons-lock" aria-hidden="true"></span> Private workspace</span></header>';
+        wp_enqueue_style('tlit-lp-admin',plugin_dir_url(__FILE__).'admin.css',array(),'1.0.0-workspace4');
+        wp_enqueue_script('tlit-lp-theme',plugins_url('../conversation-bridge/assets/admin.js',__FILE__),array(),'1.5.0-workspace4',true);
+        echo '<div class="wrap lp-workspace" data-tlit-theme-root><header class="lp-header"><div><p class="lp-eyebrow">TECH LEADS IT / COUNSELLOR WORKSPACE</p><h1>Landing page leads</h1><p>Every enquiry in one place. Review, call and qualify before syncing with TeleCRM.</p></div><div class="lp-header-tools"><span class="lp-private"><span class="dashicons dashicons-lock" aria-hidden="true"></span> Private workspace</span><button type="button" class="tlit-cb-theme-toggle" data-tlit-theme-toggle aria-pressed="false" aria-label="Switch to light theme" title="Switch to light theme"><span aria-hidden="true"></span></button></div></header>';
         echo '<nav class="lp-tabs" aria-label="Bridge sections"><a href="'.esc_url(admin_url('admin.php?page=tlit-chat-bridge&view=dashboard')).'">Dashboard</a><a href="'.esc_url(admin_url('admin.php?page=tlit-chat-bridge')).'">Conversations</a><a class="is-active" href="'.esc_url(self::url()).'" aria-current="page">Landing page leads</a><a href="'.esc_url(admin_url('admin.php?page=tlit-chat-bridge&view=integrations')).'">Integrations</a></nav>';
         $notice = self::input('notice');
         $notices = array('saved'=>'Your review has been saved. Check the TeleCRM sync status for the result.','configuration_checked'=>'The existing connection is available. Authentication is confirmed during an actual qualified lead sync.');

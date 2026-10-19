@@ -43,7 +43,7 @@ final class TLIT_CB_Dashboard {
     }
 
     public static function render() {
-        wp_enqueue_style('tlit-cb-dashboard', TLIT_CB_URL.'assets/dashboard.css', array('tlit-cb-admin'), TLIT_CB_VERSION.'-desk2');
+        wp_enqueue_style('tlit-cb-dashboard', TLIT_CB_URL.'assets/dashboard.css', array('tlit-cb-admin'), TLIT_CB_VERSION.'-workspace4');
         echo '<div class="cb-dash">';
         if (!TLIT_CB_Dashboard_Data::ready()) {
             echo '<section class="cb-dash-panel"><h2>Dashboard setup is incomplete</h2><p>Update the Bridge and Landing Page Leads modules and check the database connection.</p></section></div>';
@@ -107,23 +107,41 @@ final class TLIT_CB_Dashboard {
     private static function filters_view($filters) {
         $values=self::form_filters($filters);
         $advanced=array('variant','source','traffic','campaign','owner','viewed','qualification','crm');
-        $active=count(array_filter(array_intersect_key($values,array_flip($advanced)),function($v){return $v!=='';}));
+        $active_values=array_filter(array_intersect_key($values,array_flip($advanced)),function($v){return $v!=='';});
+        $active=count($active_values);
+        $active_labels=array();
+        $owners=array_merge(array('unassigned'=>'Unassigned'),TLIT_CB_Lead_Ops::members()); global $wpdb;
+        foreach ((array)$wpdb->get_results('SELECT DISTINCT owner_key,owner_name FROM '.TLIT_CB_Lead_Ops::table()." WHERE owner_key<>''",ARRAY_A) as $owner) { if(!isset($owners[$owner['owner_key']])){$owners[$owner['owner_key']]=$owner['owner_name'].' (former member)';} }
+        $filter_labels=array('variant'=>'Page','source'=>'Source','traffic'=>'Traffic','campaign'=>'Campaign','owner'=>'Owner','viewed'=>'PIN access','qualification'=>'Status','crm'=>'TeleCRM');
+        $filter_options=array(
+            'variant'=>array('v1'=>'V1 · Original','v2'=>'V2 · Course','v3'=>'V3 · Training','unknown'=>'Not recorded'),
+            'source'=>self::sources(),
+            'traffic'=>self::traffic(),
+            'owner'=>$owners,
+            'viewed'=>array('opened'=>'Opened','unopened'=>'Not opened','unknown'=>'Earlier views unknown'),
+            'qualification'=>array_merge(array('qualified'=>'Reviewed'),TLIT_LP_Leads::statuses()),
+            'crm'=>array('pending'=>'Not sent','held'=>'Held','sending'=>'Syncing','sent'=>'Synced','failed'=>'Failed','uncertain'=>'Check delivery'),
+        );
+        foreach($active_values as $key=>$value){
+            $display=$filter_options[$key][$value]??($key==='owner'&&$value==='unassigned'?'Unassigned':$value);
+            $active_labels[]=($filter_labels[$key]??ucfirst($key)).': '.$display;
+        }
         echo '<section class="cb-dash-panel cb-dash-filter-panel" aria-label="Filter leads"><form method="get" action="'.esc_url(admin_url('admin.php')).'#bridge-leads"><input type="hidden" name="page" value="tlit-chat-bridge"><input type="hidden" name="view" value="dashboard"><div class="cb-dash-filter-primary"><label class="cb-dash-search">Search leads<input type="search" name="search" placeholder="Name, phone, email or reference" value="'.esc_attr($values['search']??'').'"></label><label>From (IST)<input type="date" name="from" value="'.esc_attr($values['from']??'').'"></label><label>To (IST)<input type="date" name="to" value="'.esc_attr($values['to']??'').'"></label><button class="button button-primary">Apply filters</button></div>';
-        echo '<details class="cb-dash-more-filters"'.($active?' open':'').'><summary>More filters'.($active?' <span>'.$active.' active</span>':'').'</summary><div class="cb-dash-filter-grid">';
+        echo '<div class="cb-dash-filter-rail"><button type="button" class="cb-dash-filter-toggle" aria-expanded="false" aria-controls="cb-dash-advanced-filters"><span class="cb-dash-filter-chevron" aria-hidden="true"></span><span>More filters</span>'.($active?'<span class="cb-dash-filter-count">'.$active.' active</span>':'').'</button><div class="cb-dash-active-filters" aria-label="Active advanced filters">';
+        foreach($active_labels as $label){echo '<span>'.esc_html($label).'</span>';}
+        echo '</div><div class="cb-dash-date-shortcuts" aria-label="Quick date range">';
+        $today=new DateTimeImmutable('now',new DateTimeZone('Asia/Kolkata'));
+        foreach(array(1=>'Today',7=>'7 days',30=>'30 days') as $days=>$label){$args=$filters;unset($args['record']);$args['from']=$today->modify('-'.($days-1).' days')->format('Y-m-d');$args['to']=$today->format('Y-m-d');echo '<a href="'.esc_url(self::url($args).'#bridge-leads').'">'.esc_html($label).'</a>';}
+        echo '</div><a class="cb-dash-clear-filters" href="'.esc_url(self::url()).'">Clear</a></div><div id="cb-dash-advanced-filters" class="cb-dash-filter-drawer" aria-hidden="true" inert><div class="cb-dash-filter-drawer-inner"><div class="cb-dash-filter-grid">';
         self::select('variant','Landing page',array('v1'=>'V1 · Original','v2'=>'V2 · Course','v3'=>'V3 · Training','unknown'=>'Not recorded'),$values['variant']??'','All pages');
         self::select('source','Capture source',self::sources(),$values['source']??'','All sources');
         self::select('traffic','Traffic source',self::traffic(),$values['traffic']??'','All traffic');
         echo '<label>UTM campaign<input name="campaign" value="'.esc_attr($values['campaign']??'').'" placeholder="Exact campaign name"></label>';
-        $owners=array_merge(array('unassigned'=>'Unassigned'),TLIT_CB_Lead_Ops::members()); global $wpdb;
-        foreach ((array)$wpdb->get_results('SELECT DISTINCT owner_key,owner_name FROM '.TLIT_CB_Lead_Ops::table()." WHERE owner_key<>''",ARRAY_A) as $owner) { if(!isset($owners[$owner['owner_key']])){$owners[$owner['owner_key']]=$owner['owner_name'].' (former member)';} }
         self::select('owner','Assigned to',$owners,$values['owner']??'','All ownership');
         self::select('viewed','PIN access',array('opened'=>'Opened','unopened'=>'Not opened','unknown'=>'Earlier views unknown'),$values['viewed']??'','All access');
         self::select('qualification','Qualification',array_merge(array('qualified'=>'Reviewed: except New / Junk'),TLIT_LP_Leads::statuses()),$values['qualification']??'','All statuses');
         self::select('crm','TeleCRM',array('pending'=>'Not sent','held'=>'Held','sending'=>'Syncing','sent'=>'Synced','failed'=>'Failed','uncertain'=>'Check delivery'),$values['crm']??'','All sync states');
-        echo '</div><button class="button cb-dash-apply-extra">Apply filters</button></details><div class="cb-dash-filter-bottom"><div class="cb-dash-date-shortcuts" aria-label="Quick date range">';
-        $today=new DateTimeImmutable('now',new DateTimeZone('Asia/Kolkata'));
-        foreach(array(1=>'Today',7=>'Last 7 days',30=>'Last 30 days') as $days=>$label){$args=$filters;unset($args['record']);$args['from']=$today->modify('-'.($days-1).' days')->format('Y-m-d');$args['to']=$today->format('Y-m-d');echo '<a href="'.esc_url(self::url($args).'#bridge-leads').'">'.esc_html($label).'</a>';}
-        echo '</div><a href="'.esc_url(self::url()).'">Clear all filters</a></div></form></section>';
+        echo '</div><div class="cb-dash-filter-drawer-actions"><button class="button button-primary cb-dash-apply-extra">Apply advanced filters</button><button type="button" class="button cb-dash-filter-close">Close</button></div></div></div></form></section>';
     }
 
     private static function inbox($filters,$result,$bucket) {
