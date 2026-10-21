@@ -1,0 +1,58 @@
+/* Review details follow V3's existing paper, ink and yellow palette. */
+.review-track {
+  position: relative;
+  scroll-snap-type: none;
+  scroll-behavior: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+.review-track::-webkit-scrollbar { display: none; }
+.review-card {
+  position: relative;
+  flex-shrink: 0;
+}
+.review-card::before { content: none; }
+.review-person {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  min-height: 52px;
+}
+.review-person > div { min-width: 0; }
+.review-person b { display: block; line-height: 1.3; }
+.review-person small { font-size: 10px; line-height: 1.5; margin-top: 6px; }
+.review-logo {
+  display: grid;
+  place-items: center;
+  width: 50px;
+  height: 50px;
+  flex: 0 0 50px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+}
+.review-logo img { width: 32px; height: 32px; object-fit: contain; }
+.review-card blockquote {
+  border-top: 1px solid var(--line);
+  padding-top: 22px;
+  margin-top: 22px;
+}
+.review-card .review-hook {
+  color: var(--ink);
+  background: var(--yellow);
+  font-weight: 700;
+  padding: 0 .08em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+.review-track:focus-visible { outline: 2px solid var(--ink); outline-offset: 5px; }
+@media (max-width: 560px) {
+  .review-person { gap: 11px; }
+  .review-person b { font-size: 16px; }
+  .review-logo { width: 45px; height: 45px; flex-basis: 45px; }
+  .review-logo img { width: 29px; height: 29px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .review-track { scroll-snap-type: x proximity; }
+  .review-card[data-review-copy] { display: none; }
+}
