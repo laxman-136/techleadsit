@@ -7,3 +7,19 @@
 @media(max-width:600px){.tl-settings{margin:12px 10px 20px 0;padding:18px!important;border-radius:18px}.tl-settings h1{font-size:32px}.tl-header{margin-bottom:28px}.tl-presets,.tl-panel,.tl-settings fieldset{padding:18px!important}.tl-presets>div:last-child{grid-template-columns:1fr}.tl-presets .button{min-height:80px}.tl-settings .form-table th,.tl-settings .form-table td{display:block;width:100%;padding:12px 0}.tl-settings input.regular-text{width:100%}.tl-save>span{max-width:100%}.tl-save .button{width:100%}.tl-settings .tl-save{position:static}.tl-settings .nav-tab{width:100%}.tl-settings .tl-section-nav{gap:8px 16px}}
 @media(prefers-reduced-motion:reduce){.tl-settings *{transition:none!important;scroll-behavior:auto!important}}
 .tl-settings fieldset{background:var(--surface)!important;border-color:var(--line)!important}.tl-settings .nav-tab{text-decoration:none}
+/* Explicit checkbox states override WordPress admin SVG checkmarks. */
+.tl-settings{--check-fill:#b9e99a;--check-mark:#17241b;--check-border:#84938a;--check-hover:#d4f4bb}
+.tl-settings[data-theme=light]{--check-fill:#286341;--check-mark:#ffffff;--check-border:#65756a;--check-hover:#1e5033}
+.tl-settings input[type=checkbox]{appearance:none;-webkit-appearance:none;position:relative;display:inline-block;flex:0 0 20px;width:20px!important;height:20px!important;min-width:20px;min-height:20px;margin:0 10px 0 0;vertical-align:middle;border:2px solid var(--check-border);border-radius:5px;background:var(--input);box-shadow:none;cursor:pointer;transition:background .15s,border-color .15s}
+.tl-settings input[type=checkbox]::before{content:none!important}
+.tl-settings input[type=checkbox]:checked{background:var(--check-fill);border-color:var(--check-fill)}
+.tl-settings input[type=checkbox]:checked::before{content:""!important;display:block;position:absolute;left:5px;top:1px;width:5px;height:10px;margin:0;border:solid var(--check-mark);border-width:0 2px 2px 0;transform:rotate(45deg);filter:none;float:none;background:none;box-sizing:border-box}
+.tl-settings input[type=checkbox]:hover{border-color:var(--accent)}
+.tl-settings input[type=checkbox]:checked:hover{background:var(--check-hover);border-color:var(--check-hover)}
+.tl-settings input[type=checkbox]:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.tl-settings input[type=checkbox]:disabled{opacity:.5;cursor:not-allowed}
+.tl-settings .otp-slug-card label{min-width:0;overflow-wrap:anywhere}
+.tl-save-status{display:block;font-weight:600;color:var(--ink);margin-bottom:4px}
+.tl-settings .tl-save .button:disabled{opacity:.65;cursor:wait}
+@media(max-width:600px){.tl-settings .tl-save{position:static!important}.tl-settings .tl-save>span{max-width:100%;width:100%}.tl-settings .tl-save .button{min-height:48px}.tl-settings .form-table label{line-height:1.6}.tl-settings .otp-slug-card label{min-height:44px}}
+@media(forced-colors:active){.tl-settings input[type=checkbox]{appearance:auto;-webkit-appearance:auto;forced-color-adjust:auto}.tl-settings input[type=checkbox]:checked::before{content:none!important}}
