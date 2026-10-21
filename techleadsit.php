@@ -1771,12 +1771,12 @@ function techleadsit_register_multi_course_settings() {
 
 function techleadsit_sanitize_course_settings($input) {
     $sanitized = array();
-    $sanitized['countdown_enabled'] = isset($input['countdown_enabled']) ? 1 : 0;
+    $sanitized['countdown_enabled'] = !empty($input['countdown_enabled']) ? 1 : 0;
     $sanitized['countdown_text'] = sanitize_text_field($input['countdown_text'] ?? '');
     $sanitized['countdown_target_datetime'] = sanitize_text_field($input['countdown_target_datetime'] ?? '');
     $sanitized['countdown_seats_count'] = sanitize_text_field($input['countdown_seats_count'] ?? '');
 
-    $sanitized['batch_section_enabled'] = isset($input['batch_section_enabled']) ? 1 : 0;
+    $sanitized['batch_section_enabled'] = !empty($input['batch_section_enabled']) ? 1 : 0;
     $sanitized['batch_title'] = sanitize_text_field($input['batch_title'] ?? '');
     $sanitized['batch_subtitle'] = sanitize_text_field($input['batch_subtitle'] ?? '');
     $sanitized['batch_start_date'] = sanitize_text_field($input['batch_start_date'] ?? '');
@@ -1786,10 +1786,10 @@ function techleadsit_sanitize_course_settings($input) {
     $sanitized['base_visitor_floor'] = sanitize_text_field($input['base_visitor_floor'] ?? '1840');
 
     // 4-Digit SMS OTP Verification Settings
-    $sanitized['otp_verification_enabled'] = isset($input['otp_verification_enabled']) ? 1 : 0;
-    $sanitized['otp_required_hero'] = isset($input['otp_required_hero']) ? 1 : 0;
-    $sanitized['otp_required_modal'] = isset($input['otp_required_modal']) ? 1 : 0;
-    $sanitized['otp_required_gate'] = isset($input['otp_required_gate']) ? 1 : 0;
+    $sanitized['otp_verification_enabled'] = !empty($input['otp_verification_enabled']) ? 1 : 0;
+    $sanitized['otp_required_hero'] = !empty($input['otp_required_hero']) ? 1 : 0;
+    $sanitized['otp_required_modal'] = !empty($input['otp_required_modal']) ? 1 : 0;
+    $sanitized['otp_required_gate'] = !empty($input['otp_required_gate']) ? 1 : 0;
 
     // Per-landing-page OTP toggle mapping
     $course_id = sanitize_key($input['course_id'] ?? (isset($_GET['tab']) ? $_GET['tab'] : 'hcm'));
@@ -1801,9 +1801,16 @@ function techleadsit_sanitize_course_settings($input) {
         foreach(array('dm_chat_enabled','dm_chat_otp_required','dm_live_enabled','dm_gtm_enabled','dm_geo_enabled','dm_clarity_enabled','dm_seats_enabled') as $field)$sanitized[$field]=empty($input[$field])?0:1;
         tlit_dm_ai_save_course_key($input,$sanitized);
     }
+    // add_option() may sanitize an already-sanitized value again on first save.
+    // Preserve the canonical disabled map instead of treating missing enabled inputs as unchecked.
+    $already_sanitized = !array_key_exists('otp_enabled_slugs', $input)
+        && isset($input['otp_disabled_slugs']) && is_array($input['otp_disabled_slugs']);
     $sanitized['otp_disabled_slugs'] = array();
     foreach ($slugs as $slug => $file) {
-        if (empty($input['otp_enabled_slugs'][$slug])) {
+        $disabled = $already_sanitized
+            ? !empty($input['otp_disabled_slugs'][$slug])
+            : empty($input['otp_enabled_slugs'][$slug]);
+        if ($disabled) {
             $sanitized['otp_disabled_slugs'][$slug] = 1;
         }
     }
