@@ -1997,7 +1997,7 @@ function techleadsit_render_multi_course_settings_page() {
             </div>
 
             <!-- Phone verification -->
-            <div style=" padding: 24px; margin-bottom: 24px">
+            <div class="tl-panel" id="tl-verification" style=" padding: 24px; margin-bottom: 24px">
                 <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 10px">
                     <div>
                         <h2 style=" margin: 0; display: flex; align-items: center; gap: 8px">
@@ -2083,7 +2083,7 @@ function techleadsit_render_multi_course_settings_page() {
             </div>
 
             <!-- Section 4: Mapped Landing Pages in this Course -->
-            <div class="tl-panel" id="tl-verification" style=" padding: 20px; margin-bottom: 24px">
+            <div class="tl-panel" id="tl-pages" style=" padding: 20px; margin-bottom: 24px">
                 <h3 style=" margin: 0 0 12px 0; display: flex; align-items: center; gap: 8px">
                     <span class="dashicons dashicons-admin-links"></span>
                     Connected Landing Pages for <?php echo esc_html($current_course['name']); ?> (<?php echo count($current_course['slugs']); ?> URLs auto-updated)
