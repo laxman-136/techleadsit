@@ -195,3 +195,11 @@ body{--flow-paper:#fcfcf9}
 #projects{background:linear-gradient(180deg,var(--flow-paper) 0%,#edf4ed 90px,#edf3e7 100%)}
 #projects::before,#projects::after{content:none}
 #projects + #course-fit{background:linear-gradient(180deg,#edf3e7 0%,#edf3e7 calc(100% - 80px),var(--flow-paper) 100%);border-top:0}
+
+/* Supplied learner reviews: highlighted outcomes in the page's sage-green theme. */
+#reviews .review-card{min-height:350px;border:1px solid #b9cdb1;border-top:3px solid #176c4d;background:linear-gradient(145deg,#fff 68%,#edf5e8);box-shadow:0 7px 0 #173e2c}
+#reviews .review-card.has-platform header{padding-bottom:18px;border-bottom:1px solid #dce7d7}
+#reviews .review-card h4{margin-top:20px;color:#173e2c}
+#reviews .review-card blockquote{padding-top:0;margin-top:14px;border-top:0;font-size:14px;line-height:1.8;color:#3f5b49}
+#reviews .review-hook{padding:0 .08em;background:#cfe5b7;color:#173e2c;font-weight:700;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+@media(max-width:760px){#reviews .review-card{min-height:340px}#reviews .review-card blockquote{font-size:13px;line-height:1.75}}

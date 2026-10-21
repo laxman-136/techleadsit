@@ -6,8 +6,29 @@ const faqs=[["Can I join if I’m completely new to marketing?","Yes. Start with
 document.querySelector('#faq-list').innerHTML=faqs.map(([q,a],i)=>`<details name="faq"${i===0?' open':''}><summary><span class="faq-number" aria-hidden="true">${String(i+1).padStart(2,'0')}</span><span class="faq-question">${q}</span><span class="faq-toggle" aria-hidden="true"></span></summary><div class="detail-body"><p>${a.replace('₹44,999',window.TLITLeadConfig?.feeLabel||'₹44,999')}</p></div></details>`).join('');
 const tools=[['01-chatgpt.webp','ChatGPT'],['03-claude.svg','Claude'],['04-perplexity.svg','Perplexity'],['05-google-trends.webp','Google Trends'],['09-wordpress.svg','WordPress'],['elementor.svg','Elementor'],['semrush.webp','Semrush'],['15-google-search-console.svg','Search Console'],['11-canva.webp','Canva'],['24-capcut.webp','CapCut'],['27-google-ads.svg','Google Ads'],['29-meta-ads-manager.svg','Meta Ads'],['25-google-analytics-4.svg','Google Analytics'],['26-google-tag-manager.svg','Tag Manager'],['33-mailchimp.svg','Mailchimp'],['34-whatsapp-business.svg','WhatsApp Business'],['35-n8n.svg','n8n'],['36-make.svg','Make']];
 document.querySelector('#tools-grid').innerHTML=tools.map(([file,name])=>`<div class="tool-tile"><img src="${pageAssetBase}assets/tools/${file}" width="28" height="28" loading="lazy" alt=""><span>${name}</span></div>`).join('');
-const reviews=[['Vikram Shah','Analytics & measurement','The analytics exercises helped me connect campaign goals with meaningful events and reports, instead of focusing only on clicks.'],['Meera Iyer','Landing pages','Creating a landing page helped me practise clear messaging, a useful page structure and a focused call to action.'],['Arjun Verma','Meta Ads','The practice work helped me connect audience research with ad ideas and think more carefully about the customer journey.'],['Divya Menon','CRM & follow-up','Mapping how a lead moves from a form into follow-up gave me a clearer understanding of CRM and marketing automation.'],['Rahul Kapoor','Capstone projects','The project format gave me a way to combine research, content, campaign planning and measurement in one piece of work.'],['Nisha Joshi','Portfolio development','Organising a portfolio helped me explain my approach, the tools I used and what I learned from each practical assignment.']];
-const track=document.querySelector('.review-track');track.innerHTML=reviews.map(([name,area,quote])=>`<article class="review-card"><b>${name}</b><small>${area}</small><blockquote>“${quote}”</blockquote></article>`).join('');
+const reviews=[
+  ['Rohith Naidu','Traffic & revenue','I applied the strategies I learned in the course, which helped me increase traffic by 60% and generate around ₹20 lakh in revenue. I’m glad I chose this course—it feels like the right decision.'],
+  ['Chandrasekhar','Landing pages & leads','I built a landing page using the conversion optimisation techniques I learned in the course. The approach was simple and practical, and it helped me generate more than 500 leads for a clinic business.'],
+  ['Supriya Chowdary','Audience targeting & ads','The course made audience segmentation and ad creation easy to understand. I used what I learned to create a campaign that achieved a 2.3x return on ad spend (ROAS).'],
+  ['Rahul Kapoor','Funnels & CRM','The funnel lessons were easy to follow and went into real depth. I learned how funnels work for different businesses and how to connect them to a CRM. I’m glad I took this course.'],
+  ['Nisha Joshi','Projects & interviews','The three projects helped me succeed in interviews. The resume guidance helped me create an ATS-friendly resume, and I started getting around 22–25 calls a day through Naukri.'],
+  ['Vineesh Reddy','AI tools & career skills','We covered 60+ AI tools in the course. I used just 10 of them, and those skills helped me land a job at a large multinational company. I’m thankful to Tech Leads IT for this valuable course.']
+];
+const reviewPresentation=[
+  ['google.png',['increase traffic by 60%','₹20 lakh in revenue']],
+  ['facebook.svg',['conversion optimisation','more than 500 leads']],
+  ['linkedin.svg',['audience segmentation','2.3x return on ad spend']],
+  ['facebook.svg',['funnels work for different businesses','connect them to a CRM']],
+  ['linkedin.svg',['succeed in interviews','22–25 calls a day']],
+  ['google.png',['60+ AI tools','land a job']]
+];
+const reviewEscape=text=>text.replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+const track=document.querySelector('.review-track');
+track.innerHTML=reviews.map(([name,area,quote],index)=>{
+  const [logo,hooks]=reviewPresentation[index];
+  const highlighted=hooks.reduce((text,hook)=>text.replaceAll(reviewEscape(hook),`<mark class="review-hook">${reviewEscape(hook)}</mark>`),reviewEscape(quote));
+  return `<article class="review-card"><header class="review-person"><span class="review-logo"><img src="${pageAssetBase}assets/review-platforms/${logo}" width="32" height="32" alt="" aria-hidden="true" decoding="async"></span><div><b>${reviewEscape(name)}</b><small>${reviewEscape(area)}</small></div></header><blockquote>“${highlighted}”</blockquote></article>`;
+}).join('');
 document.querySelector('[data-review-prev]').onclick=()=>track.scrollBy({left:-track.clientWidth*.85,behavior:'smooth'});document.querySelector('[data-review-next]').onclick=()=>track.scrollBy({left:track.clientWidth*.85,behavior:'smooth'});
 for(const group of ['curriculum','faq'])document.querySelectorAll(`details[name=${group}]`).forEach(d=>d.addEventListener('toggle',()=>{if(d.open)document.querySelectorAll(`details[name=${group}]`).forEach(other=>{if(other!==d)other.open=false;});}));
 const menu=document.querySelector('.menu-toggle'),nav=document.querySelector('#navigation');menu.onclick=()=>{const open=menu.getAttribute('aria-expanded')!=='true';menu.setAttribute('aria-expanded',String(open));nav.classList.toggle('open',open);};nav.addEventListener('click',e=>{if(e.target.closest('a')){nav.classList.remove('open');menu.setAttribute('aria-expanded','false');}});

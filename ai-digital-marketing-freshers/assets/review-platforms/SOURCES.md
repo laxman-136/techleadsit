@@ -1,3 +1,4 @@
 Google: reused existing assets/logos/google-original.png from course source.
-Trustpilot: reused existing assets/logos/tools/trustpilot.svg (vector brand symbol) from course source.
-Review platform mapping: course-reviews-data.json records 7, 8, 10, 11. User previously confirmed these reviews are genuine; platform publication not independently verified.
+LinkedIn: official LinkedIn "in" brand mark in the course assets.
+Facebook: official Facebook app "f" brand mark using Facebook Blue (#1877F2).
+Review platform mapping and the six supplied testimonials are recorded in course-reviews-data.json. The user supplied and approved this testimonial copy; platform publication has not been independently verified.

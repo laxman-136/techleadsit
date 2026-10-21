@@ -42,9 +42,9 @@ const reviews=[
 ];
 const reviewPresentation=[
   ['google.png',['increase traffic by 60%','₹20 lakh in revenue']],
-  ['trustpilot.svg',['conversion optimisation','more than 500 leads']],
+  ['facebook.svg',['conversion optimisation','more than 500 leads']],
   ['linkedin.svg',['audience segmentation','2.3x return on ad spend']],
-  ['trustpilot.svg',['funnels work for different businesses','connect them to a CRM']],
+  ['facebook.svg',['funnels work for different businesses','connect them to a CRM']],
   ['linkedin.svg',['succeed in interviews','22–25 calls a day']],
   ['google.png',['60+ AI tools','land a job']]
 ];
