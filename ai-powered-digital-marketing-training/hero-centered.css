@@ -1,0 +1,60 @@
+/* V3 hero: one centered reading path into the existing enquiry flow. */
+.hero-centered::before { opacity: .22; right: -300px; top: 110px; }
+.hero-centered .hero-grid { display: block; padding-block: 75px 40px; }
+.hero-centered .hero-copy { max-width: 1080px; margin-inline: auto; text-align: center; }
+.hero-centered h1.hero-decision-headline { max-width: 1050px; margin: 0 auto 27px; font-size: clamp(44px, 5.25vw, 72px); line-height: 1.08; text-wrap: balance; }
+.hero-centered .hero-lead { max-width: 770px; margin: 0 auto 27px; font-size: 20px; line-height: 1.55; text-wrap: pretty; }
+.hero-batch { display: flex; justify-content: center; align-items: center; gap: 28px; width: fit-content; max-width: 100%; margin: 0 auto 27px; padding: 15px 25px; border: 1px solid var(--ink); border-radius: 12px; background: var(--soft); text-align: left; }
+.hero-batch-start { display: flex; align-items: center; gap: 13px; }
+.hero-batch-start > svg { flex-shrink: 0; }
+.hero-batch .mono { display: block; margin-bottom: 3px; font-size: 9px; letter-spacing: .06em; }
+.hero-batch strong { display: block; font-size: 16px; line-height: 1.4; }
+.hero-batch-schedule { border-left: 1px solid #bcb06a; padding-left: 28px; }
+.hero-batch-schedule > span { display: block; font-size: 12px; margin-top: 3px; }
+.hero-primary-cta { min-height: 64px; padding: 18px 36px; font-size: 20px; gap: 30px; box-shadow: 0 5px 0 #c6ac00; }
+.hero-cta-note { max-width: 550px; margin: 15px auto 0; font-size: 13px; line-height: 1.5; color: var(--ink); }
+.hero-centered .hero-points { justify-content: center; margin: 23px 0 0; gap: 10px 24px; }
+.hero-centered .hero-bottom { padding-top: 25px; }
+.lead-modal-open { overflow: hidden; scrollbar-gutter: stable; }
+dialog.main-enquiry-dialog { width: min(560px, calc(100% - 32px)); max-height: calc(100dvh - 32px); padding: 0; overscroll-behavior: contain; }
+.main-enquiry-dialog .dialog-top { position: sticky; top: 0; z-index: 2; background: var(--ink); color: var(--yellow); }
+.main-enquiry-dialog .dialog-top .eyebrow { color: inherit; }
+.main-enquiry-dialog .dialog-top button { color: var(--yellow); background: transparent; border: 1px solid #76766a; }
+.main-enquiry-dialog .hero-form-intro { padding: 23px 28px 20px; }
+.main-enquiry-dialog .hero-form-intro h2 { font-size: 28px; }
+.main-enquiry-dialog .lead-flow { padding: 23px 28px 26px; }
+.main-enquiry-dialog .form-progress { background: var(--line); border-radius: 4px; overflow: hidden; }
+.main-enquiry-dialog .form-progress span { display: block; height: 100%; }
+.main-enquiry-dialog .lead-flow .form-actions { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.main-enquiry-dialog .form-actions .button { margin-left: auto; }
+.main-enquiry-dialog .lead-flow .form-error:empty { min-height: 0; margin: 0; }
+.main-enquiry-dialog .lead-flow .lead-field { margin-bottom: 22px; }
+.main-enquiry-dialog .lead-flow .preview-form-note { margin-top: 15px; }
+@media (max-width: 850px) {
+  .hero-centered .hero-grid { padding-block: 75px 35px; }
+  .hero-centered h1.hero-decision-headline { font-size: clamp(42px, 6.8vw, 60px); }
+  .hero-centered .hero-lead { font-size: 18px; max-width: 650px; }
+}
+@media (max-width: 560px) {
+  .hero-centered .hero-grid { padding-block: 75px 28px; }
+  .hero-centered h1.hero-decision-headline { font-size: clamp(32px, 8.7vw, 46px); margin-bottom: 22px; }
+  .hero-centered .hero-lead { font-size: 16px; line-height: 1.6; margin-bottom: 24px; }
+  .hero-batch { width: 100%; max-width: 400px; padding: 16px; gap: 11px; flex-direction: column; text-align: center; margin-bottom: 25px; }
+  .hero-batch-start { justify-content: center; gap: 10px; }
+  .hero-batch-start > div { text-align: left; }
+  .hero-batch-schedule { padding: 11px 0 0; border-left: 0; border-top: 1px solid #c8b977; width: 100%; }
+  .hero-batch strong { font-size: 15px; }
+  .hero-primary-cta { width: 100%; max-width: 400px; min-height: 61px; padding: 16px 20px; font-size: 17px; gap: 16px; }
+  .hero-cta-note { font-size: 12px; max-width: 310px; }
+  .hero-centered .hero-points { gap: 8px 14px; font-size: 10px; margin-top: 21px; }
+  .hero-centered .hero-bottom { padding-top: 22px; }
+  .main-enquiry-dialog .dialog-top { padding: 14px 19px; }
+  .main-enquiry-dialog .hero-form-intro { padding: 20px; }
+  .main-enquiry-dialog .hero-form-intro h2 { font-size: 26px; }
+  .main-enquiry-dialog .lead-flow { padding: 20px; }
+}
+@media (max-width: 360px) {
+  .hero-primary-cta { font-size: 15px; padding-inline: 14px; gap: 12px; }
+  .main-enquiry-dialog .hero-form-intro,.main-enquiry-dialog .lead-flow { padding-inline: 17px; }
+  .main-enquiry-dialog .lead-flow h2 { font-size: 22px; }
+}
