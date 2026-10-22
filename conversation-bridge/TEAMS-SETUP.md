@@ -1,4 +1,4 @@
-# Microsoft Teams new-lead alerts
+# Microsoft Teams lead and form drop-off alerts
 
 Available in TechLeadsIT Landing Pages 1.3.0 and Conversation Bridge 1.2.0. Update the WordPress plugin, create your Power Automate flow, then configure and test its webhook below. Notifications remain off until enabled; TeleCRM review stays separate.
 
@@ -7,8 +7,10 @@ Available in TechLeadsIT Landing Pages 1.3.0 and Conversation Bridge 1.2.0. Upda
 Website submission → WordPress Bridge saves the enquiry → notification queue → Power Automate → your Microsoft Teams group.
 
 - Covers general forms, popup forms and brochure requests on Digital Marketing V1, V2 and V3.
+- A form drop-off alert is queued once when the visitor saved both a name and valid mobile number, then made no progress for 10 minutes. Completing the form before that deadline cancels the alert.
 - Chatbot alerts begin after a name and valid mobile number are saved. Email is optional.
-- One alert identity per form receipt or chatbot conversation. Repeated chat turns and a linked chatbot brochure request do not create extra alerts.
+- There are three operational notification types: qualified form drop-off (`FD-`), successful landing-page submission (`LP-`) and chatbot contact (`CB-`). The synthetic connection test is not a lead notification.
+- One alert identity per form journey, form receipt or chatbot conversation. Repeated checks, submission retries, chat turns and a linked chatbot brochure request do not create extra alerts.
 - A Teams alert does not qualify a lead. Your counsellor still reviews the lead in WordPress; New/Junk remain there and the other statuses sync to TeleCRM when saved.
 - Existing historical leads are not forwarded when you enable the feature. New accepted captures start the queue.
 
@@ -57,7 +59,7 @@ The settings require the PHP plugin running in local WordPress. A static HTML la
 4. Click **Send test notification**. The alert contains only clearly labelled sample details, with an `example.invalid` email. It does not submit a visitor or call TeleCRM.
 5. Confirm the test appears in your Teams group. If WordPress says **accepted**, also check the flow's run history: accepting the webhook and posting the Teams card are separate stages.
 6. Enable **Teams notifications** and the sources you want: forms, chatbot, or both. Save again.
-7. Submit a synthetic form and capture a synthetic chatbot mobile number locally. Confirm the alert's page version, enquiry source, campaign and IST submission time.
+7. Submit a synthetic form, leave a second form incomplete after saving a name and mobile number, and capture a synthetic chatbot mobile number locally. Confirm the three alert types show the correct page version, enquiry source, campaign and IST time.
 
 The signed URL is encrypted at rest and never displayed after saving. Leave the input blank to retain it. Microsoft cloud endpoints using `*.logic.azure.com` and `*.environment.api.powerplatform.com` are supported; localhost receivers, generic webhooks, embedded credentials and unrelated domains are rejected.
 
@@ -80,7 +82,7 @@ Power Automate does not automatically deduplicate requests using the `Idempotenc
 
 ## 4. Keep the queue running
 
-The plugin schedules an immediate asynchronous wake-up and a one-minute repair/sweep. WordPress Cron still needs to run. On the live host, configure a real one-minute cron for `wp-cron.php` if traffic is low or `DISABLE_WP_CRON` is enabled. The repair step can recover missed queue inserts for captures made after the feature was enabled; it does not run a historical-lead broadcast.
+The plugin schedules an immediate asynchronous wake-up and a one-minute repair/sweep. WordPress Cron still needs to run. On the live host, configure a real one-minute cron for `wp-cron.php` if traffic is low or `DISABLE_WP_CRON` is enabled. The repair step can recover missed queue inserts for captures made after the feature was enabled; it does not run a historical-lead or historical-drop-off broadcast.
 
 Notification failures do not turn a successfully saved lead into a failed enquiry. Outbox records store identifiers and delivery metadata, not conversation transcripts or copied contact fields. Chatbot personal-data erasure also removes its notification references; messages already posted to Teams must be managed in Teams separately.
 
@@ -99,4 +101,4 @@ Notification failures do not turn a successfully saved lead into a failed enquir
 php conversation-bridge/tests/teams-wordpress-test.php /path/to/isolated-wordpress/wp-load.php
 ```
 
-Requires an isolated localhost WordPress/MariaDB installation with `WP_HTTP_BLOCK_EXTERNAL` enabled and the updated runtime plugin copies. The suite mocks every Teams and CRM HTTP request, covers both lead channels and all three page variants, and removes its disposable test records. A real Teams post still requires your saved workflow URL and an explicit connection test.
+Requires an isolated localhost WordPress/MariaDB installation with `WP_HTTP_BLOCK_EXTERNAL` enabled and the updated runtime plugin copies. The suite mocks every Teams and CRM HTTP request, covers all three notification types and all three page variants, and removes its disposable test records. A real Teams post still requires your saved workflow URL and an explicit connection test.

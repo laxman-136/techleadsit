@@ -11,7 +11,7 @@ if(!defined('WP_HTTP_BLOCK_EXTERNAL')||!WP_HTTP_BLOCK_EXTERNAL||!in_array(wp_par
 require_once dirname(__DIR__,2).'/techleadsit.php';
 if(!class_exists('TLIT_Teams_Notifications'))throw new RuntimeException('Update the isolated runtime plugin copies first.');
 wp_set_current_user(1);
-$checks=0;$leads=array();$chats=array();$jobs=array();$calls=0;$crm_calls=0;$last=array();$mode='accepted';$run=bin2hex(random_bytes(5));
+$checks=0;$leads=array();$drafts=array();$chats=array();$jobs=array();$calls=0;$crm_calls=0;$last=array();$mode='accepted';$run=bin2hex(random_bytes(5));
 $old=get_option(TLIT_Teams_Notifications::OPTION,null);$old_error=get_option('tlit_teams_queue_error',null);$table=TLIT_Teams_Notifications::table();
 $url='https://prod-01.westus.logic.azure.com/workflows/qaOnlyWorkflow/triggers/manual/paths/invoke?api-version=2016-10-01&sig=synthetic-secret-only';
 function tn_check($value,$label){if(!$value)throw new RuntimeException('FAIL: '.$label);++$GLOBALS['checks'];echo "PASS $label\n";}
@@ -22,7 +22,12 @@ function tn_form($variant='v1',$source='general'){
     $result=TLIT_LP_Leads::ingest($p,array('source'=>$source,'otp_verified'=>true));
     tn_check(!is_wp_error($result)&&$result['success'],'form saved before notification');$GLOBALS['leads'][]=$result['lead_id'];return array($result,$p);
 }
-function tn_job($type,$id){global $wpdb;$row=$wpdb->get_row($wpdb->prepare('SELECT * FROM '.TLIT_Teams_Notifications::table().' WHERE identity_key=%s',($type==='form'?'LP-':'CB-').$id),ARRAY_A);if($row)$GLOBALS['jobs'][]=(int)$row['id'];return $row;}
+function tn_job($type,$id){global $wpdb;$prefix=array('form'=>'LP-','chatbot'=>'CB-','dropoff'=>'FD-')[$type];$row=$wpdb->get_row($wpdb->prepare('SELECT * FROM '.TLIT_Teams_Notifications::table().' WHERE identity_key=%s',$prefix.$id),ARRAY_A);if($row)$GLOBALS['jobs'][]=(int)$row['id'];return $row;}
+function tn_draft($variant='v1'){
+    $slugs=array('v1'=>'ai-powered-digital-marketing','v2'=>'ai-powered-digital-marketing-course','v3'=>'ai-powered-digital-marketing-training');
+    $result=TLIT_LP_Leads::save_draft(array('request_id'=>wp_generate_uuid4(),'intent'=>'general','page_variant'=>$variant,'submission_url'=>home_url('/'.$slugs[$variant].'/'),'current_step'=>2,'total_steps'=>7,'last_field'=>'phone','values'=>array('name'=>'Veera Dropoff QA','phone'=>'+919515793373'),'tracking'=>array('utm_source'=>'qa_only','utm_campaign'=>$GLOBALS['run'])));
+    tn_check(!is_wp_error($result)&&!empty($result['draft_id']),'name and mobile progress creates a protected draft');$GLOBALS['drafts'][]=(int)$result['draft_id'];return $result;
+}
 class TeamsTestDie extends RuntimeException{}
 $die_filter=function(){return function($message,$title='',$args=array()){throw new TeamsTestDie(strip_tags((string)$message),(int)($args['response']??500));};};
 $http=function($pre,$args,$request_url)use(&$calls,&$crm_calls,&$last,&$mode,$wpdb){
@@ -47,6 +52,7 @@ try{
     list($off)=tn_form();tn_check(tn_job('form',$off['lead_id'])===null&&$calls===0,'disabled notifications never send or queue');
     tn_check(tn_settings()===true,'notification sources enabled without reentering the URL');
     TLIT_Teams_Notifications::repair_queue();tn_check(tn_job('form',$off['lead_id'])===null,'enabling does not forward historical form leads');
+    $enabled_options=TLIT_Teams_Notifications::options();$enabled_options['dropoffs_started_at']=gmdate('Y-m-d H:i:s',time()-3600);update_option(TLIT_Teams_Notifications::OPTION,$enabled_options,false);
     $first=null;
     foreach(array('v1','v2','v3') as $variant)foreach(array('general','popup','brochure') as $source){
         list($r,$p)=tn_form($variant,$source);$job=tn_job('form',$r['lead_id']);
@@ -56,8 +62,25 @@ try{
         tn_check((int)tn_job('form',$r['lead_id'])['id']===(int)$job['id'],'submission retry reuses its notification');
         if(!$first)$first=$job;
     }
+    $drop=tn_draft('v1');$drop_id=(int)$drop['draft_id'];
+    tn_check(tn_job('dropoff',$drop_id)===null,'active form progress does not notify Teams immediately');
+    $wpdb->update(TLIT_LP_Leads::draft_table(),array('updated_at'=>gmdate('Y-m-d H:i:s',time()-TLIT_Teams_Notifications::DROPOFF_SECONDS-5)),array('id'=>$drop_id));
+    TLIT_Teams_Notifications::dropoff_check($drop_id);$drop_job=tn_job('dropoff',$drop_id);
+    tn_check($drop_job&&$drop_job['state']==='pending','stale form with name and valid mobile queues one drop-off alert');
+    $drop_lead=TLIT_Teams_Notifications::lead('dropoff',$drop_id);$drop_card=wp_json_encode(TLIT_Teams_Notifications::card($drop_lead,$drop_job['notification_id']));
+    tn_check(strpos($drop_card,'Form started but not completed')!==false&&strpos($drop_card,'Veera Dropoff QA started filling the form on V1')!==false&&strpos($drop_card,'Step 2 of 7')!==false,'drop-off message includes name, page, mobile context and progress');
+    TLIT_Teams_Notifications::dropoff_check($drop_id);tn_check((int)tn_job('dropoff',$drop_id)['id']===(int)$drop_job['id'],'drop-off checks remain idempotent');
+    $before=$calls;TLIT_Teams_Notifications::deliver($drop_job['id']);
+    tn_check($calls===$before+1&&tn_job('dropoff',$drop_id)['state']==='accepted'&&strpos(wp_json_encode($last['body']),'Form started but not completed')!==false,'qualified drop-off reaches Power Automate as its own notification type');
+    $completed=tn_draft('v2');$completed_id=(int)$completed['draft_id'];$completed_row=TLIT_LP_Leads::get_draft($completed_id);TLIT_LP_Leads::complete_draft($completed_row->request_id,999999);
+    $wpdb->update(TLIT_LP_Leads::draft_table(),array('updated_at'=>gmdate('Y-m-d H:i:s',time()-TLIT_Teams_Notifications::DROPOFF_SECONDS-5)),array('id'=>$completed_id));
+    TLIT_Teams_Notifications::dropoff_check($completed_id);tn_check(tn_job('dropoff',$completed_id)===null,'completed forms cancel their pending drop-off alert');
+    $missing=TLIT_LP_Leads::save_draft(array('request_id'=>wp_generate_uuid4(),'intent'=>'general','page_variant'=>'v3','submission_url'=>home_url('/ai-powered-digital-marketing-training/'),'current_step'=>1,'total_steps'=>7,'last_field'=>'name','values'=>array('name'=>'Name Only QA')));$missing_id=(int)$missing['draft_id'];$drafts[]=$missing_id;
+    $wpdb->update(TLIT_LP_Leads::draft_table(),array('updated_at'=>gmdate('Y-m-d H:i:s',time()-TLIT_Teams_Notifications::DROPOFF_SECONDS-5)),array('id'=>$missing_id));
+    TLIT_Teams_Notifications::dropoff_check($missing_id);tn_check(tn_job('dropoff',$missing_id)===null,'drop-off without both name and valid mobile never notifies Teams');
     TLIT_Teams_Notifications::deliver($first['id']);$before=$calls;TLIT_Teams_Notifications::deliver($first['id']);
     tn_check($calls===$before&&tn_job('form',$first['entity_id'])['state']==='accepted','accepted notification is never automatically resent');
+    tn_check(strpos(wp_json_encode($last['body']),'Successful landing-page submission')!==false,'completed form uses the successful-submission notification template');
     tn_check($last['body']['type']==='message'&&$last['body']['attachments'][0]['contentType']==='application/vnd.microsoft.card.adaptive','Teams webhook receives the official message and adaptive-card envelope');
     tn_check(($last['args']['redirection']??null)===0&&!isset($last['args']['headers']['Authorization']),'Anyone webhook uses no bearer token and never follows redirects');
     $card=wp_json_encode($last['body']);tn_check(strpos($card,'Submitted (IST)')!==false&&strpos($card,'Campaign source')!==false&&strpos($card,'Open in WordPress Bridge')!==false,'alert includes IST, source and a private Bridge link');
@@ -70,6 +93,7 @@ try{
     do_action('tlit_cb_capture',$event);$event['event_id']='next-question';do_action('tlit_cb_capture',$event);
     tn_check(tn_job('chatbot',$cid)['id']===$chat_job['id'],'chat retries and later conversation turns keep one alert');
     TLIT_Teams_Notifications::deliver($chat_job['id']);$facts=array_column($last['body']['attachments'][0]['content']['body'][2]['facts'],'value','title');
+    tn_check(strpos(wp_json_encode($last['body']),'New chatbot lead')!==false,'chatbot contact uses its own notification template');
     tn_check(($facts['Page version']??'')==='V3'&&!isset($facts['Email']),'chat alert keeps page attribution and permits missing email');
     $brochure=TLIT_CB_Qualification::brochure($token,array('name'=>'Synthetic Chat QA','phone'=>'+447700900456','email'=>'brochure-'.$run.'@example.invalid','page_variant'=>'v3'));
     tn_check(!is_wp_error($brochure),'chat brochure saved through canonical lead adapter');$leads[]=$brochure['lead_id'];
@@ -116,6 +140,7 @@ try{
     remove_filter('pre_http_request',$http,PHP_INT_MAX);remove_filter('wp_die_handler',$die_filter);
     foreach(array_unique($jobs) as $id){wp_clear_scheduled_hook('tlit_teams_deliver',array($id));$wpdb->delete($table,array('id'=>$id));}
     foreach($leads as $id)$wpdb->delete(TLIT_LP_Leads::table(),array('id'=>$id));
+    foreach($drafts as $id){wp_clear_scheduled_hook('tlit_teams_dropoff_check',array($id));$wpdb->delete(TLIT_LP_Leads::draft_table(),array('id'=>$id));}
     foreach($chats as $id){foreach(array('messages','events') as $name)$wpdb->delete($wpdb->prefix.'tlit_cb_'.$name,array('conversation_id'=>$id));$wpdb->delete($wpdb->prefix.'tlit_cb_conversations',array('id'=>$id));}
     if($old===null)delete_option(TLIT_Teams_Notifications::OPTION);else update_option(TLIT_Teams_Notifications::OPTION,$old,false);
     if($old_error===null)delete_option('tlit_teams_queue_error');else update_option('tlit_teams_queue_error',$old_error,false);

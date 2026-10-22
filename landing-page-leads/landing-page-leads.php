@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Tech Leads IT — Landing Page Leads
  * Description: Bridge-first landing-page lead inbox with counsellor-controlled TeleCRM handoff.
- * Version: 0.5.3
+ * Version: 0.5.4
  * Requires PHP: 8.0
  */
 if (!defined('ABSPATH')) { exit; }
@@ -12,7 +12,7 @@ require_once __DIR__.'/api.php';
 require_once __DIR__.'/integration.php';
 final class TLIT_LP_Leads {
     use TLIT_LP_API, TLIT_LP_Integration;
-    const VERSION = '0.5.3';
+    const VERSION = '0.5.4';
     const OPTION = 'tlit_lp_integration';
     static function table() { global $wpdb; return $wpdb->prefix.'tlit_landing_leads'; }
     static function draft_table() { global $wpdb; return $wpdb->prefix.'tlit_form_drafts'; }
@@ -203,7 +203,7 @@ final class TLIT_LP_Leads {
         if($status==='otp_pending'&&$requested&&strtotime($requested.' UTC')<time()-300) { return 'otp_failed'; }
         return isset(self::draft_statuses()[$status])?$status:'incomplete';
     }
-    /** Progressively stores a form session. Drafts never trigger Teams or TeleCRM. */
+    /** Progressively stores a form session. Drafts never trigger TeleCRM. */
     static function save_draft(array $p) {
         global $wpdb;
         $request_id=self::clean($p['request_id']??'',80);
@@ -247,11 +247,16 @@ final class TLIT_LP_Leads {
         if($row) {
             if($row->lifecycle_status==='verified') { return ['success'=>true,'draft_token'=>$token,'status'=>'verified']; }
             if($wpdb->update(self::draft_table(),$data,['id'=>$row->id])===false) { return self::error('Form progress could not be saved.',503); }
+            $draft_id=(int)$row->id;
         } else {
             $data=array_merge(['request_id'=>$request_id,'token_hash'=>self::draft_token_hash($request_id,$token),'created_at'=>$now],$data);
             if($wpdb->insert(self::draft_table(),$data)!==1) { return self::error('Form progress could not be saved.',503); }
+            $draft_id=(int)$wpdb->insert_id;
         }
-        return ['success'=>true,'draft_token'=>$token,'status'=>$status];
+        // Listeners may schedule a delayed abandonment check. They never perform
+        // network requests while the visitor's progress request is running.
+        try { do_action('tlit_lp_draft_saved',$draft_id); } catch(Throwable $error) { update_option('tlit_teams_queue_error',1,false); }
+        return ['success'=>true,'draft_token'=>$token,'status'=>$status,'draft_id'=>$draft_id];
     }
     static function complete_draft($request_id,$lead_id) {
         global $wpdb;$request_id=self::clean($request_id,80);

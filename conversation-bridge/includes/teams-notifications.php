@@ -5,14 +5,17 @@ if (!defined('ABSPATH')) { exit; }
 final class TLIT_Teams_Notifications {
     const OPTION='tlit_teams_notifications';
     const SCHEMA='1';
+    const DROPOFF_SECONDS=600;
     private static $queued=false;
     private static $erased=array();
 
     public static function register() {
         add_action('tlit_lp_lead_created',array(__CLASS__,'form_saved'),10,1);
+        add_action('tlit_lp_draft_saved',array(__CLASS__,'draft_saved'),10,1);
         add_action('tlit_cb_contact_saved',array(__CLASS__,'chat_saved'),10,1);
         add_action('admin_post_tlit_teams_settings',array(__CLASS__,'admin_action'));
         add_action('tlit_teams_deliver',array(__CLASS__,'deliver'),10,1);
+        add_action('tlit_teams_dropoff_check',array(__CLASS__,'dropoff_check'),10,1);
         add_action('tlit_teams_sweep',array(__CLASS__,'sweep'));
         add_action('init',array(__CLASS__,'ensure_schedule'),8);
         add_filter('cron_schedules',array(__CLASS__,'schedules'));
@@ -49,7 +52,7 @@ final class TLIT_Teams_Notifications {
     }
     public static function options() {
         $o=get_option(self::OPTION,array());
-        return wp_parse_args(is_array($o)?$o:array(),array('enabled'=>0,'forms'=>1,'chatbot'=>1,'endpoint_sealed'=>''));
+        return wp_parse_args(is_array($o)?$o:array(),array('enabled'=>0,'forms'=>1,'chatbot'=>1,'endpoint_sealed'=>'','dropoffs_started_at'=>''));
     }
     private static function error($message) { return new WP_Error('tlit_teams',$message); }
     public static function valid_url($url) {
@@ -89,6 +92,7 @@ final class TLIT_Teams_Notifications {
                 $o['forms_after_id']=is_callable(array('TLIT_LP_Leads','table'))?(int)$wpdb->get_var('SELECT MAX(id) FROM '.TLIT_LP_Leads::table()):0;
             }
             if($o['chatbot']&&(empty($previous['enabled'])||empty($previous['chatbot']))) { $o['chat_started_at']=gmdate('Y-m-d H:i:s'); }
+            if($o['forms']&&(empty($previous['enabled'])||empty($previous['forms'])||empty($o['dropoffs_started_at']))) { $o['dropoffs_started_at']=gmdate('Y-m-d H:i:s'); }
         }
         if(update_option(self::OPTION,$o,false)===false&&self::options()!==$o) { return self::error('The notification settings could not be saved.'); }
         if($o['enabled']&&!wp_next_scheduled('tlit_teams_sweep')) { wp_schedule_event(time()+60,'tlit_teams_minute','tlit_teams_sweep'); }
@@ -96,7 +100,13 @@ final class TLIT_Teams_Notifications {
         return true;
     }
     public static function ensure_schedule() {
-        if(!empty(self::options()['enabled'])&&!wp_next_scheduled('tlit_teams_sweep')) { wp_schedule_event(time()+60,'tlit_teams_minute','tlit_teams_sweep'); }
+        $o=self::options();
+        if(!empty($o['enabled'])&&!wp_next_scheduled('tlit_teams_sweep')) { wp_schedule_event(time()+60,'tlit_teams_minute','tlit_teams_sweep'); }
+        // Start abandonment tracking at deployment time. Existing historical
+        // drafts are intentionally excluded from new Teams notifications.
+        if(!empty($o['enabled'])&&!empty($o['forms'])&&empty($o['dropoffs_started_at'])) {
+            $o['dropoffs_started_at']=gmdate('Y-m-d H:i:s');update_option(self::OPTION,$o,false);
+        }
     }
     private static function enabled($type) { $o=self::options();return !empty($o['enabled'])&&!empty($o[$type==='chatbot'?'chatbot':'forms']); }
     public static function form_saved($id) {
@@ -113,11 +123,32 @@ final class TLIT_Teams_Notifications {
         try { self::queue('chatbot',(int)$id); }
         catch(Throwable $error) { update_option('tlit_teams_queue_error',1,false); }
     }
+    public static function draft_saved($id) {
+        try {
+            if(!self::enabled('dropoff')||!is_callable(array('TLIT_LP_Leads','get_draft'))) { return; }
+            $row=TLIT_LP_Leads::get_draft((int)$id);
+            if(!$row||($row->lifecycle_status??'')==='verified'||trim((string)($row->name??''))===''||self::canonical_phone((string)($row->phone??''))==='') { return; }
+            if(!wp_next_scheduled('tlit_teams_dropoff_check',array((int)$id))) { wp_schedule_single_event(time()+self::DROPOFF_SECONDS,'tlit_teams_dropoff_check',array((int)$id)); }
+            self::$queued=true;
+        } catch(Throwable $error) { update_option('tlit_teams_queue_error',1,false); }
+    }
+    public static function dropoff_check($id) {
+        try {
+            if(!self::enabled('dropoff')||!is_callable(array('TLIT_LP_Leads','get_draft'))) { return; }
+            $row=TLIT_LP_Leads::get_draft((int)$id);
+            if(!$row||($row->lifecycle_status??'')==='verified'||trim((string)($row->name??''))===''||self::canonical_phone((string)($row->phone??''))==='') { return; }
+            $started=self::options()['dropoffs_started_at']??'';
+            if($started===''||(string)$row->updated_at<$started) { return; }
+            $last=strtotime((string)$row->updated_at.' UTC');$due=($last===false?time():$last)+self::DROPOFF_SECONDS;
+            if($due>time()) { wp_schedule_single_event($due,'tlit_teams_dropoff_check',array((int)$id));return; }
+            self::queue('dropoff',(int)$id);
+        } catch(Throwable $error) { update_option('tlit_teams_queue_error',1,false); }
+    }
     /** No network and no contact snapshot: safe even inside a caller's transaction. */
     public static function queue($type,$id) {
-        if(!in_array($type,array('form','chatbot'),true)||$id<1||!self::enabled($type)) { return false; }
+        if(!in_array($type,array('form','chatbot','dropoff'),true)||$id<1||!self::enabled($type)) { return false; }
         $url=self::endpoint();if($url===''||!self::lead($type,$id)) { return false; }
-        global $wpdb;$identity=($type==='form'?'LP-':'CB-').$id;$now=gmdate('Y-m-d H:i:s');
+        global $wpdb;$prefix=array('form'=>'LP-','chatbot'=>'CB-','dropoff'=>'FD-')[$type];$identity=$prefix.$id;$now=gmdate('Y-m-d H:i:s');
         $ok=$wpdb->query($wpdb->prepare('INSERT INTO '.self::table()." (identity_key,entity_type,entity_id,notification_id,endpoint_key,state,next_attempt,created_at,updated_at) VALUES (%s,%s,%d,%s,%s,'pending',%s,%s,%s) ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id)",$identity,$type,$id,wp_generate_uuid4(),self::endpoint_key($url),$now,$now,$now));
         if($ok===false) { update_option('tlit_teams_queue_error',1,false);return false; }
         $job_id=(int)$wpdb->insert_id;
@@ -143,13 +174,25 @@ final class TLIT_Teams_Notifications {
             if(!is_callable(array('TLIT_LP_Leads','get'))) { return null; }
             $row=TLIT_LP_Leads::get($id);if(!$row||$row->source==='chatbot') { return null; }
             $data=json_decode($row->payload,true)?:array();$tracking=$data['tracking']??array();
-            $lead=array('reference'=>'LP-'.$id,'name'=>$row->name,'phone'=>$row->phone,'email'=>$row->email,'goal'=>$data['goal']??'','variant'=>$row->page_variant,'source'=>TLIT_LP_Leads::labels()[$row->source]??$row->source,'page'=>$row->submission_url,'created'=>$row->created_at,'verified'=>!empty($row->otp_verified),'language'=>$data['details']['preferred_language']??'','tracking'=>$tracking,'url'=>admin_url('admin.php?page=tlit-landing-leads&lead='.$id));
+            $lead=array('reference'=>'LP-'.$id,'event'=>'form','name'=>$row->name,'phone'=>$row->phone,'email'=>$row->email,'goal'=>$data['goal']??'','variant'=>$row->page_variant,'source'=>TLIT_LP_Leads::labels()[$row->source]??$row->source,'page'=>$row->submission_url,'created'=>$row->created_at,'verified'=>!empty($row->otp_verified),'language'=>$data['details']['preferred_language']??'','tracking'=>$tracking,'url'=>admin_url('admin.php?page=tlit-landing-leads&lead='.$id));
         } elseif($type==='chatbot') {
             if(!class_exists('TLIT_CB_Store')) { return null; }
             $row=TLIT_CB_Store::get($id);
             if(!$row||($row['course']??'')!=='digital_marketing') { return null; }
             $tracking=json_decode($row['tracking_json']??'{}',true)?:array();$variant=is_callable(array('TLIT_LP_Leads','variant'))?TLIT_LP_Leads::variant('',$row['source_url']??''):'';
-            $lead=array('reference'=>'CB-'.$id,'name'=>$row['name'],'phone'=>$row['phone'],'email'=>$row['email'],'goal'=>$row['goal'],'variant'=>$variant,'source'=>!empty($row['has_brochure'])?'Chatbot / brochure request':'Chatbot enquiry','page'=>$row['source_url'],'created'=>$row['created_at'],'verified'=>false,'language'=>$row['language'],'tracking'=>$tracking,'url'=>admin_url('admin.php?page=tlit-chat-bridge&conversation='.$id));
+            $lead=array('reference'=>'CB-'.$id,'event'=>'chatbot','name'=>$row['name'],'phone'=>$row['phone'],'email'=>$row['email'],'goal'=>$row['goal'],'variant'=>$variant,'source'=>!empty($row['has_brochure'])?'Chatbot / brochure request':'Chatbot enquiry','page'=>$row['source_url'],'created'=>$row['created_at'],'verified'=>false,'language'=>$row['language'],'tracking'=>$tracking,'url'=>admin_url('admin.php?page=tlit-chat-bridge&conversation='.$id));
+        } elseif($type==='dropoff') {
+            if(!is_callable(array('TLIT_LP_Leads','get_draft'))) { return null; }
+            $row=TLIT_LP_Leads::get_draft($id);
+            if(!$row||($row->lifecycle_status??'')==='verified') { return null; }
+            $started=self::options()['dropoffs_started_at']??'';
+            if($started===''||(string)$row->updated_at<$started) { return null; }
+            $last=strtotime((string)$row->updated_at.' UTC');
+            if($last===false||$last>time()-self::DROPOFF_SECONDS) { return null; }
+            $data=json_decode($row->payload??'{}',true)?:array();$tracking=$data['tracking']??array();
+            $status=is_callable(array('TLIT_LP_Leads','draft_status'))?TLIT_LP_Leads::draft_status($row):($row->lifecycle_status??'incomplete');
+            $labels=array('incomplete'=>'Incomplete form','otp_pending'=>'OTP pending','otp_failed'=>'OTP failed or expired');
+            $lead=array('reference'=>'FD-'.$id,'event'=>'dropoff','name'=>$row->name,'phone'=>$row->phone,'email'=>$row->email,'goal'=>$data['values']['goal']??'','variant'=>$row->page_variant,'source'=>TLIT_LP_Leads::labels()[$row->source]??$row->source,'page'=>$row->submission_url,'created'=>$row->created_at,'updated'=>$row->updated_at,'verified'=>false,'language'=>$data['details']['preferred_language']??'','tracking'=>$tracking,'progress'=>'Step '.(int)$row->current_step.' of '.max(1,(int)$row->total_steps),'dropoff_status'=>$labels[$status]??'Incomplete form','url'=>admin_url('admin.php?page=tlit-landing-leads&view=dropoffs&draft='.$id));
         } else { return null; }
         return trim($lead['name'])!==''&&self::canonical_phone($lead['phone'])!==''?$lead:null;
     }
@@ -160,17 +203,20 @@ final class TLIT_Teams_Notifications {
         return str_replace(array('\\','*','_','[',']','`'),array('\\\\','\\*','\\_','\\[','\\]','\\`'),$text);
     }
     public static function card(array $lead,$notification_id,$test=false) {
-        $stamp=strtotime(($lead['created']??'').' UTC');
-        $facts=array('Name'=>$lead['name'],'Mobile'=>$lead['phone'],'Course'=>'AI Powered Digital Marketing','Page version'=>strtoupper($lead['variant']??''),'Enquiry'=>$lead['source'],'Submitted (IST)'=>$stamp===false?'Not recorded':wp_date('d M Y, g:i a',$stamp,new DateTimeZone('Asia/Kolkata')));
+        $event=$lead['event']??'form';$dropoff=$event==='dropoff';$chatbot=$event==='chatbot';$stamp=strtotime(($dropoff?($lead['updated']??''):($lead['created']??'')).' UTC');
+        $facts=array('Name'=>$lead['name'],'Mobile'=>$lead['phone'],'Course'=>'AI Powered Digital Marketing','Page version'=>strtoupper($lead['variant']??''),'Enquiry'=>$lead['source'],($dropoff?'Last activity (IST)':'Submitted (IST)')=>$stamp===false?'Not recorded':wp_date('d M Y, g:i a',$stamp,new DateTimeZone('Asia/Kolkata')));
+        if($dropoff) { $facts['Progress']=$lead['progress']??'';$facts['Status']=$lead['dropoff_status']??'Incomplete form'; }
         foreach(array('Email'=>'email','Language'=>'language','Learning goal'=>'goal','Submitted from'=>'page') as $label=>$key) { if(!empty($lead[$key])) { $facts[$label]=$lead[$key]; } }
         if(!empty($lead['team_pin'])) { $facts['Bridge PIN']=$lead['team_pin'];$facts['Bridge access until (IST)']=$lead['team_expires']; }
         foreach(array('Campaign source'=>'utm_source','Campaign'=>'utm_campaign') as $label=>$key) { if(!empty($lead['tracking'][$key])) { $facts[$label]=$lead['tracking'][$key]; } }
         $facts['Mobile verification']=!empty($lead['verified'])?'OTP verified':'Not OTP verified';
         $facts['Reference']=$lead['reference'];$facts['Notification ID']=$notification_id;
         $items=array();foreach($facts as $title=>$value) { if($value!=='') { $items[]=array('title'=>$title,'value'=>self::text($value)); } }
+        $title=$dropoff?'Form started but not completed':($chatbot?'New chatbot lead':'Successful landing-page submission');
+        $summary=$dropoff?self::text($lead['name']).' started filling the form on '.strtoupper(self::text($lead['variant']??'the landing page')).' but did not complete it.':($chatbot?'A chatbot visitor shared a valid mobile number and is ready for contact.':'A landing-page enquiry was submitted successfully and is ready for your team to contact.');
         $card=array('$schema'=>'http://adaptivecards.io/schemas/adaptive-card.json','type'=>'AdaptiveCard','version'=>'1.2','body'=>array(
-            array('type'=>'TextBlock','text'=>$test?'TEST — Teams notifications connected':'New Digital Marketing lead','weight'=>'Bolder','size'=>'Medium','wrap'=>true),
-            array('type'=>'TextBlock','text'=>$test?'Synthetic test only. No visitor was submitted and no CRM action was taken.':'A new enquiry is ready for your team to contact.','wrap'=>true),
+            array('type'=>'TextBlock','text'=>$test?'TEST — Teams notifications connected':$title,'weight'=>'Bolder','size'=>'Medium','wrap'=>true),
+            array('type'=>'TextBlock','text'=>$test?'Synthetic test only. No visitor was submitted and no CRM action was taken.':$summary,'wrap'=>true),
             array('type'=>'FactSet','facts'=>$items)));
         if(!$test&&!empty($lead['url'])) { $card['actions']=array(array('type'=>'Action.OpenUrl','title'=>'Open in WordPress Bridge','url'=>$lead['url'])); }
         return array('type'=>'message','attachments'=>array(array('contentType'=>'application/vnd.microsoft.card.adaptive','contentUrl'=>null,'content'=>$card)));
@@ -189,7 +235,7 @@ final class TLIT_Teams_Notifications {
             if(!$lead) { $patch['state']='cancelled';$patch['last_error']='The contact is missing or no longer has a valid mobile number.'; }
             elseif(!self::enabled($job['entity_type'])||$url===''||!hash_equals($job['endpoint_key'],self::endpoint_key($url))) { $patch['state']='held';$patch['last_error']='Settings changed or alerts were disabled. Review before retrying.'; }
             else {
-                if(class_exists('TLIT_CB_Team_Access')) {
+                if($job['entity_type']!=='dropoff'&&class_exists('TLIT_CB_Team_Access')) {
                     $prepared=TLIT_CB_Team_Access::for_notification($lead);
                     if(is_wp_error($prepared)) { $wpdb->update($table,array('state'=>'held','last_error'=>'The private Bridge link could not be prepared. Check team access settings before retrying.','updated_at'=>$now),array('id'=>$id,'state'=>'sending'));return; }
                     $lead=$prepared;
@@ -225,6 +271,12 @@ final class TLIT_Teams_Notifications {
             $ids=$wpdb->get_col($wpdb->prepare("SELECT l.id FROM $leads l LEFT JOIN $table n ON n.identity_key=CONCAT('LP-',l.id) WHERE l.id>%d AND (l.source IN ('general','popup','brochure') OR (l.source='chatbot_brochure' AND COALESCE(JSON_UNQUOTE(JSON_EXTRACT(l.payload,'$.details.conversation_id')),'') NOT REGEXP '^[1-9][0-9]*$')) AND n.id IS NULL ORDER BY l.id ASC LIMIT 25",(int)$o['forms_after_id']));
             if($wpdb->last_error!=='') { $ok=false; }
             else { foreach($ids as $id) { if(!self::queue('form',(int)$id)) { $ok=false; } } }
+        }
+        if(!empty($o['forms'])&&!empty($o['dropoffs_started_at'])&&is_callable(array('TLIT_LP_Leads','draft_table'))) {
+            $drafts=TLIT_LP_Leads::draft_table();
+            $ids=$wpdb->get_col($wpdb->prepare("SELECT d.id FROM $drafts d LEFT JOIN $table n ON n.identity_key=CONCAT('FD-',d.id) WHERE d.updated_at>=%s AND d.updated_at<=%s AND d.lifecycle_status<>'verified' AND d.name<>'' AND d.phone REGEXP '^[+][1-9][0-9]{6,14}$' AND n.id IS NULL ORDER BY d.id ASC LIMIT 25",$o['dropoffs_started_at'],gmdate('Y-m-d H:i:s',time()-self::DROPOFF_SECONDS)));
+            if($wpdb->last_error!=='') { $ok=false; }
+            else { foreach($ids as $id) { if(!self::queue('dropoff',(int)$id)) { $ok=false; } } }
         }
         if(!empty($o['chatbot'])&&!empty($o['chat_started_at'])&&class_exists('TLIT_CB_Store')) {
             $conversations=$wpdb->prefix.'tlit_cb_conversations';
@@ -270,20 +322,22 @@ final class TLIT_Teams_Notifications {
     public static function render() {
         if(!current_user_can('manage_options')) { return; }
         global $wpdb;$o=self::options();$configured=self::endpoint()!=='';
-        echo '<div class="tlit-teams-grid"><section class="tlit-cb-side-panel"><p class="tlit-cb-eyebrow">MICROSOFT TEAMS</p><h2>New-lead notifications</h2><p>Alert your team as soon as an enquiry is saved. Counsellor review and TeleCRM continue separately.</p>';
+        echo '<div class="tlit-teams-grid"><section class="tlit-cb-side-panel"><p class="tlit-cb-eyebrow">MICROSOFT TEAMS</p><h2>Lead and drop-off notifications</h2><p>Alert your team when a landing-page form is submitted, when a named visitor with a valid mobile number leaves a form incomplete for 10 minutes, or when a chatbot contact is captured. Counsellor review and TeleCRM continue separately.</p>';
         $notice=is_string($_GET['teams_notice']??null)?$_GET['teams_notice']:'';
         $messages=array('save'=>'Notification settings saved. Existing leads are not sent retrospectively.','test'=>'Power Automate accepted the synthetic test. Check your Teams group and flow run history.','retry'=>'Notification queued for retry.');
         if(isset($messages[$notice])) { echo '<div class="notice notice-success inline"><p>'.esc_html($messages[$notice]).'</p></div>'; }
         if(get_option('tlit_teams_queue_error')) { echo '<div class="notice notice-error inline"><p>Some alerts could not be queued. Leads remain saved in WordPress. Check database availability and the notification table.</p></div>'; }
         self::form('save');
-        echo '<label class="tlit-teams-check"><input type="checkbox" name="enabled" value="1" '.checked(!empty($o['enabled']),true,false).'> Enable Teams notifications</label><fieldset><legend>Notify for</legend><label class="tlit-teams-check"><input type="checkbox" name="forms" value="1" '.checked(!empty($o['forms']),true,false).'> General, popup and brochure forms — all three Digital Marketing pages</label><label class="tlit-teams-check"><input type="checkbox" name="chatbot" value="1" '.checked(!empty($o['chatbot']),true,false).'> Chatbot leads — after a valid mobile number is saved</label></fieldset><label for="tlit-teams-url"><strong>Power Automate webhook URL</strong></label><input id="tlit-teams-url" class="large-text" type="password" name="webhook_url" value="" autocomplete="new-password" placeholder="'.esc_attr($configured?'URL saved — leave blank to keep it':'Paste the URL generated by the Teams webhook trigger').'"><p class="description">'.($configured?'A webhook URL is saved securely.':'No webhook URL saved yet.').' The saved URL is encrypted and never displayed.</p><label class="tlit-teams-check"><input type="checkbox" name="remove_url" value="1"> Remove the saved webhook URL</label><p><button class="button button-primary tlit-cb-button">Save notification settings</button></p></form></section>';
+        echo '<label class="tlit-teams-check"><input type="checkbox" name="enabled" value="1" '.checked(!empty($o['enabled']),true,false).'> Enable Teams notifications</label><fieldset><legend>Notify for</legend><label class="tlit-teams-check"><input type="checkbox" name="forms" value="1" '.checked(!empty($o['forms']),true,false).'> Successful form submissions and qualified form drop-offs — all three Digital Marketing pages</label><p class="description">A drop-off alert is sent once after 10 minutes without activity, only when both name and a valid mobile number were saved. Completing the form before then cancels it.</p><label class="tlit-teams-check"><input type="checkbox" name="chatbot" value="1" '.checked(!empty($o['chatbot']),true,false).'> Chatbot leads — after a valid mobile number is saved</label></fieldset><label for="tlit-teams-url"><strong>Power Automate webhook URL</strong></label><input id="tlit-teams-url" class="large-text" type="password" name="webhook_url" value="" autocomplete="new-password" placeholder="'.esc_attr($configured?'URL saved — leave blank to keep it':'Paste the URL generated by the Teams webhook trigger').'"><p class="description">'.($configured?'A webhook URL is saved securely.':'No webhook URL saved yet.').' The saved URL is encrypted and never displayed.</p><label class="tlit-teams-check"><input type="checkbox" name="remove_url" value="1"> Remove the saved webhook URL</label><p><button class="button button-primary tlit-cb-button">Save notification settings</button></p></form></section>';
         echo '<section class="tlit-cb-side-panel"><h2>Connect your Teams group</h2><ol><li>Create a Power Automate cloud flow with <strong>When a Teams webhook request is received</strong>.</li><li>Set who can trigger the flow to <strong>Anyone</strong>. Keep the generated URL private.</li><li>Use <strong>Apply to each</strong> on <code>triggerBody()?[\'attachments\']</code>. Inside it, add <strong>Post card in a chat or channel</strong> and choose your Teams group.</li><li>Set the adaptive-card content to <code>string(item()?[\'content\'])</code>. Save the flow and paste its webhook URL here.</li></ol><p>Save the URL, then send a test. A test contains sample details only and works while automatic notifications are off.</p>';
         self::form('test');echo '<button class="button"'.(!$configured?' disabled':'').'>Send test notification</button></form><p class="description">HTTP success means Power Automate accepted the request. Confirm the actual post in Teams or the flow run history. Notifications depend on WordPress Cron; configure a one-minute server cron for dependable delivery.</p><p><a target="_blank" rel="noopener noreferrer" href="https://learn.microsoft.com/en-us/connectors/teams/#when-a-teams-webhook-request-is-received">Microsoft webhook documentation ↗</a></p></section></div>';
         $page=max(1,absint($_GET['teams_paged']??1));$limit=20;$table=self::table();$rows=$wpdb->get_results($wpdb->prepare("SELECT * FROM $table ORDER BY id DESC LIMIT %d OFFSET %d",$limit,($page-1)*$limit),ARRAY_A);$read_error=$wpdb->last_error!=='';
         $labels=array('pending'=>'Queued','sending'=>'Sending','accepted'=>'Accepted by Power Automate','retry'=>'Retry scheduled','failed'=>'Action needed','uncertain'=>'Check flow before retrying','held'=>'Held','cancelled'=>'Contact unavailable');
-        echo '<section class="tlit-cb-side-panel tlit-teams-history"><h2>Notification delivery history</h2><p>One alert per form submission or chatbot session. Delivery records contain references, not copies of contact details.</p><div class="tlit-cb-table-wrap"><table class="widefat striped"><thead><tr><th>Lead</th><th>Queued (IST)</th><th>Status</th><th>Attempts</th><th>Result</th><th>Action</th></tr></thead><tbody>';
+        echo '<section class="tlit-cb-side-panel tlit-teams-history"><h2>Notification delivery history</h2><p>One alert per completed form, qualified drop-off or chatbot session. Delivery records contain references, not copies of contact details.</p><div class="tlit-cb-table-wrap"><table class="widefat striped"><thead><tr><th>Lead</th><th>Queued (IST)</th><th>Status</th><th>Attempts</th><th>Result</th><th>Action</th></tr></thead><tbody>';
         foreach(is_array($rows)?$rows:array() as $row) {
-            $stamp=strtotime($row['created_at'].' UTC');$url=admin_url('admin.php?page='.($row['entity_type']==='form'?'tlit-landing-leads&lead=':'tlit-chat-bridge&conversation=').(int)$row['entity_id']);
+            $stamp=strtotime($row['created_at'].' UTC');
+            if($row['entity_type']==='dropoff') { $url=admin_url('admin.php?page=tlit-landing-leads&view=dropoffs&draft='.(int)$row['entity_id']); }
+            else { $url=admin_url('admin.php?page='.($row['entity_type']==='form'?'tlit-landing-leads&lead=':'tlit-chat-bridge&conversation=').(int)$row['entity_id']); }
             echo '<tr><td><a href="'.esc_url($url).'">'.esc_html($row['identity_key']).'</a><small>'.esc_html($row['notification_id']).'</small></td><td>'.esc_html(wp_date('d M Y, g:i a',$stamp,new DateTimeZone('Asia/Kolkata'))).' IST</td><td>'.esc_html($labels[$row['state']]??$row['state']).'</td><td>'.(int)$row['attempts'].'</td><td>'.esc_html($row['last_error']).(!empty($row['response_code'])?' · HTTP '.(int)$row['response_code']:'').'</td><td>';
             if(in_array($row['state'],array('failed','held','uncertain'),true)) { self::form('retry');echo '<input type="hidden" name="job_id" value="'.(int)$row['id'].'">';if($row['state']==='uncertain') { echo '<label><input type="checkbox" name="confirmed" value="1" required> I checked Teams and the flow history; this alert was not posted.</label>'; }echo '<button class="button">Retry alert</button></form>'; }
             echo '</td></tr>';
