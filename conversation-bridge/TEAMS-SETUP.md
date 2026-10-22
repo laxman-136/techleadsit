@@ -7,7 +7,7 @@ Available in TechLeadsIT Landing Pages 1.3.0 and Conversation Bridge 1.2.0. Upda
 Website submission → WordPress Bridge saves the enquiry → notification queue → Power Automate → your Microsoft Teams group.
 
 - Covers general forms, popup forms and brochure requests on Digital Marketing V1, V2 and V3.
-- A form drop-off alert is queued once when the visitor saved both a name and valid mobile number, then made no progress for 10 minutes. Completing the form before that deadline cancels the alert.
+- A form drop-off alert is queued once when the visitor saved both a name and valid mobile number, then made no progress for 3 minutes. Completing the form before that deadline cancels the alert.
 - Chatbot alerts begin after a name and valid mobile number are saved. Email is optional.
 - There are three operational notification types: qualified form drop-off (`FD-`), successful landing-page submission (`LP-`) and chatbot contact (`CB-`). The synthetic connection test is not a lead notification.
 - One alert identity per form journey, form receipt or chatbot conversation. Repeated checks, submission retries, chat turns and a linked chatbot brochure request do not create extra alerts.
