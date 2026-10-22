@@ -1,8 +1,8 @@
 /* Quiet, readable legal copy below the footer navigation. */
-.footer-disclaimer.footer-disclaimer-bottom{display:block;width:100%;max-width:none;margin:0;padding:30px 24px 36px;background:#101710;border:0;border-top:1px solid #293129;text-align:center;color:#b9beb9;box-sizing:border-box}
+.footer-disclaimer.footer-disclaimer-bottom{display:block;width:100%;max-width:none;margin:0;padding:100px 24px;background:#101710;border:0;border-top:1px solid #293129;text-align:center;color:#b9beb9;box-sizing:border-box}
 .footer-disclaimer.footer-disclaimer-bottom p{max-width:1200px;margin:0 auto;color:inherit;font:400 12px/1.85 Geist,Arial,sans-serif;text-align:center}
 .footer-disclaimer.footer-disclaimer-bottom strong{color:#cdd1cd;font-weight:600}
 .footer-disclaimer.footer-disclaimer-bottom a{color:inherit;text-decoration:underline;text-underline-offset:3px}
 .footer-disclaimer.footer-disclaimer-bottom a:hover{color:#e7eee2}
 .footer-disclaimer.footer-disclaimer-bottom a:focus-visible{outline:2px solid #c7f883;outline-offset:3px}
-@media(max-width:600px){.footer-disclaimer.footer-disclaimer-bottom{padding:24px 20px 86px}}
+@media(max-width:600px){.footer-disclaimer.footer-disclaimer-bottom{padding:100px 20px}}
