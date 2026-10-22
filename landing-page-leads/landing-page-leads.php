@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Tech Leads IT — Landing Page Leads
  * Description: Bridge-first landing-page lead inbox with counsellor-controlled TeleCRM handoff.
- * Version: 0.4.0
+ * Version: 0.5.0
  * Requires PHP: 8.0
  */
 if (!defined('ABSPATH')) { exit; }
@@ -12,9 +12,10 @@ require_once __DIR__.'/api.php';
 require_once __DIR__.'/integration.php';
 final class TLIT_LP_Leads {
     use TLIT_LP_API, TLIT_LP_Integration;
-    const VERSION = '0.4.0';
+    const VERSION = '0.5.0';
     const OPTION = 'tlit_lp_integration';
     static function table() { global $wpdb; return $wpdb->prefix.'tlit_landing_leads'; }
+    static function draft_table() { global $wpdb; return $wpdb->prefix.'tlit_form_drafts'; }
     static function install() {
         global $wpdb;
         require_once ABSPATH.'wp-admin/includes/upgrade.php';
@@ -54,8 +55,41 @@ final class TLIT_LP_Leads {
             KEY lead_status (lead_status),
             KEY crm_status (crm_status)
         ) ENGINE=InnoDB ".$wpdb->get_charset_collate().';');
+        $drafts=self::draft_table();
+        dbDelta("CREATE TABLE $drafts (
+            id bigint unsigned NOT NULL AUTO_INCREMENT,
+            request_id varchar(80) NOT NULL,
+            token_hash varchar(64) NOT NULL,
+            created_at datetime NOT NULL,
+            updated_at datetime NOT NULL,
+            completed_at datetime DEFAULT NULL,
+            name varchar(80) NOT NULL DEFAULT '',
+            phone varchar(20) NOT NULL DEFAULT '',
+            email varchar(254) NOT NULL DEFAULT '',
+            source varchar(24) NOT NULL DEFAULT '',
+            page_variant varchar(80) NOT NULL DEFAULT '',
+            submission_url varchar(2000) NOT NULL DEFAULT '',
+            lifecycle_status varchar(24) NOT NULL DEFAULT 'incomplete',
+            current_step smallint unsigned NOT NULL DEFAULT 0,
+            total_steps smallint unsigned NOT NULL DEFAULT 0,
+            last_field varchar(40) NOT NULL DEFAULT '',
+            payload longtext NOT NULL,
+            otp_requested_at datetime DEFAULT NULL,
+            otp_failed_at datetime DEFAULT NULL,
+            otp_error varchar(255) NOT NULL DEFAULT '',
+            otp_attempts smallint unsigned NOT NULL DEFAULT 0,
+            lead_id bigint unsigned NOT NULL DEFAULT 0,
+            PRIMARY KEY  (id),
+            UNIQUE KEY request_id (request_id),
+            KEY lifecycle_status (lifecycle_status),
+            KEY updated_at (updated_at),
+            KEY page_variant (page_variant),
+            KEY source (source),
+            KEY lead_id (lead_id)
+        ) ENGINE=InnoDB ".$wpdb->get_charset_collate().';');
         $columns=$wpdb->get_col("SHOW COLUMNS FROM $table");
-        if (is_array($columns) && !array_diff(['lead_status','page_variant','crm_payload','crm_revision','crm_synced_revision','crm_remote_id','review_history'],$columns)) {
+        $draft_columns=$wpdb->get_col("SHOW COLUMNS FROM $drafts");
+        if (is_array($columns) && !array_diff(['lead_status','page_variant','crm_payload','crm_revision','crm_synced_revision','crm_remote_id','review_history'],$columns) && is_array($draft_columns) && !array_diff(['request_id','token_hash','lifecycle_status','current_step','payload','lead_id'],$draft_columns)) {
             update_option('tlit_lp_version',self::VERSION,false);
         }
     }
@@ -108,6 +142,7 @@ final class TLIT_LP_Leads {
         } finally { delete_option($lock); }
     }
     static function labels() { return ['general'=>'General form','popup'=>'Popup form','brochure'=>'Brochure form','chatbot_brochure'=>'Chatbot brochure','chatbot'=>'Chatbot conversation']; }
+    static function draft_statuses() { return ['incomplete'=>'Incomplete form','otp_pending'=>'OTP pending','otp_failed'=>'OTP failed / expired','verified'=>'Verified lead']; }
     static function statuses() {
         // Keep saved keys stable while displaying the account's exact TeleCRM labels.
         return ['new'=>'New','junk'=>'Junk Lead',
@@ -161,6 +196,94 @@ final class TLIT_LP_Leads {
         }
         ksort($clean);return $clean;
     }
+    static function draft_token_hash($request_id,$token) { return self::hash('form-draft|'.$request_id.'|'.$token); }
+    static function draft_status($row) {
+        $status=is_object($row)?($row->lifecycle_status??'incomplete'):($row['lifecycle_status']??'incomplete');
+        $requested=is_object($row)?($row->otp_requested_at??''):($row['otp_requested_at']??'');
+        if($status==='otp_pending'&&$requested&&strtotime($requested.' UTC')<time()-300) { return 'otp_failed'; }
+        return isset(self::draft_statuses()[$status])?$status:'incomplete';
+    }
+    /** Progressively stores a form session. Drafts never trigger Teams or TeleCRM. */
+    static function save_draft(array $p) {
+        global $wpdb;
+        $request_id=self::clean($p['request_id']??'',80);
+        if(!preg_match('/^[a-f0-9-]{36}$/D',$request_id)) { return self::error('A valid form session is required.'); }
+        $source=self::clean($p['intent']??($p['source']??''),24);
+        if(!in_array($source,['general','popup','brochure'],true)) { return self::error('A valid form type is required.'); }
+        $incoming_token=is_string($p['draft_token']??null)?$p['draft_token']:'';
+        $row=$wpdb->get_row($wpdb->prepare('SELECT * FROM '.self::draft_table().' WHERE request_id=%s',$request_id));
+        if($wpdb->last_error!=='') { return self::error('Form progress could not be saved.',503); }
+        if($row) {
+            if(!preg_match('/^[a-f0-9]{48}$/D',$incoming_token)||!hash_equals($row->token_hash,self::draft_token_hash($request_id,$incoming_token))) { return self::error('This form session cannot be updated.',403); }
+            $token=$incoming_token;
+        } else {
+            if(!self::rate('draft-ip-'.($_SERVER['REMOTE_ADDR']??''),120,3600)) { return self::error('Too many form updates. Please try again later.',429); }
+            $token=bin2hex(random_bytes(24));
+        }
+        $values=is_array($p['values']??null)?$p['values']:[];
+        $safe_values=[];
+        foreach(array_slice($values,0,20,true) as $key=>$value) {
+            if(is_string($key)&&is_scalar($value)&&$key!=='otp'&&$key!=='challenge') { $safe_values[sanitize_key($key)]=self::clean($value,600); }
+        }
+        $name=self::clean($safe_values['name']??'',80);
+        $raw_phone=self::clean($safe_values['phone']??'',20);
+        $phone=self::canonical_phone($raw_phone);
+        $email=is_string($safe_values['email']??null)?sanitize_email($safe_values['email']):'';
+        $tracking=[];foreach(self::tracking_keys() as $key) { $tracking[$key]=self::clean($p['tracking'][$key]??'',500); }
+        foreach(['landing_page','referrer'] as $key) { $tracking[$key]=self::url($tracking[$key])?:($key==='referrer'?'direct':''); }
+        $url=self::url($p['submission_url']??($tracking['landing_page']??''));
+        $variant=self::variant($p['page_variant']??'',$url);
+        $status=self::clean($p['lifecycle_status']??'incomplete',24);
+        if(!in_array($status,['incomplete','otp_pending','otp_failed'],true)) { $status='incomplete'; }
+        $total=max(1,min(50,(int)($p['total_steps']??1)));$current=max(0,min($total,(int)($p['current_step']??0)));
+        // Reaching an OTP state means the visitor reached the final verification step,
+        // even when the browser reports the preceding answer as the last completed field.
+        if(in_array($status,['otp_pending','otp_failed'],true)) { $current=$total;$p['last_field']='otp'; }
+        $payload=['values'=>$safe_values,'tracking'=>$tracking,'details'=>self::clean_details($p['details']??[]),'last_event'=>self::clean($p['last_event']??'step_saved',40)];
+        $now=current_time('mysql',true);$otp_requested=$row->otp_requested_at??null;$otp_failed=$row->otp_failed_at??null;$otp_error='';$attempts=(int)($row->otp_attempts??0);
+        if($status==='otp_pending'&&!$otp_requested) { $otp_requested=$now; }
+        if($status==='otp_failed') { $otp_failed=$now;$incoming_error=self::clean($p['otp_error']??'',255);$otp_error=$incoming_error!==''?$incoming_error:(string)($row->otp_error??'');if(!$row||$row->lifecycle_status!=='otp_failed'||$incoming_error!==''){$attempts++;} }
+        $data=['updated_at'=>$now,'name'=>$name,'phone'=>$phone,'email'=>$email,'source'=>$source,'page_variant'=>$variant,'submission_url'=>$url,'lifecycle_status'=>$status,'current_step'=>$current,'total_steps'=>$total,'last_field'=>self::clean($p['last_field']??'',40),'payload'=>wp_json_encode($payload),'otp_requested_at'=>$otp_requested,'otp_failed_at'=>$otp_failed,'otp_error'=>$otp_error,'otp_attempts'=>$attempts];
+        if($row) {
+            if($row->lifecycle_status==='verified') { return ['success'=>true,'draft_token'=>$token,'status'=>'verified']; }
+            if($wpdb->update(self::draft_table(),$data,['id'=>$row->id])===false) { return self::error('Form progress could not be saved.',503); }
+        } else {
+            $data=array_merge(['request_id'=>$request_id,'token_hash'=>self::draft_token_hash($request_id,$token),'created_at'=>$now],$data);
+            if($wpdb->insert(self::draft_table(),$data)!==1) { return self::error('Form progress could not be saved.',503); }
+        }
+        return ['success'=>true,'draft_token'=>$token,'status'=>$status];
+    }
+    static function complete_draft($request_id,$lead_id) {
+        global $wpdb;$request_id=self::clean($request_id,80);
+        if(!preg_match('/^[a-f0-9-]{36}$/D',$request_id)) { return false; }
+        $now=current_time('mysql',true);
+        return $wpdb->update(self::draft_table(),['lifecycle_status'=>'verified','lead_id'=>absint($lead_id),'completed_at'=>$now,'updated_at'=>$now],['request_id'=>$request_id])!==false;
+    }
+    static function draft_filters($input=[]) {
+        global $wpdb;$input=is_array($input)?$input:[];$sql=' WHERE 1=1';$values=[];
+        foreach(['source','page_variant'] as $key) { $value=self::clean($input[$key]??'',80);if($value!==''){$sql.=" AND $key=%s";$values[]=$value;} }
+        $status=self::clean($input['lifecycle_status']??'',24);
+        if($status==='otp_failed') { $sql.=" AND (lifecycle_status='otp_failed' OR (lifecycle_status='otp_pending' AND otp_requested_at < UTC_TIMESTAMP() - INTERVAL 5 MINUTE))"; }
+        elseif($status==='otp_pending') { $sql.=" AND lifecycle_status='otp_pending' AND otp_requested_at >= UTC_TIMESTAMP() - INTERVAL 5 MINUTE"; }
+        elseif(isset(self::draft_statuses()[$status])) { $sql.=' AND lifecycle_status=%s';$values[]=$status; }
+        foreach(['from'=>'>=','to'=>'<'] as $key=>$op) { $value=self::clean($input[$key]??'',10);if($value!==''){$bound=self::date_bound($value,$key==='to');if($bound===null){$sql.=' AND 1=0';}else{$sql.=" AND created_at $op %s";$values[]=$bound;}} }
+        $search=self::clean($input['search']??'',200);if($search!==''){$sql.=' AND (name LIKE %s OR phone LIKE %s OR email LIKE %s OR request_id LIKE %s)';$like='%'.$wpdb->esc_like($search).'%';array_push($values,$like,$like,$like,$like);}
+        return $values?$wpdb->prepare($sql,$values):$sql;
+    }
+    static function query_drafts($filters=[],$page=1,$per_page=25) {
+        global $wpdb;$page=max(1,(int)$page);$per_page=max(1,min(100,(int)$per_page));$where=self::draft_filters($filters);
+        $rows=$wpdb->get_results('SELECT * FROM '.self::draft_table().$where.' ORDER BY updated_at DESC,id DESC LIMIT '.$per_page.' OFFSET '.(($page-1)*$per_page));
+        if($wpdb->last_error!=='') { return self::error('Form sessions could not be loaded.',503); }
+        $total=(int)$wpdb->get_var('SELECT COUNT(*) FROM '.self::draft_table().$where);
+        return $wpdb->last_error!==''?self::error('Form session count could not be loaded.',503):['rows'=>$rows,'total'=>$total,'page'=>$page,'per_page'=>$per_page];
+    }
+    static function get_draft($id) { global $wpdb;return $wpdb->get_row($wpdb->prepare('SELECT * FROM '.self::draft_table().' WHERE id=%d',absint($id))); }
+    static function draft_counts() {
+        global $wpdb;$counts=array_fill_keys(array_keys(self::draft_statuses()),0);
+        $rows=$wpdb->get_results("SELECT CASE WHEN lifecycle_status='otp_pending' AND otp_requested_at < UTC_TIMESTAMP() - INTERVAL 5 MINUTE THEN 'otp_failed' ELSE lifecycle_status END AS state,COUNT(*) AS total FROM ".self::draft_table()." GROUP BY state");
+        foreach((array)$rows as $row) { if(isset($counts[$row->state]))$counts[$row->state]=(int)$row->total; }
+        return $counts;
+    }
     /** Called only after the owning form adapter has validated its verification policy. Never sends to CRM. */
     static function ingest(array $p,array $context=[]) {
         global $wpdb;
@@ -182,11 +305,12 @@ final class TLIT_LP_Leads {
         try {
             $existing=$wpdb->get_row($wpdb->prepare('SELECT * FROM '.self::table().' WHERE request_id=%s',$id));
             if($wpdb->last_error!=='') { return self::error('Your request could not be saved. Please retry.',503); }
-            if($existing) { return self::existing($existing,$fingerprint,[$name,$phone,$email,$source,$data,$p]); }
+            if($existing) { $result=self::existing($existing,$fingerprint,[$name,$phone,$email,$source,$data,$p]);if(!is_wp_error($result)){self::complete_draft($id,(int)$existing->id);}return $result; }
             $now=current_time('mysql',true);$data['captured_at']=gmdate('c');
             $ok=$wpdb->insert(self::table(),['request_id'=>$id,'fingerprint'=>$fingerprint,'created_at'=>$now,'updated_at'=>$now,'name'=>$name,'phone'=>$phone,'email'=>$email,'source'=>$source,'page_variant'=>$variant,'submission_url'=>$url,'payload'=>wp_json_encode($data),'otp_verified'=>$verified?1:0,'advisor_note'=>'','review_history'=>'[]']);
             if($ok===1) {
                 $lead_id=(int)$wpdb->insert_id;
+                self::complete_draft($id,$lead_id);
                 // Alert failures never undo a successfully saved enquiry. Listeners
                 // only enqueue; a parent conversation transaction may still be open.
                 try { do_action('tlit_lp_lead_created',$lead_id); } catch(Throwable $error) { update_option('tlit_teams_queue_error',1,false); }
@@ -194,7 +318,7 @@ final class TLIT_LP_Leads {
             }
             // A competing request can win the unique request_id insertion.
             $existing=$wpdb->get_row($wpdb->prepare('SELECT * FROM '.self::table().' WHERE request_id=%s',$id));
-            if($existing) { return self::existing($existing,$fingerprint,[$name,$phone,$email,$source,$data,$p]); }
+            if($existing) { $result=self::existing($existing,$fingerprint,[$name,$phone,$email,$source,$data,$p]);if(!is_wp_error($result)){self::complete_draft($id,(int)$existing->id);}return $result; }
             return self::error('Your request could not be saved. Please retry.',503);
         } finally { $wpdb->suppress_errors($previous); }
     }

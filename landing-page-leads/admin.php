@@ -19,6 +19,13 @@ final class TLIT_LP_Admin {
         }
         return $filters;
     }
+    private static function draft_filters() {
+        $filters = array();
+        foreach (array('from','to','page_variant','source','lifecycle_status','search') as $key) {
+            $value = self::input($key); if ($value !== '') { $filters[$key] = $value; }
+        }
+        return $filters;
+    }
     private static function date($utc) {
         return TLIT_LP_Leads::display_date($utc);
     }
@@ -41,20 +48,24 @@ final class TLIT_LP_Admin {
     }
     public static function render() {
         TLIT_LP_Leads::admin();
-        wp_enqueue_style('tlit-lp-admin',plugin_dir_url(__FILE__).'admin.css',array(),'1.0.0-workspace4');
+        wp_enqueue_style('tlit-lp-admin',plugin_dir_url(__FILE__).'admin.css',array(),TLIT_LP_Leads::VERSION.'-dropoffs1');
         wp_enqueue_script('tlit-lp-theme',plugins_url('../conversation-bridge/assets/admin.js',__FILE__),array(),'1.5.0-workspace4',true);
-        echo '<div class="wrap lp-workspace" data-tlit-theme-root><header class="lp-header"><div><p class="lp-eyebrow">TECH LEADS IT / COUNSELLOR WORKSPACE</p><h1>Landing page leads</h1><p>Every enquiry in one place. Review, call and qualify before syncing with TeleCRM.</p></div><div class="lp-header-tools"><span class="lp-private"><span class="dashicons dashicons-lock" aria-hidden="true"></span> Private workspace</span><button type="button" class="tlit-cb-theme-toggle" data-tlit-theme-toggle aria-pressed="false" aria-label="Switch to light theme" title="Switch to light theme"><span aria-hidden="true"></span></button></div></header>';
-        echo '<nav class="lp-tabs" aria-label="Bridge sections"><a href="'.esc_url(admin_url('admin.php?page=tlit-chat-bridge&view=dashboard')).'">Dashboard</a><a href="'.esc_url(admin_url('admin.php?page=tlit-chat-bridge')).'">Conversations</a><a class="is-active" href="'.esc_url(self::url()).'" aria-current="page">Landing page leads</a><a href="'.esc_url(admin_url('admin.php?page=tlit-chat-bridge&view=integrations')).'">Integrations</a></nav>';
+        $view = self::input('view');$dropoffs=$view==='dropoffs';
+        echo '<div class="wrap lp-workspace" data-tlit-theme-root><header class="lp-header"><div><p class="lp-eyebrow">TECH LEADS IT / COUNSELLOR WORKSPACE</p><h1>'.($dropoffs?'Form progress &amp; drop-offs':'Landing page leads').'</h1><p>'.($dropoffs?'See every saved form journey, its latest completed step and OTP outcome.':'Every enquiry in one place. Review, call and qualify before syncing with TeleCRM.').'</p></div><div class="lp-header-tools"><span class="lp-private"><span class="dashicons dashicons-lock" aria-hidden="true"></span> Private workspace</span><button type="button" class="tlit-cb-theme-toggle" data-tlit-theme-toggle aria-pressed="false" aria-label="Switch to light theme" title="Switch to light theme"><span aria-hidden="true"></span></button></div></header>';
+        echo '<nav class="lp-tabs" aria-label="Bridge sections"><a href="'.esc_url(admin_url('admin.php?page=tlit-chat-bridge&view=dashboard')).'">Dashboard</a><a href="'.esc_url(admin_url('admin.php?page=tlit-chat-bridge')).'">Conversations</a><a class="'.(!$dropoffs?'is-active':'').'" href="'.esc_url(self::url()).'"'.(!$dropoffs?' aria-current="page"':'').'>Landing page leads</a><a class="'.($dropoffs?'is-active':'').'" href="'.esc_url(self::url(array('view'=>'dropoffs'))).'"'.($dropoffs?' aria-current="page"':'').'>Form drop-offs</a><a href="'.esc_url(admin_url('admin.php?page=tlit-chat-bridge&view=integrations')).'">Integrations</a></nav>';
         $notice = self::input('notice');
         $notices = array('saved'=>'Your review has been saved. Check the TeleCRM sync status for the result.','configuration_checked'=>'The existing connection is available. Authentication is confirmed during an actual qualified lead sync.');
         if (isset($notices[$notice])) { echo '<div class="lp-notice" role="status">'.esc_html($notices[$notice]).'</div>'; }
-        if (TLIT_LP_Leads::existing_connection() === null) {
+        if (!$dropoffs && TLIT_LP_Leads::existing_connection() === null) {
             echo '<div class="lp-notice" role="status">The existing landing-page TeleCRM connection is unavailable. Leads remain saved here; restore that connection before syncing a qualified review.</div>';
-        } else {
+        } elseif(!$dropoffs) {
             echo '<p class="lp-help">TeleCRM uses your existing landing-page connection automatically. Save a counsellor review to sync the lead and later status changes. New and Junk leads stay in WordPress.</p>';
         }
         // Old bookmarks continue to open the inbox; there is no second CRM setup.
-        if ($id = absint(self::input('lead'))) { self::detail($id); }
+        if($dropoffs) {
+            if($draft_id=absint(self::input('draft'))) { self::dropoff_detail($draft_id); }
+            else { self::dropoffs(); }
+        } elseif ($id = absint(self::input('lead'))) { self::detail($id); }
         else { self::inbox(); }
         echo '</div>';
     }
@@ -80,6 +91,44 @@ final class TLIT_LP_Admin {
         $pages = (int)ceil($total/25);
         for ($i=max(1,$page-2);$i<=min($pages,$page+2);$i++) { echo '<a class="button '.($i===$page?'button-primary':'').'" href="'.esc_url(self::url(array_merge($filters,array('paged'=>$i)))).'"'.($i===$page?' aria-current="page"':'').'>'.$i.'</a> '; }
         echo '</nav></footer></section>';
+    }
+    private static function dropoffs() {
+        $filters=self::draft_filters();$page=max(1,absint(self::input('paged')));$result=TLIT_LP_Leads::query_drafts($filters,$page,25);
+        if(is_wp_error($result)){echo '<div class="lp-panel"><h2>Form sessions could not be loaded</h2><p>Please refresh or check the database connection.</p></div>';return;}
+        $counts=TLIT_LP_Leads::draft_counts();
+        echo '<section class="lp-dropoff-stats" aria-label="Form completion summary">';
+        foreach(TLIT_LP_Leads::draft_statuses() as $status=>$label){
+            $notes=array('incomplete'=>'Left before OTP','otp_pending'=>'Code sent; awaiting verification','otp_failed'=>'Failed or expired verification','verified'=>'Completed and saved as a lead');
+            echo '<a class="lp-dropoff-stat" href="'.esc_url(self::url(array('view'=>'dropoffs','lifecycle_status'=>$status))).'"><span>'.esc_html($label).'</span><strong>'.esc_html(number_format_i18n($counts[$status]??0)).'</strong><small>'.esc_html($notes[$status]).'</small></a>';
+        }
+        echo '</section>';
+        echo '<section class="lp-panel lp-inbox"><div class="lp-panel-header"><div><h2>Saved form journeys <span class="lp-count">'.(int)$result['total'].'</span></h2><p>Progress saves after every completed step. These records never sync to TeleCRM until a verified lead is reviewed by a counsellor.</p></div></div>';
+        echo '<form method="get" class="lp-filters lp-dropoff-filters"><input type="hidden" name="page" value="tlit-landing-leads"><input type="hidden" name="view" value="dropoffs"><label class="lp-search">Search sessions<input type="search" name="search" placeholder="Name, phone, email or session" value="'.esc_attr($filters['search']??'').'"></label>';
+        self::select('lifecycle_status','Classification',TLIT_LP_Leads::draft_statuses(),$filters['lifecycle_status']??'','All states');
+        self::select('page_variant','Landing page',self::variants(),$filters['page_variant']??'','All versions');
+        self::select('source','Form type',array_intersect_key(TLIT_LP_Leads::labels(),array_flip(array('general','popup','brochure'))),$filters['source']??'','All forms');
+        echo '<label>From (IST)<input type="date" name="from" value="'.esc_attr($filters['from']??'').'"></label><label>To (IST)<input type="date" name="to" value="'.esc_attr($filters['to']??'').'"></label><div class="lp-filter-actions"><button class="button button-primary">Apply filters</button><a href="'.esc_url(self::url(array('view'=>'dropoffs'))).'">Reset</a></div></form>';
+        echo '<div class="lp-table-scroll"><table class="lp-table lp-dropoff-table"><thead><tr><th>Visitor</th><th>Page &amp; form</th><th>Progress</th><th>Classification</th><th>Last activity (IST)</th><th><span class="screen-reader-text">Actions</span></th></tr></thead><tbody>';
+        foreach($result['rows'] as $row){$data=json_decode($row->payload,true)?:array();$status=TLIT_LP_Leads::draft_status($row);$current=max(0,(int)$row->current_step);$total=max(1,(int)$row->total_steps);$percent=min(100,(int)round($current/$total*100));
+            echo '<tr><td><a class="lp-name" href="'.esc_url(self::url(array('view'=>'dropoffs','draft'=>$row->id))).'">'.esc_html($row->name?:'Anonymous visitor').'</a><span>'.esc_html($row->phone?:'Phone not reached').'</span><span>'.esc_html($row->email?:'Email not reached').'</span></td><td><strong>'.esc_html(self::variants()[$row->page_variant]??'Page not recorded').'</strong><span>'.esc_html(TLIT_LP_Leads::labels()[$row->source]??$row->source).'</span><small>FD-'.(int)$row->id.'</small></td><td><div class="lp-progress"><span style="width:'.$percent.'%"></span></div><strong>Step '.$current.' of '.$total.'</strong><small>'.esc_html($row->last_field?ucwords(str_replace('_',' ',$row->last_field)):'Started').'</small></td><td>'.self::badge($status,TLIT_LP_Leads::draft_statuses()[$status]).($status==='verified'&&$row->lead_id?'<small><a href="'.esc_url(self::url(array('lead'=>$row->lead_id))).'">Open LP-'.(int)$row->lead_id.'</a></small>':'').'</td><td><time>'.esc_html(self::date($row->updated_at)).'</time></td><td><a class="button" href="'.esc_url(self::url(array('view'=>'dropoffs','draft'=>$row->id))).'">View journey →</a></td></tr>';
+        }
+        if(!$result['rows'])echo '<tr><td colspan="6" class="lp-empty"><h3>No form sessions found</h3><p>Try another filter. New journeys appear after a visitor completes the first form step.</p></td></tr>';
+        echo '</tbody></table></div><footer class="lp-pagination"><span>'.esc_html(number_format_i18n($result['total'])).' matching sessions · 25 per page</span><nav aria-label="Form journey pages">';
+        $pages=(int)ceil($result['total']/25);for($i=max(1,$page-2);$i<=min($pages,$page+2);$i++){echo '<a class="button '.($i===$page?'button-primary':'').'" href="'.esc_url(self::url(array_merge(array('view'=>'dropoffs'),$filters,array('paged'=>$i)))).'"'.($i===$page?' aria-current="page"':'').'>'.$i.'</a> ';}
+        echo '</nav></footer></section>';
+    }
+    private static function dropoff_detail($id) {
+        $row=TLIT_LP_Leads::get_draft($id);if(!$row){echo '<div class="lp-panel"><h2>Form session not found</h2></div>';return;}
+        $data=json_decode($row->payload,true)?:array();$values=is_array($data['values']??null)?$data['values']:array();$tracking=is_array($data['tracking']??null)?$data['tracking']:array();$status=TLIT_LP_Leads::draft_status($row);
+        echo '<p><a href="'.esc_url(self::url(array('view'=>'dropoffs'))).'">← Back to form drop-offs</a></p><div class="lp-detail-heading"><div><p class="lp-eyebrow">FORM JOURNEY / FD-'.(int)$id.'</p><h2>'.esc_html($row->name?:'Anonymous visitor').'</h2><p>Last activity '.esc_html(self::date($row->updated_at)).'</p></div>'.self::badge($status,TLIT_LP_Leads::draft_statuses()[$status]).'</div>';
+        echo '<div class="lp-review-grid"><div><section class="lp-panel"><h3>Captured form data</h3>';
+        $captured=array('Name'=>$row->name,'Mobile number'=>$row->phone,'Email'=>$row->email);
+        foreach($values as $key=>$value){if(in_array($key,array('name','phone','email'),true)||!is_scalar($value)||$value==='')continue;$captured[ucwords(str_replace('_',' ',$key))]=(string)$value;}
+        self::fields($captured);echo '</section><section class="lp-panel"><h3>Page and campaign attribution</h3>';
+        $attribution=array('Submitted from'=>$row->submission_url);foreach($tracking as $key=>$value){if(is_scalar($value)&&$value!=='')$attribution[ucwords(str_replace('_',' ',$key))]=(string)$value;}self::fields($attribution);echo '</section></div><aside><section class="lp-panel"><h3>Journey status</h3>';
+        self::fields(array('Classification'=>TLIT_LP_Leads::draft_statuses()[$status],'Progress'=>'Step '.(int)$row->current_step.' of '.max(1,(int)$row->total_steps),'Last completed field'=>ucwords(str_replace('_',' ',$row->last_field)),'Form type'=>TLIT_LP_Leads::labels()[$row->source]??$row->source,'Page version'=>self::variants()[$row->page_variant]??'Not recorded','First activity'=>self::date($row->created_at),'Last activity'=>self::date($row->updated_at),'OTP requested'=>$row->otp_requested_at?self::date($row->otp_requested_at):'Not requested','OTP issue'=>$row->otp_error,'Verified lead'=>$row->lead_id?'LP-'.$row->lead_id:'Not created'));
+        if($row->lead_id)echo '<p><a class="button button-primary lp-full" href="'.esc_url(self::url(array('lead'=>$row->lead_id))).'">Open verified lead →</a></p>';
+        echo '<p class="lp-help">Incomplete and OTP-pending sessions stay outside TeleCRM. A verified lead can sync only after a counsellor saves a qualifying review.</p></section></aside></div>';
     }
     private static function fields($values) {
         echo '<dl class="lp-fields">';

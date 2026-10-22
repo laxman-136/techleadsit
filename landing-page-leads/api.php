@@ -8,6 +8,13 @@ trait TLIT_LP_API {
     }
     static function routes() {
         foreach(['otp','submit','download'] as $route) { register_rest_route('tlit-leads/v1','/'.$route,['methods'=>'POST','permission_callback'=>[__CLASS__,'permission'],'callback'=>[__CLASS__,$route]]); }
+        register_rest_route('tlit-leads/v1','/draft',['methods'=>'POST','permission_callback'=>[__CLASS__,'permission'],'callback'=>[__CLASS__,'draft']]);
+    }
+    static function draft($request) {
+        $p=self::body($request);
+        if(!$p) { return self::error('Invalid form progress update.'); }
+        $result=self::save_draft($p);
+        return is_wp_error($result)?$result:new WP_REST_Response($result,200);
     }
     static function download($request) {
         $p=self::body($request);$receipt=$p['receipt']??'';$token=$p['download_token']??($p['token']??'');
@@ -20,7 +27,7 @@ trait TLIT_LP_API {
     static function body($request) { return strlen($request->get_body())>16000?[]:(array)$request->get_json_params(); }
     static function otp($request) {
         $p=self::body($request);$phone=self::phone($p['phone']??'');$name=self::clean($p['name']??'',81);
-        if(!$phone||strlen($name)<2||strlen($name)>80||!in_array($p['intent']??'',['general','popup'],true)) { return self::error('Check your name and mobile number.'); }
+        if(!$phone||strlen($name)<2||strlen($name)>80||!in_array($p['intent']??'',['general','popup','brochure'],true)) { return self::error('Check your name and mobile number.'); }
         if(!function_exists('techleadsit_send_vispl_sms')) { return self::error('SMS verification is not configured. Please call the career advisor.',503); }
         if(!self::rate('ip-'.($_SERVER['REMOTE_ADDR']??''),10,3600)||!self::rate('phone-'.$phone,3,600)) { return self::error('Too many code requests. Please try later.',429); }
         $lock=self::lock('sms'.$phone);if(!$lock) { return self::error('A code request is already in progress.',409); }
@@ -47,14 +54,14 @@ trait TLIT_LP_API {
         $p['name']=$name;$p['phone']='+91'.$phone;$p['email']=$email;
         $p['submission_url']=$p['submission_url']??($p['tracking']['submission_url']??($p['tracking']['landing_page']??''));
         $p['page_variant']=$p['page_variant']??($p['tracking']['page_variant']??'');
-        $context=['source'=>$source,'otp_verified'=>$source!=='brochure'];
+        $context=['source'=>$source,'otp_verified'=>true];
         $lock=self::lock('submit'.$id);if(!$lock) { return self::error('Your request is being saved. Please retry shortly.',409); }
         $otp_lock=false;
         try {
             $existing=$wpdb->get_row($wpdb->prepare('SELECT id FROM '.self::table().' WHERE request_id=%s',$id));
             if($existing) { return self::ingest($p,$context); }
             if(!self::rate('submit-'.($_SERVER['REMOTE_ADDR']??''),30,3600)) { return self::error('Too many requests. Please try later.',429); }
-            if($source!=='brochure') {
+            {
                 $challenge=$p['challenge']??'';$code=$p['otp']??'';
                 if(!is_string($challenge)||!preg_match('/^[a-f0-9]{48}$/D',$challenge)||!is_string($code)||!preg_match('/^[0-9]{4}$/D',$code)) { return self::error('Enter the four-digit verification code.'); }
                 $otp_lock=self::lock('verify'.$challenge);if(!$otp_lock) { return self::error('Verification in progress.',409); }
@@ -66,7 +73,7 @@ trait TLIT_LP_API {
             }
             $result=self::ingest($p,$context);
             // Failed database writes preserve OTP so a legitimate retry can complete.
-            if(!is_wp_error($result)&&$source!=='brochure') { delete_transient($key); }
+            if(!is_wp_error($result)) { delete_transient($key); }
             return $result;
         } finally { if($otp_lock) { delete_option($otp_lock); }delete_option($lock); }
     }

@@ -59,10 +59,16 @@ function tlit_dm_permission($request) {
 }
 add_action('rest_api_init', function() {
     register_rest_route('tlit-dm/v1','/status',array('methods'=>'GET','permission_callback'=>'__return_true','callback'=>function(){return new WP_REST_Response(array('mode'=>tlit_dm_ready()?'live':'unavailable'),200);}));
-    foreach(array('send-otp'=>'tlit_dm_send', 'submit'=>'tlit_dm_submit', 'followup'=>'tlit_dm_followup','brochure'=>'tlit_dm_brochure') as $route=>$callback) {
+    foreach(array('send-otp'=>'tlit_dm_send', 'submit'=>'tlit_dm_submit', 'draft'=>'tlit_dm_draft', 'followup'=>'tlit_dm_followup','brochure'=>'tlit_dm_brochure') as $route=>$callback) {
         register_rest_route('tlit-dm/v1', '/'.$route, array('methods'=>'POST','callback'=>$callback,'permission_callback'=>'tlit_dm_permission'));
     }
 });
+function tlit_dm_draft($request) {
+    $p=tlit_dm_body($request);
+    if(!$p||!is_callable(array('TLIT_LP_Leads','save_draft')))return tlit_dm_error('Form progress storage is unavailable.',503);
+    $result=TLIT_LP_Leads::save_draft($p);
+    return is_wp_error($result)?$result:new WP_REST_Response($result,200);
+}
 function tlit_dm_hash($value) { return hash_hmac('sha256', $value, wp_salt('auth')); }
 function tlit_dm_phone($raw) {
     if (!is_string($raw) || !preg_match('/^[+0-9 ()-]+$/D',$raw)) return '';
@@ -141,7 +147,8 @@ function tlit_dm_submit($request) {
         if(($p['intent']??'')==='chatbot_brochure')$note.=' | Enquiry channel: Course chatbot | Pain point / goal: '.substr(sanitize_text_field(is_string($p['painPoint']??null)?$p['painPoint']:''),0,600);
         $note=str_replace(' | ',"\n",$note);
         $source=in_array(($p['intent']??''),array('brochure','chatbot_brochure'),true)?$p['intent']:'general';
-        $stored=tlit_dm_store_lead($p,$name,'+91'.$phone,$email,$goal,'dm-verified-'.$challenge,$source,true);
+        $client_request=is_string($p['request_id']??null)&&preg_match('/^[a-f0-9-]{36}$/D',$p['request_id'])?$p['request_id']:'';
+        $stored=tlit_dm_store_lead($p,$name,'+91'.$phone,$email,$goal,$client_request?:'dm-verified-'.$challenge,$source,true);
         if(is_wp_error($stored))return tlit_dm_error('Your phone is verified, but the enquiry could not be saved. Please retry; do not close this page.',503);
         $token=bin2hex(random_bytes(24));$state['complete']=true;$state['receipt']=$reference;$state['token']=$token;$state['bridge_receipt']=$stored['receipt'];$state['download_token']=$stored['download_token']??'';
         set_transient($key,$state,1800);set_transient('tlit_dm_receipt_'.tlit_dm_hash($reference),array('phone'=>$phone,'token'=>tlit_dm_hash($token),'remarks'=>$note,'lead_id'=>$stored['lead_id']),1800);
