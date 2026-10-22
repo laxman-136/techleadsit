@@ -29,7 +29,30 @@ track.innerHTML=reviews.map(([name,area,quote],index)=>{
   const highlighted=hooks.reduce((text,hook)=>text.replaceAll(reviewEscape(hook),`<mark class="review-hook">${reviewEscape(hook)}</mark>`),reviewEscape(quote));
   return `<article class="review-card"><header class="review-person"><span class="review-logo"><img src="${pageAssetBase}assets/review-platforms/${logo}" width="32" height="32" alt="" aria-hidden="true" decoding="async"></span><div><b>${reviewEscape(name)}</b><small>${reviewEscape(area)}</small></div></header><blockquote>“${highlighted}”</blockquote></article>`;
 }).join('');
-document.querySelector('[data-review-prev]').onclick=()=>track.scrollBy({left:-track.clientWidth*.85,behavior:'smooth'});document.querySelector('[data-review-next]').onclick=()=>track.scrollBy({left:track.clientWidth*.85,behavior:'smooth'});
+track.addEventListener('wheel',event=>{
+  if(Math.abs(event.deltaY)<=Math.abs(event.deltaX)||track.scrollWidth<=track.clientWidth)return;
+  const atStart=track.scrollLeft<=0&&event.deltaY<0;
+  const atEnd=Math.ceil(track.scrollLeft+track.clientWidth)>=track.scrollWidth&&event.deltaY>0;
+  if(atStart||atEnd)return;
+  event.preventDefault();
+  track.scrollLeft+=event.deltaY;
+},{passive:false});
+let reviewDragX=0,reviewDragLeft=0,reviewDragging=false;
+track.addEventListener('pointerdown',event=>{
+  if(event.pointerType!=='mouse'||event.button!==0)return;
+  reviewDragging=true;
+  reviewDragX=event.clientX;
+  reviewDragLeft=track.scrollLeft;
+  track.classList.add('is-dragging');
+  track.setPointerCapture(event.pointerId);
+});
+track.addEventListener('pointermove',event=>{
+  if(!reviewDragging)return;
+  track.scrollLeft=reviewDragLeft-(event.clientX-reviewDragX);
+});
+const stopReviewDrag=()=>{reviewDragging=false;track.classList.remove('is-dragging');};
+track.addEventListener('pointerup',stopReviewDrag);
+track.addEventListener('pointercancel',stopReviewDrag);
 for(const group of ['curriculum','faq'])document.querySelectorAll(`details[name=${group}]`).forEach(d=>d.addEventListener('toggle',()=>{if(d.open)document.querySelectorAll(`details[name=${group}]`).forEach(other=>{if(other!==d)other.open=false;});}));
 const menu=document.querySelector('.menu-toggle'),nav=document.querySelector('#navigation');menu.onclick=()=>{const open=menu.getAttribute('aria-expanded')!=='true';menu.setAttribute('aria-expanded',String(open));nav.classList.toggle('open',open);};nav.addEventListener('click',e=>{if(e.target.closest('a')){nav.classList.remove('open');menu.setAttribute('aria-expanded','false');}});
 document.querySelector('[data-open-chat]').onclick=()=>document.querySelector('.chat-launch')?.click();
