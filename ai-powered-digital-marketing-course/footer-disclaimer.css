@@ -1,4 +1,6 @@
 /* Quiet, readable legal copy below the footer navigation. */
+.site-footer>a:first-child{display:inline-flex;align-items:center;padding:10px 12px;background:#071009;border-radius:10px}
+.site-footer>a:first-child img{display:block}
 .footer-disclaimer.footer-disclaimer-bottom{display:block;width:100%;max-width:none;margin:0;padding:100px 24px;background:#101710;border:0;border-top:1px solid #293129;text-align:center;color:#b9beb9;box-sizing:border-box}
 .footer-disclaimer.footer-disclaimer-bottom p{max-width:1200px;margin:0 auto;color:inherit;font:400 12px/1.85 Geist,Arial,sans-serif;text-align:center}
 .footer-disclaimer.footer-disclaimer-bottom strong{color:#cdd1cd;font-weight:600}
