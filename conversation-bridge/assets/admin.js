@@ -89,16 +89,23 @@
         var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         Array.prototype.forEach.call(document.querySelectorAll('[data-tlit-tabbar]'), function (bar) {
             var links = Array.prototype.slice.call(bar.querySelectorAll('a[href]'));
-            var active = bar.querySelector('a.is-active, a[aria-current="page"]');
             var indicator = bar.querySelector('[data-tlit-tab-indicator]');
-            if (!links.length || !active || !indicator) return;
+            if (!links.length || !indicator || !bar.querySelector('a[aria-current="page"]')) return;
             var suppressClick = false;
             var drag = null;
+            var state = 'idle';
+            var navigationTimer = 0;
 
+            function committed() {
+                return bar.querySelector('a[aria-current="page"]');
+            }
             function metrics(link) {
-                return { left: link.offsetLeft, width: link.offsetWidth };
+                var barBox = bar.getBoundingClientRect();
+                var linkBox = link.getBoundingClientRect();
+                return { left: linkBox.left - barBox.left + bar.scrollLeft, width: linkBox.width };
             }
             function place(link, immediate) {
+                if (!link) return;
                 var box = metrics(link);
                 bar.classList.toggle('is-positioning', !!immediate);
                 indicator.style.width = box.width + 'px';
@@ -117,44 +124,72 @@
             }
             function showTarget(link) {
                 clearTarget();
-                if (link) link.setAttribute('data-tlit-drop-target', 'true');
+                if (link && link !== committed()) link.setAttribute('data-tlit-drop-target', 'true');
             }
             function navigate(link) {
-                if (!link || link === active) { place(active, false); return; }
-                links.forEach(function (item) {
-                    item.classList.toggle('is-active', item === link);
-                    if (item === link) item.setAttribute('aria-current', 'page');
-                    else item.removeAttribute('aria-current');
-                });
+                var current = committed();
+                if (!link || link === current || state === 'navigating') {
+                    state = 'idle';
+                    clearTarget();
+                    place(current, false);
+                    return;
+                }
+                state = 'navigating';
+                bar.classList.add('is-navigating');
+                showTarget(link);
                 place(link, false);
-                window.setTimeout(function () { window.location.assign(link.href); }, reducedMotion ? 0 : 260);
+                window.clearTimeout(navigationTimer);
+                navigationTimer = window.setTimeout(function () { window.location.assign(link.href); }, reducedMotion ? 0 : 180);
+            }
+            function resetDrag(cancelled) {
+                if (!drag) return false;
+                var moved = drag.moved;
+                var target = cancelled ? committed() : drag.target;
+                var pointerId = drag.pointerId;
+                drag = null;
+                state = 'idle';
+                bar.classList.remove('is-dragging');
+                clearTarget();
+                var current = committed();
+                if (current && current.hasPointerCapture && current.hasPointerCapture(pointerId)) current.releasePointerCapture(pointerId);
+                if (moved) {
+                    suppressClick = true;
+                    window.setTimeout(function () { suppressClick = false; }, 350);
+                    navigate(target);
+                } else {
+                    place(current, false);
+                }
+                return moved;
             }
 
-            place(active, true);
+            place(committed(), true);
             bar.classList.add('is-ready');
 
             links.forEach(function (link) {
                 link.addEventListener('click', function (event) {
                     if (suppressClick) { event.preventDefault(); return; }
                     if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-                    if (link === active) { event.preventDefault(); return; }
+                    if (link === committed() || state !== 'idle') { event.preventDefault(); return; }
                     event.preventDefault();
                     navigate(link);
                 });
             });
 
-            active.addEventListener('pointerdown', function (event) {
-                if (event.button !== 0 || reducedMotion) return;
-                var box = metrics(active);
-                drag = { pointerId: event.pointerId, startX: event.clientX, left: box.left, width: box.width, moved: false, target: active };
-                active.setPointerCapture(event.pointerId);
+            bar.addEventListener('pointerdown', function (event) {
+                var current = committed();
+                if (event.button !== 0 || reducedMotion || state !== 'idle' || event.target.closest('a') !== current) return;
+                var box = metrics(current);
+                drag = { pointerId: event.pointerId, startX: event.clientX, left: box.left, width: box.width, moved: false, target: current };
+                state = 'pressed';
+                current.setPointerCapture(event.pointerId);
             });
-            active.addEventListener('dragstart', function (event) { event.preventDefault(); });
+            bar.addEventListener('dragstart', function (event) { if (event.target.closest('a') === committed()) event.preventDefault(); });
             bar.addEventListener('pointermove', function (event) {
                 if (!drag || drag.pointerId !== event.pointerId) return;
                 var delta = event.clientX - drag.startX;
-                if (!drag.moved && Math.abs(delta) < 5) return;
+                if (!drag.moved && Math.abs(delta) < 9) return;
                 drag.moved = true;
+                state = 'dragging';
                 event.preventDefault();
                 bar.classList.add('is-dragging');
                 var edge = Math.max(5, bar.scrollWidth - drag.width - 5);
@@ -165,24 +200,21 @@
             });
             function finish(event, cancelled) {
                 if (!drag || drag.pointerId !== event.pointerId) return;
-                var moved = drag.moved;
-                var target = cancelled ? active : drag.target;
-                drag = null;
-                bar.classList.remove('is-dragging');
-                clearTarget();
-                if (!moved) return;
-                suppressClick = true;
-                window.setTimeout(function () { suppressClick = false; }, 450);
-                navigate(target);
+                resetDrag(cancelled);
             }
             bar.addEventListener('pointerup', function (event) { finish(event, false); });
             bar.addEventListener('pointercancel', function (event) { finish(event, true); });
+            bar.addEventListener('lostpointercapture', function () { if (drag) resetDrag(true); });
+            window.addEventListener('blur', function () { if (drag) resetDrag(true); });
+            bar.addEventListener('keydown', function (event) { if (event.key === 'Escape' && drag) resetDrag(true); });
+            bar.addEventListener('scroll', function () { if (state === 'idle') place(committed(), true); }, { passive: true });
 
             if ('ResizeObserver' in window) {
-                new ResizeObserver(function () { if (!drag) place(active, true); }).observe(bar);
+                new ResizeObserver(function () { if (state === 'idle') place(committed(), true); }).observe(bar);
             } else {
-                window.addEventListener('resize', function () { if (!drag) place(active, true); });
+                window.addEventListener('resize', function () { if (state === 'idle') place(committed(), true); });
             }
+            if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { if (state === 'idle') place(committed(), true); });
         });
     }
 

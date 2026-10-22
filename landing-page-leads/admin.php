@@ -49,7 +49,7 @@ final class TLIT_LP_Admin {
     public static function render() {
         TLIT_LP_Leads::admin();
         wp_enqueue_style('tlit-lp-admin',plugin_dir_url(__FILE__).'admin.css',array(),TLIT_LP_Leads::VERSION.'-workspace5');
-        wp_enqueue_script('tlit-lp-theme',plugins_url('../conversation-bridge/assets/admin.js',__FILE__),array(),'1.5.1-workspace5',true);
+        wp_enqueue_script('tlit-lp-theme',plugins_url('../conversation-bridge/assets/admin.js',__FILE__),array(),'1.5.2-workspace6',true);
         $view = self::input('view');$dropoffs=$view==='dropoffs';
         $is_light_theme=isset($_COOKIE['tlit_bridge_theme'])&&$_COOKIE['tlit_bridge_theme']==='light';
         echo '<div class="wrap lp-workspace'.($is_light_theme?' is-light':'').'" data-tlit-theme-root><script>(function(r){try{if(localStorage.getItem("tlit_bridge_theme")==="light"){r.classList.add("is-light");r.dataset.theme="light";}}catch(e){}})(document.currentScript.parentElement);</script><header class="lp-header"><div><p class="lp-eyebrow">TECH LEADS IT / COUNSELLOR WORKSPACE</p><h1>'.($dropoffs?'Form progress &amp; drop-offs':'Landing page leads').'</h1><p>'.($dropoffs?'See every saved form journey, its latest completed step and OTP outcome.':'Every enquiry in one place. Review, call and qualify before syncing with TeleCRM.').'</p></div><div class="lp-header-tools"><span class="lp-private"><span class="dashicons dashicons-lock" aria-hidden="true"></span> Private workspace</span><button type="button" class="tlit-cb-theme-toggle" data-tlit-theme-toggle aria-pressed="false" aria-label="Switch to light theme" title="Switch to light theme"><span aria-hidden="true"></span></button></div></header>';
