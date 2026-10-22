@@ -38,7 +38,7 @@
 @media(max-width:760px){#reviews .review-card{min-height:300px;padding:23px}#reviews .review-card blockquote{font-size:15px}}
 
 /* Reviews use direct horizontal scrolling; navigation buttons are intentionally omitted. */
-#reviews .review-track{scrollbar-width:none;-ms-overflow-style:none;overscroll-behavior-inline:contain;-webkit-overflow-scrolling:touch;cursor:grab;touch-action:pan-x;scroll-padding-inline:1px}
-#reviews .review-track::-webkit-scrollbar{display:none}
+#reviews .review-track{overflow-y:hidden;scrollbar-width:none;-ms-overflow-style:none;overscroll-behavior-inline:contain;-webkit-overflow-scrolling:touch;cursor:grab;touch-action:pan-x;scroll-padding-inline:1px}
+#reviews .review-track::-webkit-scrollbar{display:none;width:0;height:0}
 #reviews .review-track.is-dragging{cursor:grabbing;scroll-snap-type:none;user-select:none}
 #reviews .review-card{scroll-snap-stop:always}

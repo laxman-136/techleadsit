@@ -53,6 +53,37 @@ track.addEventListener('pointermove',event=>{
 const stopReviewDrag=()=>{reviewDragging=false;track.classList.remove('is-dragging');};
 track.addEventListener('pointerup',stopReviewDrag);
 track.addEventListener('pointercancel',stopReviewDrag);
+// Advance the learner stories automatically while preserving drag, swipe, wheel and keyboard control.
+const reviewReducedMotion=matchMedia('(prefers-reduced-motion: reduce)');
+let reviewTimer=0,reviewDirection=1,reviewInView=false,reviewPaused=false;
+const stopReviewAutoplay=()=>{clearTimeout(reviewTimer);reviewTimer=0;};
+const scheduleReviewAutoplay=()=>{
+  stopReviewAutoplay();
+  if(reviewReducedMotion.matches||reviewPaused||!reviewInView||document.hidden)return;
+  reviewTimer=setTimeout(()=>{
+    const cards=[...track.querySelectorAll('.review-card')];
+    if(cards.length<2)return;
+    const maxScroll=Math.max(0,track.scrollWidth-track.clientWidth);
+    if(track.scrollLeft>=maxScroll-4)reviewDirection=-1;
+    else if(track.scrollLeft<=4)reviewDirection=1;
+    const trackLeft=track.getBoundingClientRect().left;
+    const positions=cards.map(card=>card.getBoundingClientRect().left-trackLeft+track.scrollLeft);
+    const currentIndex=positions.reduce((closest,position,index)=>Math.abs(position-track.scrollLeft)<Math.abs(positions[closest]-track.scrollLeft)?index:closest,0);
+    const nextIndex=Math.max(0,Math.min(cards.length-1,currentIndex+reviewDirection));
+    track.scrollTo({left:Math.min(positions[nextIndex],maxScroll),behavior:'smooth'});
+    scheduleReviewAutoplay();
+  },2600);
+};
+const pauseReviews=()=>{reviewPaused=true;stopReviewAutoplay();};
+const resumeReviews=()=>{reviewPaused=false;scheduleReviewAutoplay();};
+track.addEventListener('pointerdown',pauseReviews);
+track.addEventListener('pointerup',()=>setTimeout(resumeReviews,900));
+track.addEventListener('pointercancel',()=>setTimeout(resumeReviews,900));
+track.addEventListener('focusin',pauseReviews);
+track.addEventListener('focusout',resumeReviews);
+reviewReducedMotion.addEventListener('change',scheduleReviewAutoplay);
+document.addEventListener('visibilitychange',scheduleReviewAutoplay);
+new IntersectionObserver(([entry])=>{reviewInView=entry.isIntersecting;entry.isIntersecting?scheduleReviewAutoplay():stopReviewAutoplay();},{threshold:.25}).observe(track);
 for(const group of ['curriculum','faq'])document.querySelectorAll(`details[name=${group}]`).forEach(d=>d.addEventListener('toggle',()=>{if(d.open)document.querySelectorAll(`details[name=${group}]`).forEach(other=>{if(other!==d)other.open=false;});}));
 const menu=document.querySelector('.menu-toggle'),nav=document.querySelector('#navigation');menu.onclick=()=>{const open=menu.getAttribute('aria-expanded')!=='true';menu.setAttribute('aria-expanded',String(open));nav.classList.toggle('open',open);};nav.addEventListener('click',e=>{if(e.target.closest('a')){nav.classList.remove('open');menu.setAttribute('aria-expanded','false');}});
 document.querySelector('[data-open-chat]').onclick=()=>document.querySelector('.chat-launch')?.click();
