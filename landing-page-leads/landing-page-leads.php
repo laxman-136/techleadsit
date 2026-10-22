@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Tech Leads IT — Landing Page Leads
  * Description: Bridge-first landing-page lead inbox with counsellor-controlled TeleCRM handoff.
- * Version: 0.5.0
+ * Version: 0.5.1
  * Requires PHP: 8.0
  */
 if (!defined('ABSPATH')) { exit; }
@@ -12,7 +12,7 @@ require_once __DIR__.'/api.php';
 require_once __DIR__.'/integration.php';
 final class TLIT_LP_Leads {
     use TLIT_LP_API, TLIT_LP_Integration;
-    const VERSION = '0.5.0';
+    const VERSION = '0.5.1';
     const OPTION = 'tlit_lp_integration';
     static function table() { global $wpdb; return $wpdb->prefix.'tlit_landing_leads'; }
     static function draft_table() { global $wpdb; return $wpdb->prefix.'tlit_form_drafts'; }

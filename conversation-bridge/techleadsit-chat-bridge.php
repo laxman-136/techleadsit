@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Tech Leads IT Conversation Bridge
  * Description: A private conversation inbox, DOCX exports and controlled integrations for course chatbots.
- * Version: 1.5.0
+ * Version: 1.5.1
  * Requires at least: 6.4
  * Requires PHP: 8.0
  * Author: Tech Leads IT
@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) { exit; }
 // The same module can be installed independently or bundled with Landing Pages.
 if (!defined('TLIT_CB_FILE')) {
 define('TLIT_CB_FILE', __FILE__);
-define('TLIT_CB_VERSION', '1.5.0');
+define('TLIT_CB_VERSION', '1.5.1');
 define('TLIT_CB_URL', plugin_dir_url(__FILE__));
 
 function tlit_cb_boot() {

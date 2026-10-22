@@ -45,3 +45,22 @@
 
 /* Keep the selected value readable while native selects retain focus. */
 .tlit-cb select,.tlit-cb select:focus,.tlit-cb select:active{color:#edf2e9!important;background-color:#0f120f!important;color-scheme:dark}.tlit-cb select option,.tlit-cb select optgroup,.tlit-cb select option:checked{background:#111411!important;color:#edf2e9!important}.tlit-cb select option:disabled{color:#778076!important}.tlit-cb.is-light select,.tlit-cb.is-light select:focus,.tlit-cb.is-light select:active{color:#263229!important;background-color:#fff!important;color-scheme:light}.tlit-cb.is-light select option,.tlit-cb.is-light select optgroup,.tlit-cb.is-light select option:checked{background:#fff!important;color:#263229!important}.tlit-cb.is-light select option:disabled{color:#9aa49b!important}
+
+/* A single glass track and movable selection lens unify navigation across Bridge views. */
+body .tlit-cb .tlit-cb-tabs[data-tlit-tabbar]{position:relative;isolation:isolate;display:flex;flex-wrap:nowrap;gap:4px;width:fit-content;max-width:100%;padding:5px;margin-bottom:28px;overflow-x:auto;overflow-y:hidden;border:1px solid rgba(216,224,214,.14);border-radius:999px;background:linear-gradient(135deg,rgba(255,255,255,.075),rgba(255,255,255,.025));box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 12px 30px rgba(0,0,0,.18);backdrop-filter:blur(18px) saturate(145%);-webkit-backdrop-filter:blur(18px) saturate(145%);scrollbar-width:none}
+body .tlit-cb .tlit-cb-tabs[data-tlit-tabbar]::-webkit-scrollbar{display:none}
+body .tlit-cb .tlit-cb-tabs[data-tlit-tabbar] a{position:relative;z-index:2;flex:0 0 auto;min-height:38px;margin:0;padding:7px 15px;border:0;border-radius:999px;background:transparent;color:#aab2a8;transition:color .22s ease,transform .18s ease,text-shadow .22s ease;user-select:none;-webkit-user-drag:none}
+body .tlit-cb .tlit-cb-tabs[data-tlit-tabbar] a:hover{background:rgba(255,255,255,.055);color:#f4f7f2}
+body .tlit-cb .tlit-cb-tabs[data-tlit-tabbar] a.is-active{background:#f0f4ed;color:#101310;cursor:grab;touch-action:pan-y}
+body .tlit-cb .tlit-cb-tabs[data-tlit-tabbar].is-ready a.is-active{background:transparent}
+body .tlit-cb .tlit-cb-tabs[data-tlit-tabbar].is-ready a.is-active:hover{background:transparent}
+body .tlit-cb .tlit-cb-tabs[data-tlit-tabbar].is-dragging a.is-active{cursor:grabbing}
+body .tlit-cb .tlit-cb-tabs[data-tlit-tabbar] a[data-tlit-drop-target=true]{color:#fff;text-shadow:0 0 18px rgba(168,255,79,.45)}
+.tlit-cb .tlit-tab-indicator{position:absolute;z-index:1;top:5px;bottom:5px;left:0;width:0;border-radius:999px;background:linear-gradient(180deg,#fbfdf9,#e9eee6);box-shadow:0 5px 16px rgba(0,0,0,.27),inset 0 1px 0 #fff;opacity:0;pointer-events:none;transition:transform .42s cubic-bezier(.22,1,.36,1),width .42s cubic-bezier(.22,1,.36,1),opacity .16s ease}
+.tlit-cb .tlit-cb-tabs.is-ready .tlit-tab-indicator{opacity:1}.tlit-cb .tlit-cb-tabs.is-positioning .tlit-tab-indicator,.tlit-cb .tlit-cb-tabs.is-dragging .tlit-tab-indicator{transition:none}
+.tlit-cb.is-light .tlit-cb-tabs[data-tlit-tabbar]{border-color:rgba(84,102,88,.2);background:linear-gradient(135deg,rgba(255,255,255,.8),rgba(226,233,224,.62));box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 10px 26px rgba(40,58,44,.1)}
+body .tlit-cb.is-light .tlit-cb-tabs[data-tlit-tabbar] a{color:#667168}body .tlit-cb.is-light .tlit-cb-tabs[data-tlit-tabbar] a:hover{background:rgba(255,255,255,.7);color:#18211b}body .tlit-cb.is-light .tlit-cb-tabs[data-tlit-tabbar] a.is-active{color:#fff}body .tlit-cb.is-light .tlit-cb-tabs[data-tlit-tabbar] a[data-tlit-drop-target=true]{color:#fff;text-shadow:none}
+.tlit-cb.is-light .tlit-tab-indicator{background:linear-gradient(180deg,#222b24,#111713);box-shadow:0 5px 16px rgba(24,34,27,.25),inset 0 1px 0 rgba(255,255,255,.12)}
+.tlit-cb.is-theme-switching,.tlit-cb.is-theme-switching :is(.tlit-cb-header,.tlit-cb-tabs,.tlit-cb-stat,.tlit-cb-filters,.tlit-cb-inbox,.tlit-cb-transcript,.tlit-cb-side-panel,.tlit-cb-integration-settings>form,.tlit-cb-integration-actions,.tlit-cb-empty,.tlit-cb-theme-toggle){transition:color .34s ease,background-color .34s ease,border-color .34s ease,box-shadow .34s ease}
+@media(max-width:782px){body .tlit-cb .tlit-cb-tabs[data-tlit-tabbar]{width:100%}}
+@media(prefers-reduced-motion:reduce){.tlit-cb .tlit-tab-indicator{transition:none!important}.tlit-cb.is-theme-switching,.tlit-cb.is-theme-switching *{transition:none!important}}

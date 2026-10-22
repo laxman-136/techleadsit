@@ -21,9 +21,9 @@ class TLIT_CB_Admin {
         if ($hook !== 'toplevel_page_' . self::SLUG) {
             return;
         }
-        wp_enqueue_style('tlit-cb-admin', TLIT_CB_URL . 'assets/admin.css', array(), TLIT_CB_VERSION . '-workspace4');
-        if (($_GET['view'] ?? '') === 'dashboard') { wp_enqueue_style('tlit-cb-dashboard', TLIT_CB_URL . 'assets/dashboard.css', array('tlit-cb-admin'), TLIT_CB_VERSION . '-workspace4'); }
-        wp_enqueue_script('tlit-cb-admin', TLIT_CB_URL . 'assets/admin.js', array(), TLIT_CB_VERSION . '-workspace4', true);
+        wp_enqueue_style('tlit-cb-admin', TLIT_CB_URL . 'assets/admin.css', array(), TLIT_CB_VERSION . '-workspace5');
+        if (($_GET['view'] ?? '') === 'dashboard') { wp_enqueue_style('tlit-cb-dashboard', TLIT_CB_URL . 'assets/dashboard.css', array('tlit-cb-admin'), TLIT_CB_VERSION . '-workspace5'); }
+        wp_enqueue_script('tlit-cb-admin', TLIT_CB_URL . 'assets/admin.js', array(), TLIT_CB_VERSION . '-workspace5', true);
     }
 
     /** Collect only supported scalar filters; the store validates them again. */
@@ -154,9 +154,10 @@ class TLIT_CB_Admin {
         $filters = self::filters();
         $view = isset($_GET['view']) && is_string($_GET['view']) ? sanitize_key(wp_unslash($_GET['view'])) : '';
         $id = self::integer($_GET['conversation'] ?? 0);
-        echo '<div class="wrap tlit-cb'.($view==='dashboard'?' tlit-cb--dashboard':'').'" data-tlit-theme-root>';
+        $is_light_theme = isset($_COOKIE['tlit_bridge_theme']) && $_COOKIE['tlit_bridge_theme'] === 'light';
+        echo '<div class="wrap tlit-cb'.($view==='dashboard'?' tlit-cb--dashboard':'').($is_light_theme?' is-light':'').'" data-tlit-theme-root><script>(function(r){try{if(localStorage.getItem("tlit_bridge_theme")==="light"){r.classList.add("is-light");r.dataset.theme="light";}}catch(e){}})(document.currentScript.parentElement);</script>';
         echo '<header class="tlit-cb-header"><div><p class="tlit-cb-eyebrow">TECH LEADS IT <span aria-hidden="true">/</span> '.($view==='dashboard'?'TEAM WORKSPACE':'CHATBOT WORKSPACE').'</p><h1>'.($view==='dashboard'?'Lead dashboard':'Conversation Bridge').'</h1><p class="tlit-cb-intro">'.($view==='dashboard'?'Every enquiry, its owner and the next step.':'Every conversation, ready for your next step.').'</p></div><div class="tlit-cb-header-tools"><span class="tlit-cb-admin-label"><span class="dashicons dashicons-lock" aria-hidden="true"></span> Admin workspace</span><button type="button" class="tlit-cb-theme-toggle" data-tlit-theme-toggle aria-pressed="false" aria-label="Switch to light theme" title="Switch to light theme"><span aria-hidden="true"></span></button></div></header>';
-        echo '<nav class="tlit-cb-tabs" aria-label="Conversation Bridge sections"><a class="'.($view==='dashboard'?'is-active':'').'" href="'.esc_url(self::url(array('view'=>'dashboard'))).'"'.($view==='dashboard'?' aria-current="page"':'').'><span class="dashicons dashicons-chart-area" aria-hidden="true"></span> Dashboard</a><a class="' . (!in_array($view,array('dashboard','integrations'),true) ? 'is-active' : '') . '" href="' . esc_url(self::url()) . '"' . (!in_array($view,array('dashboard','integrations'),true) ? ' aria-current="page"' : '') . '><span class="dashicons dashicons-format-chat" aria-hidden="true"></span> Conversations</a>';
+        echo '<nav class="tlit-cb-tabs" data-tlit-tabbar aria-label="Conversation Bridge sections"><span class="tlit-tab-indicator" data-tlit-tab-indicator aria-hidden="true"></span><a class="'.($view==='dashboard'?'is-active':'').'" href="'.esc_url(self::url(array('view'=>'dashboard'))).'"'.($view==='dashboard'?' aria-current="page"':'').'><span class="dashicons dashicons-chart-area" aria-hidden="true"></span> Dashboard</a><a class="' . (!in_array($view,array('dashboard','integrations'),true) ? 'is-active' : '') . '" href="' . esc_url(self::url()) . '"' . (!in_array($view,array('dashboard','integrations'),true) ? ' aria-current="page"' : '') . '><span class="dashicons dashicons-format-chat" aria-hidden="true"></span> Conversations</a>';
         if (class_exists('TLIT_LP_Leads')) { echo '<a href="'.esc_url(admin_url('admin.php?page=tlit-landing-leads')).'"><span class="dashicons dashicons-forms" aria-hidden="true"></span> Landing page leads</a><a href="'.esc_url(admin_url('admin.php?page=tlit-landing-leads&view=dropoffs')).'"><span class="dashicons dashicons-chart-line" aria-hidden="true"></span> Form drop-offs</a>'; }
         echo '<a class="' . ($view === 'integrations' ? 'is-active' : '') . '" href="' . esc_url(self::url(array('view' => 'integrations'))) . '"' . ($view === 'integrations' ? ' aria-current="page"' : '') . '><span class="dashicons dashicons-admin-links" aria-hidden="true"></span> Integrations</a></nav>';
         if ($view === 'dashboard') {

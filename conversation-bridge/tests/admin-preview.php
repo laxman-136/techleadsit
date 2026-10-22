@@ -115,6 +115,8 @@ if ($mode === '--test') {
     $html = fixture_render('inbox');
     $assert(strpos($html, 'data-tlit-theme-root') !== false, 'Mark the private workspace as the theme scope.');
     $assert(strpos($html, 'data-tlit-theme-toggle') !== false && strpos($html, 'aria-label="Switch to light theme"') !== false, 'Render an accessible light and dark theme control.');
+    $assert(strpos($html, 'localStorage.getItem("tlit_bridge_theme")') !== false, 'Apply the saved theme synchronously before workspace content paints.');
+    $assert(strpos($html, 'data-tlit-tabbar') !== false && strpos($html, 'data-tlit-tab-indicator') !== false, 'Render one shared movable indicator for Bridge navigation.');
     $time_view = new ReflectionMethod('TLIT_CB_Admin', 'day');
     $time_view->setAccessible(true);
     $assert($time_view->invoke(null, '2026-10-15 07:17:00', 'Y-m-d H:i:s') === '2026-10-15 12:47:00', 'Show IST timestamps even when the WordPress timezone is UTC.');
