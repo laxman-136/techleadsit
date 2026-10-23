@@ -1,7 +1,8 @@
 'use strict';
 const dialog = document.querySelector('#registration');
 const form = document.querySelector('#demo-form');
-const registrationEndpoint = 'https://n8n.techleadsit.com/webhook/scm-batch-80-registration';
+const registrationEndpoint = '/wp-json/techleadsit-scm/v1/register';
+const registrationPaused = true;
 
 const demoTime = Date.parse('2026-10-31T08:00:00+05:30');
 function updateCountdown() {
@@ -67,6 +68,7 @@ document.querySelectorAll('form').forEach(currentForm => {
   });
   currentForm.addEventListener('submit', async event => {
     event.preventDefault();
+    if (registrationPaused) { message.textContent = 'Registration is temporarily paused. Please check back shortly.'; return; }
     if (submitting || registered) return;
     resetValidity();
     const name = currentForm.elements.name.value.trim();
