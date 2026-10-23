@@ -103,6 +103,13 @@ document.querySelectorAll('form').forEach(currentForm => {
       registered = true;
       submit.textContent = 'You’re registered ✓';
       message.textContent = 'Your free seat is reserved! Join the Oracle Fusion SCM live demo on 31 October 2026 at 8:00 AM IST. Zoom meeting ID: 8125 32 32 32.';
+      const zoomLink = document.createElement('a');
+      zoomLink.href = 'https://zoom.us/j/8125323232';
+      zoomLink.target = '_blank';
+      zoomLink.rel = 'noopener noreferrer';
+      zoomLink.className = 'cta zoom-link';
+      zoomLink.textContent = 'Join Zoom Demo ↗';
+      message.append(document.createElement('br'), zoomLink);
       currentForm.reset();
       otherField.hidden = true;
       currentForm.elements.otherCountryCode.disabled = true;

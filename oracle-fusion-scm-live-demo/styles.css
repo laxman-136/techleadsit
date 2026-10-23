@@ -25,3 +25,5 @@ img{height:auto}
 
 .cta:disabled{cursor:wait;opacity:.75;transform:none}
 @media(max-width:600px){.hero{display:flex;flex-direction:column;gap:0}.hero>.eyebrow{order:1;margin-bottom:24px}.hero-grid{display:contents}.hero-art{order:2;width:100%;margin:0}.hero h1{order:3;margin-top:25px;font-size:clamp(30px,9.5vw,39px)}.hero .intro{order:4;margin-bottom:0}.hero-details{display:none}.inline-registration .registration-intro{display:none}.inline-registration{padding-top:30px}}
+
+.zoom-link{margin-top:12px;text-decoration:none;width:100%}
