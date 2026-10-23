@@ -1,10 +1,14 @@
-# SCM Batch 80 — direct Apps Script registration
+# SCM Batch 80 — temporarily restored n8n registration
 
-Both existing forms submit directly to the Google Apps Script web-app URL. No n8n workflow, WordPress REST relay, or WordPress registration settings are used. The landing page itself is still hosted by the existing WordPress plugin.
+## Current state (23 October 2026)
 
-## Current state
+At the owner's explicit request, both forms temporarily use the previous n8n webhook again. Workflow OJ6rWvTcsaH2SNVg appends Name, Email, Mobile with country code, and Career objective to the designated Sheet only. It does not update rows by email or route to Conversion Bridge. Success requires a successful Sheet node followed by a response matching the submitted registration ID.
 
-Public forms remain paused until the owner supplies the deployed `/exec` URL and public Turnstile site key, and live checks pass. The previous n8n workflow remains disabled. The replacement Apps Script is in `apps-script/Code.gs` and is fixed to the owner's existing Sheet `1wSL-AyX-nsetyp3SzLnJ8JxQnF7k7qyUN1njU1ENR-o`, tab ID 0. WordPress no longer registers the former SCM registration API or settings page. Its old inactive option is not read, transmitted, or required.
+The webhook is deliberately unauthenticated; the owner explicitly accepted this and the public Sheet risk. CORS and field validation are not caller authentication. Retries after an ambiguous network failure can append a duplicate; request IDs are response correlation, not backend deduplication. The temporary queue is not installed. The Sheet remains publicly editable at the owner's request.
+
+Tests: tests/forms.cjs checks the browser flow with mocked responses; tests/restored-registration.cjs --preview --submit tests both local updated forms against the real Sheet before release; running without flags checks the published forms without submitting. Real tests are labelled SCM RESTORE TEST and use example.invalid addresses. They remain in the Sheet, not actual leads.
+
+The Apps Script code and owner setup below are retained for the later protected migration; they are not the active submission path.
 
 ## Simple owner setup
 

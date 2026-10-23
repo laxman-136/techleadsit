@@ -137,14 +137,10 @@ function techleadsit_route_landing_pages() {
                 if ($slug === 'scm-batch-80') {
                     $asset_url = plugin_dir_url(__FILE__) . 'oracle-fusion-scm-live-demo/';
                     $html_content = str_replace(
-                        array('href="styles.css?v=7"', 'src="app.js?v=10"', 'src="assets/', 'href="assets/'),
-                        array('href="'.$asset_url.'styles.css?v=7"', 'src="'.$asset_url.'app.js?v=10"', 'src="'.$asset_url.'assets/', 'href="'.$asset_url.'assets/'),
+                        array('href="styles.css?v=7"', 'src="app.js?v=12"', 'src="assets/', 'href="assets/'),
+                        array('href="'.$asset_url.'styles.css?v=7"', 'src="'.$asset_url.'app.js?v=12"', 'src="'.$asset_url.'assets/', 'href="'.$asset_url.'assets/'),
                         $html_content
                     );
-                    if (isset($_GET['scm_test']) && current_user_can('manage_options')) {
-                        // UI preview only: Apps Script still enforces the same CAPTCHA and validation.
-                        $html_content = str_replace('</head>', '<script>window.scmAdminPreview=true;</script></head>', $html_content);
-                    }
                     nocache_headers();
                     status_header(200);
                     header('Content-Type: text/html; charset=utf-8');
