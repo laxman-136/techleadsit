@@ -1,7 +1,7 @@
 'use strict';
 const dialog = document.querySelector('#registration');
 const form = document.querySelector('#demo-form');
-const status = document.querySelector('#form-status');
+const registrationEndpoint = 'https://n8n.techleadsit.com/webhook/scm-batch-80-registration';
 
 const demoTime = Date.parse('2026-10-31T08:00:00+05:30');
 function updateCountdown() {
@@ -30,7 +30,6 @@ let opener;
 document.querySelectorAll('[data-register]').forEach(button => {
   button.addEventListener('click', () => {
     opener = button;
-    status.textContent = '';
     dialog.showModal();
     document.body.classList.add('modal-open');
     form.elements.name.focus();
@@ -49,16 +48,74 @@ document.querySelectorAll('form').forEach(currentForm => {
   const countryCode = currentForm.elements.countryCode;
   const otherField = currentForm.elements.otherCountryCode.closest('label');
   const message = currentForm.querySelector('[role="status"]');
+  const submit = currentForm.querySelector('[type="submit"]');
+  const originalLabel = submit.textContent;
+  let registrationId;
+  let submitting = false;
+  let registered = false;
+  const resetValidity = () => {
+    currentForm.elements.mobile.setCustomValidity('');
+    currentForm.elements.name.setCustomValidity('');
+  };
+  currentForm.addEventListener('input', resetValidity);
   countryCode.addEventListener('change', () => {
+    resetValidity();
     const other = countryCode.value === 'other';
     otherField.hidden = !other;
     currentForm.elements.otherCountryCode.disabled = !other;
     currentForm.elements.otherCountryCode.required = other;
   });
-  currentForm.addEventListener('submit', event => {
+  currentForm.addEventListener('submit', async event => {
     event.preventDefault();
-    // Preview only: no network requests, browser storage, or lead integrations.
-    message.textContent = 'This is a preview. Your seat has not been booked and your details have not been sent or saved. Registration will open once setup is complete.';
-    message.focus();
+    if (submitting || registered) return;
+    resetValidity();
+    const name = currentForm.elements.name.value.trim();
+    const code = countryCode.value === 'other' ? currentForm.elements.otherCountryCode.value.trim() : countryCode.value;
+    const mobile = currentForm.elements.mobile.value.replace(/[\s()-]/g, '');
+    const fullMobile = code + mobile.replace(/^0+/, '');
+    if (!name) currentForm.elements.name.setCustomValidity('Please enter your name.');
+    if (!/^\d{6,14}$/.test(mobile) || !/^\+[1-9]\d{7,14}$/.test(fullMobile) || (code === '+91' && !/^[6-9]\d{9}$/.test(mobile))) {
+      currentForm.elements.mobile.setCustomValidity('Enter a valid mobile number without the country code.');
+    }
+    if (!currentForm.reportValidity()) return;
+    registrationId ||= crypto.randomUUID();
+    const payload = new URLSearchParams({
+      name,
+      email: currentForm.elements.email.value.trim().toLowerCase(),
+      countryCode: code,
+      mobile,
+      careerObjective: currentForm.elements.careerObjective.value,
+      source: currentForm.id === 'inline-demo-form' ? 'inline' : 'popup',
+      registrationId,
+      website: currentForm.elements.website.value
+    });
+    submitting = true;
+    submit.disabled = true;
+    submit.textContent = 'Reserving your seat…';
+    currentForm.setAttribute('aria-busy', 'true');
+    message.textContent = 'Saving your registration…';
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 30000);
+    try {
+      const response = await fetch(registrationEndpoint, { method: 'POST', body: payload, signal: controller.signal, credentials: 'omit' });
+      const result = await response.json();
+      if (!response.ok || result.success !== true) throw new Error('Registration not confirmed');
+      registered = true;
+      submit.textContent = 'You’re registered ✓';
+      message.textContent = 'Your free seat is reserved! Join the Oracle Fusion SCM live demo on 31 October 2026 at 8:00 AM IST. Zoom meeting ID: 8125 32 32 32.';
+      currentForm.reset();
+      otherField.hidden = true;
+      currentForm.elements.otherCountryCode.disabled = true;
+      currentForm.elements.otherCountryCode.required = false;
+    } catch {
+      message.textContent = 'We couldn’t confirm your registration. Please try again, or call +91 8125323232 for help.';
+      submit.textContent = originalLabel;
+      submit.disabled = false;
+    } finally {
+      clearTimeout(timeout);
+      submitting = false;
+      currentForm.removeAttribute('aria-busy');
+      message.focus();
+    }
   });
 });

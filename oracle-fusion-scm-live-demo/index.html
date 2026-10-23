@@ -8,15 +8,15 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=3">
-  <script src="app.js?v=3" defer></script>
+  <link rel="stylesheet" href="styles.css?v=4">
+  <script src="app.js?v=4" defer></script>
 </head>
 <body>
   <header class="header wrap"><a href="#" aria-label="Tech Leads IT home"><img src="assets/logo.png" alt="Tech Leads IT" width="180"></a><div class="demo-countdown"><div class="countdown-copy"><strong id="countdown-label">FREE LIVE DEMO STARTS IN</strong><time datetime="2026-10-31T08:00:00+05:30">31 October 2026 · 8:00 AM IST</time></div><div class="countdown-clock" role="timer" aria-live="off" aria-label="Time until the free live demo"><div><b data-countdown="days">--</b><span>DAYS</span></div><div><b data-countdown="hours">--</b><span>HRS</span></div><div><b data-countdown="minutes">--</b><span>MINS</span></div><div><b data-countdown="seconds">--</b><span>SECS</span></div></div></div></header>
   <main>
     <section class="hero wrap">
       <div class="eyebrow" style="text-align:center;line-height:1.8;letter-spacing:1px">Take ACTION before November 1st and watch the........</div>
-      <h1>SCM Specialists Are Earning <span>SIX-FIGURE Incomes.</span> Here’s the Oracle Fusion Skill Behind It.</h1>
+      <h1>SCM Specialists Are Earning <span><span class="no-wrap">SIX-FIGURE</span> Incomes.</span> Here’s the Oracle Fusion Skill Behind It.</h1>
       <p class="intro">Discover how professionals from support, sales, and testing backgrounds moved into Oracle Fusion SCM and built high-income careers, with a clear step-by-step plan, live projects, and placement support. <strong>No coding needed.</strong></p>
       <div class="hero-grid">
         <div class="hero-details">
@@ -35,7 +35,7 @@
     </section>
     <section class="inline-registration light-section" id="register" aria-labelledby="inline-title"><div class="wrap registration-layout"><div class="registration-intro"><p class="eyebrow">FREE LIVE DEMO</p><h2 id="inline-title">Take your <br>next step.</h2><p>Join Mr. Krishna for the Oracle Fusion SCM live demo, featuring Redwood + AI.</p><div class="registration-date"><strong>31 October 2026</strong><span>Saturday · 8:00 AM IST · Live on Zoom</span></div></div><div class="registration-card"><form id="inline-demo-form">
       <div class="field-row"><label>Name <span>*</span><input name="name" autocomplete="name" placeholder="Your full name" required maxlength="100"></label><label>Email <span>*</span><input type="email" name="email" autocomplete="email" placeholder="you@example.com" required maxlength="254"></label></div>
-      <div class="phone-row"><label>Country calling code <span>*</span><select name="countryCode" id="inline-country-code" autocomplete="tel-country-code" required><option value="+91">India (+91)</option><option value="+1">USA/Canada (+1)</option><option value="+44">United Kingdom (+44)</option><option value="+971">UAE (+971)</option><option value="+966">Saudi Arabia (+966)</option><option value="+61">Australia (+61)</option><option value="+49">Germany (+49)</option><option value="+65">Singapore (+65)</option><option value="+60">Malaysia (+60)</option><option value="+974">Qatar (+974)</option><option value="+965">Kuwait (+965)</option><option value="+968">Oman (+968)</option><option value="+973">Bahrain (+973)</option><option value="other">Other</option></select></label><label>Mobile number <span>*</span><input name="mobile" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="Your mobile number" required pattern="[0-9 ()\-]{6,20}" maxlength="20"></label></div>
+      <div class="phone-row"><label>Country calling code <span>*</span><select name="countryCode" id="inline-country-code" autocomplete="tel-country-code" required><option value="+91">India (+91)</option><option value="+1">USA/Canada (+1)</option><option value="+44">United Kingdom (+44)</option><option value="+971">UAE (+971)</option><option value="+966">Saudi Arabia (+966)</option><option value="+61">Australia (+61)</option><option value="+49">Germany (+49)</option><option value="+65">Singapore (+65)</option><option value="+60">Malaysia (+60)</option><option value="+974">Qatar (+974)</option><option value="+965">Kuwait (+965)</option><option value="+968">Oman (+968)</option><option value="+973">Bahrain (+973)</option><option value="other">Other</option></select></label><label>Mobile number <span>*</span><input name="mobile" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="Your mobile number" required pattern="[0-9\s\(\)\-]{6,20}" maxlength="20"></label></div>
       <label id="inline-other-code-field" hidden>Your country calling code <span>*</span><input name="otherCountryCode" type="tel" placeholder="e.g. +27" pattern="\+[1-9][0-9]{0,3}" disabled></label>
       <fieldset><legend>What is your career objective? <span>*</span></legend>
         <label class="choice"><input type="radio" name="careerObjective" value="I want to get my first job in finance or ERP." required><span>I want to get my first job in finance or ERP.</span></label>
@@ -44,8 +44,8 @@
         <label class="choice"><input type="radio" name="careerObjective" value="I want to grow into a consultant or lead role."><span>I want to grow into a consultant or lead role.</span></label>
         <label class="choice"><input type="radio" name="careerObjective" value="I want a skill that keeps my career secure."><span>I want a skill that keeps my career secure.</span></label>
       </fieldset>
-      <p class="preview-notice">Preview only — registration is not open yet. No details will be sent or saved.</p>
-      <button class="cta submit" type="submit">Reserve My Free Seat <span aria-hidden="true">↗</span></button>
+      <p class="preview-notice">We will use these details to manage your free demo registration.</p>
+      <label hidden aria-hidden="true">Leave this blank<input name="website" tabindex="-1" autocomplete="off"></label><button class="cta submit" type="submit">Reserve My Free Seat <span aria-hidden="true">↗</span></button>
       <p id="inline-form-status" role="status" tabindex="-1"></p>
     </form></div></div></section>
     <section class="mentor-section wrap">
@@ -60,7 +60,7 @@
     <div class="modal-top"><p class="eyebrow">FREE LIVE DEMO</p><h2 id="form-title">Take your next step.</h2><p id="form-description">Oracle Fusion SCM · 31 October · 8:00 AM IST</p></div>
     <form id="demo-form">
       <div class="field-row"><label>Name <span>*</span><input name="name" autocomplete="name" placeholder="Your full name" required maxlength="100"></label><label>Email <span>*</span><input type="email" name="email" autocomplete="email" placeholder="you@example.com" required maxlength="254"></label></div>
-      <div class="phone-row"><label>Country calling code <span>*</span><select name="countryCode" id="country-code" autocomplete="tel-country-code" required><option value="+91">India (+91)</option><option value="+1">USA/Canada (+1)</option><option value="+44">United Kingdom (+44)</option><option value="+971">UAE (+971)</option><option value="+966">Saudi Arabia (+966)</option><option value="+61">Australia (+61)</option><option value="+49">Germany (+49)</option><option value="+65">Singapore (+65)</option><option value="+60">Malaysia (+60)</option><option value="+974">Qatar (+974)</option><option value="+965">Kuwait (+965)</option><option value="+968">Oman (+968)</option><option value="+973">Bahrain (+973)</option><option value="other">Other</option></select></label><label>Mobile number <span>*</span><input name="mobile" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="Your mobile number" required pattern="[0-9 ()\-]{6,20}" maxlength="20"></label></div>
+      <div class="phone-row"><label>Country calling code <span>*</span><select name="countryCode" id="country-code" autocomplete="tel-country-code" required><option value="+91">India (+91)</option><option value="+1">USA/Canada (+1)</option><option value="+44">United Kingdom (+44)</option><option value="+971">UAE (+971)</option><option value="+966">Saudi Arabia (+966)</option><option value="+61">Australia (+61)</option><option value="+49">Germany (+49)</option><option value="+65">Singapore (+65)</option><option value="+60">Malaysia (+60)</option><option value="+974">Qatar (+974)</option><option value="+965">Kuwait (+965)</option><option value="+968">Oman (+968)</option><option value="+973">Bahrain (+973)</option><option value="other">Other</option></select></label><label>Mobile number <span>*</span><input name="mobile" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="Your mobile number" required pattern="[0-9\s\(\)\-]{6,20}" maxlength="20"></label></div>
       <label id="other-code-field" hidden>Your country calling code <span>*</span><input name="otherCountryCode" type="tel" placeholder="e.g. +27" pattern="\+[1-9][0-9]{0,3}" disabled></label>
       <fieldset><legend>What is your career objective? <span>*</span></legend>
         <label class="choice"><input type="radio" name="careerObjective" value="I want to get my first job in finance or ERP." required><span>I want to get my first job in finance or ERP.</span></label>
@@ -69,8 +69,8 @@
         <label class="choice"><input type="radio" name="careerObjective" value="I want to grow into a consultant or lead role."><span>I want to grow into a consultant or lead role.</span></label>
         <label class="choice"><input type="radio" name="careerObjective" value="I want a skill that keeps my career secure."><span>I want a skill that keeps my career secure.</span></label>
       </fieldset>
-      <p class="preview-notice">Preview only — registration is not open yet. No details will be sent or saved.</p>
-      <button class="cta submit" type="submit">Reserve My Free Seat <span aria-hidden="true">↗</span></button>
+      <p class="preview-notice">We will use these details to manage your free demo registration.</p>
+      <label hidden aria-hidden="true">Leave this blank<input name="website" tabindex="-1" autocomplete="off"></label><button class="cta submit" type="submit">Reserve My Free Seat <span aria-hidden="true">↗</span></button>
       <p id="form-status" role="status" tabindex="-1"></p>
     </form>
   </dialog>
