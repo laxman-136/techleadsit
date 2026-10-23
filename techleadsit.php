@@ -137,8 +137,8 @@ function techleadsit_route_landing_pages() {
                 if ($slug === 'scm-batch-80') {
                     $asset_url = plugin_dir_url(__FILE__) . 'oracle-fusion-scm-live-demo/';
                     $html_content = str_replace(
-                        array('href="styles.css?v=2"', 'src="app.js?v=2"', 'src="assets/', 'href="assets/'),
-                        array('href="'.$asset_url.'styles.css?v=2"', 'src="'.$asset_url.'app.js?v=2"', 'src="'.$asset_url.'assets/', 'href="'.$asset_url.'assets/'),
+                        array('href="styles.css?v=3"', 'src="app.js?v=3"', 'src="assets/', 'href="assets/'),
+                        array('href="'.$asset_url.'styles.css?v=3"', 'src="'.$asset_url.'app.js?v=3"', 'src="'.$asset_url.'assets/', 'href="'.$asset_url.'assets/'),
                         $html_content
                     );
                     status_header(200);
