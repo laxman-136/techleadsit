@@ -2,7 +2,45 @@
 const dialog = document.querySelector('#registration');
 const form = document.querySelector('#demo-form');
 const registrationEndpoint = '/wp-json/techleadsit-scm/v1/register';
-const registrationPaused = true;
+let registrationPaused = true;
+let registrationConfig;
+const securityWidgets = new Map();
+const requestHeaders = window.scmTestNonce ? {'X-WP-Nonce': window.scmTestNonce} : {};
+function prepareSecurityWidget(currentForm) {
+  if (registrationPaused || !window.turnstile || securityWidgets.has(currentForm)) return;
+  if (currentForm.closest('dialog') && !dialog.open) return;
+  const container = document.createElement('div');
+  container.className = 'registration-security-check';
+  currentForm.querySelector('[type="submit"]').before(container);
+  const submit = currentForm.querySelector('[type="submit"]');
+  const widget = window.turnstile.render(container, {
+    sitekey: registrationConfig.sitekey, action: 'scm_registration', size: 'flexible',
+    callback: () => { submit.disabled = false; },
+    'expired-callback': () => { submit.disabled = true; },
+    'error-callback': () => {
+      submit.disabled = true;
+      currentForm.querySelector('[role="status"]').textContent = 'Security check unavailable. Please reload to try again.';
+    }
+  });
+  securityWidgets.set(currentForm, widget);
+}
+window.scmTurnstileReady = () => document.querySelectorAll('form').forEach(prepareSecurityWidget);
+async function loadRegistration() {
+  try {
+    const response = await fetch('/wp-json/techleadsit-scm/v1/config', {headers:requestHeaders, credentials:'same-origin', cache:'no-store'});
+    registrationConfig = await response.json();
+    if (!response.ok || registrationConfig.enabled !== true || !registrationConfig.sitekey) return;
+    registrationPaused = false;
+    document.querySelectorAll('form').forEach(currentForm => {
+      currentForm.querySelector('[type="submit"]').textContent = 'Reserve My Free Seat';
+      currentForm.querySelector('[role="status"]').textContent = registrationConfig.testing ? 'Admin test mode. Public registration remains paused.' : 'Complete the security check to reserve your seat.';
+    });
+    const script = document.createElement('script');
+    script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?onload=scmTurnstileReady&render=explicit';
+    script.async = true;
+    document.head.append(script);
+  } catch { /* Keep both forms paused when configuration is unavailable. */ }
+}
 
 const demoTime = Date.parse('2026-10-31T08:00:00+05:30');
 function updateCountdown() {
@@ -32,6 +70,7 @@ document.querySelectorAll('[data-register]').forEach(button => {
   button.addEventListener('click', () => {
     opener = button;
     dialog.showModal();
+    prepareSecurityWidget(form);
     document.body.classList.add('modal-open');
     form.elements.name.focus();
   });
@@ -50,7 +89,7 @@ document.querySelectorAll('form').forEach(currentForm => {
   const otherField = currentForm.elements.otherCountryCode.closest('label');
   const message = currentForm.querySelector('[role="status"]');
   const submit = currentForm.querySelector('[type="submit"]');
-  const originalLabel = submit.textContent;
+  const originalLabel = 'Reserve My Free Seat';
   let registrationId;
   let submitting = false;
   let registered = false;
@@ -80,6 +119,9 @@ document.querySelectorAll('form').forEach(currentForm => {
       currentForm.elements.mobile.setCustomValidity('Enter a valid mobile number without the country code.');
     }
     if (!currentForm.reportValidity()) return;
+    const widget = securityWidgets.get(currentForm);
+    const captchaToken = widget === undefined ? '' : window.turnstile.getResponse(widget);
+    if (!captchaToken) { message.textContent = 'Please complete the security check.'; return; }
     registrationId ||= crypto.randomUUID();
     const payload = new URLSearchParams({
       name,
@@ -89,7 +131,8 @@ document.querySelectorAll('form').forEach(currentForm => {
       careerObjective: currentForm.elements.careerObjective.value,
       source: currentForm.id === 'inline-demo-form' ? 'inline' : 'popup',
       registrationId,
-      website: currentForm.elements.website.value
+      website: currentForm.elements.website.value,
+      captchaToken
     });
     submitting = true;
     submit.disabled = true;
@@ -97,11 +140,11 @@ document.querySelectorAll('form').forEach(currentForm => {
     currentForm.setAttribute('aria-busy', 'true');
     message.textContent = 'Saving your registration…';
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 30000);
+    const timeout = setTimeout(() => controller.abort(), 50000);
     try {
-      const response = await fetch(registrationEndpoint, { method: 'POST', body: payload, signal: controller.signal, credentials: 'omit' });
+      const response = await fetch(registrationEndpoint, { method: 'POST', body: payload, signal: controller.signal, credentials: 'same-origin', headers:requestHeaders });
       const result = await response.json();
-      if (!response.ok || result.success !== true) throw new Error('Registration not confirmed');
+      if (!response.ok || result.success !== true) throw new Error(result.message || 'Registration not confirmed');
       registered = true;
       submit.textContent = 'You’re registered ✓';
       message.textContent = 'Your free seat is reserved! Join the Oracle Fusion SCM live demo on 31 October 2026 at 8:00 AM IST. Zoom meeting ID: 8125 32 32 32.';
@@ -116,10 +159,11 @@ document.querySelectorAll('form').forEach(currentForm => {
       otherField.hidden = true;
       currentForm.elements.otherCountryCode.disabled = true;
       currentForm.elements.otherCountryCode.required = false;
-    } catch {
-      message.textContent = 'We couldn’t confirm your registration. Please try again, or call +91 8125323232 for help.';
+    } catch (error) {
+      message.textContent = error.name === 'AbortError' ? 'We couldn’t confirm your registration. Please try again, or call +91 8125323232 for help.' : error.message;
       submit.textContent = originalLabel;
-      submit.disabled = false;
+      submit.disabled = true;
+      window.turnstile.reset(widget);
     } finally {
       clearTimeout(timeout);
       submitting = false;
@@ -128,3 +172,4 @@ document.querySelectorAll('form').forEach(currentForm => {
     }
   });
 });
+loadRegistration();
