@@ -15,7 +15,6 @@ require_once __DIR__.'/digital-marketing-integration/techleadsit-digital-marketi
 require_once __DIR__.'/digital-marketing-integration/wp-render.php';
 require_once __DIR__.'/landing-page-leads/landing-page-leads.php';
 require_once __DIR__.'/digital-marketing-integration/v2-render.php';
-require_once __DIR__.'/oracle-fusion-scm-live-demo/registration.php';
 
 // 1. DYNAMIC ROUTING: Intercept clean URLs and serve HTML landing pages
 add_action('template_redirect', 'techleadsit_route_landing_pages');
@@ -138,12 +137,13 @@ function techleadsit_route_landing_pages() {
                 if ($slug === 'scm-batch-80') {
                     $asset_url = plugin_dir_url(__FILE__) . 'oracle-fusion-scm-live-demo/';
                     $html_content = str_replace(
-                        array('href="styles.css?v=7"', 'src="app.js?v=9"', 'src="assets/', 'href="assets/'),
-                        array('href="'.$asset_url.'styles.css?v=7"', 'src="'.$asset_url.'app.js?v=9"', 'src="'.$asset_url.'assets/', 'href="'.$asset_url.'assets/'),
+                        array('href="styles.css?v=7"', 'src="app.js?v=10"', 'src="assets/', 'href="assets/'),
+                        array('href="'.$asset_url.'styles.css?v=7"', 'src="'.$asset_url.'app.js?v=10"', 'src="'.$asset_url.'assets/', 'href="'.$asset_url.'assets/'),
                         $html_content
                     );
                     if (isset($_GET['scm_test']) && current_user_can('manage_options')) {
-                        $html_content = str_replace('</head>', '<script>window.scmTestNonce=' . wp_json_encode(wp_create_nonce('wp_rest')) . ';</script></head>', $html_content);
+                        // UI preview only: Apps Script still enforces the same CAPTCHA and validation.
+                        $html_content = str_replace('</head>', '<script>window.scmAdminPreview=true;</script></head>', $html_content);
                     }
                     nocache_headers();
                     status_header(200);

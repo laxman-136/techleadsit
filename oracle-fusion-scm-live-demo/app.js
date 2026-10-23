@@ -1,11 +1,12 @@
 'use strict';
 const dialog = document.querySelector('#registration');
 const form = document.querySelector('#demo-form');
-const registrationEndpoint = '/wp-json/techleadsit-scm/v1/register';
+// Public configuration only. Add the owner's /exec URL and Turnstile SITE key after deployment.
+// The Turnstile SECRET belongs only in Apps Script Script Properties.
+const registrationConfig = Object.freeze({enabled: false, endpoint: '', sitekey: ''});
+const registrationEndpoint = registrationConfig.endpoint;
 let registrationPaused = true;
-let registrationConfig;
 const securityWidgets = new Map();
-const requestHeaders = window.scmTestNonce ? {'X-WP-Nonce': window.scmTestNonce} : {};
 function prepareSecurityWidget(currentForm) {
   if (registrationPaused || !window.turnstile || securityWidgets.has(currentForm)) return;
   if (currentForm.closest('dialog') && !dialog.open) return;
@@ -15,7 +16,7 @@ function prepareSecurityWidget(currentForm) {
   const submit = currentForm.querySelector('[type="submit"]');
   const widget = window.turnstile.render(container, {
     sitekey: registrationConfig.sitekey, action: 'scm_registration', size: 'flexible',
-    callback: () => { submit.disabled = false; },
+    callback: () => { submit.disabled = currentForm.dataset.registered === 'true' || currentForm.getAttribute('aria-busy') === 'true'; },
     'expired-callback': () => { submit.disabled = true; },
     'error-callback': () => {
       submit.disabled = true;
@@ -25,21 +26,20 @@ function prepareSecurityWidget(currentForm) {
   securityWidgets.set(currentForm, widget);
 }
 window.scmTurnstileReady = () => document.querySelectorAll('form').forEach(prepareSecurityWidget);
-async function loadRegistration() {
-  try {
-    const response = await fetch('/wp-json/techleadsit-scm/v1/config', {headers:requestHeaders, credentials:'same-origin', cache:'no-store'});
-    registrationConfig = await response.json();
-    if (!response.ok || registrationConfig.enabled !== true || !registrationConfig.sitekey) return;
+function loadRegistration() {
+    if (!(registrationConfig.enabled === true || window.scmAdminPreview === true) ||
+        !/^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(registrationEndpoint) ||
+        !registrationConfig.sitekey) return;
     registrationPaused = false;
     document.querySelectorAll('form').forEach(currentForm => {
       currentForm.querySelector('[type="submit"]').textContent = 'Reserve My Free Seat';
-      currentForm.querySelector('[role="status"]').textContent = registrationConfig.testing ? 'Admin test mode. Public registration remains paused.' : 'Complete the security check to reserve your seat.';
+      currentForm.querySelector('[role="status"]').textContent = !registrationConfig.enabled ? 'Admin preview. Public forms remain paused; the security check is still required.' : 'Complete the security check to reserve your seat.';
     });
     const script = document.createElement('script');
     script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?onload=scmTurnstileReady&render=explicit';
     script.async = true;
+    script.onerror = () => document.querySelectorAll('form [role="status"]').forEach(status => { status.textContent = 'Security check unavailable. Please reload to try again.'; });
     document.head.append(script);
-  } catch { /* Keep both forms paused when configuration is unavailable. */ }
 }
 
 const demoTime = Date.parse('2026-10-31T08:00:00+05:30');
@@ -142,10 +142,23 @@ document.querySelectorAll('form').forEach(currentForm => {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 50000);
     try {
-      const response = await fetch(registrationEndpoint, { method: 'POST', body: payload, signal: controller.signal, credentials: 'same-origin', headers:requestHeaders });
+      // A simple URL-encoded CORS request; never use no-cors or treat an opaque response as success.
+      const response = await fetch(registrationEndpoint, { method: 'POST', body: payload, signal: controller.signal, credentials: 'omit', mode: 'cors', redirect: 'follow' });
       const result = await response.json();
-      if (!response.ok || result.success !== true) throw new Error(result.message || 'Registration not confirmed');
+      if (!response.ok || result.success !== true || result.registrationId !== registrationId) {
+        const errors = {
+          paused: 'Registration is temporarily paused. Please check back shortly.',
+          invalid_fields: 'Please check your registration details.',
+          security_check: 'Please complete the security check again.',
+          rate_limited: 'Too many attempts. Please try again later.',
+          busy: 'Registration is busy. Please try again shortly.'
+        };
+        const failure = new Error(errors[result.code] || 'We couldn’t confirm your registration. Please retry or call +91 8125323232.');
+        failure.registrationMessage = true;
+        throw failure;
+      }
       registered = true;
+      currentForm.dataset.registered = 'true';
       submit.textContent = 'You’re registered ✓';
       message.textContent = 'Your free seat is reserved! Join the Oracle Fusion SCM live demo on 31 October 2026 at 8:00 AM IST. Zoom meeting ID: 8125 32 32 32.';
       const zoomLink = document.createElement('a');
@@ -160,7 +173,7 @@ document.querySelectorAll('form').forEach(currentForm => {
       currentForm.elements.otherCountryCode.disabled = true;
       currentForm.elements.otherCountryCode.required = false;
     } catch (error) {
-      message.textContent = error.name === 'AbortError' ? 'We couldn’t confirm your registration. Please try again, or call +91 8125323232 for help.' : error.message;
+      message.textContent = error.registrationMessage ? error.message : 'We couldn’t confirm your registration. Please try again, or call +91 8125323232 for help.';
       submit.textContent = originalLabel;
       submit.disabled = true;
       window.turnstile.reset(widget);

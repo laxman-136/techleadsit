@@ -1,38 +1,50 @@
-# Oracle Fusion SCM live demo
+# SCM Batch 80 — direct Apps Script registration
 
-Standalone page for 31 October 2026, 8:00 AM IST. Open index.html or serve this folder with a static HTTP server. It is separate from the digital marketing pages.
+Both existing forms submit directly to the Google Apps Script web-app URL. No n8n workflow, WordPress REST relay, or WordPress registration settings are used. The landing page itself is still hosted by the existing WordPress plugin.
 
-All page CTAs open a native accessible dialog with name, email, mobile number, the requested country-code list (India default, plus a custom field for Other), and the five exact career-objective choices. Escape, close button, outside click, focus restoration, and native required-field validation are supported.
+## Current state
 
-Both forms use `/wp-json/techleadsit-scm/v1/register`. The sole spreadsheet destination is `1wSL-AyX-nsetyp3SzLnJ8JxQnF7k7qyUN1njU1ENR-o`, tab `Sheet1`, columns Name, Email, Mobile, Career objective. The replacement is WordPress → signed Apps Script request → private Sheet. Public registration is paused by default. The former n8n workflow `OJ6rWvTcsaH2SNVg` was unpublished on 23 October 2026; do not reactivate it.
+Public forms remain paused until the owner supplies the deployed `/exec` URL and public Turnstile site key, and live checks pass. The previous n8n workflow remains disabled. The replacement Apps Script is in `apps-script/Code.gs` and is fixed to the owner's existing Sheet `1wSL-AyX-nsetyp3SzLnJ8JxQnF7k7qyUN1njU1ENR-o`, tab ID 0. WordPress no longer registers the former SCM registration API or settings page. Its old inactive option is not read, transmitted, or required.
 
-No Conversion/Conversation Bridge, TeleCRM, WordPress lead storage, analytics, or browser storage is used by this page. The isolated route bypasses shared landing-page scripts. WordPress stores only salted rate-limit hashes and temporary counters, plus server configuration. No contact values or credentials are exposed in the frontend. Do not activate until private access and both live forms have been verified.
+## Simple owner setup
 
-Client/server validation, Turnstile server verification, a honeypot, rate limits, disabled submit while saving, a 50-second timeout and a retry message cover errors. Success and the Zoom link appear only after a confirmed save. No confirmation email or WhatsApp message is sent.
+1. Open the existing Sheet as its owner (`techleadsit@gmail.com`). Set Share → General access → Restricted, and stop any File → Share → Publish to web publication. Keep A1:D1 exactly: `Name`, `Email`, `Mobile`, `Career objective`. Preserve existing rows.
+2. In Cloudflare → Turnstile, create a Managed widget allowing only `lp.techleadsit.com`. Keep the secret key private. The site key is public.
+3. In the Sheet → Extensions → Apps Script, replace ALL of Code.gs with `apps-script/Code.gs`. The old `SCM_SHARED_SECRET` is no longer used. There is no WordPress-side secret to copy.
+4. In the Apps Script editor, next to Services, click + and add Google Drive API (v3) and Google Sheets API (v4). For a default Apps Script Cloud project this also enables those APIs. For a manually selected standard Cloud project, enable both APIs in that Cloud project's API Library as well. No manifest editing is needed. The included appsscript.json is an optional equivalent configuration.
+5. Apps Script → Project Settings → Script Properties: add `TURNSTILE_SECRET_KEY` with the real widget secret key. Save. Do not put this secret in the source code, website, Git, or chat. No other manually generated secret is needed.
+6. Select `setupPrivateSheet` from the editor function dropdown and click Run. Authorize as owner. It restricts general link access, validates the headers and privacy, creates a rate-limit salt internally, and sets REGISTRATION_ENABLED=true. It does not modify existing registration rows. Wait for Execution completed. Website forms are still paused separately.
+7. Deploy → New deployment → Web app. Execute as Me (the Sheet owner); Who has access: Anyone. Copy the resulting URL ending in `/exec`. If updating an existing deployment, use Deploy → Manage deployments → Edit → New version → Deploy. Saving the source alone does not update a deployed version.
+8. Send the deployment `/exec` URL and the PUBLIC Turnstile SITE key to the developer/assistant. Keep the Turnstile SECRET in Apps Script only. The public endpoint requires a real CAPTCHA token verified for the exact website hostname and action before accessing any Sheet data.
+9. The developer connects both forms, tests them while the public UI is paused, verifies the Sheet is inaccessible signed out, then enables the public UI only after confirmation of successful saves. Both forms must show the Zoom link only after a readable JSON success response with the matching registration ID.
 
-The three user-supplied images are under assets. The logo is reused from the existing SCM page. Demo topics are conservative introductory copy based on the supplied poster; confirm the detailed agenda before launch.
+## Developer connection and tests
 
-## Owner setup (use your own signed-in browser)
+Set only the public `endpoint` and `sitekey` in app.js's `registrationConfig`, retaining `enabled:false` while testing. Bump the app.js asset version consistently in index.html and techleadsit.php. The site's administrator can open `/scm-batch-80?scm_test=1` for a UI preview while public forms are paused. This only shows the forms; it is not a server security bypass. Apps Script still verifies CAPTCHA, privacy, validation and limits for every submission. Once the two forms pass real Google/CAPTCHA tests, set `enabled:true`, bump the version, deploy and verify the live page.
 
-1. Open the existing Sheet as `techleadsit@gmail.com`. Set Share → General access → Restricted. Keep only named team accounts that need access. Stop any File → Share → Publish to web publication. No n8n access is needed.
-2. Open Extensions → Apps Script. Paste `apps-script/Code.gs`. In project settings, show the manifest and use `apps-script/appsscript.json`. Enable Google Sheets API and Google Drive API for the project's Google Cloud project if needed. The script needs Sheets, Drive and external request permissions; its source is fixed to this one Sheet and tab ID 0.
-3. In WordPress → Settings → SCM Registration Security, copy the generated shared secret into the Apps Script project's Script Properties under `SCM_SHARED_SECRET`. Do not put this value in chat, frontend code, or Git. The admin-only password field can be selected and copied.
-4. Run `setupPrivateSheet` in the Apps Script editor as owner and authorize it. This restricts link sharing and checks the existing headers; it does not modify rows. If the Sheet is published, stop publishing and rerun setup.
-5. Deploy → New deployment → Web app. Execute as **Me** (Sheet owner); access **Anyone**. The endpoint is reachable by the website server but rejects unsigned or stale requests before reading or writing. The Sheet stays private. Save the `/exec` deployment URL in WordPress settings, not the `/dev` test URL.
-6. Create a Cloudflare Turnstile widget restricted to `lp.techleadsit.com`. Save its site key and secret key in WordPress settings. Never use public test keys on the live site. Save with public registration disabled.
-7. Open admin test mode from those settings. Submit a labeled synthetic registration through each form and complete the real security check. Verify all four fields in Sheet1 and the Zoom link after success. Two different requests with the same test email must append separate rows, preserving the first; retrying an identical request ID must not append again. Invalid CAPTCHA, unsigned Apps Script requests, and upstream failures must not show success or save records.
-8. Check the Sheet while signed out: access must be denied. Remove only identified synthetic test rows with owner approval. Then check the verification acknowledgment and enable public registration.
+The direct fetch is URL-encoded, uses `credentials:omit`, follows Google's ContentService redirect and requires a readable response. Never use `mode:no-cors`, opaque-response success, JSONP, or an iframe-load event as proof of a save. If the actual deployment's response cannot be read by the browser, keep forms paused and investigate the Google deployment/access/redirect behavior before going live.
 
-## Security details
+Test inline and popup separately with clearly labeled synthetic records. Verify all four fields and the `+` country code. A second request with the same email must append, not replace the first row. Identical request-ID retries with fresh CAPTCHA tokens must not add another row. Invalid/reused CAPTCHA, conflicting request IDs, invalid fields, storage failures, and an unreadable response must not show success. Do not temporarily expose the production Sheet to test privacy rejection; use the mock tests or a separate nonproduction fixture. Remove only identified synthetic rows with owner approval.
 
-- Server-only HMAC-SHA256 signs the exact payload and timestamp. Apps Script accepts signatures for 120 seconds.
-- Both layers validate fields. Apps Script uses explicit `stringValue` cells, preserving international phones and preventing spreadsheet formula execution.
-- Apps Script checks Drive permissions, including published permissions, on every save. Any `anyone`, `domain`, or published permission causes rejection.
-- ScriptLock plus an atomic append and column-A note provide durable request-ID idempotency. The note contains only a random ID and payload digest. Email is never an update selector.
-- WordPress verifies Turnstile success, hostname and action; caps the body at 8 KiB; limits each direct client address to 10 attempts/10 minutes and each salted email hash to 3/hour. Arbitrary forwarded-IP headers are not trusted. If a reverse proxy masks addresses, configure trusted server-level real-IP mapping before enabling or the limit applies to the proxy.
-- Errors do not echo contact values, credentials or Google responses. Infrastructure log retention still needs the owner's normal review. Existing n8n execution history is untouched.
-- Admin test mode uses an administrator's REST nonce and uncached responses. CAPTCHA remains mandatory. Missing settings fail closed.
+Run:
 
-Run PHP syntax checks for `techleadsit.php` and `registration.php`, `php run_test.php`, and the tests in `tests/`. Mock tests do not replace Google deployment and both live-form tests.
+- `node oracle-fusion-scm-live-demo/tests/apps-script.cjs`
+- `node oracle-fusion-scm-live-demo/tests/forms.cjs` (local-only browser integration with mocked services)
+- `C:/xampp/php/php.exe -l techleadsit.php`
+- `C:/xampp/php/php.exe run_test.php`
 
-References: [Apps Script web apps](https://developers.google.com/apps-script/guides/web), [Drive permissions](https://developers.google.com/workspace/drive/api/reference/rest/v3/permissions), [Turnstile server validation](https://developers.cloudflare.com/turnstile/get-started/server-side-validation/).
+Mock tests are not proof that the real Google deployment is connected.
+
+## Security behavior
+
+- No public read endpoint; GET returns only `post_required`.
+- Rejects bad fields, duplicate parameters, oversized payloads and the honeypot before CAPTCHA verification.
+- Server-side Turnstile validation requires success, hostname `lp.techleadsit.com`, and action `scm_registration`. A public URL or Origin header is not caller authentication. This is an anonymous registration service protected against automated submissions, not verified email/phone identity.
+- Checks the Sheet's Drive permissions for anyone/domain/published access on every valid submission and refuses storage if broad access is found.
+- Uses ScriptLock and durable request IDs in a column-A note. The four cells plus the note are appended atomically. Existing email addresses are never update selectors.
+- Explicit Sheets string values preserve phone prefixes and prevent formula execution. The note contains a random ID and digest, not additional contact fields.
+- Limits new registrations to 30/minute globally and 3/hour per salted email hash. Expired rate counters are cleaned on subsequent accepted attempts. Apps Script does not expose a trustworthy client IP; no fake IP-based limit is claimed. Public invalid traffic can still consume Apps Script execution quota.
+- No request bodies, Google error details, or secrets are logged by this script or returned in public errors. No contact details are stored in WordPress, browser storage, or Conversion/Conversation Bridge.
+- To stop ALL collection, run `pauseRegistration` in the Apps Script editor (sets REGISTRATION_ENABLED=false immediately). Running setupPrivateSheet again re-enables the endpoint after checks. The frontend enabled flag only pauses the UI; the script property is the server-side switch.
+
+References: https://developers.google.com/apps-script/guides/web ; https://developers.google.com/apps-script/guides/content ; https://developers.cloudflare.com/turnstile/get-started/server-side-validation/
