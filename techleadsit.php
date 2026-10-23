@@ -99,6 +99,7 @@ function techleadsit_route_landing_pages() {
         'ai-powered-digital-marketing-course/thank-you' => 'ai-powered-digital-marketing-course/thank-you.html',
         'ai-powered-digital-marketing-training' => 'ai-powered-digital-marketing-training/index.html',
         'ai-powered-digital-marketing-training/thank-you' => 'ai-powered-digital-marketing-training/thank-you.html',
+        'scm-batch-80' => 'oracle-fusion-scm-live-demo/index.html',
         'scm-demo' => 'scm-demo/index.html',
         'scm-demo-v2' => 'scm-demo-v2/index.html',
         'rise-v1' => 'rise-v1/index.html',
@@ -132,6 +133,19 @@ function techleadsit_route_landing_pages() {
             
             if (file_exists($html_filepath)) {
                 $html_content = file_get_contents($html_filepath);
+                // Standalone event preview: no shared lead capture, tracking, or course-date overrides.
+                if ($slug === 'scm-batch-80') {
+                    $asset_url = plugin_dir_url(__FILE__) . 'oracle-fusion-scm-live-demo/';
+                    $html_content = str_replace(
+                        array('href="styles.css"', 'src="app.js"', 'src="assets/', 'href="assets/'),
+                        array('href="'.$asset_url.'styles.css"', 'src="'.$asset_url.'app.js"', 'src="'.$asset_url.'assets/', 'href="'.$asset_url.'assets/'),
+                        $html_content
+                    );
+                    status_header(200);
+                    header('Content-Type: text/html; charset=utf-8');
+                    if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'HEAD') echo $html_content;
+                    exit;
+                }
                 if (in_array($slug,array('ai-powered-digital-marketing-course','ai-powered-digital-marketing-course/thank-you','ai-powered-digital-marketing-training','ai-powered-digital-marketing-training/thank-you'),true)) {
                     $variant=str_starts_with($slug,'ai-powered-digital-marketing-training')?'v3':'v2';
                     $page_slug=$variant==='v3'?'ai-powered-digital-marketing-training':'ai-powered-digital-marketing-course';
@@ -1640,6 +1654,7 @@ function techleadsit_get_courses_registry() {
                 'oracle-fusion-scm-training' => 'oracle-fusion-scm-training/index.html',
                 'scm-demo' => 'scm-demo/index.html',
                 'scm-demo-v2' => 'scm-demo-v2/index.html',
+                'scm-batch-80' => 'oracle-fusion-scm-live-demo/index.html',
                 'rise-v1' => 'rise-v1/index.html',
                 'rise-v2' => 'rise-v2/index.html',
                 'rise-form-16465496' => 'rise-form-16465496/index.html',
