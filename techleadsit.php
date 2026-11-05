@@ -108,6 +108,7 @@ function techleadsit_route_landing_pages() {
         'rise-form-16465496' => 'rise-form-16465496/index.html',
         'free-sql-training-44819' => 'free-sql-training-44819/index.html',
         'oracle-fusion-hcm-training' => 'f-hcm-course/index.html',
+        'oracle-fusion-hcm-online-live-demo' => 'oracle-fusion-hcm-live-demo/index.html',
         'f-hcm-course' => 'f-hcm-course/index.html',
         'mb-hr-to' => 'f-hcm-course/index.html',
         'oracle-fusion-hcm-training-in-hyderabad' => 'f-hcm-course/index.html',
@@ -134,8 +135,8 @@ function techleadsit_route_landing_pages() {
             if (file_exists($html_filepath)) {
                 $html_content = file_get_contents($html_filepath);
                 // Standalone event preview: no shared lead capture, tracking, or course-date overrides.
-                if ($slug === 'scm-batch-80') {
-                    $asset_url = plugin_dir_url(__FILE__) . 'oracle-fusion-scm-live-demo/';
+                if ($slug === 'scm-batch-80' || $slug === 'oracle-fusion-hcm-online-live-demo') {
+                    $asset_url = plugin_dir_url(__FILE__) . ($slug === 'scm-batch-80' ? 'oracle-fusion-scm-live-demo/' : 'oracle-fusion-hcm-live-demo/');
                     $html_content = str_replace(
                         array('href="styles.css?v=7"', 'src="app.js?v=12"', 'src="assets/', 'href="assets/'),
                         array('href="'.$asset_url.'styles.css?v=7"', 'src="'.$asset_url.'app.js?v=12"', 'src="'.$asset_url.'assets/', 'href="'.$asset_url.'assets/'),
@@ -1614,6 +1615,7 @@ function techleadsit_get_courses_registry() {
             'default_template' => 'f-hcm-course/index.html',
             'slugs' => array(
                 'oracle-fusion-hcm-training' => 'f-hcm-course/index.html',
+        'oracle-fusion-hcm-online-live-demo' => 'oracle-fusion-hcm-live-demo/index.html',
                 'f-hcm-course' => 'f-hcm-course/index.html',
                 'mb-hr-to' => 'f-hcm-course/index.html',
                 'oracle-fusion-hcm-training-in-hyderabad' => 'f-hcm-course/index.html',
