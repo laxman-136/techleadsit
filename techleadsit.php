@@ -2,7 +2,7 @@
 /**
  * Plugin Name: TechLeadsIT Landing Pages
  * Description: Serves high-performance custom HTML landing pages at clean URLs and handles secure lead routing to TeleCRM.
- * Version: 1.7.8
+ * Version: 1.7.9
  * Author: TechLeadsIT
  */
 
@@ -160,7 +160,7 @@ function techleadsit_route_landing_pages() {
                 // Standalone event preview: no shared lead capture, tracking, or course-date overrides.
                 if ($slug === 'oracle-fusion-financials-course-online' || str_starts_with($slug, 'oracle-fusion-financials-course-online/')) {
                     $asset_url=plugin_dir_url(__FILE__).'oracle-financials-landing/';
-                    $html_content=str_replace(array('href="styles.css"','href="theme.css"','src="app.js"','src="assets/','href="assets/'),array('href="'.$asset_url.'styles.css?v=1.7.8"','href="'.$asset_url.'theme.css"','src="'.$asset_url.'app.js?v=1.7.8"','src="'.$asset_url.'assets/','href="'.$asset_url.'assets/'),$html_content);
+                    $html_content=str_replace(array('href="styles.css"','href="theme.css"','src="app.js"','src="assets/','href="assets/'),array('href="'.$asset_url.'styles.css?v=1.7.9"','href="'.$asset_url.'theme.css"','src="'.$asset_url.'app.js?v=1.7.9"','src="'.$asset_url.'assets/','href="'.$asset_url.'assets/'),$html_content);
                     $html_content=str_replace('href="policies.css"','href="'.$asset_url.'policies.css"',$html_content);
                     $html_content=str_replace('href="index.html"','href="/oracle-fusion-financials-course-online/"',$html_content);
                     foreach (array('privacy-policy','terms-and-conditions','refund-cancellation-policy','cookie-policy','about-contact') as $policy_slug) {

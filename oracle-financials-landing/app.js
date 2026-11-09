@@ -35,7 +35,7 @@ if ('IntersectionObserver' in window) {
 }
 const endpoint='/wp-json/tlit-leads/v1/';
 const uuid=()=>crypto.randomUUID();
-let requestId=uuid(),challenge='',draftToken='',draftQueue=Promise.resolve(),complete=false,busy=false,cooldownUntil=0;
+let requestId=uuid(),challenge='',draftToken='',draftQueue=Promise.resolve(),complete=false,busy=false,cooldownUntil=0,currentStep=1;
 const keys='utm_source utm_medium utm_campaign utm_adgroup utm_term utm_content utm_id gclid fbclid gbraid wbraid fb_ad fb_campaign fb_adset_name fb_adset_id fb_lead_id adset_id ad_id'.split(' ');
 const cleanUrl=value=>{try{const u=new URL(value);return u.origin+u.pathname}catch{return ''}};
 const query=new URLSearchParams(location.search);
@@ -58,28 +58,40 @@ async function api(route,data){const response=await fetch(endpoint+route,{method
 function draft(state='incomplete',field='contact',error=''){
  if(complete||!form.elements.consent.checked)return Promise.resolve();
  const p=payload();if(!p.name||!p.phone)return Promise.resolve();
- const v={name:p.name,phone:p.phone,email:p.email,goal:p.goal};
- draftQueue=draftQueue.catch(()=>{}).then(async()=>{if(complete)return;const r=await api('draft',{...p,draft_token:draftToken,values:v,lifecycle_status:state,current_step:state==='incomplete'?1:2,total_steps:2,last_field:field,otp_error:error});draftToken=r.draft_token;}).catch(()=>{});
+ const v={name:p.name,phone:p.phone,email:p.email,goal:p.goal};const progress=currentStep;
+ draftQueue=draftQueue.catch(()=>{}).then(async()=>{if(complete)return;const r=await api('draft',{...p,draft_token:draftToken,values:v,lifecycle_status:state,current_step:progress,total_steps:3,last_field:field,otp_error:error});draftToken=r.draft_token;}).catch(()=>{});
  return draftQueue;
 }
 form.addEventListener('change',event=>{if(['name','phone','email','goal','consent','bant_need','bant_timeline','bant_budget','bant_authority'].includes(event.target.name))draft('incomplete',event.target.name)});
-const detailsStep=document.querySelector('#details-step'),otpPanel=document.querySelector('#otp-panel');
+const detailsStep=document.querySelector('#details-step'),plansStep=document.querySelector('#plans-step'),otpPanel=document.querySelector('#otp-panel'),backButton=document.querySelector('#form-back');
 const stepItems=[...document.querySelectorAll('.registration-steps li')];
-function showStep(step){
- const verifying=step===2;
- detailsStep.hidden=verifying;otpPanel.hidden=!verifying;
- form.elements.otp.required=verifying;
+function showStep(step,focus=true){
+ currentStep=step;detailsStep.hidden=step!==1;plansStep.hidden=step!==2;otpPanel.hidden=step!==3;
+ form.elements.otp.required=step===3;backButton.hidden=step===1;
  stepItems.forEach((item,i)=>{item.classList.toggle('is-active',i===step-1);if(i===step-1)item.setAttribute('aria-current','step');else item.removeAttribute('aria-current')});
- submit.innerHTML=verifying?'Verify & Reserve My Seat':'Reserve My Free Seat <span>↗</span>';
- if(verifying){document.querySelector('.otp-destination').textContent='Enter the 4-digit SMS code sent to +91 '+form.elements.phone.value;form.elements.otp.focus()}
+ submit.innerHTML=step===1?'Continue to Learning Plans <span>→</span>':step===2?'Continue to Verify Mobile <span>→</span>':'Verify & Reserve My Free Seat';
+ if(step===3)document.querySelector('.otp-destination').textContent='Enter the 4-digit SMS code sent to +91 '+form.elements.phone.value;
+ if(focus)(step===1?form.elements.name:step===2?form.elements.bant_need:form.elements.otp).focus();
 }
-showStep(1);
-document.querySelector('#edit-details').addEventListener('click',()=>{if(busy||complete)return;challenge='';form.elements.otp.value='';showStep(1);message('Update your details, then request a new verification code.');form.elements.phone.focus()});
-form.elements.phone.addEventListener('input',()=>{if(challenge){challenge='';form.elements.otp.value='';showStep(1);message('Mobile number changed. Request a new verification code.')}});
-async function sendCode(){const p=payload();await draft();const r=await api('otp',{name:p.name,phone:p.phone,intent:'general'});challenge=r.challenge;cooldownUntil=Date.now()+30000;showStep(2);message('We sent a four-digit code to your mobile. Enter it to confirm your request.');form.elements.otp.focus();await draft('otp_pending','otp')}
-form.addEventListener('submit',async event=>{event.preventDefault();if(busy||complete)return;if(!challenge&&!form.reportValidity())return;if(challenge&&!form.elements.otp.reportValidity())return;busy=true;submit.disabled=true;message(challenge?'Verifying and saving your request…':'Sending your verification code…');try{if(!challenge){await sendCode()}else{await draftQueue;const result=await api('submit',{...payload(),challenge,otp:form.elements.otp.value});complete=true;message('Your demo request is saved. Our team will contact you with the schedule. Reference: '+result.receipt);submit.textContent='Request received ✓';[...form.elements].forEach(el=>el.disabled=true);document.querySelector('#otp-panel').hidden=true;window.dataLayer=window.dataLayer||[];window.dataLayer.push({event:'form_submitted',course:'oracle_fusion_financials',form_id:'financials_demo'});}}catch(error){message(error.message||'Unable to connect. Please try again.',true);if(challenge)await draft('otp_failed','otp',error.message)}finally{busy=false;if(!complete)submit.disabled=false}});
+function validStep(step){return [...(step===1?detailsStep:step===2?plansStep:otpPanel).querySelectorAll('input,select')].every(field=>field.reportValidity())}
+showStep(1,false);
+backButton.addEventListener('click',()=>{if(busy||complete)return;challenge='';form.elements.otp.value='';showStep(currentStep-1);message('');draft('incomplete','back')});
+form.elements.phone.addEventListener('input',()=>{challenge='';form.elements.otp.value=''});
+async function sendCode(){const p=payload();await draft();const r=await api('otp',{name:p.name,phone:p.phone,intent:'general'});challenge=r.challenge;cooldownUntil=Date.now()+30000;showStep(3);message('We sent a four-digit code to your mobile. Enter it to confirm your request.');form.elements.otp.focus();await draft('otp_pending','otp')}
+form.addEventListener('submit',async event=>{
+ event.preventDefault();if(busy||complete||!validStep(currentStep))return;
+ if(currentStep===1){showStep(2);message('');draft('incomplete','bant_need');return}
+ busy=true;submit.disabled=true;backButton.disabled=true;
+ message(currentStep===3?'Verifying and saving your request…':'Sending your verification code…');
+ try{
+  if(currentStep===2){await sendCode()}
+  else{await draftQueue;const result=await api('submit',{...payload(),challenge,otp:form.elements.otp.value});complete=true;message('Your demo request is saved. Our team will contact you with the schedule. Reference: '+result.receipt);submit.textContent='Request received ✓';[...form.elements].forEach(el=>el.disabled=true);otpPanel.hidden=true;backButton.hidden=true;window.dataLayer=window.dataLayer||[];window.dataLayer.push({event:'form_submitted',course:'oracle_fusion_financials',form_id:'financials_demo'});}
+ }catch(error){message(error.message||'Unable to connect. Please try again.',true);if(challenge)await draft('otp_failed','otp',error.message)}
+ finally{busy=false;if(!complete){submit.disabled=false;backButton.disabled=false}}
+});
+
 document.querySelector('#resend').addEventListener('click',async()=>{if(busy)return;if(Date.now()<cooldownUntil){message('Please wait 30 seconds before requesting another code.',true);return}busy=true;submit.disabled=true;try{await sendCode()}catch(error){message(error.message,true)}finally{busy=false;submit.disabled=false}});
-document.querySelectorAll('a[href="#reserve"]').forEach(a=>a.addEventListener('click',()=>{setTimeout(()=>{if(!complete)(challenge?form.elements.otp:form.elements.name).focus({preventScroll:true})},400)}));
+document.querySelectorAll('a[href="#reserve"]').forEach(a=>a.addEventListener('click',()=>{setTimeout(()=>{if(!complete)(currentStep===3?form.elements.otp:currentStep===2?form.elements.bant_need:form.elements.name).focus({preventScroll:true})},400)}));
 
 const logoMotion=document.querySelector('#logo-motion');
 // Curriculum uses its own form state and the same verified Bridge endpoints.
