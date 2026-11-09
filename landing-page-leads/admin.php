@@ -148,6 +148,7 @@ final class TLIT_LP_Admin {
             echo '<p><a href="'.esc_url(add_query_arg(array('page'=>'tlit-chat-bridge','conversation'=>$conversation_id),admin_url('admin.php'))).'">Open chatbot conversation →</a></p>';
         }
         self::fields(array('Page version'=>self::variants()[$lead['page_variant']??'']??'Not recorded','Form type'=>TLIT_LP_Leads::labels()[$lead['source']]??$lead['source'],'Brochure'=>!empty($data['brochure_downloaded'])?'Download recorded':(in_array($lead['source'],array('brochure','chatbot_brochure'),true)?'Requested':'Not requested'),'Mobile verification'=>!empty($lead['otp_verified'])?'OTP verified':'Not verified','Learning goal'=>$data['goal']??'','Current profile'=>(($data['status']??'') ?: ($data['details']['student_status']??'')),'Joining timeline'=>(($data['timeline']??'') ?: ($data['details']['start_timeline']??'')),'Question or interest'=>(($data['question']??'') ?: ($data['details']['main_question']??'')),'Preferred time to call'=>$data['details']['preferred_call_time']??'','Marketing consent'=>!empty($data['marketingConsent'])?'Given':'Not given'));
+        if(($lead['page_variant']??'')==='oracle_financials') self::fields(tlit_financials_bant_fields($data['details']??array()));
         echo '</section><section class="lp-panel"><h3>Page and campaign attribution</h3>';
         $values = array('Submitted from'=>$lead['submission_url']??'');
         foreach (($data['tracking']??array()) as $key=>$value) { if (is_scalar($value) && $value !== '') { $values[ucwords(str_replace('_',' ',$key))] = (string)$value; } }

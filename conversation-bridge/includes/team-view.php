@@ -62,6 +62,7 @@ final class TLIT_CB_Team_View {
         if (!empty($analysis['evidence'])) { echo '<p>Based on: “' . esc_html($analysis['evidence']) . '”</p>'; }
         echo '</div>';
         self::fields(array('Course' => ($row['page_variant']??'')==='oracle_financials'?'Oracle Fusion Financials':'AI Powered Digital Marketing', 'Language' => $chat ? $row['language'] : ($data['details']['preferred_language'] ?? ''), 'Enquiry' => $chat ? 'Chatbot conversation' : (TLIT_LP_Leads::labels()[$row['source']] ?? $row['source']), 'Brochure' => ($chat ? !empty($row['has_brochure']) : !empty($data['brochure_downloaded'])) ? 'Requested / downloaded' : 'Not recorded'));
+        if(!$chat&&($row['page_variant']??'')==='oracle_financials') self::fields(tlit_financials_bant_fields($data['details']??array()));
         if (!$chat) { self::fields(array('Current profile' => $data['status'] ?? ($data['details']['student_status'] ?? ''), 'Joining timeline' => $data['timeline'] ?? ($data['details']['start_timeline'] ?? ''), 'Question or interest' => $data['question'] ?? ($data['details']['main_question'] ?? ''), 'Preferred time to call' => $data['details']['preferred_call_time'] ?? '')); }
         echo '</div></section>';
         if ($chat) {

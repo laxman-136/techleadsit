@@ -52,7 +52,7 @@ tracking.ga_client_id=cookie('_ga').split('.').slice(-2).join('.');
 tracking.session_id=tracking.session_id||uuid();
 try{sessionStorage.setItem('financials-attribution',JSON.stringify(tracking))}catch{}
 function values(){return Object.fromEntries(new FormData(form))}
-function payload(){const v=values();return {request_id:requestId,intent:'general',page_variant:'oracle_financials',submission_url:cleanUrl(location.href),tracking,name:v.name,phone:v.phone,email:v.email,goal:v.goal,status:v.goal,details:{student_status:v.goal},marketingConsent:false,consent_text:'I agree to be contacted by Tech Leads IT about this demo and course.',contact_consent:v.consent==='on'}}
+function payload(){tracking.fbp=cookie('_fbp')||tracking.fbp;tracking.fbc=cookie('_fbc')||tracking.fbc;tracking.ga_client_id=cookie('_ga').split('.').slice(-2).join('.')||tracking.ga_client_id;const v=values();return {request_id:requestId,intent:'general',page_variant:'oracle_financials',submission_url:cleanUrl(location.href),tracking,name:v.name,phone:v.phone,email:v.email,goal:v.goal,status:v.goal,timeline:v.bant_timeline,question:v.bant_need,details:{student_status:v.goal,bant_need:v.bant_need,bant_timeline:v.bant_timeline,bant_budget:v.bant_budget,bant_authority:v.bant_authority},marketingConsent:false,consent_text:'I agree to be contacted by Tech Leads IT about this demo and course.',contact_consent:v.consent==='on'}}
 function message(text,error=false){status.textContent=text;status.classList.toggle('error',error)}
 async function api(route,data){const response=await fetch(endpoint+route,{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify(data),signal:AbortSignal.timeout(20000)});let result;try{result=await response.json()}catch{throw Error('Registration is temporarily unavailable. Please call +91 8125 32 32 32.')}if(!response.ok||result.success!==true)throw Error(result.message||'Your request could not be saved. Please try again.');return result}
 function draft(state='incomplete',field='contact',error=''){
@@ -62,12 +62,24 @@ function draft(state='incomplete',field='contact',error=''){
  draftQueue=draftQueue.catch(()=>{}).then(async()=>{if(complete)return;const r=await api('draft',{...p,draft_token:draftToken,values:v,lifecycle_status:state,current_step:state==='incomplete'?1:2,total_steps:2,last_field:field,otp_error:error});draftToken=r.draft_token;}).catch(()=>{});
  return draftQueue;
 }
-form.addEventListener('change',event=>{if(['name','phone','email','goal','consent'].includes(event.target.name))draft('incomplete',event.target.name)});
-form.elements.phone.addEventListener('input',()=>{if(challenge){challenge='';document.querySelector('#otp-panel').hidden=true;form.elements.otp.required=false;form.elements.otp.value='';message('Mobile number changed. Request a new verification code.');submit.innerHTML='Reserve My Free Seat <span>↗</span>'}});
-async function sendCode(){const p=payload();await draft();const r=await api('otp',{name:p.name,phone:p.phone,intent:'general'});challenge=r.challenge;cooldownUntil=Date.now()+30000;document.querySelector('#otp-panel').hidden=false;form.elements.otp.required=true;submit.textContent='Verify & Reserve My Seat';message('We sent a four-digit code to your mobile. Enter it to confirm your request.');form.elements.otp.focus();await draft('otp_pending','otp')}
-form.addEventListener('submit',async event=>{event.preventDefault();if(busy||complete||!form.reportValidity())return;busy=true;submit.disabled=true;message(challenge?'Verifying and saving your request…':'Sending your verification code…');try{if(!challenge){await sendCode()}else{await draftQueue;const result=await api('submit',{...payload(),challenge,otp:form.elements.otp.value});complete=true;message('Your demo request is saved. Our team will contact you with the schedule. Reference: '+result.receipt);submit.textContent='Request received ✓';[...form.elements].forEach(el=>el.disabled=true);document.querySelector('#otp-panel').hidden=true;window.dataLayer=window.dataLayer||[];window.dataLayer.push({event:'generate_lead',course:'oracle_fusion_financials',form_id:'financials_demo'});}}catch(error){message(error.message||'Unable to connect. Please try again.',true);if(challenge)await draft('otp_failed','otp',error.message)}finally{busy=false;if(!complete)submit.disabled=false}});
+form.addEventListener('change',event=>{if(['name','phone','email','goal','consent','bant_need','bant_timeline','bant_budget','bant_authority'].includes(event.target.name))draft('incomplete',event.target.name)});
+const detailsStep=document.querySelector('#details-step'),otpPanel=document.querySelector('#otp-panel');
+const stepItems=[...document.querySelectorAll('.registration-steps li')];
+function showStep(step){
+ const verifying=step===2;
+ detailsStep.hidden=verifying;otpPanel.hidden=!verifying;
+ form.elements.otp.required=verifying;
+ stepItems.forEach((item,i)=>{item.classList.toggle('is-active',i===step-1);if(i===step-1)item.setAttribute('aria-current','step');else item.removeAttribute('aria-current')});
+ submit.innerHTML=verifying?'Verify & Reserve My Seat':'Reserve My Free Seat <span>↗</span>';
+ if(verifying){document.querySelector('.otp-destination').textContent='Enter the 4-digit SMS code sent to +91 '+form.elements.phone.value;form.elements.otp.focus()}
+}
+showStep(1);
+document.querySelector('#edit-details').addEventListener('click',()=>{if(busy||complete)return;challenge='';form.elements.otp.value='';showStep(1);message('Update your details, then request a new verification code.');form.elements.phone.focus()});
+form.elements.phone.addEventListener('input',()=>{if(challenge){challenge='';form.elements.otp.value='';showStep(1);message('Mobile number changed. Request a new verification code.')}});
+async function sendCode(){const p=payload();await draft();const r=await api('otp',{name:p.name,phone:p.phone,intent:'general'});challenge=r.challenge;cooldownUntil=Date.now()+30000;showStep(2);message('We sent a four-digit code to your mobile. Enter it to confirm your request.');form.elements.otp.focus();await draft('otp_pending','otp')}
+form.addEventListener('submit',async event=>{event.preventDefault();if(busy||complete)return;if(!challenge&&!form.reportValidity())return;if(challenge&&!form.elements.otp.reportValidity())return;busy=true;submit.disabled=true;message(challenge?'Verifying and saving your request…':'Sending your verification code…');try{if(!challenge){await sendCode()}else{await draftQueue;const result=await api('submit',{...payload(),challenge,otp:form.elements.otp.value});complete=true;message('Your demo request is saved. Our team will contact you with the schedule. Reference: '+result.receipt);submit.textContent='Request received ✓';[...form.elements].forEach(el=>el.disabled=true);document.querySelector('#otp-panel').hidden=true;window.dataLayer=window.dataLayer||[];window.dataLayer.push({event:'form_submitted',course:'oracle_fusion_financials',form_id:'financials_demo'});}}catch(error){message(error.message||'Unable to connect. Please try again.',true);if(challenge)await draft('otp_failed','otp',error.message)}finally{busy=false;if(!complete)submit.disabled=false}});
 document.querySelector('#resend').addEventListener('click',async()=>{if(busy)return;if(Date.now()<cooldownUntil){message('Please wait 30 seconds before requesting another code.',true);return}busy=true;submit.disabled=true;try{await sendCode()}catch(error){message(error.message,true)}finally{busy=false;submit.disabled=false}});
-document.querySelectorAll('a[href="#reserve"]').forEach(a=>a.addEventListener('click',()=>{setTimeout(()=>form.elements.name.focus({preventScroll:true}),400)}));
+document.querySelectorAll('a[href="#reserve"]').forEach(a=>a.addEventListener('click',()=>{setTimeout(()=>{if(!complete)(challenge?form.elements.otp:form.elements.name).focus({preventScroll:true})},400)}));
 
 const logoMotion=document.querySelector('#logo-motion');
 // Curriculum uses its own form state and the same verified Bridge endpoints.
@@ -108,7 +120,7 @@ const logoMotion=document.querySelector('#logo-motion');
  downloadForm.addEventListener('submit',async event=>{
   event.preventDefault();if(locked||finished||!downloadForm.reportValidity())return;
   locked=true;button.disabled=true;say(code?'Verifying and saving your request…':'Sending your verification code…');
-  try{if(!code){await send()}else{await queue;receipt=await api('submit',{...data(),challenge:code,otp:downloadForm.elements.otp.value});finished=true;[...downloadForm.elements].forEach(el=>el.disabled=true);otpPanel.hidden=true;button.textContent='Curriculum ready ✓';say('Your request is saved. Your download is starting. If it does not start, use the download link below.');download();window.dataLayer=window.dataLayer||[];window.dataLayer.push({event:'generate_lead',course:'oracle_fusion_financials',form_id:'financials_curriculum'});}}
+  try{if(!code){await send()}else{await queue;receipt=await api('submit',{...data(),challenge:code,otp:downloadForm.elements.otp.value});finished=true;[...downloadForm.elements].forEach(el=>el.disabled=true);otpPanel.hidden=true;button.textContent='Curriculum ready ✓';say('Your request is saved. Your download is starting. If it does not start, use the download link below.');download();window.dataLayer=window.dataLayer||[];window.dataLayer.push({event:'form_submitted',course:'oracle_fusion_financials',form_id:'financials_curriculum'});}}
   catch(e){say(e.message||'Unable to connect. Please try again.',true);if(code)await saveDraft('otp_failed')}
   finally{locked=false;if(!finished)button.disabled=false}
  });
@@ -146,4 +158,3 @@ if(reviewGrid && typeof HTMLDialogElement!=='undefined'){
  });
  reviewDialog.addEventListener('close',()=>{document.body.classList.remove('review-modal-open');reviewTrigger?.focus({preventScroll:true});});
 }
-

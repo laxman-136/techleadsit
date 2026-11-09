@@ -2,7 +2,7 @@
 /**
  * Plugin Name: TechLeadsIT Landing Pages
  * Description: Serves high-performance custom HTML landing pages at clean URLs and handles secure lead routing to TeleCRM.
- * Version: 1.7.7
+ * Version: 1.7.8
  * Author: TechLeadsIT
  */
 
@@ -15,6 +15,19 @@ require_once __DIR__.'/digital-marketing-integration/techleadsit-digital-marketi
 require_once __DIR__.'/digital-marketing-integration/wp-render.php';
 require_once __DIR__.'/landing-page-leads/landing-page-leads.php';
 require_once __DIR__.'/digital-marketing-integration/v2-render.php';
+
+// Shared tracking for every HTML landing/policy route, including early returns.
+// Meta Pixel is managed by the existing GTM container; never initialise it twice here.
+function techleadsit_with_tracking($html) {
+    if (stripos($html, '<head') === false || strpos($html, 'googletagmanager.com/gtm.js') !== false) return $html;
+    $options = get_option('gtm4wp-options', array());
+    $id = is_array($options) ? ($options['gtm-code'] ?? '') : '';
+    if (!is_string($id) || !preg_match('/^GTM-[A-Z0-9]+$/D', $id)) return $html;
+    $head = "<!-- Shared Google Tag Manager; Meta Pixel managed in GTM --><script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','".$id."');</script>";
+    $body = '<noscript><iframe src="https://www.googletagmanager.com/ns.html?id='.$id.'" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>';
+    $html = preg_replace('~(<head\b[^>]*>)~i', '$1'.$head, $html, 1);
+    return preg_replace('~(<body\b[^>]*>)~i', '$1'.$body, $html, 1);
+}
 
 // 1. DYNAMIC ROUTING: Intercept clean URLs and serve HTML landing pages
 add_action('template_redirect', 'techleadsit_route_landing_pages');
@@ -147,14 +160,14 @@ function techleadsit_route_landing_pages() {
                 // Standalone event preview: no shared lead capture, tracking, or course-date overrides.
                 if ($slug === 'oracle-fusion-financials-course-online' || str_starts_with($slug, 'oracle-fusion-financials-course-online/')) {
                     $asset_url=plugin_dir_url(__FILE__).'oracle-financials-landing/';
-                    $html_content=str_replace(array('href="styles.css"','href="theme.css"','src="app.js"','src="assets/','href="assets/'),array('href="'.$asset_url.'styles.css"','href="'.$asset_url.'theme.css"','src="'.$asset_url.'app.js"','src="'.$asset_url.'assets/','href="'.$asset_url.'assets/'),$html_content);
+                    $html_content=str_replace(array('href="styles.css"','href="theme.css"','src="app.js"','src="assets/','href="assets/'),array('href="'.$asset_url.'styles.css?v=1.7.8"','href="'.$asset_url.'theme.css"','src="'.$asset_url.'app.js?v=1.7.8"','src="'.$asset_url.'assets/','href="'.$asset_url.'assets/'),$html_content);
                     $html_content=str_replace('href="policies.css"','href="'.$asset_url.'policies.css"',$html_content);
                     $html_content=str_replace('href="index.html"','href="/oracle-fusion-financials-course-online/"',$html_content);
                     foreach (array('privacy-policy','terms-and-conditions','refund-cancellation-policy','cookie-policy','about-contact') as $policy_slug) {
                         $html_content=str_replace('href="'.$policy_slug.'.html"','href="/oracle-fusion-financials-course-online/'.$policy_slug.'.html"',$html_content);
                     }
                     nocache_headers();status_header(200);header('Content-Type: text/html; charset=utf-8');
-                    if(($_SERVER['REQUEST_METHOD']??'GET')!=='HEAD') echo $html_content;
+                    if(($_SERVER['REQUEST_METHOD']??'GET')!=='HEAD') echo techleadsit_with_tracking($html_content);
                     exit;
                 }
                 if ($slug === 'scm-batch-80' || $slug === 'oracle-fusion-hcm-online-live-demo') {
@@ -167,7 +180,7 @@ function techleadsit_route_landing_pages() {
                     nocache_headers();
                     status_header(200);
                     header('Content-Type: text/html; charset=utf-8');
-                    if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'HEAD') echo $html_content;
+                    if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'HEAD') echo techleadsit_with_tracking($html_content);
                     exit;
                 }
                 if (in_array($slug,array('ai-powered-digital-marketing-course','ai-powered-digital-marketing-course/thank-you','ai-powered-digital-marketing-training','ai-powered-digital-marketing-training/thank-you'),true)) {
@@ -175,13 +188,13 @@ function techleadsit_route_landing_pages() {
                     $page_slug=$variant==='v3'?'ai-powered-digital-marketing-training':'ai-powered-digital-marketing-course';
                     $page=tlit_dm_v2_render($html_content,plugin_dir_url(__FILE__).$page_slug.'/',techleadsit_get_course_options('digital_marketing'),$variant,$page_slug);
                     status_header(200);nocache_headers();header('Content-Type: text/html; charset=utf-8');header('X-Robots-Tag: noindex, nofollow');
-                    if (($_SERVER['REQUEST_METHOD']??'GET')!=='HEAD') echo $page;
+                    if (($_SERVER['REQUEST_METHOD']??'GET')!=='HEAD') echo techleadsit_with_tracking($page);
                     exit;
                 }
                 if ($slug === 'ai-powered-digital-marketing') {
                     $dm_html=tlit_dm_render_page($html_content,plugin_dir_url(__FILE__).'ai-digital-marketing-freshers/',techleadsit_get_course_options('digital_marketing'));
                     status_header(200);nocache_headers();header('Content-Type: text/html; charset=utf-8');
-                    if (($_SERVER['REQUEST_METHOD']??'GET')!=='HEAD') echo $dm_html;
+                    if (($_SERVER['REQUEST_METHOD']??'GET')!=='HEAD') echo techleadsit_with_tracking($dm_html);
                     exit;
                 }
 
@@ -202,7 +215,7 @@ function techleadsit_route_landing_pages() {
                 $html_content = str_replace('href="policy.css"', 'href="' . $plugin_url . 'policy.css?v=1.0"', $html_content);
                 $html_content = str_replace('src="../logo-dark.png"', 'src="' . plugin_dir_url(__FILE__) . 'f-hcm-course/logo-dark.png"', $html_content);
 
-                // Policy Pages: Serve clean, bloat-free HTML without tracking scripts, batch counters, or countdowns
+                // Policy pages keep shared tracking but omit batch counters and countdowns.
                 if (strpos($file, 'policy/') === 0) {
                     if (function_exists('status_header')) {
                         status_header(200);
@@ -215,7 +228,7 @@ function techleadsit_route_landing_pages() {
                         header('Content-Length: ' . strlen($html_content));
                         exit;
                     }
-                    echo $html_content;
+                    echo techleadsit_with_tracking($html_content);
                     exit;
                 }
                 
@@ -936,7 +949,7 @@ function techleadsit_route_landing_pages() {
                     exit;
                 }
 
-                echo $html_content;
+                echo techleadsit_with_tracking($html_content);
                 exit;
             }
         }

@@ -175,6 +175,7 @@ final class TLIT_Teams_Notifications {
             $row=TLIT_LP_Leads::get($id);if(!$row||$row->source==='chatbot') { return null; }
             $data=json_decode($row->payload,true)?:array();$tracking=$data['tracking']??array();
             $lead=array('reference'=>'LP-'.$id,'event'=>'form','name'=>$row->name,'phone'=>$row->phone,'email'=>$row->email,'goal'=>$data['goal']??'','variant'=>$row->page_variant,'source'=>TLIT_LP_Leads::labels()[$row->source]??$row->source,'page'=>$row->submission_url,'created'=>$row->created_at,'verified'=>!empty($row->otp_verified),'language'=>$data['details']['preferred_language']??'','tracking'=>$tracking,'url'=>admin_url('admin.php?page=tlit-landing-leads&lead='.$id));
+            if($row->page_variant==='oracle_financials') $lead['bant']=tlit_financials_bant_fields($data['details']??array());
         } elseif($type==='chatbot') {
             if(!class_exists('TLIT_CB_Store')) { return null; }
             $row=TLIT_CB_Store::get($id);
@@ -205,6 +206,7 @@ final class TLIT_Teams_Notifications {
     public static function card(array $lead,$notification_id,$test=false) {
         $event=$lead['event']??'form';$dropoff=$event==='dropoff';$chatbot=$event==='chatbot';$stamp=strtotime(($dropoff?($lead['updated']??''):($lead['created']??'')).' UTC');
         $facts=array('Name'=>$lead['name'],'Mobile'=>$lead['phone'],'Course'=>($lead['variant']??'')==='oracle_financials'?'Oracle Fusion Financials':'AI Powered Digital Marketing','Page version'=>strtoupper($lead['variant']??''),'Enquiry'=>$lead['source'],($dropoff?'Last activity (IST)':'Submitted (IST)')=>$stamp===false?'Not recorded':wp_date('d M Y, g:i a',$stamp,new DateTimeZone('Asia/Kolkata')));
+        foreach(($lead['bant']??array()) as $label=>$answer) $facts[$label]=$answer;
         if($dropoff) { $facts['Progress']=$lead['progress']??'';$facts['Status']=$lead['dropoff_status']??'Incomplete form'; }
         foreach(array('Email'=>'email','Language'=>'language','Learning goal'=>'goal','Submitted from'=>'page') as $label=>$key) { if(!empty($lead[$key])) { $facts[$label]=$lead[$key]; } }
         if(!empty($lead['team_pin'])) { $facts['Bridge PIN']=$lead['team_pin'];$facts['Bridge access until (IST)']=$lead['team_expires']; }

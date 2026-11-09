@@ -271,3 +271,13 @@ h1,h2{text-transform:uppercase}
 @media(max-width:760px){.hero-centered .actions>.button{min-width:0;width:100%;font-size:16px;min-height:56px;padding:16px 20px}}
 .footer-disclaimer{flex-basis:100%;width:100%;border-top:1px solid var(--line);padding-top:26px;margin-top:4px;text-align:left}.footer-disclaimer h2{font-family:'DM Sans',Arial,sans-serif;font-size:16px;line-height:1.5;letter-spacing:.4px;margin-bottom:18px;color:#e4e7df}.footer .footer-disclaimer p{width:auto;margin:0 0 16px;font-size:13px;line-height:1.8;color:#b8bbb4}.footer-disclaimer strong{color:#e4e7df;font-weight:600}.footer-disclaimer a{text-decoration:underline;text-underline-offset:3px;color:var(--lime)}
 @media(max-width:760px){.footer-disclaimer{padding-top:22px}.footer-disclaimer h2{font-size:15px}.footer .footer-disclaimer p{font-size:13px;line-height:1.75}}
+/* The verification screen replaces details; hidden controls retain the submitted values. */
+#details-step[hidden],#otp-panel[hidden]{display:none!important}
+.enrollment-single .registration-steps li{color:#626858;font-weight:400}
+.enrollment-single .registration-steps li>span{background:transparent;border-color:#a8ae9c}
+.enrollment-single .registration-steps li.is-active{color:#202611;font-weight:700}
+.enrollment-single .registration-steps li.is-active>span{background:var(--lime);border-color:var(--lime)}
+.otp-destination{font-size:14px;line-height:1.6;margin:0 0 10px}
+#edit-details{margin:0 0 20px;padding:6px 0;text-decoration:underline}
+
+.bant-questions{border:0;border-top:1px solid #cdd3bc;margin:24px 0 0;padding:18px 0 0;min-width:0}.bant-questions legend{font-size:15px;font-weight:700;padding:0 8px 0 0}.bant-questions p{font-size:12px;line-height:1.6;color:#505747}.enrollment-single .bant-questions select{width:100%;font-size:14px}
