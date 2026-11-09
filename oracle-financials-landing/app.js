@@ -34,6 +34,7 @@ if ('IntersectionObserver' in window) {
  formVisibility.observe(form);
 }
 const endpoint='/wp-json/tlit-leads/v1/';
+const otpRequired=window.FINANCIALS_FORM_CONFIG?.otpRequired!==false;
 const uuid=()=>crypto.randomUUID();
 let requestId=uuid(),challenge='',draftToken='',draftQueue=Promise.resolve(),complete=false,busy=false,cooldownUntil=0,currentStep=1;
 const keys='utm_source utm_medium utm_campaign utm_adgroup utm_term utm_content utm_id gclid fbclid gbraid wbraid fb_ad fb_campaign fb_adset_name fb_adset_id fb_lead_id adset_id ad_id'.split(' ');
@@ -67,13 +68,19 @@ const detailsStep=document.querySelector('#details-step'),plansStep=document.que
 const stepItems=[...document.querySelectorAll('.registration-steps li')];
 function showStep(step,focus=true){
  currentStep=step;detailsStep.hidden=step!==1;plansStep.hidden=step!==2;otpPanel.hidden=step!==3;
- form.elements.otp.required=step===3;backButton.hidden=step===1;
+ form.elements.otp.required=step===3&&otpRequired;document.querySelector('#otp-entry').hidden=!otpRequired;document.querySelector('#submission-review').hidden=otpRequired;backButton.hidden=step===1;
  stepItems.forEach((item,i)=>{item.classList.toggle('is-active',i===step-1);if(i===step-1)item.setAttribute('aria-current','step');else item.removeAttribute('aria-current')});
- submit.innerHTML=step===1?'Continue to Learning Plans <span>→</span>':step===2?'Continue to Verify Mobile <span>→</span>':'Verify & Reserve My Free Seat';
+ submit.innerHTML=step===1?'Continue to Learning Plans <span>→</span>':step===2?(otpRequired?'Continue to Verify Mobile <span>→</span>':'Continue to Review <span>→</span>'):(otpRequired?'Verify & Reserve My Free Seat':'Reserve My Free Seat <span>↗</span>');
+ if(step===3&&!otpRequired)renderReview();
  if(step===3)document.querySelector('.otp-destination').textContent='Enter the 4-digit SMS code sent to +91 '+form.elements.phone.value;
- if(focus)(step===1?form.elements.name:step===2?form.elements.bant_need:form.elements.otp).focus();
+ if(focus)(step===1?form.elements.name:step===2?form.elements.bant_need:otpRequired?form.elements.otp:document.querySelector('#submission-review')).focus();
 }
-function validStep(step){return [...(step===1?detailsStep:step===2?plansStep:otpPanel).querySelectorAll('input,select')].every(field=>field.reportValidity())}
+function validStep(step){if(step===3&&!otpRequired)return true;return [...(step===1?detailsStep:step===2?plansStep:otpPanel).querySelectorAll('input,select')].every(field=>field.reportValidity())}
+function renderReview(){
+ const v=values(),target=document.querySelector('#review-values');target.replaceChildren();
+ for(const [label,value] of [['Name',v.name],['Email',v.email],['Mobile','+91 '+v.phone],['Background',v.goal],['Learning need',v.bant_need],['Timeline',v.bant_timeline],['Paid training',v.bant_budget],['Decision maker',v.bant_authority]]){const dt=document.createElement('dt'),dd=document.createElement('dd');dt.textContent=label;dd.textContent=value;target.append(dt,dd)}
+}
+if(!otpRequired){form.querySelector('.micro').textContent='After you submit, our team will share your demo joining details.';stepItems[2].innerHTML='<span>3</span> Review & submit';document.querySelector('.registration-intro').textContent='Share your details, tell us your learning plans, then review and reserve your free seat.'}
 showStep(1,false);
 backButton.addEventListener('click',()=>{if(busy||complete)return;challenge='';form.elements.otp.value='';showStep(currentStep-1);message('');draft('incomplete','back')});
 form.elements.phone.addEventListener('input',()=>{challenge='';form.elements.otp.value=''});
@@ -81,8 +88,9 @@ async function sendCode(){const p=payload();await draft();const r=await api('otp
 form.addEventListener('submit',async event=>{
  event.preventDefault();if(busy||complete||!validStep(currentStep))return;
  if(currentStep===1){showStep(2);message('');draft('incomplete','bant_need');return}
+ if(currentStep===2&&!otpRequired){showStep(3);message('');draft('incomplete','review');return}
  busy=true;submit.disabled=true;backButton.disabled=true;
- message(currentStep===3?'Verifying and saving your request…':'Sending your verification code…');
+ message(currentStep===3?(otpRequired?'Verifying and saving your request…':'Saving your request…'):'Sending your verification code…');
  try{
   if(currentStep===2){await sendCode()}
   else{await draftQueue;const result=await api('submit',{...payload(),challenge,otp:form.elements.otp.value});complete=true;message('Your demo request is saved. Our team will contact you with the schedule. Reference: '+result.receipt);submit.textContent='Request received ✓';[...form.elements].forEach(el=>el.disabled=true);otpPanel.hidden=true;backButton.hidden=true;window.dataLayer=window.dataLayer||[];window.dataLayer.push({event:'form_submitted',course:'oracle_fusion_financials',form_id:'financials_demo'});}
@@ -91,7 +99,7 @@ form.addEventListener('submit',async event=>{
 });
 
 document.querySelector('#resend').addEventListener('click',async()=>{if(busy)return;if(Date.now()<cooldownUntil){message('Please wait 30 seconds before requesting another code.',true);return}busy=true;submit.disabled=true;try{await sendCode()}catch(error){message(error.message,true)}finally{busy=false;submit.disabled=false}});
-document.querySelectorAll('a[href="#reserve"]').forEach(a=>a.addEventListener('click',()=>{setTimeout(()=>{if(!complete)(currentStep===3?form.elements.otp:currentStep===2?form.elements.bant_need:form.elements.name).focus({preventScroll:true})},400)}));
+document.querySelectorAll('a[href="#reserve"]').forEach(a=>a.addEventListener('click',()=>{setTimeout(()=>{if(!complete)(currentStep===3?(otpRequired?form.elements.otp:document.querySelector('#submission-review')):currentStep===2?form.elements.bant_need:form.elements.name).focus({preventScroll:true})},400)}));
 
 const logoMotion=document.querySelector('#logo-motion');
 // Curriculum uses its own form state and the same verified Bridge endpoints.

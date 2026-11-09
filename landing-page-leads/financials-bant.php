@@ -26,3 +26,12 @@ function tlit_financials_bant_fields($details) {
     foreach(array('Budget'=>'bant_budget','Decision maker'=>'bant_authority','Learning need'=>'bant_need','Start timeline'=>'bant_timeline') as $label=>$key) $fields['BANT '.$label]=$details[$key]??'Not recorded';
     return $fields;
 }
+
+// Resolve the existing admin controls on the server. Client flags never grant bypass.
+function tlit_financials_otp_required() {
+    $o=get_option('techleadsit_course_settings_financials',array());
+    if(!is_array($o)) return true;
+    return (!isset($o['otp_verification_enabled']) || !empty($o['otp_verification_enabled']))
+        && empty($o['otp_disabled_slugs']['oracle-fusion-financials-course-online'])
+        && (!isset($o['otp_required_hero']) || !empty($o['otp_required_hero']));
+}

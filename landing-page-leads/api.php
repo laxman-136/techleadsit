@@ -57,14 +57,15 @@ trait TLIT_LP_API {
         $p['name']=$name;$p['phone']='+91'.$phone;$p['email']=$email;
         $p['submission_url']=$p['submission_url']??($p['tracking']['submission_url']??($p['tracking']['landing_page']??''));
         $p['page_variant']=$p['page_variant']??($p['tracking']['page_variant']??'');
-        $context=['source'=>$source,'otp_verified'=>true];
+        $otp_required=!($financials&&$source==='general')||tlit_financials_otp_required();
+        $context=['source'=>$source,'otp_verified'=>false];
         $lock=self::lock('submit'.$id);if(!$lock) { return self::error('Your request is being saved. Please retry shortly.',409); }
         $otp_lock=false;
         try {
-            $existing=$wpdb->get_row($wpdb->prepare('SELECT id FROM '.self::table().' WHERE request_id=%s',$id));
-            if($existing) { return self::ingest($p,$context); }
+            $existing=$wpdb->get_row($wpdb->prepare('SELECT id,otp_verified,payload FROM '.self::table().' WHERE request_id=%s',$id));
+            if($existing) { $context['otp_verified']=!empty($existing->otp_verified);if($financials){$old=json_decode($existing->payload,true)?:[];if(isset($old['details']['phone_verification']))$p['details']['phone_verification']=$old['details']['phone_verification'];else unset($p['details']['phone_verification']);}return self::ingest($p,$context); }
             if(!self::rate('submit-'.($_SERVER['REMOTE_ADDR']??''),30,3600)) { return self::error('Too many requests. Please try later.',429); }
-            {
+            if($otp_required) {
                 $challenge=$p['challenge']??'';$code=$p['otp']??'';
                 if(!is_string($challenge)||!preg_match('/^[a-f0-9]{48}$/D',$challenge)||!is_string($code)||!preg_match('/^[0-9]{4}$/D',$code)) { return self::error('Enter the four-digit verification code.'); }
                 $otp_lock=self::lock('verify'.$challenge);if(!$otp_lock) { return self::error('Verification in progress.',409); }
@@ -74,9 +75,11 @@ trait TLIT_LP_API {
                     $state['tries']++;set_transient($key,$state,max(1,$state['expires']-time()));return self::error('Incorrect code. Please check and try again.');
                 }
             }
+            $context['otp_verified']=$otp_required;
+            if($financials) $p['details']['phone_verification']=$otp_required?'OTP verified':'Bypassed by admin setting — not OTP verified';
             $result=self::ingest($p,$context);
             // Failed database writes preserve OTP so a legitimate retry can complete.
-            if(!is_wp_error($result)) { delete_transient($key); }
+            if(!is_wp_error($result)&&$otp_required) { delete_transient($key); }
             return $result;
         } finally { if($otp_lock) { delete_option($otp_lock); }delete_option($lock); }
     }

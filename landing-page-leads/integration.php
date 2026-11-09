@@ -36,6 +36,7 @@ trait TLIT_LP_Integration {
     static function mapping_keys() { return array_merge(['goal','status','timeline','question','source','remarks','marketingConsent','page_variant','submission_url','lead_status','reference'],self::tracking_keys()); }
     static function crm_statuses() { return array_diff_key(self::statuses(),array_flip(['new','junk'])); }
     static function protected_fields() {
+        if($row->page_variant==='oracle_financials'&&!empty($details['phone_verification'])) $note.="\nPhone verification: ".$details['phone_verification'];
         if($row->page_variant==='oracle_financials') foreach(tlit_financials_bant_fields($details) as $label=>$answer) { $note.="\n".$label.': '.$answer; }
         $fields=tlit_lp_schema_lead_fields([],'','','','','');
         unset($fields['Remarks']);return array_map('strtolower',array_keys($fields));
