@@ -6,11 +6,11 @@ All Digital Marketing page forms first save a durable record in this inbox. Stor
 
 1. Open **Conversation Bridge → Landing Page Leads**.
 2. Review the contact and source details, call the learner, and add a note.
-3. Choose from the exact TeleCRM status labels and save the review. The existing landing-page TeleCRM connection automatically syncs the lead after the review is saved; there is no second credential setup or enable switch.
+3. Choose **Junk, Nurture, Warm, Hot, or Quality** and save the review. Nurture maps to `below 50 % Potential`, Warm to `50 % Potential`, Hot to `60-80 Potential`, and Quality to `Potential Lead 100`. Junk remains local. The existing landing-page TeleCRM connection syncs eligible reviews; no second credential setup is needed.
 4. Later qualification or note changes update the same TeleCRM lead. Unchanged saves do not resend the same revision. **New** and **Junk lead** never send; setting an already synced lead New or Junk does not delete its existing CRM record.
 5. If delivery is uncertain, check the latest attempted qualification and notes in TeleCRM before selecting the reconciliation action. The presence of an older lead is not proof that the latest update arrived. A timeout never silently retries.
 
-All active TeleCRM statuses are available in the counsellor dropdown, except Fresh is represented by the local New state. New and Junk Lead remain local; every other status syncs when saved. Existing saved keys retain their meanings:
+The review dropdown offers only the five choices above. Existing records and CRM mappings are preserved. A new lead or a record with another legacy status shows a required “Choose qualification” placeholder until the counsellor explicitly selects one of the five choices; opening the page does not reclassify or sync it. Historical statuses remain available in reporting and filters. Existing saved keys retain their meanings:
 
 | Existing saved key | TeleCRM `status` |
 | --- | --- |

@@ -153,8 +153,18 @@ final class TLIT_LP_Admin {
         foreach (($data['tracking']??array()) as $key=>$value) { if (is_scalar($value) && $value !== '') { $values[ucwords(str_replace('_',' ',$key))] = (string)$value; } }
         self::fields($values); echo '</section></div><aside><section class="lp-panel lp-review"><h3>Counsellor review</h3><p>Call the learner, then choose their interest level.</p>';
         self::form('status',$id);
-        self::select('lead_status','Lead qualification',TLIT_LP_Leads::statuses(),$lead['lead_status']??'new');
-        echo '<label>Call notes<textarea name="note" rows="6" maxlength="5000" placeholder="What did you discuss? What should happen next?">'.esc_textarea($lead['advisor_note']).'</textarea></label><p class="lp-help">All TeleCRM statuses except New and Junk Lead sync automatically when saved. Later qualification changes update the same TeleCRM lead. New and Junk leads are not sent.</p><button class="button button-primary lp-full">Save review &amp; sync lead</button></form></section><section class="lp-panel"><h3>TeleCRM sync</h3>'.self::badge($lead['crm_status'],self::crm_states()[$lead['crm_status']]??$lead['crm_status']).'<p>'.esc_html($lead['crm_message'] ?: 'Waiting for counsellor qualification.').'</p>';
+        // Keep existing saved keys and TeleCRM mappings; simplify only the review choices.
+        $qualifications = array('junk'=>'Junk','below_50_potential'=>'Nurture','potential'=>'Warm','high_potential'=>'Hot','intended_to_join'=>'Quality');
+        $current_qualification = $lead['lead_status']??'new';
+        echo '<label>Lead qualification<select name="lead_status" required>';
+        if (!isset($qualifications[$current_qualification])) {
+            echo '<option value="" disabled selected>Choose qualification</option>';
+        }
+        foreach ($qualifications as $key=>$label) {
+            echo '<option value="'.esc_attr($key).'" '.selected($current_qualification,$key,false).'>'.esc_html($label).'</option>';
+        }
+        echo '</select></label>';
+        echo '<label>Call notes<textarea name="note" rows="6" maxlength="5000" placeholder="What did you discuss? What should happen next?">'.esc_textarea($lead['advisor_note']).'</textarea></label><p class="lp-help">Choose Junk, Nurture, Warm, Hot or Quality. Nurture, Warm, Hot and Quality sync when saved. Junk stays in WordPress. Later reviews update the same TeleCRM lead.</p><button class="button button-primary lp-full">Save review &amp; sync lead</button></form></section><section class="lp-panel"><h3>TeleCRM sync</h3>'.self::badge($lead['crm_status'],self::crm_states()[$lead['crm_status']]??$lead['crm_status']).'<p>'.esc_html($lead['crm_message'] ?: 'Waiting for counsellor qualification.').'</p>';
         if (!empty($lead['crm_updated'])) { echo '<p class="lp-help">Last update: '.esc_html(self::date($lead['crm_updated'])).'</p>'; }
         $target_status = TLIT_LP_Leads::crm_statuses()[$lead['lead_status']]??'';
         if ($target_status !== '') { echo '<p class="lp-help">TeleCRM status for this qualification: <strong>'.esc_html($target_status).'</strong>.</p>'; }
