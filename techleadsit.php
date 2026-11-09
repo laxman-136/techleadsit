@@ -2,7 +2,7 @@
 /**
  * Plugin Name: TechLeadsIT Landing Pages
  * Description: Serves high-performance custom HTML landing pages at clean URLs and handles secure lead routing to TeleCRM.
- * Version: 1.7.6
+ * Version: 1.7.7
  * Author: TechLeadsIT
  */
 
@@ -26,7 +26,11 @@ function techleadsit_route_digital_marketing_early() {
     $path=wp_parse_url($_SERVER['REQUEST_URI']??'',PHP_URL_PATH);
     if(!is_string($path)) { return; }
     $path=rtrim($path,'/');
-    if(in_array($path,array('/ai-powered-digital-marketing','/ai-powered-digital-marketing-course','/ai-powered-digital-marketing-course/thank-you','/ai-powered-digital-marketing-training','/ai-powered-digital-marketing-training/thank-you'),true)) {
+    if (preg_match('#^/oracle-fusion-financials-course-online/(privacy-policy|terms-and-conditions|refund-cancellation-policy|cookie-policy|about-contact)\.html$#', $path)) {
+        techleadsit_route_landing_pages();
+        return;
+    }
+    if(in_array($path,array('/oracle-fusion-financials-course-online','/ai-powered-digital-marketing','/ai-powered-digital-marketing-course','/ai-powered-digital-marketing-course/thank-you','/ai-powered-digital-marketing-training','/ai-powered-digital-marketing-training/thank-you'),true)) {
         techleadsit_route_landing_pages();
     }
 }
@@ -94,6 +98,12 @@ function techleadsit_route_landing_pages() {
     // Define your landing pages and their corresponding HTML files here
     // Slug key => HTML filename
     $landing_pages = array(
+        'oracle-fusion-financials-course-online' => 'oracle-financials-landing/index.html',
+        'oracle-fusion-financials-course-online/privacy-policy.html' => 'oracle-financials-landing/privacy-policy.html',
+        'oracle-fusion-financials-course-online/terms-and-conditions.html' => 'oracle-financials-landing/terms-and-conditions.html',
+        'oracle-fusion-financials-course-online/refund-cancellation-policy.html' => 'oracle-financials-landing/refund-cancellation-policy.html',
+        'oracle-fusion-financials-course-online/cookie-policy.html' => 'oracle-financials-landing/cookie-policy.html',
+        'oracle-fusion-financials-course-online/about-contact.html' => 'oracle-financials-landing/about-contact.html',
         'ai-powered-digital-marketing' => 'ai-digital-marketing-freshers/index.html',
         'ai-powered-digital-marketing-course' => 'ai-powered-digital-marketing-course/index.html',
         'ai-powered-digital-marketing-course/thank-you' => 'ai-powered-digital-marketing-course/thank-you.html',
@@ -135,6 +145,18 @@ function techleadsit_route_landing_pages() {
             if (file_exists($html_filepath)) {
                 $html_content = file_get_contents($html_filepath);
                 // Standalone event preview: no shared lead capture, tracking, or course-date overrides.
+                if ($slug === 'oracle-fusion-financials-course-online' || str_starts_with($slug, 'oracle-fusion-financials-course-online/')) {
+                    $asset_url=plugin_dir_url(__FILE__).'oracle-financials-landing/';
+                    $html_content=str_replace(array('href="styles.css"','href="theme.css"','src="app.js"','src="assets/','href="assets/'),array('href="'.$asset_url.'styles.css"','href="'.$asset_url.'theme.css"','src="'.$asset_url.'app.js"','src="'.$asset_url.'assets/','href="'.$asset_url.'assets/'),$html_content);
+                    $html_content=str_replace('href="policies.css"','href="'.$asset_url.'policies.css"',$html_content);
+                    $html_content=str_replace('href="index.html"','href="/oracle-fusion-financials-course-online/"',$html_content);
+                    foreach (array('privacy-policy','terms-and-conditions','refund-cancellation-policy','cookie-policy','about-contact') as $policy_slug) {
+                        $html_content=str_replace('href="'.$policy_slug.'.html"','href="/oracle-fusion-financials-course-online/'.$policy_slug.'.html"',$html_content);
+                    }
+                    nocache_headers();status_header(200);header('Content-Type: text/html; charset=utf-8');
+                    if(($_SERVER['REQUEST_METHOD']??'GET')!=='HEAD') echo $html_content;
+                    exit;
+                }
                 if ($slug === 'scm-batch-80' || $slug === 'oracle-fusion-hcm-online-live-demo') {
                     $asset_url = plugin_dir_url(__FILE__) . ($slug === 'scm-batch-80' ? 'oracle-fusion-scm-live-demo/' : 'oracle-fusion-hcm-live-demo/');
                     $html_content = str_replace(
@@ -1716,7 +1738,8 @@ function techleadsit_get_courses_registry() {
             'badge_color' => '#f59e0b',
             'default_template' => 'f-hcm-course/index.html',
             'slugs' => array(
-                'oracle-fusion-financials-training' => 'f-hcm-course/index.html'
+                'oracle-fusion-financials-training' => 'f-hcm-course/index.html',
+                'oracle-fusion-financials-course-online' => 'oracle-financials-landing/index.html'
             ),
             'defaults' => array(
                 'countdown_enabled' => 1,

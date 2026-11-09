@@ -44,11 +44,13 @@ trait TLIT_LP_API {
         global $wpdb;
         $p=self::body($request);$name=self::clean($p['name']??'',81);$phone=self::phone($p['phone']??'');
         $email=is_string($p['email']??null)?sanitize_email($p['email']):'';$source=$p['intent']??'';$id=$p['request_id']??'';
-        $goals=['Get my first marketing job','Grow in my marketing career','Start freelancing','Grow my business'];
+        $financials=($p['page_variant']??'')==='oracle_financials';
+        $goals=$financials?['Student or recent graduate','Finance or accounting professional','Oracle EBS or ERP professional','Exploring a career change']:['Get my first marketing job','Grow in my marketing career','Start freelancing','Grow my business'];
+        if($financials&&($p['contact_consent']??false)!==true) { return self::error('Please agree to be contacted about your demo request.'); }
         if(strlen($name)<2||strlen($name)>80||!$phone||!is_email($email)||strlen($email)>254||!in_array($source,['general','popup','brochure'],true)||!is_string($id)||!preg_match('/^[a-f0-9-]{36}$/D',$id)||!in_array($p['goal']??'',$goals,true)) { return self::error('Please check your contact details and career goal.'); }
         $options=['status'=>['I’m currently studying','I’ve recently graduated','I’m working and exploring a change','I’m freelancing or running a business'],'timeline'=>['As soon as possible','Within one month','In one to three months','I’m exploring for now'],'question'=>['Fees and payment options','Jobs and career support','Classes, schedule and learning','Projects, tools and practical skills']];
         foreach($options as $key=>$allowed) {
-            if($source==='general'&&!in_array($p[$key]??'',$allowed,true)) { return self::error('Please complete the course questions.'); }
+            if($source==='general'&&!$financials&&!in_array($p[$key]??'',$allowed,true)) { return self::error('Please complete the course questions.'); }
             if($source!=='general') { $p[$key]=''; }
         }
         $p['name']=$name;$p['phone']='+91'.$phone;$p['email']=$email;

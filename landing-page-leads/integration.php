@@ -55,7 +55,9 @@ trait TLIT_LP_Integration {
         foreach(['status','timeline','question'] as $key) { if(!empty($d[$key])) { $note.="\n".ucfirst($key).': '.$d[$key]; } }
         if(!empty($d['brochure_downloaded'])) { $note.="\nPerson downloaded brochure — AI Powered Digital Marketing"; }
         elseif(in_array($row->source,['brochure','chatbot_brochure'],true)) { $note.="\nBrochure requested — AI Powered Digital Marketing"; }
+        if($row->page_variant==='oracle_financials') { $note=str_replace('AI Powered Digital Marketing','Oracle Fusion Financials',$note); }
         $fields=tlit_lp_schema_lead_fields(['tracking'=>$tracking,'details'=>$details],$row->name,$row->phone,$row->email,$d['goal']??'',$note);
+        if($row->page_variant==='oracle_financials') { $fields['Course Name']='Oracle Fusion Financials'; }
         // The handoff may happen days later; report the original capture date in IST.
         try {
             $captured=new DateTimeImmutable($row->created_at,new DateTimeZone('UTC'));

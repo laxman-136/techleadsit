@@ -1,0 +1,3 @@
+/* Preserve review author icons with the restored dark-and-lime palette. */
+.reviews .review-google{width:24px;height:24px;object-fit:contain;flex-shrink:0;margin-left:auto}
+.reviews figcaption>div{flex:1}

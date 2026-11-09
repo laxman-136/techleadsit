@@ -50,6 +50,7 @@ final class TLIT_CB_Dashboard {
             return;
         }
         $filters = TLIT_CB_Dashboard_Data::filters(wp_unslash($_GET));
+        echo '<nav class="nav-tab-wrapper" aria-label="Course leads"><a class="nav-tab" href="'.esc_url(self::url()).'">All leads</a><a class="nav-tab'.(($filters['variant']??'')==='oracle_financials'?' nav-tab-active':'').'" href="'.esc_url(self::url(array('variant'=>'oracle_financials'))).'">Oracle Fusion Financials</a></nav>';
         if (isset($_GET['notice'])) {
             echo '<p class="cb-dash-notice" role="status">'.esc_html($_GET['notice']==='members'?'Team members saved.':'Assignment saved. Qualification and TeleCRM were not changed.').'</p>';
         }
@@ -101,7 +102,7 @@ final class TLIT_CB_Dashboard {
     }
 
     private static function variant($value) {
-        return array('v1'=>'V1 · Original','v2'=>'V2 · Course','v3'=>'V3 · Training')[$value]??'Page not recorded';
+        return TLIT_LP_Leads::variants()[$value]??'Page not recorded';
     }
 
     private static function filters_view($filters) {
@@ -114,7 +115,7 @@ final class TLIT_CB_Dashboard {
         foreach ((array)$wpdb->get_results('SELECT DISTINCT owner_key,owner_name FROM '.TLIT_CB_Lead_Ops::table()." WHERE owner_key<>''",ARRAY_A) as $owner) { if(!isset($owners[$owner['owner_key']])){$owners[$owner['owner_key']]=$owner['owner_name'].' (former member)';} }
         $filter_labels=array('variant'=>'Page','source'=>'Source','traffic'=>'Traffic','campaign'=>'Campaign','owner'=>'Owner','viewed'=>'PIN access','qualification'=>'Status','crm'=>'TeleCRM');
         $filter_options=array(
-            'variant'=>array('v1'=>'V1 · Original','v2'=>'V2 · Course','v3'=>'V3 · Training','unknown'=>'Not recorded'),
+            'variant'=>array_merge(TLIT_LP_Leads::variants(),array('unknown'=>'Not recorded')),
             'source'=>self::sources(),
             'traffic'=>self::traffic(),
             'owner'=>$owners,
@@ -133,7 +134,7 @@ final class TLIT_CB_Dashboard {
         $today=new DateTimeImmutable('now',new DateTimeZone('Asia/Kolkata'));
         foreach(array(1=>'Today',7=>'7 days',30=>'30 days') as $days=>$label){$args=$filters;unset($args['record']);$args['from']=$today->modify('-'.($days-1).' days')->format('Y-m-d');$args['to']=$today->format('Y-m-d');echo '<a href="'.esc_url(self::url($args).'#bridge-leads').'">'.esc_html($label).'</a>';}
         echo '</div><a class="cb-dash-clear-filters" href="'.esc_url(self::url()).'">Clear</a></div><div id="cb-dash-advanced-filters" class="cb-dash-filter-drawer" aria-hidden="true" inert><div class="cb-dash-filter-drawer-inner"><div class="cb-dash-filter-grid">';
-        self::select('variant','Landing page',array('v1'=>'V1 · Original','v2'=>'V2 · Course','v3'=>'V3 · Training','unknown'=>'Not recorded'),$values['variant']??'','All pages');
+        self::select('variant','Landing page',array_merge(TLIT_LP_Leads::variants(),array('unknown'=>'Not recorded')),$values['variant']??'','All pages');
         self::select('source','Capture source',self::sources(),$values['source']??'','All sources');
         self::select('traffic','Traffic source',self::traffic(),$values['traffic']??'','All traffic');
         echo '<label>UTM campaign<input name="campaign" value="'.esc_attr($values['campaign']??'').'" placeholder="Exact campaign name"></label>';

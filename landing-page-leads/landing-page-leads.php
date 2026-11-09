@@ -170,7 +170,8 @@ final class TLIT_LP_Leads {
         if($next_day) { $date=$date->modify('+1 day'); }
         return $date->setTimezone(new DateTimeZone('UTC'))->format('Y-m-d H:i:s');
     }
-    static function variants() { return ['v1'=>'Digital Marketing — V1','v2'=>'Digital Marketing — V2','v3'=>'Digital Marketing — V3']; }
+    static function variants() { return ['v1'=>'Digital Marketing — V1','v2'=>'Digital Marketing — V2','v3'=>'Digital Marketing — V3','oracle_financials'=>'Oracle Fusion Financials']; }
+    static function course_name($variant) { return $variant==='oracle_financials'?'Oracle Fusion Financials':'AI Powered Digital Marketing'; }
     static function tracking_keys() { return explode(' ','utm_source utm_medium utm_campaign utm_adgroup utm_term utm_content utm_id gclid fbclid gbraid wbraid landing_page referrer fbp fbc ga_client_id session_id fb_ad fb_campaign fb_adset_name fb_adset_id fb_lead_id adset_id ad_id city state'); }
     static function url($value) {
         $value=self::clean($value,2000);$parts=wp_parse_url($value);
@@ -180,8 +181,9 @@ final class TLIT_LP_Leads {
     }
     static function variant($value,$url='') {
         $value=self::clean($value,80);
-        if (in_array($value,['v1','v2','v3'],true)) { return $value; }
+        if (in_array($value,['v1','v2','v3','oracle_financials'],true)) { return $value; }
         $path=trim((string)wp_parse_url($url,PHP_URL_PATH),'/');
+        if(in_array($path,['oracle-fusion-financials-demo','oracle-fusion-financials-course-online'],true)) { return 'oracle_financials'; }
         if($path==='ai-powered-digital-marketing-course') { return 'v2'; }
         if($path==='ai-powered-digital-marketing-training') { return 'v3'; }
         if(str_contains($path,'digital-marketing-v3')||str_contains($path,'digital-marketing-3')) { return 'v3'; }

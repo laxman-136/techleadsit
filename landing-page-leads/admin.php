@@ -41,7 +41,7 @@ final class TLIT_LP_Admin {
         foreach ($options as $key=>$value) { echo '<option value="'.esc_attr($key).'" '.selected($selected,$key,false).'>'.esc_html($value).'</option>'; }
         echo '</select></label>';
     }
-    private static function variants() { return array('v1'=>'Version 1 · Original','v2'=>'Version 2 · Course','v3'=>'Version 3 · Training'); }
+    private static function variants() { return TLIT_LP_Leads::variants(); }
     private static function crm_states() { return array('pending'=>'Not synced','sending'=>'Syncing','sent'=>'Synced to TeleCRM','failed'=>'Action needed','uncertain'=>'Check TeleCRM'); }
     private static function export_url($args) {
         return wp_nonce_url(add_query_arg(array_merge($args,array('action'=>'tlit_lp_export')),admin_url('admin-post.php')),'tlit_lp_export');
