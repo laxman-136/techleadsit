@@ -40,3 +40,12 @@
 .lp-workspace.is-theme-switching,.lp-workspace.is-theme-switching :is(.lp-header,.lp-tabs,.lp-panel,.lp-filters,.lp-dropoff-stat,.tlit-cb-theme-toggle){transition:color .34s ease,background-color .34s ease,border-color .34s ease,box-shadow .34s ease}
 @media(max-width:900px){.lp-tabs[data-tlit-tabbar]{width:100%}}
 @media(prefers-reduced-motion:reduce){.lp-tabs .tlit-tab-indicator{transition:none!important}.lp-workspace.is-theme-switching,.lp-workspace.is-theme-switching *{transition:none!important}}
+/* Text contrast: theme-specific links and readable supporting copy. */
+.lp-workspace{--lp-link:#b5ff70;--lp-link-hover:#d5ffb0;--lp-readable-muted:#a6b0a2}
+.lp-workspace.is-light{--lp-link:#285f18;--lp-link-hover:#173e0d;--lp-readable-muted:#566358}
+.lp-workspace a:not(.button):not(.lp-dropoff-stat):not(.lp-tabs a){color:var(--lp-link)}
+.lp-workspace a:not(.button):not(.lp-dropoff-stat):not(.lp-tabs a):hover{color:var(--lp-link-hover);text-decoration:underline}
+.lp-workspace .lp-contact a,.lp-workspace p>a:not(.button){text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+.lp-workspace:is(.is-light,:not(.is-light)) .lp-header p:not(.lp-eyebrow),.lp-workspace:is(.is-light,:not(.is-light)) .lp-panel-header p,.lp-workspace:is(.is-light,:not(.is-light)) .lp-detail-heading p:last-child,.lp-workspace:is(.is-light,:not(.is-light)) .lp-help,.lp-workspace:is(.is-light,:not(.is-light)) .lp-fields dt,.lp-workspace:is(.is-light,:not(.is-light)) .lp-table td>small,.lp-workspace:is(.is-light,:not(.is-light)) .lp-pagination,.lp-workspace:is(.is-light,:not(.is-light)) .lp-empty p,.lp-workspace:is(.is-light,:not(.is-light)) .lp-rules span,.lp-workspace:is(.is-light,:not(.is-light)) .lp-dropoff-stat>span,.lp-workspace:is(.is-light,:not(.is-light)) .lp-dropoff-stat>small,.lp-workspace:is(.is-light,:not(.is-light)) .lp-table th,.lp-workspace:is(.is-light,:not(.is-light)) .lp-private{color:var(--lp-readable-muted)}
+.lp-workspace:is(.is-light,:not(.is-light)) input::placeholder,.lp-workspace:is(.is-light,:not(.is-light)) textarea::placeholder{color:var(--lp-readable-muted);opacity:1}
+.lp-workspace.is-light :is(a,button,input,select,textarea,summary):focus-visible{outline-color:#285f18}

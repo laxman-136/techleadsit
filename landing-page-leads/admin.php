@@ -48,7 +48,7 @@ final class TLIT_LP_Admin {
     }
     public static function render() {
         TLIT_LP_Leads::admin();
-        wp_enqueue_style('tlit-lp-admin',plugin_dir_url(__FILE__).'admin.css',array(),TLIT_LP_Leads::VERSION.'-workspace5');
+        wp_enqueue_style('tlit-lp-admin',plugin_dir_url(__FILE__).'admin.css',array(),TLIT_LP_Leads::VERSION.'-workspace6');
         wp_enqueue_script('tlit-lp-theme',plugins_url('../conversation-bridge/assets/admin.js',__FILE__),array(),'1.5.3-workspace6',true);
         $view = self::input('view');$dropoffs=$view==='dropoffs';
         $is_light_theme=isset($_COOKIE['tlit_bridge_theme'])&&$_COOKIE['tlit_bridge_theme']==='light';
