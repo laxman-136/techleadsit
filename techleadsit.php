@@ -2,7 +2,7 @@
 /**
  * Plugin Name: TechLeadsIT Landing Pages
  * Description: Serves high-performance custom HTML landing pages at clean URLs and handles secure lead routing to TeleCRM.
- * Version: 1.7.13
+ * Version: 1.7.14
  * Author: TechLeadsIT
  */
 
@@ -164,7 +164,7 @@ function techleadsit_route_landing_pages() {
                         $config='<script>window.FINANCIALS_FORM_CONFIG={otpRequired:'.(tlit_financials_otp_required()?'true':'false').'};</script>';
                         $html_content=str_replace('</head>',$config.'</head>',$html_content);
                     }
-                    $html_content=str_replace(array('href="styles.css"','href="theme.css"','src="app.js"','src="assets/','href="assets/'),array('href="'.$asset_url.'styles.css?v=1.7.12"','href="'.$asset_url.'theme.css"','src="'.$asset_url.'app.js?v=1.7.12"','src="'.$asset_url.'assets/','href="'.$asset_url.'assets/'),$html_content);
+                    $html_content=str_replace(array('href="styles.css"','href="theme.css"','src="app.js"','src="assets/','href="assets/'),array('href="'.$asset_url.'styles.css?v=1.7.14"','href="'.$asset_url.'theme.css"','src="'.$asset_url.'app.js?v=1.7.14"','src="'.$asset_url.'assets/','href="'.$asset_url.'assets/'),$html_content);
                     $html_content=str_replace('src="tab-attention.js?v=2"','src="'.$asset_url.'tab-attention.js?v=2"',$html_content);
                     $html_content=str_replace('href="policies.css"','href="'.$asset_url.'policies.css"',$html_content);
                     $html_content=str_replace('href="index.html"','href="/oracle-fusion-financials-course-online/"',$html_content);

@@ -57,13 +57,15 @@ function payload(){tracking.fbp=cookie('_fbp')||tracking.fbp;tracking.fbc=cookie
 function message(text,error=false){status.textContent=text;status.classList.toggle('error',error)}
 async function api(route,data){const response=await fetch(endpoint+route,{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify(data),signal:AbortSignal.timeout(20000)});let result;try{result=await response.json()}catch{throw Error('Registration is temporarily unavailable. Please call +91 8125 32 32 32.')}if(!response.ok||result.success!==true)throw Error(result.message||'Your request could not be saved. Please try again.');return result}
 function draft(state='incomplete',field='contact',error=''){
- if(complete||!form.elements.consent.checked)return Promise.resolve();
- const p=payload();if(!p.name||!p.phone)return Promise.resolve();
- const v={name:p.name,phone:p.phone,email:p.email,goal:p.goal};const progress=currentStep;
+ if(complete)return Promise.resolve();
+ const p=payload();if(!p.name?.trim()||!form.elements.phone.checkValidity()||!p.phone)return Promise.resolve();
+ const v={name:p.name,phone:p.phone,email:p.email,goal:p.goal,contact_consent:p.contact_consent,marketing_consent:false,collection_notice:"Details and form progress saved as you type; notice v1, 2026-11-10"};const progress=currentStep;
  draftQueue=draftQueue.catch(()=>{}).then(async()=>{if(complete)return;const r=await api('draft',{...p,draft_token:draftToken,values:v,lifecycle_status:state,current_step:progress,total_steps:3,last_field:field,otp_error:error});draftToken=r.draft_token;}).catch(()=>{});
  return draftQueue;
 }
 form.addEventListener('change',event=>{if(['name','phone','email','goal','consent','bant_need','bant_timeline','bant_budget','bant_authority'].includes(event.target.name))draft('incomplete',event.target.name)});
+let draftInputTimer;
+form.addEventListener('input',event=>{if(!['name','phone','email'].includes(event.target.name))return;clearTimeout(draftInputTimer);draftInputTimer=setTimeout(()=>draft('incomplete',event.target.name),700)});
 const detailsStep=document.querySelector('#details-step'),plansStep=document.querySelector('#plans-step'),otpPanel=document.querySelector('#otp-panel'),backButton=document.querySelector('#form-back');
 const stepItems=[...document.querySelectorAll('.registration-steps li')];
 function showStep(step,focus=true){

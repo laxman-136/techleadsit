@@ -290,3 +290,6 @@ h1,h2{text-transform:uppercase}
 @media(max-width:380px){.enrollment-single .registration-steps li{font-size:10px;gap:4px}.registration-steps li>span{width:20px;height:20px;flex-shrink:0}}
 
 #otp-entry[hidden],#submission-review[hidden]{display:none!important}#review-values{margin:20px 0 0}#review-values dt{font-size:11px;color:#505747;margin-top:14px}#review-values dd{margin:2px 0 0;font-size:14px;overflow-wrap:anywhere}#submission-review h3{font-size:20px;margin:0 0 8px}#submission-review>p{font-size:13px}
+
+/* Visible disclosure before progressive enquiry capture. */
+.draft-privacy-notice{font-size:14px;line-height:1.5;color:#45483d;margin:0 0 20px;text-align:left}.draft-privacy-notice a{color:inherit;text-decoration:underline;text-underline-offset:2px}
