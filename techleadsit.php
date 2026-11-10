@@ -167,8 +167,8 @@ function techleadsit_route_landing_pages() {
                     );
                     $html_content = str_replace('https://lp.techleadsit.com/wp-content/plugins/techleadsit-financials-event/', $asset_url, $html_content);
                     $html_content = techleadsit_with_tracking($html_content);
-                    // Keep registration closed until a dedicated Financials endpoint is configured.
-                    $endpoint = esc_url_raw(apply_filters('techleadsit_financials_event_registration_endpoint', ''));
+                    // Dedicated Financials workflow writes to the Financials tab before confirming.
+                    $endpoint = esc_url_raw(apply_filters('techleadsit_financials_event_registration_endpoint', 'https://n8n.techleadsit.com/webhook/financials-demo-registration'));
                     $html_content = str_replace('</head>', '<script>window.FINANCIALS_REGISTRATION_ENDPOINT='.wp_json_encode($endpoint).';</script></head>', $html_content);
                     nocache_headers(); status_header(200); header('Content-Type: text/html; charset=utf-8');
                     if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'HEAD') echo $html_content;

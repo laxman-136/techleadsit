@@ -2,7 +2,7 @@
 const dialog = document.querySelector('#registration');
 const form = document.querySelector('#demo-form');
 const isLocalPreview = ['localhost', '127.0.0.1'].includes(location.hostname);
-const registrationEndpoint = isLocalPreview ? '/api/financials-registration' : (window.FINANCIALS_REGISTRATION_ENDPOINT || '');
+const registrationEndpoint = isLocalPreview ? '/api/financials-registration' : (window.FINANCIALS_REGISTRATION_ENDPOINT || 'https://n8n.techleadsit.com/webhook/financials-demo-registration');
 // Refresh the side-view preview when source files change, without interrupting a form.
 if (isLocalPreview) {
   let previewVersion;
@@ -15,7 +15,7 @@ if (isLocalPreview) {
     } catch { /* Keep the page usable while the local server restarts. */ }
   }, 2000);
   document.querySelectorAll('.preview-notice').forEach(note => {
-    note.textContent = 'Local preview: registration details are saved on this computer only. No CRM or email is contacted.';
+    note.textContent = 'By registering, you agree to be contacted by Tech Leads IT about this demo and relevant training.';
   });
 }
 
@@ -156,7 +156,7 @@ document.querySelectorAll('form').forEach(currentForm => {
       if (!response.ok || result.success !== true || result.registrationId !== registrationId) throw new Error('Registration not confirmed');
       registered = true;
       submit.textContent = 'You’re registered ✓';
-      message.textContent = (isLocalPreview ? 'Preview registration saved locally. ' : '') + 'Your free seat is reserved! Join the Oracle Fusion Financials live demo on 30 November 2026 at 8:00 PM IST. Zoom meeting ID: 8125668899. Password: techleads.';
+      message.textContent = 'Your free seat is reserved! Join the Oracle Fusion Financials live demo on 30 November 2026 at 8:00 PM IST. Zoom meeting ID: 8125668899. Password: techleads.';
       const zoomLink = document.createElement('a');
       zoomLink.href = 'https://zoom.us/j/8125668899';
       zoomLink.target = '_blank';
@@ -165,7 +165,7 @@ document.querySelectorAll('form').forEach(currentForm => {
       zoomLink.textContent = 'Join Zoom Demo ↗';
       message.append(document.createElement('br'), zoomLink);
       if (brochureRequested) downloadBrochure(message);
-      
+
       currentForm.reset();
       otherField.hidden = true;
       currentForm.elements.otherCountryCode.disabled = true;
