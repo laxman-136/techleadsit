@@ -138,7 +138,7 @@ document.querySelectorAll('form').forEach(currentForm => {
       countryCode: code,
       mobile,
       careerObjective: currentForm.elements.careerObjective.value,
-      source: currentForm.id === 'inline-demo-form' ? 'inline' : 'popup',
+      source: currentForm.id === 'demo-form' ? 'popup' : 'inline',
       registrationId,
       website: currentForm.elements.website.value
     });
