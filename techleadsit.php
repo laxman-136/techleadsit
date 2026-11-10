@@ -2,7 +2,7 @@
 /**
  * Plugin Name: TechLeadsIT Landing Pages
  * Description: Serves high-performance custom HTML landing pages at clean URLs and handles secure lead routing to TeleCRM.
- * Version: 1.7.16
+ * Version: 1.7.17
  * Author: TechLeadsIT
  */
 
@@ -43,7 +43,7 @@ function techleadsit_route_digital_marketing_early() {
         techleadsit_route_landing_pages();
         return;
     }
-    if(in_array($path,array('/oracle-fusion-financials-course-online','/ai-powered-digital-marketing','/ai-powered-digital-marketing-course','/ai-powered-digital-marketing-course/thank-you','/ai-powered-digital-marketing-training','/ai-powered-digital-marketing-training/thank-you'),true)) {
+    if(in_array($path,array('/oracle-fusion-financials-live-demo','/oracle-fusion-financials-course-online','/ai-powered-digital-marketing','/ai-powered-digital-marketing-course','/ai-powered-digital-marketing-course/thank-you','/ai-powered-digital-marketing-training','/ai-powered-digital-marketing-training/thank-you'),true)) {
         techleadsit_route_landing_pages();
     }
 }
@@ -111,6 +111,7 @@ function techleadsit_route_landing_pages() {
     // Define your landing pages and their corresponding HTML files here
     // Slug key => HTML filename
     $landing_pages = array(
+        'oracle-fusion-financials-live-demo' => 'oracle-fusion-financials-live-demo/index.html',
         'oracle-fusion-financials-course-online' => 'oracle-financials-landing/index.html',
         'oracle-fusion-financials-course-online/privacy-policy.html' => 'oracle-financials-landing/privacy-policy.html',
         'oracle-fusion-financials-course-online/terms-and-conditions.html' => 'oracle-financials-landing/terms-and-conditions.html',
@@ -157,6 +158,23 @@ function techleadsit_route_landing_pages() {
             
             if (file_exists($html_filepath)) {
                 $html_content = file_get_contents($html_filepath);
+                if ($slug === 'oracle-fusion-financials-live-demo') {
+                    $asset_url = plugin_dir_url(__FILE__) . 'oracle-fusion-financials-live-demo/';
+                    $html_content = str_replace(
+                        array('href="styles.css?v=7"', 'href="financials.css"', 'src="app.js?v=14"', 'src="assets/', 'href="assets/'),
+                        array('href="'.$asset_url.'styles.css?v=7"', 'href="'.$asset_url.'financials.css"', 'src="'.$asset_url.'app.js?v=14"', 'src="'.$asset_url.'assets/', 'href="'.$asset_url.'assets/'),
+                        $html_content
+                    );
+                    $html_content = str_replace('https://lp.techleadsit.com/wp-content/plugins/techleadsit-financials-event/', $asset_url, $html_content);
+                    $html_content = techleadsit_with_tracking($html_content);
+                    // Keep registration closed until a dedicated Financials endpoint is configured.
+                    $endpoint = esc_url_raw(apply_filters('techleadsit_financials_event_registration_endpoint', ''));
+                    $html_content = str_replace('</head>', '<script>window.FINANCIALS_REGISTRATION_ENDPOINT='.wp_json_encode($endpoint).';</script></head>', $html_content);
+                    nocache_headers(); status_header(200); header('Content-Type: text/html; charset=utf-8');
+                    if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'HEAD') echo $html_content;
+                    exit;
+                }
+
                 // Standalone event preview: no shared lead capture, tracking, or course-date overrides.
                 if ($slug === 'oracle-fusion-financials-course-online' || str_starts_with($slug, 'oracle-fusion-financials-course-online/')) {
                     $asset_url=plugin_dir_url(__FILE__).'oracle-financials-landing/';
@@ -1757,7 +1775,8 @@ function techleadsit_get_courses_registry() {
             'default_template' => 'f-hcm-course/index.html',
             'slugs' => array(
                 'oracle-fusion-financials-training' => 'f-hcm-course/index.html',
-                'oracle-fusion-financials-course-online' => 'oracle-financials-landing/index.html'
+                'oracle-fusion-financials-course-online' => 'oracle-financials-landing/index.html',
+                'oracle-fusion-financials-live-demo' => 'oracle-fusion-financials-live-demo/index.html'
             ),
             'defaults' => array(
                 'countdown_enabled' => 1,

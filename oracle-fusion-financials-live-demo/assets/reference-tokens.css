@@ -1,0 +1,30 @@
+/* Mangekyō Sharingan inspiration tokens
+   Observed on www.outskill.com. Verify third-party licenses before reuse. */
+:root {
+  --harvest-color-1: rgb(229,231,235);
+  --harvest-color-2: rgb(255,255,255);
+  --harvest-color-3: rgb(0,0,0);
+  --harvest-color-4: rgba(255,255,255,0.3);
+  --harvest-color-5: rgb(156,163,175);
+  --harvest-color-6: rgba(0,0,0,0.7);
+  --harvest-color-7: rgba(255,255,255,0.5);
+  --harvest-color-8: rgba(255,255,255,0.2);
+  --harvest-color-9: rgba(217,217,217,0.4);
+  --harvest-color-10: rgba(0,0,0,0.3);
+  --harvest-space-1: 16px;
+  --harvest-space-2: 12px;
+  --harvest-space-3: 24px;
+  --harvest-space-4: 8px;
+  --harvest-space-5: 32px;
+  --harvest-space-6: 4px;
+  --harvest-space-7: 153px;
+  --harvest-space-8: 60px;
+  --harvest-space-9: 20px;
+  --harvest-space-10: 48px;
+  --harvest-radius-1: 2px;
+  --harvest-radius-2: 4px;
+  --harvest-radius-3: 12px;
+  --harvest-radius-4: 8px;
+  --harvest-font-1: "Fira Sans", sans-serif;
+  --harvest-font-2: "figtree", sans-serif;
+}
