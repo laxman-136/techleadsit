@@ -293,3 +293,6 @@ h1,h2{text-transform:uppercase}
 
 /* Visible disclosure before progressive enquiry capture. */
 .draft-privacy-notice{font-size:11px;line-height:1.65;color:#666c59;opacity:0.5;margin:6px 0 12px;text-align:center}.draft-privacy-notice a{color:inherit;text-decoration:underline;text-underline-offset:2px}
+
+/* Hand-drawn underline follows the highlighted words across wrapped lines. */
+.pencil-underline{padding-bottom:.09em;-webkit-box-decoration-break:clone;box-decoration-break:clone;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 12' preserveAspectRatio='none'%3E%3Cpath d='M2 7 Q90 2 195 6 T398 4' fill='none' stroke='%23dcff00' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath d='M6 10 Q130 5 260 8 T395 7' fill='none' stroke='%23dcff00' stroke-width='1' opacity='.55' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:left bottom;background-size:100% .17em}
