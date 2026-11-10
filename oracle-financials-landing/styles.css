@@ -296,3 +296,9 @@ h1,h2{text-transform:uppercase}
 
 /* Hand-drawn underline follows the highlighted words across wrapped lines. */
 .pencil-underline{padding-bottom:.09em;-webkit-box-decoration-break:clone;box-decoration-break:clone;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 12' preserveAspectRatio='none'%3E%3Cpath d='M2 7 Q90 2 195 6 T398 4' fill='none' stroke='%23dcff00' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath d='M6 10 Q130 5 260 8 T395 7' fill='none' stroke='%23dcff00' stroke-width='1' opacity='.55' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:left bottom;background-size:100% .17em}
+
+/* Keep the three editorial headline lines intact on desktop. */
+@media(min-width:761px){
+ .hero-centered h1.hero-headline-three{gap:6px}
+ .hero-headline-three .headline-premise,.hero-headline-three .headline-bridge,.hero-headline-three .headline-reveal{font-size:clamp(22px,3vw,40px);line-height:1.16;letter-spacing:-.6px;white-space:nowrap}
+}
