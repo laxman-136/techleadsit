@@ -115,7 +115,7 @@
                         <li><span>2</span> Learning plans</li>
                         <li><span>3</span> Verify mobile</li>
                     </ol>
-                    <form id="lead-form" novalidate>
+                    <form id="lead-form" novalidate aria-describedby="draft-privacy-notice">
                         <div id="details-step"><label for="name">Full name</label><input id="name" name="name"
                                 autocomplete="name" placeholder="Your full name" minlength="2" maxlength="80"
                                 required><label for="email">Email address</label><input id="email" name="email"
@@ -189,6 +189,7 @@
                             class="button submit" type="submit">Reserve My Free Seat <span>↗</span></button>
                         <p id="form-status" role="status" aria-live="polite"></p>
                         <p class="micro">After verification, our team will share your demo joining details.</p>
+                        <p id="draft-privacy-notice" class="draft-privacy-notice">Details save as you type, even without submitting. <a href="privacy-policy.html" target="_blank" rel="noopener">Privacy Policy</a></p>
                     </form>
                     <div class="form-bottom"><span>✓ 100% online</span><span>✓ No payment to attend</span></div>
                 </aside>
@@ -648,7 +649,7 @@
                 the advertising platform endorses the training or its outcomes.</p>
             <p><strong>Information collected and follow-up:</strong> Our enquiry form collects your name, email address,
                 mobile number, career background, learning plans, paid-training readiness, enrollment decision-maker,
-                contact-consent choice and verification status. When you click Continue, entered details and form progress are saved even if you do not finish registration. We use this information to send an SMS
+                contact-consent choice and verification status. Once you enter your name and a valid email, entered details and form progress are saved and updated as you fill the form, even if you do not finish registration. We use this information to send an SMS
                 verification code, respond to your request, arrange the demo and discuss the relevant course. Leads are
                 handled through Conversion Bridge and may be passed to our CRM and, where enabled, admissions
                 notifications in Microsoft Teams. Relevant hosting, SMS and service providers process information needed

@@ -56,15 +56,18 @@ function values(){return Object.fromEntries(new FormData(form))}
 function payload(){tracking.fbp=cookie('_fbp')||tracking.fbp;tracking.fbc=cookie('_fbc')||tracking.fbc;tracking.ga_client_id=cookie('_ga').split('.').slice(-2).join('.')||tracking.ga_client_id;const v=values();return {request_id:requestId,intent:'general',page_variant:'oracle_financials',submission_url:cleanUrl(location.href),tracking,name:v.name,phone:v.phone,email:v.email,goal:v.goal,status:v.goal,timeline:v.bant_timeline,question:v.bant_need,details:{student_status:v.goal,bant_need:v.bant_need,bant_timeline:v.bant_timeline,bant_budget:v.bant_budget,bant_authority:v.bant_authority},marketingConsent:false,consent_text:'I agree to be contacted by Tech Leads IT about this demo and course.',contact_consent:v.consent==='on'}}
 function message(text,error=false){status.textContent=text;status.classList.toggle('error',error)}
 async function api(route,data){const response=await fetch(endpoint+route,{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify(data),signal:AbortSignal.timeout(20000)});let result;try{result=await response.json()}catch{throw Error('Registration is temporarily unavailable. Please call +91 8125 32 32 32.')}if(!response.ok||result.success!==true)throw Error(result.message||'Your request could not be saved. Please try again.');return result}
-let draftCaptureStarted=false;
+
 function draft(state='incomplete',field='contact',error=''){
- if(complete||!draftCaptureStarted)return Promise.resolve();
- const p=payload();if(!p.name?.trim()||!form.elements.phone.checkValidity()||!p.phone)return Promise.resolve();
- const v={name:p.name,phone:p.phone,email:p.email,goal:p.goal,contact_consent:p.contact_consent,marketing_consent:false,collection_notice:"Details and form progress saved after Continue; notice v2, 2026-11-10"};const progress=currentStep;
+ if(complete)return Promise.resolve();
+ const p=payload();if(!p.name?.trim()||!p.email||!form.elements.email.checkValidity())return Promise.resolve();
+ const v={name:p.name,phone:p.phone,email:p.email,goal:p.goal,...p.details,contact_consent:p.contact_consent,marketing_consent:false,collection_notice:"Name and valid email start live form progress saving; notice v3, 2026-11-10"};const progress=currentStep;
  draftQueue=draftQueue.catch(()=>{}).then(async()=>{if(complete)return;const r=await api('draft',{...p,draft_token:draftToken,values:v,lifecycle_status:state,current_step:progress,total_steps:3,last_field:field,otp_error:error});draftToken=r.draft_token;}).catch(()=>{});
  return draftQueue;
 }
-form.addEventListener('change',event=>{if(['name','phone','email','goal','consent','bant_need','bant_timeline','bant_budget','bant_authority'].includes(event.target.name))draft('incomplete',event.target.name)});
+const draftFields=['name','phone','email','goal','consent','bant_need','bant_timeline','bant_budget','bant_authority'];
+let draftInputTimer;
+form.addEventListener('input',event=>{if(!draftFields.includes(event.target.name))return;clearTimeout(draftInputTimer);draftInputTimer=setTimeout(()=>draft('incomplete',event.target.name),800)});
+form.addEventListener('change',event=>{if(!draftFields.includes(event.target.name))return;clearTimeout(draftInputTimer);draft('incomplete',event.target.name)});
 const detailsStep=document.querySelector('#details-step'),plansStep=document.querySelector('#plans-step'),otpPanel=document.querySelector('#otp-panel'),backButton=document.querySelector('#form-back');
 const stepItems=[...document.querySelectorAll('.registration-steps li')];
 function showStep(step,focus=true){
@@ -88,7 +91,7 @@ form.elements.phone.addEventListener('input',()=>{challenge='';form.elements.otp
 async function sendCode(){const p=payload();await draft();const r=await api('otp',{name:p.name,phone:p.phone,intent:'general'});challenge=r.challenge;cooldownUntil=Date.now()+30000;showStep(3);message('We sent a four-digit code to your mobile. Enter it to confirm your request.');form.elements.otp.focus();await draft('otp_pending','otp')}
 form.addEventListener('submit',async event=>{
  event.preventDefault();if(busy||complete||!validStep(currentStep))return;
- if(currentStep===1){draftCaptureStarted=true;showStep(2);message('');draft('incomplete','bant_need');return}
+ if(currentStep===1){showStep(2);message('');draft('incomplete','bant_need');return}
  if(currentStep===2&&!otpRequired){showStep(3);message('');draft('incomplete','review');return}
  busy=true;submit.disabled=true;backButton.disabled=true;
  message(currentStep===3?(otpRequired?'Verifying and saving your request…':'Saving your request…'):'Sending your verification code…');
@@ -111,7 +114,7 @@ const logoMotion=document.querySelector('#logo-motion');
  const dialog=document.createElement('dialog');dialog.className='curriculum-dialog';dialog.id='curriculum-download';
  dialog.setAttribute('aria-labelledby','curriculum-form-title');
  dialog.innerHTML='<button type="button" class="curriculum-close" aria-label="Close curriculum form">×</button><h2 id="curriculum-form-title">Get the full curriculum</h2><p>Enter your details and verify your mobile number. Your Oracle Fusion Financials curriculum will download after submission.</p><div class="registration"></div><a class="download-again" hidden>Download the curriculum again ↓</a>';
- const downloadForm=form.cloneNode(true);downloadForm.id='curriculum-form';
+ const downloadForm=form.cloneNode(true);downloadForm.id='curriculum-form';downloadForm.removeAttribute('aria-describedby');downloadForm.querySelector('.draft-privacy-notice')?.remove();
  downloadForm.querySelectorAll('[id]').forEach(el=>el.id='curriculum-'+el.id);
  downloadForm.querySelectorAll('[for]').forEach(el=>el.htmlFor='curriculum-'+el.htmlFor);
  const button=downloadForm.querySelector('[type=submit]');button.classList.remove('submit');button.classList.add('curriculum-submit');button.textContent='Get My Curriculum';

@@ -64,8 +64,11 @@ final class TLIT_LP_Admin {
         }
         // Old bookmarks continue to open the inbox; there is no second CRM setup.
         if($dropoffs) {
+            wp_enqueue_script('tlit-lp-dropoffs-live',plugin_dir_url(__FILE__).'dropoffs-live.js',array(),'1.0.0',true);
+            echo '<p class="lp-help"><button type="button" class="button" id="lp-live-toggle" aria-pressed="true">Pause live updates</button> <span id="lp-live-status" role="status">Updates every 5 seconds while this tab is visible.</span></p><div id="lp-live-content">';
             if($draft_id=absint(self::input('draft'))) { self::dropoff_detail($draft_id); }
             else { self::dropoffs(); }
+            echo '</div>';
         } elseif ($id = absint(self::input('lead'))) { self::detail($id); }
         else { self::inbox(); }
         echo '</div>';
@@ -113,7 +116,7 @@ final class TLIT_LP_Admin {
         foreach($result['rows'] as $row){$data=json_decode($row->payload,true)?:array();$status=TLIT_LP_Leads::draft_status($row);$current=max(0,(int)$row->current_step);$total=max(1,(int)$row->total_steps);$percent=min(100,(int)round($current/$total*100));
             echo '<tr><td><a class="lp-name" href="'.esc_url(self::url(array('view'=>'dropoffs','draft'=>$row->id))).'">'.esc_html($row->name?:'Anonymous visitor').'</a><span>'.esc_html($row->phone?:'Phone not reached').'</span><span>'.esc_html($row->email?:'Email not reached').'</span></td><td><strong>'.esc_html(self::variants()[$row->page_variant]??'Page not recorded').'</strong><span>'.esc_html(TLIT_LP_Leads::labels()[$row->source]??$row->source).'</span><small>FD-'.(int)$row->id.'</small></td><td><div class="lp-progress"><span style="width:'.$percent.'%"></span></div><strong>Step '.$current.' of '.$total.'</strong><small>'.esc_html($row->last_field?ucwords(str_replace('_',' ',$row->last_field)):'Started').'</small></td><td>'.self::badge($status,TLIT_LP_Leads::draft_statuses()[$status]).($status==='verified'&&$row->lead_id?'<small><a href="'.esc_url(self::url(array('lead'=>$row->lead_id))).'">Open LP-'.(int)$row->lead_id.'</a></small>':'').'</td><td><time>'.esc_html(self::date($row->updated_at)).'</time></td><td><a class="button" href="'.esc_url(self::url(array('view'=>'dropoffs','draft'=>$row->id))).'">View journey →</a></td></tr>';
         }
-        if(!$result['rows'])echo '<tr><td colspan="6" class="lp-empty"><h3>No form sessions found</h3><p>Try another filter. New journeys appear after a visitor completes the first form step.</p></td></tr>';
+        if(!$result['rows'])echo '<tr><td colspan="6" class="lp-empty"><h3>No form sessions found</h3><p>Try another filter. Financials demo journeys appear after a name and valid email are entered.</p></td></tr>';
         echo '</tbody></table></div><footer class="lp-pagination"><span>'.esc_html(number_format_i18n($result['total'])).' matching sessions · 25 per page</span><nav aria-label="Form journey pages">';
         $pages=(int)ceil($result['total']/25);for($i=max(1,$page-2);$i<=min($pages,$page+2);$i++){echo '<a class="button '.($i===$page?'button-primary':'').'" href="'.esc_url(self::url(array_merge(array('view'=>'dropoffs'),$filters,array('paged'=>$i)))).'"'.($i===$page?' aria-current="page"':'').'>'.$i.'</a> ';}
         echo '</nav></footer></section>';
@@ -127,7 +130,7 @@ final class TLIT_LP_Admin {
         foreach($values as $key=>$value){if(in_array($key,array('name','phone','email'),true)||!is_scalar($value)||$value==='')continue;$captured[ucwords(str_replace('_',' ',$key))]=(string)$value;}
         self::fields($captured);echo '</section><section class="lp-panel"><h3>Page and campaign attribution</h3>';
         $attribution=array('Submitted from'=>$row->submission_url);foreach($tracking as $key=>$value){if(is_scalar($value)&&$value!=='')$attribution[ucwords(str_replace('_',' ',$key))]=(string)$value;}self::fields($attribution);echo '</section></div><aside><section class="lp-panel"><h3>Journey status</h3>';
-        self::fields(array('Classification'=>TLIT_LP_Leads::draft_statuses()[$status],'Progress'=>'Step '.(int)$row->current_step.' of '.max(1,(int)$row->total_steps),'Last completed field'=>ucwords(str_replace('_',' ',$row->last_field)),'Form type'=>TLIT_LP_Leads::labels()[$row->source]??$row->source,'Page version'=>self::variants()[$row->page_variant]??'Not recorded','First activity'=>self::date($row->created_at),'Last activity'=>self::date($row->updated_at),'OTP requested'=>$row->otp_requested_at?self::date($row->otp_requested_at):'Not requested','OTP issue'=>$row->otp_error,'Verified lead'=>$row->lead_id?'LP-'.$row->lead_id:'Not created'));
+        self::fields(array('Classification'=>TLIT_LP_Leads::draft_statuses()[$status],'Progress'=>'Step '.(int)$row->current_step.' of '.max(1,(int)$row->total_steps),'Last updated field'=>ucwords(str_replace('_',' ',$row->last_field)),'Form type'=>TLIT_LP_Leads::labels()[$row->source]??$row->source,'Page version'=>self::variants()[$row->page_variant]??'Not recorded','First activity'=>self::date($row->created_at),'Last activity'=>self::date($row->updated_at),'OTP requested'=>$row->otp_requested_at?self::date($row->otp_requested_at):'Not requested','OTP issue'=>$row->otp_error,'Verified lead'=>$row->lead_id?'LP-'.$row->lead_id:'Not created'));
         if($row->lead_id)echo '<p><a class="button button-primary lp-full" href="'.esc_url(self::url(array('lead'=>$row->lead_id))).'">Open verified lead →</a></p>';
         echo '<p class="lp-help">Incomplete and OTP-pending sessions stay outside TeleCRM. A verified lead can sync only after a counsellor saves a qualifying review.</p></section></aside></div>';
     }
