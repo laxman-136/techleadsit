@@ -114,7 +114,7 @@ async function main() {
     assert.ok((await page.locator('.consultant-example').textContent()).includes('purchase request gets stuck'));
     assert.equal(await page.locator('.career-chart > li').count(), 6);
     assert.deepEqual(await page.locator('.career-salary').allTextContents(), [
-      '₹5–8 LPA', '₹8–12 LPA', '₹12–20 LPA', '₹20–30 LPA', '₹30–45 LPA', '₹40–65+ LPA'
+      '₹40–65+ LPA', '₹30–45 LPA', '₹20–30 LPA', '₹12–20 LPA', '₹8–12 LPA', '₹5–8 LPA'
     ]);
     assert.equal(await page.locator('.career-growth + .brochure-card [data-lead-intent=brochure]').count(), 1);
     assert.ok((await page.locator('#career-note').textContent()).includes('not guaranteed'));

@@ -12,6 +12,7 @@ Existing saved SCM demo and batch dates are preserved.
 
 The section above the modules explains five functional consulting responsibilities and a purchase-approval example, based on the course brochure.
 The brochure section includes a salary-range graph from fresher/associate to practice head/director, on a shared 0–70 lakh annual CTC scale.
+The ladder rises visually from the fresher role at the bottom-left to practice leadership at the top-right; the accessible list follows the same displayed order.
 The six planning bands are ₹5–8, ₹8–12, ₹12–20, ₹20–30, ₹30–45 and ₹40–65+ LPA. They are explicitly illustrative targets, not measured averages or guaranteed salaries. Fresher offers may be lower; roles and experience bands vary by employer.
 
 Public references reviewed on 24 November 2026 are linked in the chart's expandable reference note:
