@@ -11,19 +11,19 @@ const formCopy = {
     intent: 'demo',
     title: 'Register for the Free Demo',
     description: 'Oracle Fusion SCM · ' + demoSchedule + ' · ' + demoPlatform,
-    submit: 'Register for the Free Demo'
+    submit: 'Register for demo'
   },
   brochure: {
     intent: 'brochure',
     title: 'Download the SCM Brochure',
     description: 'Oracle Fusion SCM syllabus and AI Agents overview',
-    submit: 'Download the SCM Brochure'
+    submit: 'Download brochure'
   },
   'ai-brochure': {
     intent: 'brochure',
     title: 'Download the AI Brochure',
     description: 'The 8-hour Oracle Fusion AI Agents overview',
-    submit: 'Download the AI Brochure'
+    submit: 'Download AI overview'
   }
 };
 
@@ -97,11 +97,13 @@ if ('IntersectionObserver' in window) {
 
 function attachLeadForm(container, source, closeButton) {
   const form = container.querySelector('form');
+  const selectControls = window.SCMFormControls?.enhance(form) || new Map();
   const steps = Array.from(form.querySelectorAll('[data-form-step]'));
   const backButton = form.querySelector('[data-form-back]');
   const submitButton = form.querySelector('[type="submit"]');
   const progress = form.querySelector('[data-form-progress]');
   const progressBar = form.querySelector('progress');
+  const progressSteps = form.querySelectorAll('[data-progress-step]');
   const statusMessage = container.querySelector('[data-form-status]');
   const resultPanel = container.querySelector('[data-form-result]');
   const resultLinks = resultPanel.querySelectorAll('[data-result-intent]');
@@ -129,9 +131,28 @@ function attachLeadForm(container, source, closeButton) {
   }
 
   function submitLabel() {
-    if (activeStep === steps.length) return 'Verify & ' + formCopy[offer].submit;
+    if (activeStep === steps.length) return offer === 'demo' ? 'Verify & register' : 'Verify & download';
     if (activeStep === steps.length - 1) return requiresOTP() ? 'Send verification code' : formCopy[offer].submit;
     return 'Continue';
+  }
+
+  function showMessage(text, state = 'info') {
+    statusMessage.textContent = text;
+    statusMessage.dataset.state = state;
+  }
+
+  function refreshProgress() {
+    const total = requiresOTP() ? steps.length : steps.length - 1;
+    progress.textContent = 'Step ' + activeStep + ' of ' + total;
+    progressBar.max = total;
+    progressBar.value = activeStep;
+    progressSteps.forEach((item, index) => {
+      item.hidden = index >= total;
+      item.classList.toggle('is-complete', index + 1 < activeStep);
+      item.classList.toggle('is-last', index + 1 === total);
+      if (index + 1 === activeStep) item.setAttribute('aria-current', 'step');
+      else item.removeAttribute('aria-current');
+    });
   }
 
   function updateResend() {
@@ -152,18 +173,16 @@ function attachLeadForm(container, source, closeButton) {
 
   function setStep(step, focus = true) {
     activeStep = step;
-    const totalSteps = requiresOTP() ? steps.length : steps.length - 1;
-    progress.textContent = 'Step ' + step + ' of ' + totalSteps;
-    progressBar.max = totalSteps;
-    progressBar.value = step;
+    refreshProgress();
+    selectControls.forEach(control => control.close());
     for (const fieldset of steps) {
       fieldset.hidden = Number(fieldset.dataset.formStep) !== step;
-      fieldset.disabled = fieldset.hidden;
+      fieldset.disabled = fieldset.hidden || pending;
     }
     backButton.hidden = step === 1;
     submitButton.textContent = submitLabel();
-    statusMessage.textContent = '';
-    if (focus) steps[step - 1].querySelector('input, select').focus();
+    showMessage('');
+    if (focus) steps[step - 1].querySelector('input:not([disabled]), [role="combobox"], select:not([hidden])')?.focus();
   }
 
   function syncCountryCode() {
@@ -190,12 +209,16 @@ function attachLeadForm(container, source, closeButton) {
   }
 
   function validate(step) {
-    return Array.from(steps[step - 1].elements).every(field => field.reportValidity());
+    return Array.from(steps[step - 1].elements).every(field => selectControls.has(field) ? selectControls.get(field).validate() : field.reportValidity());
   }
 
   function reset(nextOffer) {
     offer = nextOffer;
+    form.querySelector('[data-contact-description]').textContent = offer === 'demo' ? 'Tell us where to send your demo details.'
+      : offer === 'ai-brochure' ? 'Share your details to download the AI overview.' : 'Share your details to get the course brochure.';
     form.reset();
+    form.after(statusMessage);
+    selectControls.forEach(control => control.sync());
     lastSubmission = undefined;
     requestId = undefined;
     clearVerification();
@@ -210,6 +233,7 @@ function attachLeadForm(container, source, closeButton) {
 
   function setPending(value) {
     pending = value;
+    steps.forEach(fieldset => { fieldset.disabled = value || Number(fieldset.dataset.formStep) !== activeStep; });
     submitButton.disabled = value;
     backButton.disabled = value;
     if (closeButton) closeButton.disabled = value;
@@ -225,8 +249,7 @@ function attachLeadForm(container, source, closeButton) {
   form.addEventListener('input', event => {
     if (event.target.name !== 'otp' && challenge) clearVerification();
     if (['mobile', 'otherCountryCode'].includes(event.target.name)) {
-      progressBar.max = requiresOTP() ? steps.length : steps.length - 1;
-      progress.textContent = 'Step ' + activeStep + ' of ' + progressBar.max;
+      refreshProgress();
       submitButton.textContent = submitLabel();
     }
   });
@@ -284,15 +307,15 @@ function attachLeadForm(container, source, closeButton) {
     resendTimer = setInterval(updateResend, 1000);
     otpDestination.textContent = 'Enter the four-digit SMS code sent to +91 ' + body.get('mobile') + '.';
     setStep(steps.length);
-    statusMessage.textContent = 'Code sent. Enter it below to verify and complete your request.';
+    showMessage('Code sent. Enter it below to complete your request.', 'success');
   }
 
   resendButton.addEventListener('click', async () => {
     if (pending || Date.now() < resendAvailableAt) return;
     setPending(true);
-    statusMessage.textContent = 'Sending a new verification code…';
+    showMessage('Sending a new verification code…', 'pending');
     try { await sendCode(submissionBody(contactDetails())); }
-    catch (error) { statusMessage.textContent = error.message || 'Unable to send the code. Please try again.'; }
+    catch (error) { showMessage(error.message || 'Unable to send the code. Please try again.', 'error'); }
     finally { setPending(false); if (activeStep === steps.length && challenge) otpInput.focus(); }
   });
 
@@ -310,15 +333,15 @@ function attachLeadForm(container, source, closeButton) {
     if (needsOTP && activeStep === steps.length - 1) {
       if (challenge && challengeRequestId === requestId) { setStep(steps.length); return; }
       setPending(true);
-      statusMessage.textContent = 'Sending your verification code…';
+      showMessage('Sending your verification code…', 'pending');
       try { await sendCode(body); }
-      catch (error) { statusMessage.textContent = error.message || 'Unable to send the code. Please try again.'; }
+      catch (error) { showMessage(error.message || 'Unable to send the code. Please try again.', 'error'); }
       finally { setPending(false); if (activeStep === steps.length && challenge) otpInput.focus(); }
       return;
     }
     if (needsOTP && (!challenge || challengeRequestId !== requestId)) {
       clearVerification(); setStep(steps.length - 1);
-      statusMessage.textContent = 'Your details changed. Send a new verification code to continue.';
+      showMessage('Your details changed. Send a new verification code to continue.', 'error');
       return;
     }
     const { intent } = formCopy[offer];
@@ -328,7 +351,7 @@ function attachLeadForm(container, source, closeButton) {
     }
 
     setPending(true);
-    statusMessage.textContent = needsOTP ? 'Verifying your mobile and saving your details…' : 'Saving your details…';
+    showMessage(needsOTP ? 'Verifying your mobile and saving your details…' : 'Saving your details…', 'pending');
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 30000);
     try {
@@ -339,26 +362,28 @@ function attachLeadForm(container, source, closeButton) {
       if (!response.ok || result.success !== true || !/^LP-[1-9]\d*$/.test(result.receipt) ||
           result.registrationId !== requestId || result.intent !== intent) {
         if (!response.ok && result.message) {
-          statusMessage.textContent = result.message;
+          showMessage(result.message, 'error');
           return;
         }
         throw new Error('Lead receipt did not match the request.');
       }
       form.hidden = true;
       resultPanel.hidden = false;
+      resultPanel.querySelector('[data-result-title]').textContent = intent === 'brochure' ? 'Your brochure is ready' : 'You’re registered';
+      resultPanel.querySelector('.form-success-heading').after(statusMessage);
       const resultLink = resultPanel.querySelector('[data-result-intent="' + offer + '"]');
       resultLink.hidden = false;
       if (intent === 'brochure') {
-        statusMessage.textContent = 'Your brochure is ready. If the download doesn’t start, use the link below.';
+        showMessage('Your download is starting. You can also use the link below.', 'success');
         resultLink.click();
       } else {
-        statusMessage.textContent = 'Your free seat is reserved for ' + demoSchedule + '. Use the link below to join.';
+        showMessage('Your free seat is reserved for ' + demoSchedule + '. Use the link below to join.', 'success');
       }
       lastSubmission = undefined;
       requestId = undefined;
       clearVerification();
     } catch {
-      statusMessage.textContent = 'We couldn’t confirm your request. Please try again or call +91 8125323232 for help.';
+      showMessage('We couldn’t confirm your request. Please try again or call +91 8125323232 for help.', 'error');
     } finally {
       clearTimeout(timeout);
       setPending(false);

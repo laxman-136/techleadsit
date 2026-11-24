@@ -25,8 +25,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..800&amp;family=Sora:wght@600..800&amp;display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=1.7.24">
-  <script src="app.js?v=1.7.24" defer></script>
+  <link rel="stylesheet" href="styles.css?v=1.7.25">
+  <script src="form-controls.js?v=1.7.25" defer></script>
+  <script src="app.js?v=1.7.25" defer></script>
 </head>
 <body>
   <header class="site-header">
@@ -68,14 +69,22 @@
           <div data-hero-fields>
           <form id="hero-demo-form" method="post" action="about:blank" novalidate>
             <div class="form-progress">
-              <p data-form-progress aria-live="polite">Step 1 of 4</p>
-              <progress value="1" max="4" aria-hidden="true"></progress>
+              <p class="sr-only" data-form-progress aria-live="polite">Step 1 of 4</p>
+              <progress class="sr-only" value="1" max="4" aria-hidden="true"></progress>
+              <ol class="form-stepper" aria-label="Registration steps">
+                <li data-progress-step="1" aria-current="step"><span>1</span><b>Contact</b></li>
+                <li data-progress-step="2"><span>2</span><b>Background</b></li>
+                <li data-progress-step="3"><span>3</span><b>Plans</b></li>
+                <li data-progress-step="4"><span>4</span><b>Verify</b></li>
+              </ol>
             </div>
             <fieldset data-form-step="1">
               <legend>Your contact details</legend>
+              <p class="form-step-description" data-contact-description>Tell us where to send your demo details.</p>
               <label>Name <span aria-hidden="true">*</span><input name="name" autocomplete="name" placeholder="Your full name" required maxlength="80"></label>
               <label>Email <span aria-hidden="true">*</span><input name="email" type="email" autocomplete="email" placeholder="you@example.com" required maxlength="254"></label>
-              <label>Country calling code
+              <div class="phone-fields">
+              <label>Country code
                 <select name="countryCode" autocomplete="tel-country-code" required>
                   <option value="+91">India (+91)</option>
                   <option value="+1">USA/Canada (+1)</option>
@@ -93,13 +102,15 @@
                   <option value="other">Other</option>
                 </select>
               </label>
-              <label data-other-code hidden>Other calling code <input name="otherCountryCode" type="tel" inputmode="tel" placeholder="e.g. +27" pattern="\+[1-9][0-9]{0,3}" disabled></label>
               <label>Mobile number <span aria-hidden="true">*</span><input name="mobile" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="Your mobile number" required maxlength="20"></label>
+              </div>
+              <label data-other-code hidden>Other calling code <input name="otherCountryCode" type="tel" inputmode="tel" placeholder="e.g. +27" pattern="\+[1-9][0-9]{0,3}" disabled></label>
               <p class="phone-verification-note">Indian (+91) mobile numbers require SMS verification. International numbers can submit without OTP.</p>
             </fieldset>
             <fieldset data-form-step="2" hidden disabled>
               <legend>Tell us about your goal</legend>
-              <label>What’s your current status? <span aria-hidden="true">*</span>
+              <p class="form-step-description">A little context helps our team guide you.</p>
+              <label>Current status <span aria-hidden="true">*</span>
                 <select name="currentStatus" required>
                   <option value="">Select your current status</option>
                   <option value="final-year">Final-year student</option>
@@ -117,7 +128,7 @@
                   <option value="other-degree">Other degree</option>
                 </select>
               </label>
-              <label>How comfortable are you with coding? <span aria-hidden="true">*</span>
+              <label>Coding experience <span aria-hidden="true">*</span>
                 <select name="codingComfort" required>
                   <option value="">Select your coding experience</option>
                   <option value="none">I have no coding knowledge</option>
@@ -125,7 +136,7 @@
                   <option value="comfortable">I’m comfortable with coding</option>
                 </select>
               </label>
-              <label>What are you looking for? <span aria-hidden="true">*</span>
+              <label>Career goal <span aria-hidden="true">*</span>
                 <select name="careerObjective" required>
                   <option value="">Select your goal</option>
                   <option value="start-it">Start a career in IT from scratch</option>
@@ -134,7 +145,7 @@
                   <option value="explore">Just exploring options</option>
                 </select>
               </label>
-              <label>When do you want to start learning? <span aria-hidden="true">*</span>
+              <label>Preferred start <span aria-hidden="true">*</span>
                 <select name="startTimeline" required>
                   <option value="">Select when you’d like to start</option>
                   <option value="two-weeks">Immediately (within 2 weeks)</option>
@@ -145,8 +156,9 @@
               </label>
             </fieldset>
             <fieldset data-form-step="3" hidden disabled>
-              <legend>Almost done</legend>
-              <label>Who will make the decision about enrolling? <span aria-hidden="true">*</span>
+              <legend>Your learning plans</legend>
+              <p class="form-step-description">Help us understand what works for you.</p>
+              <label>Enrolment decision <span aria-hidden="true">*</span>
                 <select name="enrollmentDecision" required>
                   <option value="">Select who will decide</option>
                   <option value="self">I will decide myself</option>
@@ -155,7 +167,7 @@
                   <option value="employer">My employer will sponsor it</option>
                 </select>
               </label>
-              <label>Are you comfortable investing in a career-focused training program? <span aria-hidden="true">*</span>
+              <label>Training budget <span aria-hidden="true">*</span>
                 <select name="trainingBudget" required>
                   <option value="">Select what works for you</option>
                   <option value="skills">Yes, if the course gives me real job skills</option>
@@ -168,7 +180,7 @@
               <p class="form-privacy-notice"><a href="/privacy-policy/" target="_blank" rel="noopener">Privacy Policy</a></p>
             </fieldset>
             <fieldset data-form-step="4" hidden disabled>
-              <legend>Verify your mobile</legend>
+              <legend>Check your messages</legend>
               <p class="otp-destination" data-otp-destination>Enter the four-digit code sent by SMS.</p>
               <label>4-digit SMS code <span aria-hidden="true">*</span><input name="otp" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{4}" minlength="4" maxlength="4" placeholder="Enter 4-digit code" required></label>
               <div class="otp-actions"><button type="button" data-resend-otp>Resend code</button><button type="button" data-change-phone>Change mobile number</button></div>
@@ -182,6 +194,7 @@
           </form>
           <p class="form-status" data-form-status role="status" tabindex="-1"></p>
           <div class="form-result" data-form-result hidden>
+            <div class="form-success-heading"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m6 12 4 4 8-8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><h3 data-result-title>Your request is complete</h3></div>
             <a class="cta" data-result-intent="demo" href="https://zoom.us/j/8125323232" target="_blank" rel="noopener noreferrer" hidden>Join the Free Demo</a>
             <a class="cta" data-result-intent="brochure" href="assets/Oracle-Fusion-SCM-Brochure-and-AI-Overview.pdf" download="Oracle-Fusion-SCM-Brochure-and-AI-Overview.pdf" hidden>Download the PDF</a>
             <a class="cta" data-result-intent="ai-brochure" href="assets/Tech-Leads-IT-AI-Agents-Overview.pdf" download="Tech-Leads-IT-AI-Agents-Overview.pdf" hidden>Download the AI PDF</a>
@@ -513,10 +526,12 @@
   </footer>
 
   <dialog id="registration" aria-labelledby="form-title" aria-describedby="form-description">
-    <button class="close" type="button" aria-label="Close form">×</button>
+    <div class="dialog-heading">
+    <button class="close" type="button" aria-label="Close form"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button>
     <h2 id="form-title">Register for the Free Demo</h2>
     <p id="form-description">Oracle Fusion SCM live demo</p>
-    <div data-popup-fields></div>
+    </div>
+    <div class="dialog-body" data-popup-fields></div>
   </dialog>
 </body>
 </html>

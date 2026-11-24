@@ -35,6 +35,12 @@ The server derives the policy from the canonical phone prefix; client flags and 
 
 The SCM event page and other course forms retain their own existing verification policies. Tests mock SMS dispatch; they never send a real code.
 
+## Form presentation
+
+The inline and popup enquiries share a restrained form layout, responsive phone row, named progress stages, inline validation and explicit loading/error/success states. Popup actions remain visible while scrolling longer screens.
+
+`form-controls.js` enhances native selects into accessible select-only comboboxes. Arrow keys, Home/End, Enter/Space, Escape, Tab and typeahead are supported; selected values and validation remain attached to the original form controls. Menus open above or below according to available room. Native selects remain available if the enhancement fails to load. The question values and India-only OTP policy are unchanged.
+
 Local checks (all registrations mocked):
 
 - C:/xampp/php/php.exe -l techleadsit.php

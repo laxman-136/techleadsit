@@ -51,26 +51,34 @@ function serve(req, res) {
   }
 }
 
+async function choose(form, name, value) {
+  const field = form.locator('[data-select-name="' + name + '"]');
+  const text = await form.locator('select[name="' + name + '"] option[value="' + value + '"]').textContent();
+  await field.getByRole('combobox').click();
+  await field.getByRole('option', { name: text.trim(), exact: true }).click();
+  assert.equal(await form.locator('select[name="' + name + '"]').inputValue(), value);
+}
+
 async function completeContacts(form, country = '+91', mobile = '9123456789') {
   await form.getByLabel('Name', { exact: false }).fill('Test Fresher');
   await form.getByLabel('Email').fill('scm-test@example.invalid');
-  await form.getByLabel('Country calling code').selectOption(country);
+  await choose(form, 'countryCode', country);
   await form.getByLabel('Mobile number').fill(mobile);
   await form.getByRole('button', { name: 'Continue' }).click();
 }
 
 async function completeGoal(form) {
-  await form.getByLabel('What’s your current status?').selectOption('recent-graduate');
-  await form.getByLabel('Highest qualification').selectOption('engineering');
-  await form.getByLabel('How comfortable are you with coding?').selectOption('none');
-  await form.getByLabel('What are you looking for?').selectOption('first-erp-job');
-  await form.getByLabel('When do you want to start learning?').selectOption('one-month');
+  await choose(form, 'currentStatus', 'recent-graduate');
+  await choose(form, 'highestQualification', 'engineering');
+  await choose(form, 'codingComfort', 'none');
+  await choose(form, 'careerObjective', 'first-erp-job');
+  await choose(form, 'startTimeline', 'one-month');
   await form.getByRole('button', { name: 'Continue' }).click();
 }
 
 async function completeEnrollment(form) {
-  await form.getByLabel('Who will make the decision about enrolling?').selectOption('with-family');
-  await form.getByLabel('Are you comfortable investing').selectOption('fee-first');
+  await choose(form, 'enrollmentDecision', 'with-family');
+  await choose(form, 'trainingBudget', 'fee-first');
 }
 
 async function requestCode(form) {
@@ -166,7 +174,7 @@ async function main() {
     }
     const demoSchedule = await page.locator('.hero-event time').textContent();
 
-    if (process.env.SCM_REVIEW_DIR) {
+    if (process.env.SCM_REVIEW_DIR && process.env.SCM_REVIEW_FULL === '1') {
       fs.mkdirSync(process.env.SCM_REVIEW_DIR, { recursive: true });
       for (const width of [1440, 390, 320]) {
         await page.setViewportSize({ width, height: 900 });
@@ -231,6 +239,27 @@ async function main() {
     const dialog = page.getByRole('dialog');
     const hero = page.locator('#hero-register');
     const heroForm = hero.locator('form');
+    async function reviewForm(name, menuName) {
+      if (!process.env.SCM_REVIEW_DIR) return;
+      fs.mkdirSync(process.env.SCM_REVIEW_DIR, { recursive: true });
+      const panel = await dialog.isVisible() ? dialog : hero;
+      const targetForm = await dialog.isVisible() ? page.locator('#demo-form') : heroForm;
+      for (const width of [1440, 390]) {
+        await page.setViewportSize({ width, height: 900 });
+        if (menuName) await targetForm.locator('[data-select-name="' + menuName + '"]').getByRole('combobox').click();
+        await panel.screenshot({ path: path.join(process.env.SCM_REVIEW_DIR, name + '-' + width + '.png'), animations: 'disabled' });
+        if (menuName) await page.keyboard.press('Escape');
+        assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
+      }
+      await page.setViewportSize({ width: 1440, height: 900 });
+    }
+    await reviewForm('contact');
+    await reviewForm('country-menu', 'countryCode');
+    const countryPicker = heroForm.locator('[data-select-name=countryCode]').getByRole('combobox');
+    await countryPicker.focus(); await countryPicker.press('ArrowDown');
+    assert.equal(await countryPicker.getAttribute('aria-expanded'), 'true');
+    await countryPicker.press('End'); await countryPicker.press('Escape');
+    assert.equal(await heroForm.locator('select[name=countryCode]').inputValue(), '+91');
     assert.equal(await heroForm.getByRole('link', { name: 'Privacy Policy' }).count(), 0);
     assert.equal(await page.locator('.hero-portrait').count(), 0);
     await heroForm.getByRole('button', { name: 'Continue' }).click();
@@ -243,6 +272,12 @@ async function main() {
     await heroForm.getByRole('button', { name: 'Continue' }).click();
     await heroForm.getByRole('button', { name: 'Continue' }).click();
     assert.equal(await heroForm.locator('[data-form-step="2"]').isVisible(), true);
+    assert.equal(await heroForm.locator('.select-control[aria-invalid=true]').count(), 1);
+    await reviewForm('background-menu', 'currentStatus');
+    const statusPicker = heroForm.locator('[data-select-name=currentStatus]').getByRole('combobox');
+    await statusPicker.focus(); await statusPicker.press('ArrowDown'); await statusPicker.press('Home');
+    await statusPicker.press('ArrowDown'); await statusPicker.press('Enter');
+    assert.equal(await heroForm.locator('select[name=currentStatus]').inputValue(), 'recent-graduate');
     await completeGoal(heroForm);
     assert.equal(await heroForm.locator('[data-form-progress]').innerText(), 'Step 3 of 4');
     assert.equal(calls.length, 0);
@@ -250,6 +285,7 @@ async function main() {
     assert.equal(await heroForm.locator('[name=careerObjective]').inputValue(), 'first-erp-job');
     await heroForm.getByRole('button', { name: 'Continue' }).click();
     await completeEnrollment(heroForm);
+    await reviewForm('plans-menu', 'trainingBudget');
     assert.equal(await heroForm.getByRole('link', { name: 'Privacy Policy' }).getAttribute('href'), '/privacy-policy/');
     assert.equal(await heroForm.getByRole('link', { name: 'Privacy Policy' }).getAttribute('target'), '_blank');
     await heroForm.getByRole('button', { name: 'Send verification code' }).click();
@@ -273,7 +309,7 @@ async function main() {
       await page.setViewportSize({ width: 1440, height: 900 });
     }
     await heroForm.getByLabel('4-digit SMS code').fill('0000');
-    await heroForm.getByRole('button', { name: 'Verify & Register for the Free Demo' }).click();
+    await heroForm.getByRole('button', { name: 'Verify & register', exact: true }).click();
     await hero.getByRole('status').filter({ hasText: 'Incorrect code' }).waitFor();
     assert.equal(await hero.getByRole('link', { name: 'Join the Free Demo' }).isVisible(), false);
     assert.equal(calls.length, 0);
@@ -286,23 +322,26 @@ async function main() {
     await page.evaluate(() => { Date.now = window.scmRealNow; delete window.scmRealNow; });
     assert.equal(otpCalls.length, beforeResend + 1);
     await heroForm.getByLabel('4-digit SMS code').fill('1234');
-    await heroForm.getByRole('button', { name: 'Verify & Register for the Free Demo' }).click();
+    await heroForm.getByRole('button', { name: 'Verify & register', exact: true }).click();
     await hero.getByRole('link', { name: 'Join the Free Demo' }).waitFor();
     assert.ok((await hero.getByRole('status').textContent()).includes(demoSchedule));
     assert.equal(calls.length, 1);
     assert.equal(calls[0].intent, 'demo');
     assert.equal(calls[0].source, 'inline');
+    await reviewForm('success');
     assert.equal(await hero.getByRole('link', { name: 'Download the PDF' }).isVisible(), false);
 
     await page.locator('.closing [data-lead-intent=demo]').click();
     assert.ok((await dialog.locator('#form-description').textContent()).includes(demoSchedule));
     const form = page.locator('#demo-form');
+    await reviewForm('popup-contact');
     assert.equal(await form.locator('[name=name]').inputValue(), '');
     assert.equal(await form.getByRole('link', { name: 'Privacy Policy' }).count(), 0);
     await dialog.getByRole('button', { name: 'Close form' }).click();
 
     await page.locator('[data-lead-intent=brochure]').click();
     await completeContacts(form);
+    await reviewForm('popup-background', 'currentStatus');
     await completeGoal(form);
     await completeEnrollment(form);
     assert.equal(await form.getByRole('link', { name: 'Privacy Policy' }).getAttribute('href'), '/privacy-policy/');
@@ -310,13 +349,13 @@ async function main() {
     await requestCode(form);
     for (const problem of ['unavailable', 'mismatch']) {
       failure = problem;
-      await form.getByRole('button', { name: 'Download the SCM Brochure' }).click();
+      await form.getByRole('button', { name: 'Verify & download', exact: true }).click();
       await dialog.getByRole('status').filter({ hasText: 'couldn’t confirm' }).waitFor();
       assert.equal(await dialog.getByRole('link', { name: 'Download the PDF' }).isVisible(), false);
     }
     failure = '';
     const downloadEvent = page.waitForEvent('download');
-    await form.getByRole('button', { name: 'Download the SCM Brochure' }).click();
+    await form.getByRole('button', { name: 'Verify & download', exact: true }).click();
     const download = await downloadEvent;
     assert.equal(download.suggestedFilename(), 'Oracle-Fusion-SCM-Brochure-and-AI-Overview.pdf');
     assert.equal(await download.failure(), null);
@@ -338,7 +377,7 @@ async function main() {
     await form.getByRole('checkbox').check();
     await requestCode(form);
     const aiDownloadEvent = page.waitForEvent('download');
-    await form.getByRole('button', { name: 'Download the AI Brochure' }).click();
+    await form.getByRole('button', { name: 'Verify & download', exact: true }).click();
     const aiDownload = await aiDownloadEvent;
     assert.equal(aiDownload.suggestedFilename(), 'Tech-Leads-IT-AI-Agents-Overview.pdf');
     assert.equal(await aiDownload.failure(), null);
@@ -360,13 +399,13 @@ async function main() {
     await requestCode(form);
     const beforeInternational = otpCalls.length;
     await form.getByRole('button', { name: 'Change mobile number' }).click();
-    await form.getByLabel('Country calling code').selectOption('+1');
+    await choose(form, 'countryCode', '+1');
     await form.getByLabel('Mobile number').fill('2025550123');
     assert.equal(await form.locator('[data-form-progress]').innerText(), 'Step 1 of 3');
     await form.getByRole('button', { name: 'Continue', exact: true }).click();
     await form.getByRole('button', { name: 'Continue', exact: true }).click();
     assert.equal(await form.locator('[data-form-progress]').innerText(), 'Step 3 of 3');
-    await form.getByRole('button', { name: 'Register for the Free Demo', exact: true }).click();
+    await form.getByRole('button', { name: 'Register for demo', exact: true }).click();
     await dialog.getByRole('link', { name: 'Join the Free Demo' }).waitFor();
     assert.equal(otpCalls.length, beforeInternational);
     assert.equal(calls.at(-1).countryCode, '+1');
