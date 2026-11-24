@@ -9,10 +9,11 @@ if (!defined('ABSPATH')) { exit; }
 if (!class_exists('TLIT_LP_Leads')) {
 require_once __DIR__.'/lead-schema.php';
 require_once __DIR__.'/api.php';
+require_once __DIR__.'/scm-otp.php';
 require_once __DIR__.'/integration.php';
 require_once __DIR__.'/financials-bant.php';
 final class TLIT_LP_Leads {
-    use TLIT_LP_API, TLIT_LP_Integration;
+    use TLIT_LP_API, TLIT_LP_Integration, TLIT_LP_SCM_OTP;
     const VERSION = '0.5.4';
     const OPTION = 'tlit_lp_integration';
     static function table() { global $wpdb; return $wpdb->prefix.'tlit_landing_leads'; }

@@ -25,8 +25,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..800&amp;family=Sora:wght@600..800&amp;display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=1.7.22">
-  <script src="app.js?v=1.7.21" defer></script>
+  <link rel="stylesheet" href="styles.css?v=1.7.24">
+  <script src="app.js?v=1.7.24" defer></script>
 </head>
 <body>
   <header class="site-header">
@@ -68,8 +68,8 @@
           <div data-hero-fields>
           <form id="hero-demo-form" method="post" action="about:blank" novalidate>
             <div class="form-progress">
-              <p data-form-progress aria-live="polite">Step 1 of 3</p>
-              <progress value="1" max="3" aria-hidden="true"></progress>
+              <p data-form-progress aria-live="polite">Step 1 of 4</p>
+              <progress value="1" max="4" aria-hidden="true"></progress>
             </div>
             <fieldset data-form-step="1">
               <legend>Your contact details</legend>
@@ -95,6 +95,7 @@
               </label>
               <label data-other-code hidden>Other calling code <input name="otherCountryCode" type="tel" inputmode="tel" placeholder="e.g. +27" pattern="\+[1-9][0-9]{0,3}" disabled></label>
               <label>Mobile number <span aria-hidden="true">*</span><input name="mobile" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="Your mobile number" required maxlength="20"></label>
+              <p class="phone-verification-note">Indian (+91) mobile numbers require SMS verification. International numbers can submit without OTP.</p>
             </fieldset>
             <fieldset data-form-step="2" hidden disabled>
               <legend>Tell us about your goal</legend>
@@ -165,6 +166,13 @@
               </label>
               <label class="terms-check"><input type="checkbox" name="termsAccepted" required><span>I accept the <a href="/terms-and-conditions/" target="_blank" rel="noopener">Terms and Conditions</a>.</span></label>
               <p class="form-privacy-notice"><a href="/privacy-policy/" target="_blank" rel="noopener">Privacy Policy</a></p>
+            </fieldset>
+            <fieldset data-form-step="4" hidden disabled>
+              <legend>Verify your mobile</legend>
+              <p class="otp-destination" data-otp-destination>Enter the four-digit code sent by SMS.</p>
+              <label>4-digit SMS code <span aria-hidden="true">*</span><input name="otp" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{4}" minlength="4" maxlength="4" placeholder="Enter 4-digit code" required></label>
+              <div class="otp-actions"><button type="button" data-resend-otp>Resend code</button><button type="button" data-change-phone>Change mobile number</button></div>
+              <p class="phone-verification-note">The code expires in 5 minutes. Verify your Indian mobile number to confirm the demo or download the brochure.</p>
             </fieldset>
             <label hidden aria-hidden="true">Leave this blank<input name="website" tabindex="-1" autocomplete="off"></label>
             <div class="form-actions">

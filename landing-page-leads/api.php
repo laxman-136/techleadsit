@@ -10,6 +10,7 @@ trait TLIT_LP_API {
         foreach(['otp','submit','download'] as $route) { register_rest_route('tlit-leads/v1','/'.$route,['methods'=>'POST','permission_callback'=>[__CLASS__,'permission'],'callback'=>[__CLASS__,$route]]); }
         register_rest_route('tlit-leads/v1','/draft',['methods'=>'POST','permission_callback'=>[__CLASS__,'permission'],'callback'=>[__CLASS__,'draft']]);
         register_rest_route('tlit-leads/v1','/scm-registration',['methods'=>'POST','permission_callback'=>[__CLASS__,'permission'],'callback'=>[__CLASS__,'scm_registration']]);
+        register_rest_route('tlit-leads/v1','/scm-otp',['methods'=>'POST','permission_callback'=>[__CLASS__,'permission'],'callback'=>[__CLASS__,'scm_otp']]);
     }
     static function draft($request) {
         $p=self::body($request);
@@ -43,7 +44,7 @@ trait TLIT_LP_API {
             !is_email($email) || strlen($email) > 254 ||
             !preg_match('/^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/Di', $id) ||
             !preg_match('/^\+[1-9][0-9]{0,3}$/D', $country) || !preg_match('/^[0-9]{6,14}$/D', $mobile) ||
-            !preg_match('/^\+[1-9][0-9]{7,14}$/D', $phone) || ($country === '+91' && !self::phone($mobile))) {
+            !preg_match('/^\+[1-9][0-9]{7,14}$/D', $phone) || (str_starts_with($phone, '+91') && !self::phone($phone))) {
             return self::error('Please check your contact details.');
         }
 
@@ -118,7 +119,7 @@ trait TLIT_LP_API {
         ];
         if ($intent === 'brochure') { $details['brochure_name'] = $brochures[$brochure]; }
         $source = $intent === 'brochure' ? 'brochure' : ($placement === 'popup' ? 'popup' : 'general');
-        $result = self::ingest([
+        $payload = [
             'request_id' => $id,
             'name' => $name,
             'email' => $email,
@@ -130,7 +131,13 @@ trait TLIT_LP_API {
             'page_variant' => 'oracle_scm',
             'submission_url' => home_url('/oracle-fusion-scm-course-it'),
             'consent_text' => 'I accept the Terms and Conditions.',
-        ], ['source' => $source]);
+        ];
+        if (str_starts_with($phone, '+91')) {
+            $result = self::scm_save_verified_registration($form, $payload, $source);
+        } else {
+            $payload['details']['phone_verification'] = 'Not required for international number — not OTP verified';
+            $result = self::ingest($payload, ['source' => $source, 'otp_verified' => false]);
+        }
         if (is_wp_error($result)) { return $result; }
         return ['success' => true, 'receipt' => $result['receipt'], 'registrationId' => $id, 'intent' => $intent];
     }

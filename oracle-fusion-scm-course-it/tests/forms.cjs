@@ -51,10 +51,11 @@ function serve(req, res) {
   }
 }
 
-async function completeContacts(form) {
+async function completeContacts(form, country = '+91', mobile = '9123456789') {
   await form.getByLabel('Name', { exact: false }).fill('Test Fresher');
   await form.getByLabel('Email').fill('scm-test@example.invalid');
-  await form.getByLabel('Mobile number').fill('9123456789');
+  await form.getByLabel('Country calling code').selectOption(country);
+  await form.getByLabel('Mobile number').fill(mobile);
   await form.getByRole('button', { name: 'Continue' }).click();
 }
 
@@ -72,6 +73,12 @@ async function completeEnrollment(form) {
   await form.getByLabel('Are you comfortable investing').selectOption('fee-first');
 }
 
+async function requestCode(form) {
+  await form.getByRole('button', { name: 'Send verification code', exact: true }).click();
+  await form.locator('[data-form-step="4"]').waitFor({ state: 'visible' });
+  await form.getByLabel('4-digit SMS code').fill('1234');
+}
+
 async function main() {
   const server = http.createServer(serve);
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
@@ -82,11 +89,31 @@ async function main() {
     const base = 'http://127.0.0.1:' + server.address().port;
     const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, acceptDownloads: true });
     const calls = [];
+    const otpCalls = [];
+    const challenges = new Map();
+    let otpUnavailable = false;
     let failure = '';
     await page.route(/^https?:/, route => route.request().url().startsWith(base) ? route.continue() : route.abort());
+    await page.route(base + '/wp-json/tlit-leads/v1/scm-otp', async route => {
+      const payload = route.request().postDataJSON();
+      otpCalls.push(payload);
+      assert.equal(payload.phone, '+919123456789');
+      if (otpUnavailable) return route.fulfill({ status: 502, json: { message: 'We could not send the SMS code. Please try again.' } });
+      const challenge = otpCalls.length.toString(16).padStart(48, '0');
+      challenges.set(payload.registrationId, challenge);
+      return route.fulfill({ json: { success: true, challenge, expiresIn: 300, resendAfter: 30 } });
+    });
     await page.route(base + '/wp-json/tlit-leads/v1/scm-registration', async route => {
       const request = route.request();
       const payload = Object.fromEntries(new URLSearchParams(request.postData()));
+      if ((payload.countryCode + payload.mobile).startsWith('+91') &&
+          (payload.otp !== '1234' || payload.challenge !== challenges.get(payload.registrationId))) {
+        return route.fulfill({ status: 400, json: { code: 'tlit_landing_lead', message: 'Incorrect code. Please check the SMS and try again.' } });
+      }
+      if (payload.countryCode !== '+91') {
+        assert.equal(payload.challenge, undefined);
+        assert.equal(payload.otp, undefined);
+      }
       calls.push(payload);
       assert.equal(request.method(), 'POST');
       assert.equal(request.headers().origin, base);
@@ -98,7 +125,7 @@ async function main() {
       assert.equal(payload.startTimeline, 'one-month');
       assert.equal(payload.enrollmentDecision, 'with-family');
       assert.equal(payload.trainingBudget, 'fee-first');
-      assert.equal(payload.countryCode + payload.mobile, '+919123456789');
+      assert.equal(payload.countryCode + payload.mobile, payload.countryCode === '+91' ? '+919123456789' : '+12025550123');
       if (failure === 'unavailable') return route.fulfill({ status: 503, body: 'Unavailable' });
       return route.fulfill({
         status: 200,
@@ -217,7 +244,7 @@ async function main() {
     await heroForm.getByRole('button', { name: 'Continue' }).click();
     assert.equal(await heroForm.locator('[data-form-step="2"]').isVisible(), true);
     await completeGoal(heroForm);
-    assert.equal(await heroForm.locator('[data-form-progress]').innerText(), 'Step 3 of 3');
+    assert.equal(await heroForm.locator('[data-form-progress]').innerText(), 'Step 3 of 4');
     assert.equal(calls.length, 0);
     await heroForm.getByRole('button', { name: 'Back' }).click();
     assert.equal(await heroForm.locator('[name=careerObjective]').inputValue(), 'first-erp-job');
@@ -225,11 +252,41 @@ async function main() {
     await completeEnrollment(heroForm);
     assert.equal(await heroForm.getByRole('link', { name: 'Privacy Policy' }).getAttribute('href'), '/privacy-policy/');
     assert.equal(await heroForm.getByRole('link', { name: 'Privacy Policy' }).getAttribute('target'), '_blank');
-    await heroForm.getByRole('button', { name: 'Register for the Free Demo' }).click();
+    await heroForm.getByRole('button', { name: 'Send verification code' }).click();
     assert.equal(calls.length, 0);
+    assert.equal(otpCalls.length, 0);
     await heroForm.getByRole('checkbox').check();
     assert.equal(await heroForm.getByRole('link', { name: 'Terms and Conditions' }).getAttribute('href'), '/terms-and-conditions/');
-    await heroForm.getByRole('button', { name: 'Register for the Free Demo' }).click();
+    otpUnavailable = true;
+    await heroForm.getByRole('button', { name: 'Send verification code' }).click();
+    await hero.getByRole('status').filter({ hasText: 'could not send the SMS code' }).waitFor();
+    assert.equal(await heroForm.locator('[data-form-step="3"]').isVisible(), true);
+    otpUnavailable = false;
+    await requestCode(heroForm);
+    assert.equal(await heroForm.locator('[data-form-progress]').innerText(), 'Step 4 of 4');
+    assert.equal(await heroForm.getByRole('button', { name: 'Resend code', exact: false }).isDisabled(), true);
+    if (process.env.SCM_REVIEW_DIR) {
+      for (const width of [1440, 390]) {
+        await page.setViewportSize({ width, height: 900 });
+        await hero.screenshot({ path: path.join(process.env.SCM_REVIEW_DIR, 'otp-' + width + '.png'), animations: 'disabled' });
+      }
+      await page.setViewportSize({ width: 1440, height: 900 });
+    }
+    await heroForm.getByLabel('4-digit SMS code').fill('0000');
+    await heroForm.getByRole('button', { name: 'Verify & Register for the Free Demo' }).click();
+    await hero.getByRole('status').filter({ hasText: 'Incorrect code' }).waitFor();
+    assert.equal(await hero.getByRole('link', { name: 'Join the Free Demo' }).isVisible(), false);
+    assert.equal(calls.length, 0);
+    const beforeResend = otpCalls.length;
+    await page.evaluate(() => { window.scmRealNow = Date.now; Date.now = () => window.scmRealNow() + 31000; });
+    await page.waitForFunction(() => !document.querySelector('#hero-demo-form [data-resend-otp]').disabled);
+    await heroForm.getByRole('button', { name: 'Resend code', exact: true }).click();
+    await heroForm.getByLabel('4-digit SMS code').waitFor({ state: 'visible' });
+    await page.waitForFunction(() => document.querySelector('#hero-demo-form [name=otp]').value === '' && !document.querySelector('#hero-demo-form [type=submit]').disabled);
+    await page.evaluate(() => { Date.now = window.scmRealNow; delete window.scmRealNow; });
+    assert.equal(otpCalls.length, beforeResend + 1);
+    await heroForm.getByLabel('4-digit SMS code').fill('1234');
+    await heroForm.getByRole('button', { name: 'Verify & Register for the Free Demo' }).click();
     await hero.getByRole('link', { name: 'Join the Free Demo' }).waitFor();
     assert.ok((await hero.getByRole('status').textContent()).includes(demoSchedule));
     assert.equal(calls.length, 1);
@@ -250,6 +307,7 @@ async function main() {
     await completeEnrollment(form);
     assert.equal(await form.getByRole('link', { name: 'Privacy Policy' }).getAttribute('href'), '/privacy-policy/');
     await form.getByRole('checkbox').check();
+    await requestCode(form);
     for (const problem of ['unavailable', 'mismatch']) {
       failure = problem;
       await form.getByRole('button', { name: 'Download the SCM Brochure' }).click();
@@ -278,6 +336,7 @@ async function main() {
     await completeGoal(form);
     await completeEnrollment(form);
     await form.getByRole('checkbox').check();
+    await requestCode(form);
     const aiDownloadEvent = page.waitForEvent('download');
     await form.getByRole('button', { name: 'Download the AI Brochure' }).click();
     const aiDownload = await aiDownloadEvent;
@@ -289,6 +348,29 @@ async function main() {
     assert.equal(calls[4].brochureType, 'ai');
     assert.equal(await dialog.getByRole('link', { name: 'Download the AI PDF' }).isVisible(), true);
     assert.equal(await dialog.getByRole('link', { name: 'Download the PDF' }).isVisible(), false);
+    await dialog.getByRole('button', { name: 'Close form' }).click();
+
+    // Changing a verified-flow phone to an international code returns to three
+    // steps and sends no SMS or verification data with the final submission.
+    await page.locator('.closing [data-lead-intent=demo]').click();
+    await completeContacts(form);
+    await completeGoal(form);
+    await completeEnrollment(form);
+    await form.getByRole('checkbox').check();
+    await requestCode(form);
+    const beforeInternational = otpCalls.length;
+    await form.getByRole('button', { name: 'Change mobile number' }).click();
+    await form.getByLabel('Country calling code').selectOption('+1');
+    await form.getByLabel('Mobile number').fill('2025550123');
+    assert.equal(await form.locator('[data-form-progress]').innerText(), 'Step 1 of 3');
+    await form.getByRole('button', { name: 'Continue', exact: true }).click();
+    await form.getByRole('button', { name: 'Continue', exact: true }).click();
+    assert.equal(await form.locator('[data-form-progress]').innerText(), 'Step 3 of 3');
+    await form.getByRole('button', { name: 'Register for the Free Demo', exact: true }).click();
+    await dialog.getByRole('link', { name: 'Join the Free Demo' }).waitFor();
+    assert.equal(otpCalls.length, beforeInternational);
+    assert.equal(calls.at(-1).countryCode, '+1');
+    assert.equal(calls.at(-1).otp, undefined);
     await dialog.getByRole('button', { name: 'Close form' }).click();
 
     await page.goto(base);
@@ -308,7 +390,7 @@ async function main() {
     assert.equal(await reviewTrack.evaluate(el => getComputedStyle(el).animationName), 'none');
     await video.scrollIntoViewIfNeeded();
     assert.equal(await video.evaluate(el => el.paused && el.currentTime === 0), true);
-    console.log('PASS: FAQ order, click-to-call, mobile layout, page media, all three form steps, Conversion Bridge receipts, and both brochure downloads.');
+    console.log('PASS: India-only SMS OTP, wrong-code rejection, international direct submission, country changes, mobile layout, Conversion Bridge receipts and both brochure downloads.');
   } finally {
     await browser.close();
     server.close();

@@ -27,10 +27,19 @@ The requested ₹5–8 LPA fresher band is an entry-level target. The chart does
 The inline and popup forms use the existing same-origin Conversion Bridge route, tlit-leads/v1/scm-registration.
 Demo confirmation and brochure downloads require a matching receipt. Leads are attributed to the new course URL.
 
+## India-only SMS verification
+
+Only this course page uses the dedicated `tlit-leads/v1/scm-otp` adapter. Indian +91 numbers must complete a fourth SMS verification step before demo or either brochure submission. International numbers retain three steps and submit directly with `otp_verified=false` and an explicit international verification note.
+
+The server derives the policy from the canonical phone prefix; client flags and legacy course OTP switches cannot bypass verification for +91 numbers. The existing VISPL sender is reused. Codes expire after five minutes, allow five failed attempts, and have a 30-second resend cooldown plus the existing shared SMS limits. Challenges are bound to this page, phone, registration ID, intent and inline/popup placement. A resend invalidates the old challenge. Exact retries of the same request remain idempotent after a lost response or storage failure.
+
+The SCM event page and other course forms retain their own existing verification policies. Tests mock SMS dispatch; they never send a real code.
+
 Local checks (all registrations mocked):
 
 - C:/xampp/php/php.exe -l techleadsit.php
 - C:/xampp/php/php.exe run_test.php
+- C:/xampp/php/php.exe landing-page-leads/tests/scm-otp-test.php
 - node oracle-fusion-scm-course-it/tests/routing.cjs
 - node oracle-fusion-scm-course-it/tests/forms.cjs
 - node oracle-fusion-scm-live-demo/tests/forms.cjs

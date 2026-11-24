@@ -275,6 +275,12 @@ form input:not([type="checkbox"]), form select {
 .form-back { min-height: 44px; padding: 11px 15px; border: 1px solid var(--line); border-radius: 7px; background: #fff; color: var(--ink); font-size: 14px; }
 .form-status:not(:empty) { margin-top: 13px; padding: 12px; border-radius: 8px; background: var(--paper); color: var(--ink); font-size: 14px; line-height: 1.5; }
 .form-result { margin-top: 12px; }
+.phone-verification-note, .otp-destination { margin: 0 0 14px; color: var(--muted); font-size: 13px; line-height: 1.6; }
+.phone-verification-note a { color: var(--blue); text-decoration: underline; text-underline-offset: 3px; }
+.otp-actions { display: flex; flex-wrap: wrap; gap: 0 18px; margin: -4px 0 8px; }
+.otp-actions button { min-height: 44px; padding: 8px 0; border: 0; background: transparent; color: var(--blue-hover); font-size: 13px; font-weight: 700; text-align: left; }
+.otp-actions button:disabled { color: var(--muted); cursor: default; }
+input[name="otp"] { font-variant-numeric: tabular-nums; }
 
 @media (max-width: 920px) {
   .ai-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }

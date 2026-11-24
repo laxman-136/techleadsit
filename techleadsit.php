@@ -2,7 +2,7 @@
 /**
  * Plugin Name: TechLeadsIT Landing Pages
  * Description: Serves high-performance custom HTML landing pages at clean URLs and handles secure lead routing to TeleCRM.
- * Version: 1.7.22
+ * Version: 1.7.24
  * Author: TechLeadsIT
  */
 
@@ -198,13 +198,14 @@ function techleadsit_route_landing_pages() {
                 if ($slug === 'oracle-fusion-scm-course-it') {
                     $asset_url = plugin_dir_url(__FILE__) . 'oracle-fusion-scm-course-it/';
                     $html_content = str_replace(
-                        array('href="styles.css?v=1.7.22"', 'src="app.js?v=1.7.21"', 'src="assets/', 'href="assets/', 'poster="assets/'),
-                        array('href="'.$asset_url.'styles.css?v=1.7.22"', 'src="'.$asset_url.'app.js?v=1.7.21"', 'src="'.$asset_url.'assets/', 'href="'.$asset_url.'assets/', 'poster="'.$asset_url.'assets/'),
+                        array('href="styles.css?v=1.7.24"', 'src="app.js?v=1.7.24"', 'src="assets/', 'href="assets/', 'poster="assets/'),
+                        array('href="'.$asset_url.'styles.css?v=1.7.24"', 'src="'.$asset_url.'app.js?v=1.7.24"', 'src="'.$asset_url.'assets/', 'href="'.$asset_url.'assets/', 'poster="'.$asset_url.'assets/'),
                         $html_content
                     );
                     $html_content = techleadsit_render_scm_schedule($html_content);
                     $bridge_endpoint = wp_json_encode(rest_url('tlit-leads/v1/scm-registration'), JSON_HEX_TAG);
-                    $html_content = str_replace('</head>', '<script>window.SCM_REGISTRATION_ENDPOINT='.$bridge_endpoint.';</script></head>', $html_content);
+                    $otp_endpoint = wp_json_encode(rest_url('tlit-leads/v1/scm-otp'), JSON_HEX_TAG);
+                    $html_content = str_replace('</head>', '<script>window.SCM_REGISTRATION_ENDPOINT='.$bridge_endpoint.';window.SCM_OTP_ENDPOINT='.$otp_endpoint.';</script></head>', $html_content);
                     nocache_headers(); status_header(200); header('Content-Type: text/html; charset=utf-8');
                     if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'HEAD') echo techleadsit_with_tracking($html_content);
                     exit;
@@ -2077,6 +2078,7 @@ function techleadsit_render_multi_course_settings_page() {
                 <h2 id="tl-scm-live-demo-title" style="margin: 0">SCM landing page demo details</h2>
                 <p id="tl-scm-live-demo-help">Enter the dates and times in India Standard Time (IST) for <a href="<?php echo esc_url(home_url('/oracle-fusion-scm-course-it')); ?>">/oracle-fusion-scm-course-it</a>. These details update its countdown, registration messages, and demo schedule.</p>
                 <p>The <a href="<?php echo esc_url(home_url('/scm-batch-80')); ?>">/scm-batch-80 event page</a> keeps its separate schedule and registration.</p>
+                <p>On this course form, Indian (+91) numbers require SMS OTP; international numbers submit without OTP and are marked unverified. The legacy OTP switches below apply to the older templates.</p>
                 <table class="form-table" style="margin-top: 0">
                     <?php foreach (array('scm_demo_datetime' => 'Free demo date and time', 'scm_batch_datetime' => 'Regular batch start date and time') as $key => $label) : ?>
                     <tr>

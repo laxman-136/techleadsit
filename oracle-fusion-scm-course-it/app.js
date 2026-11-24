@@ -1,5 +1,6 @@
 'use strict';
 const registrationEndpoint = window.SCM_REGISTRATION_ENDPOINT || '/wp-json/tlit-leads/v1/scm-registration';
+const otpEndpoint = window.SCM_OTP_ENDPOINT || '/wp-json/tlit-leads/v1/scm-otp';
 const demoDate = document.querySelector('time[data-scm-time="demo"]');
 const demoTime = Date.parse(demoDate.dateTime);
 const demoSchedule = demoDate.textContent.trim();
@@ -107,23 +108,60 @@ function attachLeadForm(container, source, closeButton) {
   const countryCode = form.elements.countryCode;
   const otherCode = form.elements.otherCountryCode;
   const otherCodeField = form.querySelector('[data-other-code]');
+  const otpInput = form.elements.otp;
+  const resendButton = form.querySelector('[data-resend-otp]');
+  const changePhoneButton = form.querySelector('[data-change-phone]');
+  const otpDestination = form.querySelector('[data-otp-destination]');
 
   let offer = 'demo';
   let activeStep = 1;
   let pending = false;
   let requestId;
   let lastSubmission;
+  let challenge = '';
+  let challengeRequestId;
+  let resendAvailableAt = 0;
+  let resendTimer;
+
+  function requiresOTP() {
+    const code = countryCode.value === 'other' ? otherCode.value.trim() : countryCode.value;
+    return (code + form.elements.mobile.value.replace(/[\s()-]/g, '').replace(/^0+/, '')).startsWith('+91');
+  }
+
+  function submitLabel() {
+    if (activeStep === steps.length) return 'Verify & ' + formCopy[offer].submit;
+    if (activeStep === steps.length - 1) return requiresOTP() ? 'Send verification code' : formCopy[offer].submit;
+    return 'Continue';
+  }
+
+  function updateResend() {
+    const remaining = Math.max(0, Math.ceil((resendAvailableAt - Date.now()) / 1000));
+    resendButton.disabled = pending || remaining > 0;
+    resendButton.textContent = remaining ? 'Resend code in ' + remaining + 's' : 'Resend code';
+    if (!remaining) clearInterval(resendTimer);
+  }
+
+  function clearVerification() {
+    challenge = '';
+    challengeRequestId = undefined;
+    otpInput.value = '';
+    resendAvailableAt = 0;
+    clearInterval(resendTimer);
+    updateResend();
+  }
 
   function setStep(step, focus = true) {
     activeStep = step;
-    progress.textContent = 'Step ' + step + ' of ' + steps.length;
+    const totalSteps = requiresOTP() ? steps.length : steps.length - 1;
+    progress.textContent = 'Step ' + step + ' of ' + totalSteps;
+    progressBar.max = totalSteps;
     progressBar.value = step;
     for (const fieldset of steps) {
       fieldset.hidden = Number(fieldset.dataset.formStep) !== step;
       fieldset.disabled = fieldset.hidden;
     }
     backButton.hidden = step === 1;
-    submitButton.textContent = step === steps.length ? formCopy[offer].submit : 'Continue';
+    submitButton.textContent = submitLabel();
     statusMessage.textContent = '';
     if (focus) steps[step - 1].querySelector('input, select').focus();
   }
@@ -145,10 +183,10 @@ function attachLeadForm(container, source, closeButton) {
     form.elements.name.setCustomValidity(nameLength < 2 ? 'Please enter your full name.' : nameLength > 80 ? 'Please enter a shorter name.' : '');
     form.elements.mobile.setCustomValidity(
       /^\d{6,14}$/.test(mobile) && /^\+[1-9]\d{7,14}$/.test(fullMobile) &&
-      (code !== '+91' || /^[6-9]\d{9}$/.test(mobile))
+      (!fullMobile.startsWith('+91') || /^\+91[6-9]\d{9}$/.test(fullMobile))
         ? '' : 'Enter a valid mobile number without the country code.'
     );
-    return { name, email: form.elements.email.value.trim().toLowerCase(), countryCode: code, mobile };
+    return { name, email: form.elements.email.value.trim().toLowerCase(), countryCode: code, mobile: mobile.replace(/^0+/, '') };
   }
 
   function validate(step) {
@@ -158,6 +196,9 @@ function attachLeadForm(container, source, closeButton) {
   function reset(nextOffer) {
     offer = nextOffer;
     form.reset();
+    lastSubmission = undefined;
+    requestId = undefined;
+    clearVerification();
     form.elements.name.setCustomValidity('');
     syncCountryCode();
     resultPanel.hidden = true;
@@ -172,26 +213,30 @@ function attachLeadForm(container, source, closeButton) {
     submitButton.disabled = value;
     backButton.disabled = value;
     if (closeButton) closeButton.disabled = value;
+    changePhoneButton.disabled = value;
+    otpInput.disabled = value;
+    updateResend();
+    if (!value) submitButton.textContent = submitLabel();
     if (value) form.setAttribute('aria-busy', 'true');
     else form.removeAttribute('aria-busy');
   }
 
-  countryCode.addEventListener('change', syncCountryCode);
+  countryCode.addEventListener('change', () => { clearVerification(); syncCountryCode(); setStep(activeStep, false); });
+  form.addEventListener('input', event => {
+    if (event.target.name !== 'otp' && challenge) clearVerification();
+    if (['mobile', 'otherCountryCode'].includes(event.target.name)) {
+      progressBar.max = requiresOTP() ? steps.length : steps.length - 1;
+      progress.textContent = 'Step ' + activeStep + ' of ' + progressBar.max;
+      submitButton.textContent = submitLabel();
+    }
+  });
   form.elements.name.addEventListener('input', () => form.elements.name.setCustomValidity(''));
   form.elements.mobile.addEventListener('input', () => form.elements.mobile.setCustomValidity(''));
   otherCode.addEventListener('input', () => form.elements.mobile.setCustomValidity(''));
   backButton.addEventListener('click', () => setStep(activeStep - 1));
+  changePhoneButton.addEventListener('click', () => { clearVerification(); setStep(1); form.elements.mobile.focus(); });
 
-  form.addEventListener('submit', async event => {
-    event.preventDefault();
-    if (pending) return;
-    const contact = contactDetails();
-    if (!validate(activeStep)) return;
-    if (activeStep < steps.length) {
-      setStep(activeStep + 1);
-      return;
-    }
-
+  function submissionBody(contact) {
     const { intent } = formCopy[offer];
     const body = new URLSearchParams({
       ...contact,
@@ -214,9 +259,76 @@ function attachLeadForm(container, source, closeButton) {
       lastSubmission = submission;
     }
     body.set('registrationId', requestId);
+    return body;
+  }
+
+  async function sendCode(body) {
+    const response = await fetch(otpEndpoint, {
+      method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: body.get('name'), phone: body.get('countryCode') + body.get('mobile'),
+        registrationId: body.get('registrationId'), intent: body.get('intent'), source
+      }), signal: AbortSignal.timeout(20000)
+    });
+    let result;
+    try { result = await response.json(); }
+    catch { throw new Error('We could not confirm that the code was sent. Please try again.'); }
+    if (!response.ok || result.success !== true || !/^[a-f0-9]{48}$/.test(result.challenge)) {
+      throw new Error(result.message || 'We could not send the code. Please try again.');
+    }
+    challenge = result.challenge;
+    challengeRequestId = body.get('registrationId');
+    otpInput.value = '';
+    resendAvailableAt = Date.now() + 30000;
+    clearInterval(resendTimer);
+    resendTimer = setInterval(updateResend, 1000);
+    otpDestination.textContent = 'Enter the four-digit SMS code sent to +91 ' + body.get('mobile') + '.';
+    setStep(steps.length);
+    statusMessage.textContent = 'Code sent. Enter it below to verify and complete your request.';
+  }
+
+  resendButton.addEventListener('click', async () => {
+    if (pending || Date.now() < resendAvailableAt) return;
+    setPending(true);
+    statusMessage.textContent = 'Sending a new verification code…';
+    try { await sendCode(submissionBody(contactDetails())); }
+    catch (error) { statusMessage.textContent = error.message || 'Unable to send the code. Please try again.'; }
+    finally { setPending(false); if (activeStep === steps.length && challenge) otpInput.focus(); }
+  });
+
+  form.addEventListener('submit', async event => {
+    event.preventDefault();
+    if (pending) return;
+    const contact = contactDetails();
+    if (!validate(activeStep)) return;
+    if (activeStep < steps.length - 1) {
+      setStep(activeStep + 1);
+      return;
+    }
+    const body = submissionBody(contact);
+    const needsOTP = requiresOTP();
+    if (needsOTP && activeStep === steps.length - 1) {
+      if (challenge && challengeRequestId === requestId) { setStep(steps.length); return; }
+      setPending(true);
+      statusMessage.textContent = 'Sending your verification code…';
+      try { await sendCode(body); }
+      catch (error) { statusMessage.textContent = error.message || 'Unable to send the code. Please try again.'; }
+      finally { setPending(false); if (activeStep === steps.length && challenge) otpInput.focus(); }
+      return;
+    }
+    if (needsOTP && (!challenge || challengeRequestId !== requestId)) {
+      clearVerification(); setStep(steps.length - 1);
+      statusMessage.textContent = 'Your details changed. Send a new verification code to continue.';
+      return;
+    }
+    const { intent } = formCopy[offer];
+    if (needsOTP) {
+      body.set('challenge', challenge);
+      body.set('otp', otpInput.value.trim());
+    }
 
     setPending(true);
-    statusMessage.textContent = 'Saving your details…';
+    statusMessage.textContent = needsOTP ? 'Verifying your mobile and saving your details…' : 'Saving your details…';
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 30000);
     try {
@@ -226,6 +338,10 @@ function attachLeadForm(container, source, closeButton) {
       const result = await response.json();
       if (!response.ok || result.success !== true || !/^LP-[1-9]\d*$/.test(result.receipt) ||
           result.registrationId !== requestId || result.intent !== intent) {
+        if (!response.ok && result.message) {
+          statusMessage.textContent = result.message;
+          return;
+        }
         throw new Error('Lead receipt did not match the request.');
       }
       form.hidden = true;
@@ -240,6 +356,7 @@ function attachLeadForm(container, source, closeButton) {
       }
       lastSubmission = undefined;
       requestId = undefined;
+      clearVerification();
     } catch {
       statusMessage.textContent = 'We couldn’t confirm your request. Please try again or call +91 8125323232 for help.';
     } finally {
