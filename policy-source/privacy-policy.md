@@ -1,7 +1,7 @@
 # Privacy Policy
 
 **Effective date:** 7 September 2026  
-**Last updated:** 7 September 2026
+**Last updated:** 24 November 2026
 
 Tech Leads IT Solutions Private Limited ("Tech Leads IT", "we", "our" or "us") respects your privacy. This Privacy Policy explains what personal information we collect, why we collect it, how we use and share it, and the choices available to you when you visit our websites, submit an enquiry, register for a demo, enrol in a course, access our learning platform or communicate with us.
 
@@ -23,6 +23,12 @@ Depending on how you interact with us, we may collect:
 - Feedback, survey responses and testimonials submitted voluntarily.
 
 We do not intentionally collect card numbers, CVVs or online-banking credentials on our servers. Payments may be handled by third-party payment providers under their own privacy and security practices.
+
+### Oracle Fusion SCM demo and brochure forms
+
+The SCM forms collect your name, email address and mobile number with its country calling code. We also ask about your current status, highest qualification, coding experience, career goal, when you want to start learning, who will make the enrolment decision, and your preferences about paying for training.
+
+When you submit the final step, we save your details, answers, acceptance of the Terms & Conditions, and the type of request in Conversion Bridge, our WordPress lead inbox. We use this information to deliver the requested brochure or demo details and to follow up about the course.
 
 ### Information collected automatically
 
@@ -59,7 +65,7 @@ We use cookies and similar technologies to operate the website, remember prefere
 
 These technologies may be provided by Tech Leads IT or by service providers such as Google Analytics, Google Ads, Google Tag Manager, Meta and other analytics, advertising or website-service platforms. Where consent is legally required, non-essential analytics or advertising technologies should be used only after consent is recorded.
 
-You can control cookies through the consent controls made available on the website and through your browser settings. Blocking some cookies may affect website functionality or attribution accuracy.
+You can manage cookies in your browser and through any consent controls available on the website. Blocking some cookies may affect website functionality or campaign measurement. For details about the Oracle Fusion SCM and Digital Marketing landing pages, read our [Cookie Policy](/cookie-policy/).
 
 ## 4. How we share information
 
@@ -74,6 +80,8 @@ We may share information only as reasonably necessary with:
 - Professional advisers, auditors, regulators, law-enforcement agencies or courts where disclosure is required or legally justified.
 - A successor organisation in connection with a lawful merger, acquisition, restructuring or transfer of the business, subject to appropriate safeguards.
 
+Authorised Tech Leads IT staff use the SCM record in Conversion Bridge to handle your enquiry. If a counsellor sends the record to TeleCRM for follow-up, it is also processed there. Microsoft Teams may be used to notify the admissions team when notifications are enabled.
+
 We do not sell or rent your personal information to third parties.
 
 ## 5. Advertising measurement and server-side tracking
@@ -81,6 +89,10 @@ We do not sell or rent your personal information to third parties.
 We use browser-side and server-side measurement to understand whether advertising leads to genuine course enquiries. A single enquiry may generate related technical events across our website, analytics systems, advertising platforms and CRM. We use event identifiers and other controls to reduce duplicate measurement.
 
 Advertising platforms apply their own attribution rules. An advertising conversion does not necessarily mean that additional personal details have been disclosed to the platform.
+
+### Measurement on the Oracle Fusion SCM page
+
+The SCM page loads the site’s shared Google Tag Manager container when it is configured. Tags such as Google Analytics and the Meta Pixel may measure page visits, interactions and campaign performance. When enabled for the page, measurement tags may receive information such as the page address, referrer, device or browser information, IP address, and cookie or campaign identifiers. The SCM form submits the details and answers you provide to Conversion Bridge. Advertising measurement is configured separately in the tag manager.
 
 ## 6. Data retention
 
@@ -127,14 +139,11 @@ We may update this Privacy Policy to reflect changes in our services, technologi
 
 ## 13. Contact and grievance information
 
-**Tech Leads IT Solutions Private Limited**  
-Email: **info@techleadsit.com**  
-Phone: **+91 81253 23232**  
-Registered office: **[INSERT REGISTERED OFFICE ADDRESS]**  
-Privacy/Grievance contact: **[INSERT RESPONSIBLE PERSON OR DESIGNATION]**
+**Tech Leads IT Solutions Private Limited**
+
+- Email: **info@techleadsit.com**
+- Phone: **+91 81253 23232**
+- Office and registered address: [Tech Leads IT Contact page](https://www.techleadsit.com/contactus)
+- Privacy/Grievance contact: **Grievance Officer, Tech Leads IT Solutions Private Limited (Email: info@techleadsit.com)**
 
 For privacy questions, requests or complaints, email us with the subject line **“Privacy Request”**. We will review and respond in accordance with applicable law.
-
----
-
-**Implementation note for Antigravity:** Do not publish the bracketed placeholders. Replace them with the company’s registered-office address and the responsible privacy/grievance contact before launch.

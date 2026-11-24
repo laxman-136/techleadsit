@@ -104,6 +104,13 @@ a:hover {
 }
 
 @media (max-width: 640px) {
+    .header-container {
+        gap: 12px;
+    }
+    .logo-img {
+        max-width: 48vw;
+        height: auto;
+    }
     .policy-card {
         padding: 2rem 1.25rem;
     }

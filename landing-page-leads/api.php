@@ -9,6 +9,7 @@ trait TLIT_LP_API {
     static function routes() {
         foreach(['otp','submit','download'] as $route) { register_rest_route('tlit-leads/v1','/'.$route,['methods'=>'POST','permission_callback'=>[__CLASS__,'permission'],'callback'=>[__CLASS__,$route]]); }
         register_rest_route('tlit-leads/v1','/draft',['methods'=>'POST','permission_callback'=>[__CLASS__,'permission'],'callback'=>[__CLASS__,'draft']]);
+        register_rest_route('tlit-leads/v1','/scm-registration',['methods'=>'POST','permission_callback'=>[__CLASS__,'permission'],'callback'=>[__CLASS__,'scm_registration']]);
     }
     static function draft($request) {
         $p=self::body($request);
@@ -25,6 +26,114 @@ trait TLIT_LP_API {
         return is_wp_error($saved)?$saved:['success'=>true];
     }
     static function body($request) { return strlen($request->get_body())>16000?[]:(array)$request->get_json_params(); }
+    static function scm_registration($request) {
+        $form = strlen($request->get_body()) <= 16000 ? $request->get_body_params() : [];
+        $field = static function ($key) use ($form) {
+            return is_string($form[$key] ?? null) ? trim($form[$key]) : '';
+        };
+        $id = $field('registrationId');
+        $intent = $field('intent');
+        $placement = $field('source');
+        $name = sanitize_text_field($field('name'));
+        $email = $field('email');
+        $country = $field('countryCode');
+        $mobile = preg_replace('/[\s()-]/', '', $field('mobile'));
+        $phone = $country.ltrim($mobile, '0');
+        if ($field('website') !== '' || strlen($name) < 2 || strlen($name) > 80 ||
+            !is_email($email) || strlen($email) > 254 ||
+            !preg_match('/^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/Di', $id) ||
+            !preg_match('/^\+[1-9][0-9]{0,3}$/D', $country) || !preg_match('/^[0-9]{6,14}$/D', $mobile) ||
+            !preg_match('/^\+[1-9][0-9]{7,14}$/D', $phone) || ($country === '+91' && !self::phone($mobile))) {
+            return self::error('Please check your contact details.');
+        }
+
+        $brochure = $field('brochureType');
+        $brochures = ['scm' => 'Oracle Fusion SCM Brochure', 'ai' => 'AI Agents Overview'];
+        if (!in_array($placement, ['inline','popup'], true) || !in_array($intent, ['demo','brochure'], true) ||
+            ($intent === 'brochure' ? $placement !== 'popup' || !isset($brochures[$brochure]) : $brochure !== '') ||
+            $field('termsAccepted') !== 'true') {
+            return self::error('Please complete the course questions and accept the Terms and Conditions.');
+        }
+
+        $choices = [
+            'currentStatus' => [
+                'final-year' => 'Final-year student',
+                'recent-graduate' => 'Recently graduated (0 to 1 year)',
+                'graduate-not-working' => 'Graduated more than 1 year ago, not working',
+                'working-switch' => 'Working, but want to switch to IT',
+            ],
+            'highestQualification' => [
+                'engineering' => 'B.Tech / B.E.',
+                'computer-studies' => 'BCA / B.Sc (IT/CS)',
+                'commerce-management' => 'B.Com / BBA / MBA',
+                'other-degree' => 'Other degree',
+            ],
+            'codingComfort' => [
+                'none' => 'I have no coding knowledge',
+                'basic' => 'I know the basics',
+                'comfortable' => 'I’m comfortable with coding',
+            ],
+            'careerObjective' => [
+                'start-it' => 'Start a career in IT from scratch',
+                'first-erp-job' => 'Get my first job in Oracle / SAP / ERP',
+                'switch-to-it' => 'Switch from a non-IT role to IT',
+                'explore' => 'Just exploring options',
+            ],
+            'startTimeline' => [
+                'two-weeks' => 'Immediately (within 2 weeks)',
+                'one-month' => 'Within 1 month',
+                'two-three-months' => 'In 2 to 3 months',
+                'exploring' => 'Just exploring for now',
+            ],
+            'enrollmentDecision' => [
+                'self' => 'I will decide myself',
+                'with-family' => 'I’ll decide with my parents or family',
+                'family' => 'My parents or family will decide',
+                'employer' => 'My employer will sponsor it',
+            ],
+            'trainingBudget' => [
+                'skills' => 'Yes, if the course gives me real job skills',
+                'installments' => 'Yes, if I can pay in installments',
+                'fee-first' => 'I’d like to know the fee first',
+                'free-only' => 'I’m looking for a free option only',
+            ],
+        ];
+        $answers = [];
+        foreach ($choices as $key => $values) {
+            $choice = $field($key);
+            if (!isset($values[$choice])) { return self::error('Please answer all of the course questions.'); }
+            $answers[$key] = $values[$choice];
+        }
+
+        if (!self::rate('scm-registration-'.($_SERVER['REMOTE_ADDR'] ?? ''), 30, 3600)) {
+            return self::error('Too many requests. Please try later.', 429);
+        }
+
+        $details = [
+            'highest_qualification' => $answers['highestQualification'],
+            'coding_comfort' => $answers['codingComfort'],
+            'enrollment_decision' => $answers['enrollmentDecision'],
+            'training_budget' => $answers['trainingBudget'],
+            'terms_accepted' => 'Yes',
+        ];
+        if ($intent === 'brochure') { $details['brochure_name'] = $brochures[$brochure]; }
+        $source = $intent === 'brochure' ? 'brochure' : ($placement === 'popup' ? 'popup' : 'general');
+        $result = self::ingest([
+            'request_id' => $id,
+            'name' => $name,
+            'email' => $email,
+            'phone' => $phone,
+            'goal' => $answers['careerObjective'],
+            'status' => $answers['currentStatus'],
+            'timeline' => $answers['startTimeline'],
+            'details' => $details,
+            'page_variant' => 'oracle_scm',
+            'submission_url' => home_url('/scm-batch-80'),
+            'consent_text' => 'I accept the Terms and Conditions.',
+        ], ['source' => $source]);
+        if (is_wp_error($result)) { return $result; }
+        return ['success' => true, 'receipt' => $result['receipt'], 'registrationId' => $id, 'intent' => $intent];
+    }
     static function otp($request) {
         $p=self::body($request);$phone=self::phone($p['phone']??'');$name=self::clean($p['name']??'',81);
         if(!$phone||strlen($name)<2||strlen($name)>80||!in_array($p['intent']??'',['general','popup','brochure'],true)) { return self::error('Check your name and mobile number.'); }

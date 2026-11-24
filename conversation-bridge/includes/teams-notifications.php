@@ -205,7 +205,9 @@ final class TLIT_Teams_Notifications {
     }
     public static function card(array $lead,$notification_id,$test=false) {
         $event=$lead['event']??'form';$dropoff=$event==='dropoff';$chatbot=$event==='chatbot';$stamp=strtotime(($dropoff?($lead['updated']??''):($lead['created']??'')).' UTC');
-        $facts=array('Name'=>$lead['name'],'Mobile'=>$lead['phone'],'Course'=>($lead['variant']??'')==='oracle_financials'?'Oracle Fusion Financials':'AI Powered Digital Marketing','Page version'=>strtoupper($lead['variant']??''),'Enquiry'=>$lead['source'],($dropoff?'Last activity (IST)':'Submitted (IST)')=>$stamp===false?'Not recorded':wp_date('d M Y, g:i a',$stamp,new DateTimeZone('Asia/Kolkata')));
+        $variant=$lead['variant']??'';
+        $course=is_callable(array('TLIT_LP_Leads','course_name'))?TLIT_LP_Leads::course_name($variant):'AI Powered Digital Marketing';
+        $facts=array('Name'=>$lead['name'],'Mobile'=>$lead['phone'],'Course'=>$course,'Page version'=>strtoupper($variant),'Enquiry'=>$lead['source'],($dropoff?'Last activity (IST)':'Submitted (IST)')=>$stamp===false?'Not recorded':wp_date('d M Y, g:i a',$stamp,new DateTimeZone('Asia/Kolkata')));
         foreach(($lead['bant']??array()) as $label=>$answer) $facts[$label]=$answer;
         if($dropoff) { $facts['Progress']=$lead['progress']??'';$facts['Status']=$lead['dropoff_status']??'Incomplete form'; }
         foreach(array('Email'=>'email','Language'=>'language','Learning goal'=>'goal','Submitted from'=>'page') as $label=>$key) { if(!empty($lead[$key])) { $facts[$label]=$lead[$key]; } }

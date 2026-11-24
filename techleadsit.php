@@ -91,8 +91,8 @@ function techleadsit_route_landing_pages() {
         $sitemap_entries = array(
             'https://lp.techleadsit.com/oracle-fusion-hcm-training/' => array('lastmod' => '2026-09-08', 'priority' => '1.0'),
             'https://lp.techleadsit.com/f-hcm-course/' => array('lastmod' => '2026-09-08', 'priority' => '0.9'),
-            'https://lp.techleadsit.com/cookie-policy/' => array('lastmod' => '2026-10-09', 'priority' => '0.6'),
-            'https://lp.techleadsit.com/privacy-policy/' => array('lastmod' => '2026-09-07', 'priority' => '0.6'),
+            'https://lp.techleadsit.com/cookie-policy/' => array('lastmod' => '2026-11-24', 'priority' => '0.6'),
+            'https://lp.techleadsit.com/privacy-policy/' => array('lastmod' => '2026-11-24', 'priority' => '0.6'),
             'https://lp.techleadsit.com/terms-and-conditions/' => array('lastmod' => '2026-09-07', 'priority' => '0.6'),
             'https://lp.techleadsit.com/refund-cancellation-policy/' => array('lastmod' => '2026-09-07', 'priority' => '0.6')
         );
@@ -195,12 +195,18 @@ function techleadsit_route_landing_pages() {
                 }
                 if ($slug === 'scm-batch-80' || $slug === 'oracle-fusion-hcm-online-live-demo') {
                     $asset_url = plugin_dir_url(__FILE__) . ($slug === 'scm-batch-80' ? 'oracle-fusion-scm-live-demo/' : 'oracle-fusion-hcm-live-demo/');
-                    $event_script = $slug === 'scm-batch-80' ? 'app.js?v=13' : 'app.js?v=12';
+                    $event_style = $slug === 'scm-batch-80' ? 'styles.css?v=22' : 'styles.css?v=7';
+                    $event_script = $slug === 'scm-batch-80' ? 'app.js?v=20' : 'app.js?v=12';
                     $html_content = str_replace(
-                        array('href="styles.css?v=7"', 'src="'.$event_script.'"', 'src="assets/', 'href="assets/'),
-                        array('href="'.$asset_url.'styles.css?v=7"', 'src="'.$asset_url.$event_script.'"', 'src="'.$asset_url.'assets/', 'href="'.$asset_url.'assets/'),
+                        array('href="'.$event_style.'"', 'src="'.$event_script.'"', 'src="assets/', 'href="assets/', 'poster="assets/'),
+                        array('href="'.$asset_url.$event_style.'"', 'src="'.$asset_url.$event_script.'"', 'src="'.$asset_url.'assets/', 'href="'.$asset_url.'assets/', 'poster="'.$asset_url.'assets/'),
                         $html_content
                     );
+                    if ($slug === 'scm-batch-80') {
+                        $html_content = techleadsit_render_scm_schedule($html_content);
+                        $bridge_endpoint = wp_json_encode(rest_url('tlit-leads/v1/scm-registration'), JSON_HEX_TAG);
+                        $html_content = str_replace('</head>', '<script>window.SCM_REGISTRATION_ENDPOINT='.$bridge_endpoint.';</script></head>', $html_content);
+                    }
                     nocache_headers();
                     status_header(200);
                     header('Content-Type: text/html; charset=utf-8');
@@ -236,7 +242,7 @@ function techleadsit_route_landing_pages() {
                 $html_content = str_replace('src="logo-dark.png"', 'src="' . $plugin_url . 'logo-dark.png"', $html_content);
                 $html_content = str_replace('src="logo-light.png"', 'src="' . $plugin_url . 'logo-light.png"', $html_content);
                 $html_content = str_replace('src="images/', 'src="' . $plugin_url . 'images/', $html_content);
-                $html_content = str_replace('href="policy.css"', 'href="' . $plugin_url . 'policy.css?v=1.0"', $html_content);
+                $html_content = str_replace('href="policy.css"', 'href="' . $plugin_url . 'policy.css?v=1.1"', $html_content);
                 $html_content = str_replace('src="../logo-dark.png"', 'src="' . plugin_dir_url(__FILE__) . 'f-hcm-course/logo-dark.png"', $html_content);
 
                 // Policy pages keep shared tracking but omit batch counters and countdowns.
@@ -1726,6 +1732,8 @@ function techleadsit_get_courses_registry() {
                 'countdown_text' => 'Next SCM Batch starts soon - Only 6 seats left!',
                 'countdown_target_datetime' => '2026-09-28T19:00',
                 'countdown_seats_count' => '6',
+                'scm_demo_datetime' => '2026-12-12T08:00',
+                'scm_batch_datetime' => '2026-12-14T07:00',
                 'batch_section_enabled' => 1,
                 'batch_title' => 'Next Batch Starts Soon',
                 'batch_subtitle' => 'Live Interactive Training with Real-Time Implementation',
@@ -1820,6 +1828,40 @@ function techleadsit_get_course_options($course_id) {
     return wp_parse_args($saved, $defaults);
 }
 
+function techleadsit_parse_scm_datetime($value) {
+    if (!is_string($value) || !preg_match('/^[1-9][0-9]{3}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}$/D', $value)) {
+        return null;
+    }
+    $date = DateTimeImmutable::createFromFormat('!Y-m-d\TH:i', $value, new DateTimeZone('Asia/Kolkata'));
+    return $date && $date->format('Y-m-d\TH:i') === $value ? $date : null;
+}
+
+function techleadsit_get_scm_schedule() {
+    $defaults = techleadsit_get_courses_registry()['scm']['defaults'];
+    $saved = get_option('techleadsit_course_settings_scm', array());
+    $schedule = array();
+    foreach (array('scm_demo_datetime', 'scm_batch_datetime') as $key) {
+        $schedule[$key] = techleadsit_parse_scm_datetime($saved[$key] ?? null) ?? techleadsit_parse_scm_datetime($defaults[$key]);
+    }
+    return $schedule;
+}
+
+function techleadsit_render_scm_schedule($html) {
+    $schedule = techleadsit_get_scm_schedule();
+    $html = preg_replace_callback('~<time data-scm-time="(demo|batch)" datetime="[^"]*">[^<]*</time>~', function ($match) use ($schedule) {
+        $date = $schedule['scm_'.$match[1].'_datetime'];
+        return '<time data-scm-time="'.$match[1].'" datetime="'.esc_attr($date->format(DATE_ATOM)).'">'.
+            esc_html($date->format('l, j F Y · g:i A').' IST').'</time>';
+    }, $html);
+
+    return preg_replace_callback('~(<script type="application/ld\+json" id="scm-event-schema">)(.*?)(</script>)~s', function ($match) use ($schedule) {
+        $event = json_decode($match[2], true);
+        if (!is_array($event)) { return $match[0]; }
+        $event['startDate'] = $schedule['scm_demo_datetime']->format(DATE_ATOM);
+        return $match[1].wp_json_encode($event, JSON_HEX_TAG | JSON_UNESCAPED_SLASHES).$match[3];
+    }, $html);
+}
+
 add_action('admin_menu', 'techleadsit_add_admin_menu');
 function techleadsit_add_admin_menu() {
     add_menu_page(
@@ -1876,6 +1918,17 @@ function techleadsit_sanitize_course_settings($input) {
     $courses = techleadsit_get_courses_registry();
     $slugs = $courses[$course_id]['slugs'] ?? array();
 
+    if ($course_id === 'scm') {
+        foreach (techleadsit_get_scm_schedule() as $key => $previous) {
+            $date = techleadsit_parse_scm_datetime($input[$key] ?? null);
+            if (!$date && array_key_exists($key, $input)) {
+                $label = $key === 'scm_demo_datetime' ? 'demo' : 'batch start';
+                add_settings_error('techleadsit_course_settings_scm', $key, 'Enter a valid SCM '.$label.' date and time in IST.');
+            }
+            $sanitized[$key] = ($date ?? $previous)->format('Y-m-d\TH:i');
+        }
+    }
+
     if ($course_id === 'digital_marketing') {
         foreach(array('dm_chat_enabled','dm_chat_otp_required','dm_live_enabled','dm_gtm_enabled','dm_geo_enabled','dm_clarity_enabled','dm_seats_enabled') as $field)$sanitized[$field]=empty($input[$field])?0:1;
         tlit_dm_ai_save_course_key($input,$sanitized);
@@ -1906,12 +1959,15 @@ function techleadsit_render_multi_course_settings_page() {
     $active_tab = isset($_GET['tab']) && isset($courses[$_GET['tab']]) ? sanitize_key($_GET['tab']) : 'hcm';
     $current_course = $courses[$active_tab];
     $opts = techleadsit_get_course_options($active_tab);
+    $scm_schedule = $active_tab === 'scm' ? techleadsit_get_scm_schedule() : array();
+    $scm_errors = $active_tab === 'scm' ? get_settings_errors('techleadsit_course_settings_scm') : array();
     if ($active_tab === 'digital_marketing' && function_exists('settings_errors')) settings_errors('techleadsit_course_settings_digital_marketing');
     ?>
 <style><?php readfile(__DIR__ . "/admin-settings/settings.css"); ?></style>
     <div class="wrap tl-settings" data-theme="dark">
 <header class="tl-header"><div><span class="tl-eyebrow">TECHLEADS IT / CAMPAIGN WORKSPACE</span><h1>Landing page settings<span class="tl-heading-dot">.</span></h1><p>Set your schedule. Personalize your message. Keep every page in sync.</p></div><div class="tl-theme" role="group" aria-label="Appearance"><button type="button" data-set-theme="light" aria-pressed="false">☀ Light</button><button type="button" data-set-theme="dark" aria-pressed="true">☾ Dark</button></div></header><div class="tl-course-intro"><span class="tl-eyebrow">01 / CHOOSE A COURSE</span><p>Each course has its own settings. Select one to get started.</p></div>
-        <?php if (isset($_GET['settings-updated']) && $_GET['settings-updated']) : ?>
+        <?php if ($scm_errors) settings_errors('techleadsit_course_settings_scm'); ?>
+        <?php if (isset($_GET['settings-updated']) && $_GET['settings-updated'] && !$scm_errors) : ?>
             <div class="notice notice-success is-dismissible" style=" margin-bottom: 20px">
                 <p><strong>Campaign Updated!</strong> Landing pages for <strong><?php echo esc_html($current_course['name']); ?></strong> are now broadcasting your updated schedule.</p>
             </div>
@@ -1961,7 +2017,12 @@ function techleadsit_render_multi_course_settings_page() {
             </div>
         </div>
 
-        <p id="tl-feedback" class="tl-feedback" role="status" aria-live="polite">Choose a preset or edit the settings below.</p><nav class="tl-section-nav" aria-label="Settings sections"><a href="#tl-countdown">Countdown banner</a><a href="#tl-batch">Batch schedule</a><a href="#tl-verification">Phone verification</a><a href="#tl-pages">Connected pages</a></nav><form method="post" action="options.php" id="techleadsitForm">
+        <p id="tl-feedback" class="tl-feedback" role="status" aria-live="polite">Choose a preset or edit the settings below.</p>
+        <nav class="tl-section-nav" aria-label="Settings sections">
+            <?php if ($active_tab === 'scm') : ?><a href="#tl-scm-live-demo">SCM live demo schedule</a><?php endif; ?>
+            <a href="#tl-countdown">Countdown banner</a><a href="#tl-batch">Batch schedule</a><a href="#tl-verification">Phone verification</a><a href="#tl-pages">Connected pages</a>
+        </nav>
+        <form method="post" action="options.php" id="techleadsitForm">
             <?php settings_fields('techleadsit_course_group_' . $active_tab); ?>
             <?php if($active_tab==='digital_marketing'): ?>
             <fieldset style="padding:20px;margin:20px 0"><legend><strong>Digital Marketing integration</strong></legend>
@@ -1973,6 +2034,21 @@ function techleadsit_render_multi_course_settings_page() {
             <?php endif; ?>
 
             <input type="hidden" name="techleadsit_course_settings_<?php echo esc_attr($active_tab); ?>[course_id]" value="<?php echo esc_attr($active_tab); ?>">
+
+            <?php if ($active_tab === 'scm') : ?>
+            <section class="tl-panel" id="tl-scm-live-demo" aria-labelledby="tl-scm-live-demo-title" style="padding: 24px; margin-bottom: 24px">
+                <h2 id="tl-scm-live-demo-title" style="margin: 0">SCM live demo schedule</h2>
+                <p id="tl-scm-live-demo-help">Enter the dates and times in India Standard Time (IST) for <a href="<?php echo esc_url(home_url('/scm-batch-80')); ?>">the SCM fresher landing page</a>.</p>
+                <table class="form-table" style="margin-top: 0">
+                    <?php foreach (array('scm_demo_datetime' => 'Free demo date and time', 'scm_batch_datetime' => 'Regular batch start date and time') as $key => $label) : ?>
+                    <tr>
+                        <th scope="row" style="width: 220px"><label for="field_<?php echo esc_attr($key); ?>"><?php echo esc_html($label); ?></label></th>
+                        <td><input type="datetime-local" id="field_<?php echo esc_attr($key); ?>" name="techleadsit_course_settings_scm[<?php echo esc_attr($key); ?>]" value="<?php echo esc_attr($scm_schedule[$key]->format('Y-m-d\TH:i')); ?>" aria-describedby="tl-scm-live-demo-help" class="regular-text" required></td>
+                    </tr>
+                    <?php endforeach; ?>
+                </table>
+            </section>
+            <?php endif; ?>
 
             <!-- Section 1: Sticky Countdown Bar -->
             <div class="tl-panel" id="tl-countdown" style=" padding: 24px; margin-bottom: 24px">

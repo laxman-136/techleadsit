@@ -55,11 +55,13 @@ trait TLIT_LP_Integration {
         $note="Landing Page Leads | LP-{$row->id}\nPage: {$row->page_variant}\nSubmitted from: {$row->submission_url}\nForm: ".(self::labels()[$row->source]??$row->source)."\nCounsellor qualification: ".(self::statuses()[$row->lead_status]??$row->lead_status)."\nGoal: ".($d['goal']??'')."\nMarketing consent: ".(!empty($d['marketingConsent'])?'Yes':'No')."\nPhone verified: ".(!empty($row->otp_verified)?'Yes':'No')."\nCounsellor notes: {$row->advisor_note}";
         if(!empty($details['conversation_reference'])) { $note.="\nConversation: ".$details['conversation_reference']; }
         foreach(['status','timeline','question'] as $key) { if(!empty($d[$key])) { $note.="\n".ucfirst($key).': '.$d[$key]; } }
-        if(!empty($d['brochure_downloaded'])) { $note.="\nPerson downloaded brochure — AI Powered Digital Marketing"; }
-        elseif(in_array($row->source,['brochure','chatbot_brochure'],true)) { $note.="\nBrochure requested — AI Powered Digital Marketing"; }
-        if($row->page_variant==='oracle_financials') { $note=str_replace('AI Powered Digital Marketing','Oracle Fusion Financials',$note); }
+        $course = self::course_name($row->page_variant);
+        $brochure = $details['brochure_name'] ?? $course;
+        if(!empty($d['brochure_downloaded'])) { $note.="\nPerson downloaded brochure — ".$brochure; }
+        elseif(in_array($row->source,['brochure','chatbot_brochure'],true)) { $note.="\nBrochure requested — ".$brochure; }
+        if($row->page_variant==='oracle_scm' && !empty($details['highest_qualification'])) { $note.="\nHighest qualification: ".$details['highest_qualification']; }
         $fields=tlit_lp_schema_lead_fields(['tracking'=>$tracking,'details'=>$details],$row->name,$row->phone,$row->email,$d['goal']??'',$note);
-        if($row->page_variant==='oracle_financials') { $fields['Course Name']='Oracle Fusion Financials'; }
+        if(in_array($row->page_variant,['oracle_financials','oracle_scm'],true)) { $fields['Course Name']=$course; }
         // The handoff may happen days later; report the original capture date in IST.
         try {
             $captured=new DateTimeImmutable($row->created_at,new DateTimeZone('UTC'));
