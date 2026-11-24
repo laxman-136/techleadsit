@@ -128,7 +128,7 @@ trait TLIT_LP_API {
             'timeline' => $answers['startTimeline'],
             'details' => $details,
             'page_variant' => 'oracle_scm',
-            'submission_url' => home_url('/scm-batch-80'),
+            'submission_url' => home_url('/oracle-fusion-scm-course-it'),
             'consent_text' => 'I accept the Terms and Conditions.',
         ], ['source' => $source]);
         if (is_wp_error($result)) { return $result; }

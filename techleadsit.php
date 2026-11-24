@@ -2,7 +2,7 @@
 /**
  * Plugin Name: TechLeadsIT Landing Pages
  * Description: Serves high-performance custom HTML landing pages at clean URLs and handles secure lead routing to TeleCRM.
- * Version: 1.7.20
+ * Version: 1.7.21
  * Author: TechLeadsIT
  */
 
@@ -43,7 +43,7 @@ function techleadsit_route_digital_marketing_early() {
         techleadsit_route_landing_pages();
         return;
     }
-    if(in_array($path,array('/oracle-fusion-financials-live-demo','/oracle-fusion-financials-course-online','/ai-powered-digital-marketing','/ai-powered-digital-marketing-course','/ai-powered-digital-marketing-course/thank-you','/ai-powered-digital-marketing-training','/ai-powered-digital-marketing-training/thank-you'),true)) {
+    if(in_array($path,array('/scm-batch-80','/oracle-fusion-scm-course-it','/oracle-fusion-financials-live-demo','/oracle-fusion-financials-course-online','/ai-powered-digital-marketing','/ai-powered-digital-marketing-course','/ai-powered-digital-marketing-course/thank-you','/ai-powered-digital-marketing-training','/ai-powered-digital-marketing-training/thank-you'),true)) {
         techleadsit_route_landing_pages();
     }
 }
@@ -91,6 +91,7 @@ function techleadsit_route_landing_pages() {
         $sitemap_entries = array(
             'https://lp.techleadsit.com/oracle-fusion-hcm-training/' => array('lastmod' => '2026-09-08', 'priority' => '1.0'),
             'https://lp.techleadsit.com/f-hcm-course/' => array('lastmod' => '2026-09-08', 'priority' => '0.9'),
+            'https://lp.techleadsit.com/oracle-fusion-scm-course-it' => array('lastmod' => '2026-11-24', 'priority' => '0.9'),
             'https://lp.techleadsit.com/cookie-policy/' => array('lastmod' => '2026-11-24', 'priority' => '0.6'),
             'https://lp.techleadsit.com/privacy-policy/' => array('lastmod' => '2026-11-24', 'priority' => '0.6'),
             'https://lp.techleadsit.com/terms-and-conditions/' => array('lastmod' => '2026-09-07', 'priority' => '0.6'),
@@ -124,6 +125,7 @@ function techleadsit_route_landing_pages() {
         'ai-powered-digital-marketing-training' => 'ai-powered-digital-marketing-training/index.html',
         'ai-powered-digital-marketing-training/thank-you' => 'ai-powered-digital-marketing-training/thank-you.html',
         'scm-batch-80' => 'oracle-fusion-scm-live-demo/index.html',
+        'oracle-fusion-scm-course-it' => 'oracle-fusion-scm-course-it/index.html',
         'scm-demo' => 'scm-demo/index.html',
         'scm-demo-v2' => 'scm-demo-v2/index.html',
         'rise-v1' => 'rise-v1/index.html',
@@ -193,20 +195,30 @@ function techleadsit_route_landing_pages() {
                     if(($_SERVER['REQUEST_METHOD']??'GET')!=='HEAD') echo techleadsit_with_tracking($html_content);
                     exit;
                 }
+                if ($slug === 'oracle-fusion-scm-course-it') {
+                    $asset_url = plugin_dir_url(__FILE__) . 'oracle-fusion-scm-course-it/';
+                    $html_content = str_replace(
+                        array('href="styles.css?v=1.7.21"', 'src="app.js?v=1.7.21"', 'src="assets/', 'href="assets/', 'poster="assets/'),
+                        array('href="'.$asset_url.'styles.css?v=1.7.21"', 'src="'.$asset_url.'app.js?v=1.7.21"', 'src="'.$asset_url.'assets/', 'href="'.$asset_url.'assets/', 'poster="'.$asset_url.'assets/'),
+                        $html_content
+                    );
+                    $html_content = techleadsit_render_scm_schedule($html_content);
+                    $bridge_endpoint = wp_json_encode(rest_url('tlit-leads/v1/scm-registration'), JSON_HEX_TAG);
+                    $html_content = str_replace('</head>', '<script>window.SCM_REGISTRATION_ENDPOINT='.$bridge_endpoint.';</script></head>', $html_content);
+                    nocache_headers(); status_header(200); header('Content-Type: text/html; charset=utf-8');
+                    if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'HEAD') echo techleadsit_with_tracking($html_content);
+                    exit;
+                }
+                // Event pages keep their own schedule and registration workflow.
                 if ($slug === 'scm-batch-80' || $slug === 'oracle-fusion-hcm-online-live-demo') {
                     $asset_url = plugin_dir_url(__FILE__) . ($slug === 'scm-batch-80' ? 'oracle-fusion-scm-live-demo/' : 'oracle-fusion-hcm-live-demo/');
-                    $event_style = $slug === 'scm-batch-80' ? 'styles.css?v=22' : 'styles.css?v=7';
-                    $event_script = $slug === 'scm-batch-80' ? 'app.js?v=20' : 'app.js?v=12';
+                    $event_style = 'styles.css?v=7';
+                    $event_script = $slug === 'scm-batch-80' ? 'app.js?v=13' : 'app.js?v=12';
                     $html_content = str_replace(
                         array('href="'.$event_style.'"', 'src="'.$event_script.'"', 'src="assets/', 'href="assets/', 'poster="assets/'),
                         array('href="'.$asset_url.$event_style.'"', 'src="'.$asset_url.$event_script.'"', 'src="'.$asset_url.'assets/', 'href="'.$asset_url.'assets/', 'poster="'.$asset_url.'assets/'),
                         $html_content
                     );
-                    if ($slug === 'scm-batch-80') {
-                        $html_content = techleadsit_render_scm_schedule($html_content);
-                        $bridge_endpoint = wp_json_encode(rest_url('tlit-leads/v1/scm-registration'), JSON_HEX_TAG);
-                        $html_content = str_replace('</head>', '<script>window.SCM_REGISTRATION_ENDPOINT='.$bridge_endpoint.';</script></head>', $html_content);
-                    }
                     nocache_headers();
                     status_header(200);
                     header('Content-Type: text/html; charset=utf-8');
@@ -1722,7 +1734,7 @@ function techleadsit_get_courses_registry() {
                 'oracle-fusion-scm-training' => 'oracle-fusion-scm-training/index.html',
                 'scm-demo' => 'scm-demo/index.html',
                 'scm-demo-v2' => 'scm-demo-v2/index.html',
-                'scm-batch-80' => 'oracle-fusion-scm-live-demo/index.html',
+                'oracle-fusion-scm-course-it' => 'oracle-fusion-scm-course-it/index.html',
                 'rise-v1' => 'rise-v1/index.html',
                 'rise-v2' => 'rise-v2/index.html',
                 'rise-form-16465496' => 'rise-form-16465496/index.html',
@@ -1734,6 +1746,8 @@ function techleadsit_get_courses_registry() {
                 'countdown_seats_count' => '6',
                 'scm_demo_datetime' => '2026-12-12T08:00',
                 'scm_batch_datetime' => '2026-12-14T07:00',
+                'scm_demo_platform' => 'Live on Zoom',
+                'scm_demo_join_url' => 'https://zoom.us/j/8125323232',
                 'batch_section_enabled' => 1,
                 'batch_title' => 'Next Batch Starts Soon',
                 'batch_subtitle' => 'Live Interactive Training with Real-Time Implementation',
@@ -1854,12 +1868,28 @@ function techleadsit_render_scm_schedule($html) {
             esc_html($date->format('l, j F Y · g:i A').' IST').'</time>';
     }, $html);
 
-    return preg_replace_callback('~(<script type="application/ld\+json" id="scm-event-schema">)(.*?)(</script>)~s', function ($match) use ($schedule) {
-        $event = json_decode($match[2], true);
-        if (!is_array($event)) { return $match[0]; }
-        $event['startDate'] = $schedule['scm_demo_datetime']->format(DATE_ATOM);
-        return $match[1].wp_json_encode($event, JSON_HEX_TAG | JSON_UNESCAPED_SLASHES).$match[3];
+    $details = techleadsit_get_scm_demo_details();
+    $html = preg_replace_callback('~(<span data-scm-platform>)[^<]*(</span>)~', function ($match) use ($details) {
+        return $match[1].esc_html($details['scm_demo_platform']).$match[2];
     }, $html);
+    return preg_replace_callback('~(<a\b[^>]*data-result-intent="demo"[^>]*href=")[^"]*(")~', function ($match) use ($details) {
+        return $match[1].esc_url($details['scm_demo_join_url']).$match[2];
+    }, $html);
+}
+
+function techleadsit_parse_scm_join_url($value) {
+    if (!is_string($value) || !filter_var($value, FILTER_VALIDATE_URL)) return null;
+    $parts = parse_url($value);
+    return ($parts['scheme'] ?? '') === 'https' && !empty($parts['host']) && !isset($parts['user']) && !isset($parts['pass']) ? $value : null;
+}
+
+function techleadsit_get_scm_demo_details() {
+    $defaults = techleadsit_get_courses_registry()['scm']['defaults'];
+    $options = techleadsit_get_course_options('scm');
+    return array(
+        'scm_demo_platform' => sanitize_text_field($options['scm_demo_platform']) ?: $defaults['scm_demo_platform'],
+        'scm_demo_join_url' => techleadsit_parse_scm_join_url($options['scm_demo_join_url']) ?? $defaults['scm_demo_join_url'],
+    );
 }
 
 add_action('admin_menu', 'techleadsit_add_admin_menu');
@@ -1927,6 +1957,13 @@ function techleadsit_sanitize_course_settings($input) {
             }
             $sanitized[$key] = ($date ?? $previous)->format('Y-m-d\TH:i');
         }
+        $previous = techleadsit_get_scm_demo_details();
+        $sanitized['scm_demo_platform'] = sanitize_text_field($input['scm_demo_platform'] ?? '') ?: $previous['scm_demo_platform'];
+        $join_url = techleadsit_parse_scm_join_url($input['scm_demo_join_url'] ?? null);
+        if (!$join_url && array_key_exists('scm_demo_join_url', $input)) {
+            add_settings_error('techleadsit_course_settings_scm', 'scm_demo_join_url', 'Enter a valid HTTPS demo joining link.');
+        }
+        $sanitized['scm_demo_join_url'] = $join_url ?? $previous['scm_demo_join_url'];
     }
 
     if ($course_id === 'digital_marketing') {
@@ -2019,7 +2056,7 @@ function techleadsit_render_multi_course_settings_page() {
 
         <p id="tl-feedback" class="tl-feedback" role="status" aria-live="polite">Choose a preset or edit the settings below.</p>
         <nav class="tl-section-nav" aria-label="Settings sections">
-            <?php if ($active_tab === 'scm') : ?><a href="#tl-scm-live-demo">SCM live demo schedule</a><?php endif; ?>
+            <?php if ($active_tab === 'scm') : ?><a href="#tl-scm-live-demo">SCM landing page demo details</a><?php endif; ?>
             <a href="#tl-countdown">Countdown banner</a><a href="#tl-batch">Batch schedule</a><a href="#tl-verification">Phone verification</a><a href="#tl-pages">Connected pages</a>
         </nav>
         <form method="post" action="options.php" id="techleadsitForm">
@@ -2037,8 +2074,9 @@ function techleadsit_render_multi_course_settings_page() {
 
             <?php if ($active_tab === 'scm') : ?>
             <section class="tl-panel" id="tl-scm-live-demo" aria-labelledby="tl-scm-live-demo-title" style="padding: 24px; margin-bottom: 24px">
-                <h2 id="tl-scm-live-demo-title" style="margin: 0">SCM live demo schedule</h2>
-                <p id="tl-scm-live-demo-help">Enter the dates and times in India Standard Time (IST) for <a href="<?php echo esc_url(home_url('/scm-batch-80')); ?>">the SCM fresher landing page</a>.</p>
+                <h2 id="tl-scm-live-demo-title" style="margin: 0">SCM landing page demo details</h2>
+                <p id="tl-scm-live-demo-help">Enter the dates and times in India Standard Time (IST) for <a href="<?php echo esc_url(home_url('/oracle-fusion-scm-course-it')); ?>">/oracle-fusion-scm-course-it</a>. These details update its countdown, registration messages, and demo schedule.</p>
+                <p>The <a href="<?php echo esc_url(home_url('/scm-batch-80')); ?>">/scm-batch-80 event page</a> keeps its separate schedule and registration.</p>
                 <table class="form-table" style="margin-top: 0">
                     <?php foreach (array('scm_demo_datetime' => 'Free demo date and time', 'scm_batch_datetime' => 'Regular batch start date and time') as $key => $label) : ?>
                     <tr>
@@ -2046,6 +2084,15 @@ function techleadsit_render_multi_course_settings_page() {
                         <td><input type="datetime-local" id="field_<?php echo esc_attr($key); ?>" name="techleadsit_course_settings_scm[<?php echo esc_attr($key); ?>]" value="<?php echo esc_attr($scm_schedule[$key]->format('Y-m-d\TH:i')); ?>" aria-describedby="tl-scm-live-demo-help" class="regular-text" required></td>
                     </tr>
                     <?php endforeach; ?>
+                    <?php $scm_details = techleadsit_get_scm_demo_details(); ?>
+                    <tr>
+                        <th scope="row"><label for="field_scm_demo_platform">Demo delivery label</label></th>
+                        <td><input type="text" id="field_scm_demo_platform" name="techleadsit_course_settings_scm[scm_demo_platform]" value="<?php echo esc_attr($scm_details['scm_demo_platform']); ?>" class="regular-text" placeholder="Live on Zoom" required></td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><label for="field_scm_demo_join_url">Demo joining link</label></th>
+                        <td><input type="url" id="field_scm_demo_join_url" name="techleadsit_course_settings_scm[scm_demo_join_url]" value="<?php echo esc_attr($scm_details['scm_demo_join_url']); ?>" class="large-text" required><p class="description">Use an HTTPS link. Visitors see this link after a confirmed demo registration.</p></td>
+                    </tr>
                 </table>
             </section>
             <?php endif; ?>

@@ -1,26 +1,12 @@
-# SCM Batch 80 — fresher landing page
+# SCM Batch 80 — temporarily restored n8n registration
 
-## Updating the demo and batch dates
-
-In WordPress, open **Landing Page Settings → Oracle Fusion SCM → SCM live demo schedule**. Enter the free demo and regular batch start times in IST, then select **Save changes**. The dates apply to `/scm-batch-80` and supply its countdown, registration messages and event metadata.
-
-## Three-step registration and brochure download
-
-The inline demo form and the demo, SCM brochure, and AI brochure popups submit to the same-origin WordPress REST route `tlit-leads/v1/scm-registration` after the final step. The route saves the lead and all seven qualification answers in Conversion Bridge under **Oracle Fusion SCM**, along with terms acceptance and the requested brochure where applicable. Demo confirmation and PDF downloads require a Conversion Bridge receipt matching the submitted registration ID and intent.
-
-Deploy the landing page and its WordPress REST handler together. The `/terms-and-conditions/` link uses the existing WordPress route.
-
-Run `node oracle-fusion-scm-live-demo/tests/forms.cjs` with Playwright available to check the page using simulated Conversion Bridge receipts. Set `SCM_CHROME_PATH` if Chrome is installed outside Playwright’s default location.
-
-## Previous registration setup
-
-## Historical setup (23 October 2026)
+## Current state (23 October 2026)
 
 At the owner's explicit request, both forms temporarily use the previous n8n webhook again. Workflow OJ6rWvTcsaH2SNVg appends Name, Email, Mobile with country code, and Career objective to the designated Sheet only. It does not update rows by email or route to Conversion Bridge. Success requires a successful Sheet node followed by a response matching the submitted registration ID.
 
 The webhook is deliberately unauthenticated; the owner explicitly accepted this and the public Sheet risk. CORS and field validation are not caller authentication. Retries after an ambiguous network failure can append a duplicate; request IDs are response correlation, not backend deduplication. The temporary queue is not installed. The Sheet remains publicly editable at the owner's request.
 
-The legacy smoke test, `tests/restored-registration.cjs`, targets the previous live page. Its `--submit` mode creates labelled test rows in the Sheet. Use the local mock test above for the new popup.
+Tests: tests/forms.cjs checks the browser flow with mocked responses; tests/restored-registration.cjs --preview --submit tests both local updated forms against the real Sheet before release; running without flags checks the published forms without submitting. Real tests are labelled SCM RESTORE TEST and use example.invalid addresses. They remain in the Sheet, not actual leads.
 
 The Apps Script code and owner setup below are retained for the later protected migration; they are not the active submission path.
 

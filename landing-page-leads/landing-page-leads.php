@@ -197,7 +197,7 @@ final class TLIT_LP_Leads {
         if (isset(self::variants()[$value])) { return $value; }
         $path=trim((string)wp_parse_url($url,PHP_URL_PATH),'/');
         if(in_array($path,['oracle-fusion-financials-demo','oracle-fusion-financials-course-online'],true)) { return 'oracle_financials'; }
-        if($path==='scm-batch-80') { return 'oracle_scm'; }
+        if(in_array($path,['oracle-fusion-scm-course-it','scm-batch-80'],true)) { return 'oracle_scm'; }
         if($path==='ai-powered-digital-marketing-course') { return 'v2'; }
         if($path==='ai-powered-digital-marketing-training') { return 'v3'; }
         if(str_contains($path,'digital-marketing-v3')||str_contains($path,'digital-marketing-3')) { return 'v3'; }
