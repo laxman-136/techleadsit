@@ -84,7 +84,13 @@ async function completeEnrollment(form) {
 async function requestCode(form) {
   await form.getByRole('button', { name: 'Send verification code', exact: true }).click();
   await form.locator('[data-form-step="4"]').waitFor({ state: 'visible' });
-  await form.getByLabel('4-digit SMS code').fill('1234');
+  await fillOTP(form, '1234');
+}
+
+async function fillOTP(form, code) {
+  await form.getByRole('textbox', { name: 'Digit 1 of 4', exact: true }).fill(code);
+  assert.equal(await form.locator('[name=otp]').inputValue(), code);
+  assert.equal(await form.locator('[data-otp-digit]').evaluateAll(inputs => inputs.map(input => input.value).join('')), code);
 }
 
 async function main() {
@@ -301,6 +307,30 @@ async function main() {
     await requestCode(heroForm);
     assert.equal(await heroForm.locator('[data-form-progress]').innerText(), 'Step 4 of 4');
     assert.equal(await heroForm.getByRole('button', { name: 'Resend code', exact: false }).isDisabled(), true);
+    const digits = heroForm.locator('[data-otp-digit]');
+    assert.equal(await digits.count(), 4);
+    await digits.nth(3).press('Backspace');
+    await digits.nth(3).press('Backspace');
+    assert.equal(await heroForm.locator('[name=otp]').inputValue(), '12');
+    assert.equal(await digits.nth(2).evaluate(input => input === document.activeElement), true);
+    await digits.nth(2).press('3');
+    assert.equal(await digits.nth(3).evaluate(input => input === document.activeElement), true);
+    await digits.nth(3).press('4');
+    await digits.nth(3).press('ArrowLeft');
+    assert.equal(await digits.nth(2).evaluate(input => input === document.activeElement), true);
+    await digits.nth(2).press('ArrowRight');
+    assert.equal(await digits.nth(3).evaluate(input => input === document.activeElement), true);
+    await digits.nth(3).fill('');
+    await heroForm.getByRole('button', { name: 'Verify & register', exact: true }).click();
+    assert.equal(calls.length, 0);
+    assert.equal(await digits.nth(3).evaluate(input => input === document.activeElement && !input.validity.valid), true);
+    await digits.nth(3).fill('x');
+    assert.equal(await digits.nth(3).inputValue(), '');
+    await digits.nth(2).evaluate(input => {
+      const clipboardData = new DataTransfer(); clipboardData.setData('text', '12 34');
+      input.dispatchEvent(new ClipboardEvent('paste', { bubbles: true, cancelable: true, clipboardData }));
+    });
+    assert.equal(await heroForm.locator('[name=otp]').inputValue(), '1234');
     if (process.env.SCM_REVIEW_DIR) {
       for (const width of [1440, 390]) {
         await page.setViewportSize({ width, height: 900 });
@@ -308,7 +338,7 @@ async function main() {
       }
       await page.setViewportSize({ width: 1440, height: 900 });
     }
-    await heroForm.getByLabel('4-digit SMS code').fill('0000');
+    await fillOTP(heroForm, '0000');
     await heroForm.getByRole('button', { name: 'Verify & register', exact: true }).click();
     await hero.getByRole('status').filter({ hasText: 'Incorrect code' }).waitFor();
     assert.equal(await hero.getByRole('link', { name: 'Join the Free Demo' }).isVisible(), false);
@@ -317,11 +347,13 @@ async function main() {
     await page.evaluate(() => { window.scmRealNow = Date.now; Date.now = () => window.scmRealNow() + 31000; });
     await page.waitForFunction(() => !document.querySelector('#hero-demo-form [data-resend-otp]').disabled);
     await heroForm.getByRole('button', { name: 'Resend code', exact: true }).click();
-    await heroForm.getByLabel('4-digit SMS code').waitFor({ state: 'visible' });
+    await heroForm.getByRole('textbox', { name: 'Digit 1 of 4', exact: true }).waitFor({ state: 'visible' });
     await page.waitForFunction(() => document.querySelector('#hero-demo-form [name=otp]').value === '' && !document.querySelector('#hero-demo-form [type=submit]').disabled);
     await page.evaluate(() => { Date.now = window.scmRealNow; delete window.scmRealNow; });
     assert.equal(otpCalls.length, beforeResend + 1);
-    await heroForm.getByLabel('4-digit SMS code').fill('1234');
+    assert.deepEqual(await digits.evaluateAll(inputs => inputs.map(input => input.value)), ['', '', '', '']);
+    await digits.nth(0).pressSequentially('1234');
+    assert.equal(await heroForm.locator('[name=otp]').inputValue(), '1234');
     await heroForm.getByRole('button', { name: 'Verify & register', exact: true }).click();
     await hero.getByRole('link', { name: 'Join the Free Demo' }).waitFor();
     assert.ok((await hero.getByRole('status').textContent()).includes(demoSchedule));

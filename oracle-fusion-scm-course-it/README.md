@@ -35,6 +35,8 @@ The server derives the policy from the canonical phone prefix; client flags and 
 
 The SCM event page and other course forms retain their own existing verification policies. Tests mock SMS dispatch; they never send a real code.
 
+The verification screen uses four individual digit boxes. It advances as digits are entered, supports backspace and arrow-key navigation, and distributes pasted or autofilled codes across all four boxes. Resending or changing the phone clears every box; incomplete codes cannot be submitted.
+
 ## Form presentation
 
 The inline and popup enquiries share a restrained form layout, responsive phone row, named progress stages, inline validation and explicit loading/error/success states. Popup actions remain visible while scrolling longer screens.

@@ -111,6 +111,7 @@ function attachLeadForm(container, source, closeButton) {
   const otherCode = form.elements.otherCountryCode;
   const otherCodeField = form.querySelector('[data-other-code]');
   const otpInput = form.elements.otp;
+  const otpDigits = Array.from(form.querySelectorAll('[data-otp-digit]'));
   const resendButton = form.querySelector('[data-resend-otp]');
   const changePhoneButton = form.querySelector('[data-change-phone]');
   const otpDestination = form.querySelector('[data-otp-destination]');
@@ -162,10 +163,50 @@ function attachLeadForm(container, source, closeButton) {
     if (!remaining) clearInterval(resendTimer);
   }
 
+  function syncOTP() {
+    otpInput.value = otpDigits.map(input => input.value).join('');
+  }
+
+  function clearOTP() {
+    otpDigits.forEach(input => { input.value = ''; });
+    syncOTP();
+  }
+
+  function focusOTP() {
+    (otpDigits.find(input => !input.value) || otpDigits[3]).focus();
+  }
+
+  function enterOTP(index, value) {
+    const digits = value.replace(/\D/g, '').slice(0, 4);
+    if (!digits) { otpDigits[index].value = ''; syncOTP(); return; }
+    // Full-code paste and SMS autofill can arrive in any of the four boxes.
+    const start = digits.length === 4 ? 0 : index;
+    Array.from(digits).slice(0, 4 - start).forEach((digit, offset) => { otpDigits[start + offset].value = digit; });
+    syncOTP();
+    otpDigits[Math.min(start + digits.length, 3)].focus();
+  }
+
+  otpDigits.forEach((input, index) => {
+    input.addEventListener('focus', () => input.select());
+    input.addEventListener('input', () => enterOTP(index, input.value));
+    input.addEventListener('paste', event => {
+      event.preventDefault();
+      const digits = event.clipboardData.getData('text').replace(/\D/g, '');
+      if (digits) enterOTP(index, digits);
+    });
+    input.addEventListener('keydown', event => {
+      if (event.key === 'Backspace' && !input.value && index > 0) {
+        event.preventDefault(); otpDigits[index - 1].value = ''; syncOTP(); otpDigits[index - 1].focus();
+      } else if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+        event.preventDefault(); otpDigits[Math.max(0, Math.min(3, index + (event.key === 'ArrowLeft' ? -1 : 1)))].focus();
+      }
+    });
+  });
+
   function clearVerification() {
     challenge = '';
     challengeRequestId = undefined;
-    otpInput.value = '';
+    clearOTP();
     resendAvailableAt = 0;
     clearInterval(resendTimer);
     updateResend();
@@ -182,7 +223,7 @@ function attachLeadForm(container, source, closeButton) {
     backButton.hidden = step === 1;
     submitButton.textContent = submitLabel();
     showMessage('');
-    if (focus) steps[step - 1].querySelector('input:not([disabled]), [role="combobox"], select:not([hidden])')?.focus();
+    if (focus) steps[step - 1].querySelector('input:not([disabled]):not([type="hidden"]), [role="combobox"], select:not([hidden])')?.focus();
   }
 
   function syncCountryCode() {
@@ -247,7 +288,7 @@ function attachLeadForm(container, source, closeButton) {
 
   countryCode.addEventListener('change', () => { clearVerification(); syncCountryCode(); setStep(activeStep, false); });
   form.addEventListener('input', event => {
-    if (event.target.name !== 'otp' && challenge) clearVerification();
+    if (event.target.name !== 'otp' && !event.target.matches('[data-otp-digit]') && challenge) clearVerification();
     if (['mobile', 'otherCountryCode'].includes(event.target.name)) {
       refreshProgress();
       submitButton.textContent = submitLabel();
@@ -301,7 +342,7 @@ function attachLeadForm(container, source, closeButton) {
     }
     challenge = result.challenge;
     challengeRequestId = body.get('registrationId');
-    otpInput.value = '';
+    clearOTP();
     resendAvailableAt = Date.now() + 30000;
     clearInterval(resendTimer);
     resendTimer = setInterval(updateResend, 1000);
@@ -316,7 +357,7 @@ function attachLeadForm(container, source, closeButton) {
     showMessage('Sending a new verification code…', 'pending');
     try { await sendCode(submissionBody(contactDetails())); }
     catch (error) { showMessage(error.message || 'Unable to send the code. Please try again.', 'error'); }
-    finally { setPending(false); if (activeStep === steps.length && challenge) otpInput.focus(); }
+    finally { setPending(false); if (activeStep === steps.length && challenge) focusOTP(); }
   });
 
   form.addEventListener('submit', async event => {
@@ -336,7 +377,7 @@ function attachLeadForm(container, source, closeButton) {
       showMessage('Sending your verification code…', 'pending');
       try { await sendCode(body); }
       catch (error) { showMessage(error.message || 'Unable to send the code. Please try again.', 'error'); }
-      finally { setPending(false); if (activeStep === steps.length && challenge) otpInput.focus(); }
+      finally { setPending(false); if (activeStep === steps.length && challenge) focusOTP(); }
       return;
     }
     if (needsOTP && (!challenge || challengeRequestId !== requestId)) {
