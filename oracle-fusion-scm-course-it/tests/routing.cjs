@@ -12,7 +12,7 @@ for (const suffix of ['', '/', '?utm_source=google', '/?utm_source=facebook']) {
   const course = render('/oracle-fusion-scm-course-it' + suffix);
   assert.ok(course.includes('Want an IT Career'));
   assert.ok(course.includes('2027-01-21T19:15:00+05:30'));
-  assert.ok(course.includes('http://example.com/oracle-fusion-scm-course-it/styles.css?v=1.7.21'));
+  assert.ok(course.includes('http://example.com/oracle-fusion-scm-course-it/styles.css?v=1.7.22'));
   assert.ok(course.includes('window.SCM_REGISTRATION_ENDPOINT='));
   assert.ok(course.includes('"@type": "Course"'));
   assert.ok(!course.includes('scm-batch-80'));

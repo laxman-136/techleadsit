@@ -136,16 +136,18 @@ a { color: inherit; text-underline-offset: .22em; }
 .faq-grid dt { font-size: 16px; font-weight: 800; line-height: 1.35; }
 
 .awareness-intro { display: grid; grid-template-columns: minmax(0, 1.75fr) minmax(0, 1fr); align-items: center; gap: clamp(18px, 4vw, 56px); }
-.consultant-role { padding: 15px 18px; border-inline-start: 3px solid var(--blue); border-radius: 0 10px 10px 0; background: #e6efff; }
+.consultant-role { padding: 18px; border-radius: 12px; background: #e6efff; }
 .consultant-role h3 { font-size: 16px; }
 .consultant-role p { margin-top: 5px; color: var(--muted); font-size: 14px; line-height: 1.6; }
-.workflow-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 24px 0 0; padding: 0; list-style: none; border: 1px solid var(--line); border-radius: 14px; background: #fff; }
-.workflow-grid li { position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr); align-content: start; gap: 12px; padding: 19px clamp(16px, 2vw, 28px); }
-.workflow-grid li + li { border-inline-start: 1px solid var(--line); }
-.workflow-number { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: #e6efff; color: var(--blue-hover); font-size: 14px; font-weight: 800; }
-.workflow-arrow { position: absolute; top: 50%; left: 0; transform: translate(-50%, -50%); display: grid; place-items: center; width: 22px; height: 22px; border: 1px solid var(--line); border-radius: 50%; background: var(--paper); color: var(--blue); font-size: 13px; }
-.workflow-grid h3 { font-size: 16px; }
-.workflow-grid p { margin-top: 4px; color: var(--muted); font-size: 14px; }
+.consultant-duties { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 14px; margin: 24px 0 0; padding: 0; list-style: none; }
+.consultant-duties li { grid-column: span 2; display: grid; grid-template-columns: auto minmax(0, 1fr); align-content: start; gap: 12px; padding: 22px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+.consultant-duties li:nth-last-child(-n+2) { grid-column: span 3; }
+.role-number { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: #e6efff; color: var(--blue-hover); font-size: 14px; font-weight: 800; }
+.consultant-duties h3 { font-size: 16px; line-height: 1.4; }
+.consultant-duties p { margin-top: 6px; color: var(--muted); font-size: 14px; line-height: 1.65; }
+.consultant-example { display: grid; grid-template-columns: minmax(0, 13rem) minmax(0, 1fr); gap: 8px 24px; margin-top: 16px; padding: 19px 22px; border-radius: 12px; background: #e6efff; }
+.consultant-example h3 { font-size: 16px; }
+.consultant-example p { color: var(--muted); font-size: 14px; line-height: 1.65; }
 
 .curriculum { margin-top: clamp(30px, 4vw, 48px); scroll-margin-top: 16px; }
 .curriculum > h3 { font-size: clamp(22px, 2.6vw, 32px); letter-spacing: -.025em; text-wrap: balance; }
@@ -211,6 +213,32 @@ a { color: inherit; text-underline-offset: .22em; }
 .event-list dt { font-size: 14px; font-weight: 800; }
 .event-list dd { margin-top: 6px; color: var(--muted); font-size: 14px; line-height: 1.5; }
 .brochure-section { background: var(--paper); }
+.career-growth { margin-bottom: clamp(30px, 4vw, 48px); }
+.career-heading { max-width: 72ch; }
+.career-figure { margin: 26px 0 0; padding: clamp(18px, 3vw, 32px); border: 1px solid var(--line); border-radius: 16px; background: #fff; }
+.career-chart-heading { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 20px; padding-bottom: 20px; }
+.career-chart-heading p { font-size: 16px; font-weight: 750; }
+.career-chart-heading > span { color: var(--muted); font-size: 13px; }
+.career-axis, .career-chart > li { display: grid; grid-template-columns: minmax(0, 250px) minmax(0, 1fr) 112px; align-items: center; gap: 24px; }
+.career-axis { padding-bottom: 10px; color: var(--muted); font-size: 11px; }
+.career-axis > span:last-child { text-align: right; }
+.career-axis-scale { display: flex; justify-content: space-between; font-variant-numeric: tabular-nums; }
+.career-chart { margin: 0; padding: 0; list-style: none; }
+.career-chart > li { min-height: 83px; padding-block: 15px; border-top: 1px solid var(--line); }
+.career-role h3 { font-size: 15px; line-height: 1.4; }
+.career-role p { margin-top: 4px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.career-track { position: relative; height: 32px; background: repeating-linear-gradient(to right, var(--line) 0, var(--line) 1px, transparent 1px, transparent calc(100% / 7)); border-inline-end: 1px solid var(--line); }
+.career-track::before { content: ''; position: absolute; inset-inline: 0; top: 50%; height: 1px; background: var(--line); }
+.career-range { position: absolute; top: 8px; left: calc(var(--salary-min) / 70 * 100%); width: calc((var(--salary-max) - var(--salary-min)) / 70 * 100%); height: 16px; border-radius: 4px; background: var(--blue); }
+.career-range--leadership { background: var(--navy); }
+.career-salary { color: var(--blue-hover); font-size: 19px; font-weight: 800; font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+.career-salary span { font-size: 11px; font-weight: 650; }
+.career-figure figcaption { margin-top: 20px; color: var(--muted); font-size: 12px; line-height: 1.7; }
+.career-sources { margin-top: 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; line-height: 1.7; }
+.career-sources summary { display: list-item; width: fit-content; min-height: 44px; padding-block: 13px 7px; color: var(--blue-hover); font-weight: 700; cursor: pointer; }
+.career-sources p { max-width: 75ch; }
+.career-sources ul { display: flex; flex-wrap: wrap; gap: 0 24px; margin: 8px 0 0; padding-left: 16px; }
+.career-sources a { display: inline-block; min-height: 44px; padding-block: 10px; color: var(--blue-hover); text-decoration: underline; text-underline-offset: 3px; }
 .brochure-card, .closing-inner { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 20px 35px; }
 .brochure-card { padding: clamp(22px, 3.8vw, 46px); border: 1px solid #bdcff4; border-radius: 18px; background: #e8f0ff; }
 .site-footer { padding-block: 12px 22px; color: var(--muted); font-size: 13px; line-height: 1.5; }
@@ -250,6 +278,10 @@ form input:not([type="checkbox"]), form select {
 
 @media (max-width: 920px) {
   .ai-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .consultant-duties { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .consultant-duties li, .consultant-duties li:nth-last-child(-n+2) { grid-column: auto; }
+  .consultant-duties li:last-child { grid-column: 1 / -1; }
+  .career-axis, .career-chart > li { grid-template-columns: minmax(0, 205px) minmax(0, 1fr) 104px; gap: 16px; }
 }
 
 @media (max-width: 740px) {
@@ -264,6 +296,14 @@ form input:not([type="checkbox"]), form select {
   .ratings-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
   .awareness-intro, .curriculum-group { grid-template-columns: minmax(0, 1fr); }
   .curriculum-group p { grid-column: auto; }
+  .career-axis { display: block; }
+  .career-axis > span { display: none; }
+  .career-chart > li { grid-template-columns: minmax(0, 1fr) auto; gap: 10px 12px; padding-block: 18px; }
+  .career-role { grid-column: 1; }
+  .career-salary { grid-column: 2; grid-row: 1; align-self: start; }
+  .career-track { grid-column: 1 / -1; height: 25px; }
+  .career-range { top: 5px; }
+  .consultant-example { grid-template-columns: minmax(0, 1fr); }
 }
 
 @media (max-width: 520px) {
@@ -277,9 +317,13 @@ form input:not([type="checkbox"]), form select {
   .hero-actions .cta { padding-inline: 8px; }
   .hero-registration-panel { padding: 17px; }
   .brochure-card .cta, .closing .cta, .ai-brochure .cta, .trainer-cta { width: 100%; }
-  .workflow-grid, .curriculum-group ul, .ai-grid, .ai-brochure { grid-template-columns: minmax(0, 1fr); }
-  .workflow-grid li + li { border-inline-start: 0; border-top: 1px solid var(--line); }
-  .workflow-arrow { top: 0; left: 32px; transform: translate(-50%, -50%) rotate(90deg); }
+  .consultant-duties, .curriculum-group ul, .ai-grid, .ai-brochure { grid-template-columns: minmax(0, 1fr); }
+  .consultant-duties li { padding: 18px; }
+  .consultant-example { padding: 18px; }
+  .career-salary { font-size: 18px; }
+  .career-role h3 { max-width: 20ch; font-size: 14px; }
+  .career-role p { font-size: 11px; }
+  .career-chart-heading { padding-bottom: 16px; }
   .employer-heading { flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-top: 24px; }
   .employer-heading h3 { font-size: 16px; }
   .motion-control { flex: 0 0 auto; min-height: 44px; }

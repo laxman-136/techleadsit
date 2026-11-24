@@ -109,6 +109,16 @@ async function main() {
     await page.goto(base);
     assert.equal(await page.locator('main > section').count(), 10);
     assert.equal(await page.locator('.awareness + .faq-section').count(), 1);
+    assert.equal(await page.locator('#awareness-title').textContent(), 'What Does an Oracle Fusion SCM Consultant Do?');
+    assert.equal(await page.locator('.consultant-duties > li').count(), 5);
+    assert.ok((await page.locator('.consultant-example').textContent()).includes('purchase request gets stuck'));
+    assert.equal(await page.locator('.career-chart > li').count(), 6);
+    assert.deepEqual(await page.locator('.career-salary').allTextContents(), [
+      '₹5–8 LPA', '₹8–12 LPA', '₹12–20 LPA', '₹20–30 LPA', '₹30–45 LPA', '₹40–65+ LPA'
+    ]);
+    assert.equal(await page.locator('.career-growth + .brochure-card [data-lead-intent=brochure]').count(), 1);
+    assert.ok((await page.locator('#career-note').textContent()).includes('not guaranteed'));
+    assert.equal(await page.getByText('Salary references and how to read this chart', { exact: true }).count(), 1);
     assert.equal(await page.locator('.hero').getByRole('link', { name: 'Contact Us', exact: true }).getAttribute('href'), 'tel:+918125323232');
     assert.equal(await page.locator('.hero a[href="#scm-curriculum"]').count(), 0);
     const footerLinks = page.getByRole('navigation', { name: 'Policies and contact' }).getByRole('link');
@@ -128,6 +138,18 @@ async function main() {
       assert.equal(await page.locator('[data-result-intent=demo]').first().getAttribute('href'), 'https://meet.google.com/abc-defg-hij');
     }
     const demoSchedule = await page.locator('.hero-event time').textContent();
+
+    if (process.env.SCM_REVIEW_DIR) {
+      fs.mkdirSync(process.env.SCM_REVIEW_DIR, { recursive: true });
+      for (const width of [1440, 390, 320]) {
+        await page.setViewportSize({ width, height: 900 });
+        assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
+        for (const section of ['awareness', 'brochure-section']) {
+          await page.locator('.' + section).screenshot({ path: path.join(process.env.SCM_REVIEW_DIR, section + '-' + width + '.png') });
+        }
+      }
+      await page.setViewportSize({ width: 1440, height: 900 });
+    }
 
     const track = page.locator('.logo-track');
     assert.equal(await track.locator('ul').count(), 2);
