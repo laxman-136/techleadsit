@@ -346,7 +346,7 @@ form[aria-busy="true"] [type="submit"]::before { content: ''; width: 14px; heigh
   .hero-layout, .split-section, .brochure-card, .closing-inner, .ai-intro { grid-template-columns: minmax(0, 1fr); }
   .hero::before { background-size: 36px 36px; mask-image: linear-gradient(115deg, transparent 5%, #0009 58%, transparent 95%); }
   .hero-route { display: none; }
-  .hero h1 { max-width: 22ch; font-size: clamp(33px, 7.5vw, 52px); }
+  .hero h1 { max-width: 22ch; font-size: 57px; }
   .hero-registration-panel { width: min(100%, 540px); }
   .trainer-media { justify-self: start; }
   .brochure-card .cta, .closing .cta { justify-self: start; }
