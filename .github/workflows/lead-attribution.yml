@@ -13,5 +13,7 @@ jobs:
         run: php run_test.php
       - name: Attribution through Bridge, Teams and TeleCRM
         run: php tests/lead-attribution-test.php
+      - name: SCM question validation and verification
+        run: php landing-page-leads/tests/scm-otp-test.php
       - name: Browser collection and form decoration contract
         run: node tests/lead-attribution-test.cjs

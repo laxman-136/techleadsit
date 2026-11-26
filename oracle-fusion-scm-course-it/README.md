@@ -39,6 +39,8 @@ The verification screen uses four individual digit boxes. It advances as digits 
 
 ## Form presentation
 
+The contact step asks for a target salary package (below ₹4 LPA, ₹4–8 LPA, or job-first with no package preference). The answer is saved as `details.target_package`, appears in the administrator and private consultant views, and is retained in TeleCRM Remarks and the system note. Education includes MCA alongside BCA/B.Sc (IT/CS). Both exploration choices read “Casual Exploring Options”; enrolment excludes employer sponsorship. Training budget offers “No budget right now” and “Yes, I have a budget of ₹25,000–₹30,000”. These questions apply to the inline demo and both brochure popups.
+
 The inline and popup enquiries share a restrained form layout, responsive phone row, named progress stages, inline validation and explicit loading/error/success states. Popup actions remain visible while scrolling longer screens.
 
 `form-controls.js` enhances native selects into accessible select-only comboboxes. Arrow keys, Home/End, Enter/Space, Escape, Tab and typeahead are supported; selected values and validation remain attached to the original form controls. Menus open above or below according to available room. Native selects remain available if the enhancement fails to load. The question values and India-only OTP policy are unchanged.

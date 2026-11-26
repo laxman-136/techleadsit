@@ -178,6 +178,7 @@ final class TLIT_LP_Leads {
     }
     static function scm_fields($details) {
         return [
+            'Target salary package' => $details['target_package'] ?? '',
             'Highest qualification' => $details['highest_qualification'] ?? '',
             'Coding comfort' => $details['coding_comfort'] ?? '',
             'Enrolment decision' => $details['enrollment_decision'] ?? '',

@@ -16,12 +16,13 @@ foreach(array('google','facebook') as $source) {
     $normalized=TLIT_Attribution::normalize(array('tracking'=>$tracking));
     verify_attribution(TLIT_Attribution::normalize($tracking)===$normalized,'Flat and nested capture must have the same attribution.');
     verify_attribution(!isset($normalized['api_key'],$normalized['otp']),'Private fields cannot enter attribution.');
-    $details=array('highest_qualification'=>'Engineering','coding_comfort'=>'No coding knowledge','training_budget'=>'Discuss fee first','enrollment_decision'=>'With family','custom_learning_answer'=>'Procurement consultant','otp'=>'1234','access_token'=>'MUST-NOT-LEAK');
+    $details=array('target_package'=>'₹4–8 LPA','highest_qualification'=>'Engineering','coding_comfort'=>'No coding knowledge','training_budget'=>'Yes, I have a budget of ₹25,000–₹30,000','enrollment_decision'=>'With family','custom_learning_answer'=>'Procurement consultant','otp'=>'1234','access_token'=>'MUST-NOT-LEAK');
     $row=(object)array('id'=>123,'payload'=>json_encode(array('tracking'=>$normalized,'details'=>$details,'goal'=>'First ERP job')),'page_variant'=>'oracle_scm','submission_url'=>'https://lp.techleadsit.com/oracle-fusion-scm-course-it','source'=>'general','lead_status'=>'potential','advisor_note'=>'Contacted','otp_verified'=>true,'name'=>'Synthetic QA','phone'=>'+447700900123','email'=>'qa@example.invalid','created_at'=>'2026-11-26 04:30:00');
     $payload=TLIT_LP_Leads::crm_payload($row);$fields=$payload['fields'];
     foreach($required as $key) verify_attribution(array_key_exists($key,$fields),'Missing CRM tracking field '.$key);
     foreach(array('gaclientid'=>'ga_client_id','sessionid'=>'session_id','utmcampaign'=>'utm_campaign','utmadgroup'=>'utm_adgroup','utmcontent'=>'utm_content') as $api=>$key) verify_attribution($fields[$api]===$normalized[$key],'Incorrect TeleCRM API alias '.$api);
-    foreach(array('SCM November Campaign','SCM Consultant Video','SCM Freshers','Procurement consultant','Engineering','Discuss fee first') as $value) verify_attribution(str_contains($fields['remarks'],$value)&&str_contains($payload['actions'][0]['text'],$value),'CRM field and note must retain '.$value);
+    foreach(array('SCM November Campaign','SCM Consultant Video','SCM Freshers','Procurement consultant','Engineering','₹4–8 LPA','₹25,000–₹30,000') as $value) verify_attribution(str_contains($fields['remarks'],$value)&&str_contains($payload['actions'][0]['text'],$value),'CRM field and note must retain '.$value);
+    verify_attribution(TLIT_LP_Leads::scm_fields($details)['Target salary package']==='₹4–8 LPA','Target package must be visible in Bridge and consultant fields.');
     verify_attribution($fields['course']==='Oracle Fusion SCM','Correct course must survive handoff.');
     verify_attribution($fields['lead_date']==='2026-11-26 10:00:00','Original lead time must remain in IST.');
     foreach(array_keys($fields) as $key) verify_attribution(!preg_match('/enrol|payment|amount_paid/i',$key),'Counsellor enrolment/payment fields must stay untouched.');

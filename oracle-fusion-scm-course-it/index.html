@@ -28,7 +28,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..800&amp;family=Sora:wght@600..800&amp;display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=1.7.27">
   <script src="form-controls.js?v=1.7.27" defer></script>
-  <script src="app.js?v=1.7.28" defer></script>
+  <script src="app.js?v=1.7.29" defer></script>
 </head>
 <body>
   <header class="site-header">
@@ -107,6 +107,14 @@
               </div>
               <label data-other-code hidden>Other calling code <input name="otherCountryCode" type="tel" inputmode="tel" placeholder="e.g. +27" pattern="\+[1-9][0-9]{0,3}" disabled></label>
               <p class="phone-verification-note">Indian (+91) mobile numbers require SMS verification. International numbers can submit without OTP.</p>
+              <label>What is your target package? <span aria-hidden="true">*</span>
+                <select name="targetPackage" required>
+                  <option value="">Select your salary goal</option>
+                  <option value="below-4">Below ₹4 LPA</option>
+                  <option value="4-8">₹4–8 LPA</option>
+                  <option value="job-first">Package isn’t important; I’m looking for a job.</option>
+                </select>
+              </label>
             </fieldset>
             <fieldset data-form-step="2" hidden disabled>
               <legend>Tell us about your goal</legend>
@@ -124,7 +132,7 @@
                 <select name="highestQualification" required>
                   <option value="">Select your qualification</option>
                   <option value="engineering">B.Tech / B.E.</option>
-                  <option value="computer-studies">BCA / B.Sc (IT/CS)</option>
+                  <option value="computer-studies">BCA / MCA / B.Sc (IT/CS)</option>
                   <option value="commerce-management">B.Com / BBA / MBA</option>
                   <option value="other-degree">Other degree</option>
                 </select>
@@ -143,7 +151,7 @@
                   <option value="start-it">Start a career in IT from scratch</option>
                   <option value="first-erp-job">Get my first job in Oracle / SAP / ERP</option>
                   <option value="switch-to-it">Switch from a non-IT role to IT</option>
-                  <option value="explore">Just exploring options</option>
+                  <option value="explore">Casual Exploring Options</option>
                 </select>
               </label>
               <label>Preferred start <span aria-hidden="true">*</span>
@@ -152,7 +160,7 @@
                   <option value="two-weeks">Immediately (within 2 weeks)</option>
                   <option value="one-month">Within 1 month</option>
                   <option value="two-three-months">In 2 to 3 months</option>
-                  <option value="exploring">Just exploring for now</option>
+                  <option value="exploring">Casual Exploring Options</option>
                 </select>
               </label>
             </fieldset>
@@ -165,16 +173,13 @@
                   <option value="self">I will decide myself</option>
                   <option value="with-family">I’ll decide with my parents or family</option>
                   <option value="family">My parents or family will decide</option>
-                  <option value="employer">My employer will sponsor it</option>
                 </select>
               </label>
               <label>Training budget <span aria-hidden="true">*</span>
                 <select name="trainingBudget" required>
-                  <option value="">Select what works for you</option>
-                  <option value="skills">Yes, if the course gives me real job skills</option>
-                  <option value="installments">Yes, if I can pay in installments</option>
-                  <option value="fee-first">I’d like to know the fee first</option>
-                  <option value="free-only">I’m looking for a free option only</option>
+                  <option value="">Select your current budget</option>
+                  <option value="no-budget">No budget right now</option>
+                  <option value="has-budget">Yes, I have a budget of ₹25,000–₹30,000</option>
                 </select>
               </label>
               <label class="terms-check"><input type="checkbox" name="termsAccepted" required><span>I accept the <a href="/terms-and-conditions/" target="_blank" rel="noopener">Terms and Conditions</a>.</span></label>

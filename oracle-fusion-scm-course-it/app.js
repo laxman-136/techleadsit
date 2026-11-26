@@ -316,6 +316,7 @@ function attachLeadForm(container, source, closeButton) {
       ...contact,
       source,
       intent,
+      targetPackage: form.elements.targetPackage.value,
       currentStatus: form.elements.currentStatus.value,
       highestQualification: form.elements.highestQualification.value,
       codingComfort: form.elements.codingComfort.value,

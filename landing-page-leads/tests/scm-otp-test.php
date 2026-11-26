@@ -64,7 +64,7 @@ function fixture($changes=[]) {
         'name'=>'Synthetic SCM QA','email'=>'qa@example.invalid','countryCode'=>'+91','mobile'=>'9123456789',
         'currentStatus'=>'recent-graduate','highestQualification'=>'engineering','codingComfort'=>'none',
         'careerObjective'=>'first-erp-job','startTimeline'=>'one-month','enrollmentDecision'=>'self',
-        'trainingBudget'=>'fee-first','termsAccepted'=>'true','website'=>'',
+        'trainingBudget'=>'has-budget','targetPackage'=>'4-8','termsAccepted'=>'true','website'=>'',
         'utm_source'=>'facebook','campaign_name'=>'SCM Campaign QA','ad_name'=>'SCM Video QA','adset_name'=>'SCM Freshers QA','ga_client_id'=>'100.200','session_id'=>'300',
     ],$changes);
 }
@@ -83,6 +83,8 @@ check(is_wp_error(register($india))&&SCM_OTP_Test::$ingestCalls===0,'Indian subm
 $foreign=fixture(['registrationId'=>'22222222-2222-4222-8222-222222222222','countryCode'=>'+1','mobile'=>'2025550123','otp_verified'=>true]);
 check(!is_wp_error(register($foreign))&&empty($GLOBALS['sms']),'International submissions should not request SMS.');
 $row=SCM_OTP_Test::$rows[$foreign['registrationId']];
+check(($row['payload']['details']['target_package']??'')==='₹4–8 LPA','Target package must be saved in the main Bridge details.');
+check(($row['payload']['details']['training_budget']??'')==='Yes, I have a budget of ₹25,000–₹30,000','Budget answer must retain the selected amount.');
 foreach(['campaign_name'=>'SCM Campaign QA','ad_name'=>'SCM Video QA','adset_name'=>'SCM Freshers QA','ga_client_id'=>'100.200','session_id'=>'300'] as $key=>$value)check(($row['payload']['tracking'][$key]??'')===$value,'SCM adapter must preserve '.$key.' in the main Bridge payload.');
 check($row['context']['otp_verified']===false&&str_contains($row['payload']['details']['phone_verification'],'international'),'Foreign leads must not be labelled verified, even with forged client flags.');
 check(is_wp_error(register(fixture(['countryCode'=>'+9','mobile'=>'19123456789']))),'Splitting the +91 prefix must not bypass OTP.');
@@ -135,4 +137,19 @@ SCM_OTP_Test::$rejectRate=false;
 $GLOBALS['sms_failure']=true;
 $failed=send_code($next);
 check(is_wp_error($failed)&&$failed->data['status']===502,'Gateway failure must not show a usable challenge.');
-echo "PASS: India-only OTP enforcement, international bypass marked unverified, scope/phone/intent/request binding, attempt limit, resend invalidation, expiry, safe retries, rate limits and SMS failures. No real SMS sent.\n";
+$option_id=1000;
+foreach(['below-4'=>'Below ₹4 LPA','4-8'=>'₹4–8 LPA','job-first'=>'Package isn’t important; I’m looking for a job.'] as $target=>$label) {
+    foreach(['no-budget'=>'No budget right now','has-budget'=>'Yes, I have a budget of ₹25,000–₹30,000'] as $budget=>$budget_label) {
+        $id=sprintf('%08x-0000-4000-8000-%012x',++$option_id,$option_id);
+        $form=fixture(['registrationId'=>$id,'countryCode'=>'+1','mobile'=>'2025550123','targetPackage'=>$target,'trainingBudget'=>$budget,'highestQualification'=>'computer-studies','careerObjective'=>'explore','startTimeline'=>'exploring']);
+        check(!is_wp_error(register($form)),'All requested package and budget options must be accepted.');
+        $stored=SCM_OTP_Test::$rows[$id]['payload'];
+        check($stored['details']['target_package']===$label&&$stored['details']['training_budget']===$budget_label,'Selected package and budget must be retained exactly.');
+        check($stored['details']['highest_qualification']==='BCA / MCA / B.Sc (IT/CS)','Education must include MCA.');
+        check($stored['goal']==='Casual Exploring Options'&&$stored['timeline']==='Casual Exploring Options','Exploration labels must match the form.');
+    }
+}
+foreach([['targetPackage'=>''],['targetPackage'=>'unknown'],['trainingBudget'=>'fee-first'],['trainingBudget'=>'skills'],['enrollmentDecision'=>'employer']] as $invalid) {
+    check(is_wp_error(register(fixture(array_merge(['countryCode'=>'+1','mobile'=>'2025550123'], $invalid)))),'Missing/unknown or removed form options must not reach storage.');
+}
+echo "PASS: SCM package, budget, MCA and exploration choices; India-only OTP enforcement, international bypass, request binding, resend, expiry, safe retries and SMS failures. No real SMS sent.\n";

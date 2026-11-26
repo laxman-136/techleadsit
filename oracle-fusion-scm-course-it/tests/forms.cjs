@@ -65,6 +65,7 @@ async function completeContacts(form, country = '+91', mobile = '9123456789') {
   await form.getByLabel('Email').fill('scm-test@example.invalid');
   await choose(form, 'countryCode', country);
   await form.getByLabel('Mobile number').fill(mobile);
+  await choose(form, 'targetPackage', '4-8');
   await form.getByRole('button', { name: 'Continue' }).click();
 }
 
@@ -79,7 +80,7 @@ async function completeGoal(form) {
 
 async function completeEnrollment(form) {
   await choose(form, 'enrollmentDecision', 'with-family');
-  await choose(form, 'trainingBudget', 'fee-first');
+  await choose(form, 'trainingBudget', 'has-budget');
 }
 
 async function requestCode(form) {
@@ -146,7 +147,8 @@ async function main() {
       assert.equal(payload.careerObjective, 'first-erp-job');
       assert.equal(payload.startTimeline, 'one-month');
       assert.equal(payload.enrollmentDecision, 'with-family');
-      assert.equal(payload.trainingBudget, 'fee-first');
+      assert.equal(payload.trainingBudget, 'has-budget');
+      assert.equal(payload.targetPackage, '4-8');
       assert.equal(payload.countryCode + payload.mobile, payload.countryCode === '+91' ? '+919123456789' : '+12025550123');
       if (failure === 'unavailable') return route.fulfill({ status: 503, body: 'Unavailable' });
       return route.fulfill({

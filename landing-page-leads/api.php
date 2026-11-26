@@ -58,6 +58,11 @@ trait TLIT_LP_API {
         }
 
         $choices = [
+            'targetPackage' => [
+                'below-4' => 'Below ₹4 LPA',
+                '4-8' => '₹4–8 LPA',
+                'job-first' => 'Package isn’t important; I’m looking for a job.',
+            ],
             'currentStatus' => [
                 'final-year' => 'Final-year student',
                 'recent-graduate' => 'Recently graduated (0 to 1 year)',
@@ -66,7 +71,7 @@ trait TLIT_LP_API {
             ],
             'highestQualification' => [
                 'engineering' => 'B.Tech / B.E.',
-                'computer-studies' => 'BCA / B.Sc (IT/CS)',
+                'computer-studies' => 'BCA / MCA / B.Sc (IT/CS)',
                 'commerce-management' => 'B.Com / BBA / MBA',
                 'other-degree' => 'Other degree',
             ],
@@ -79,31 +84,30 @@ trait TLIT_LP_API {
                 'start-it' => 'Start a career in IT from scratch',
                 'first-erp-job' => 'Get my first job in Oracle / SAP / ERP',
                 'switch-to-it' => 'Switch from a non-IT role to IT',
-                'explore' => 'Just exploring options',
+                'explore' => 'Casual Exploring Options',
             ],
             'startTimeline' => [
                 'two-weeks' => 'Immediately (within 2 weeks)',
                 'one-month' => 'Within 1 month',
                 'two-three-months' => 'In 2 to 3 months',
-                'exploring' => 'Just exploring for now',
+                'exploring' => 'Casual Exploring Options',
             ],
             'enrollmentDecision' => [
                 'self' => 'I will decide myself',
                 'with-family' => 'I’ll decide with my parents or family',
                 'family' => 'My parents or family will decide',
-                'employer' => 'My employer will sponsor it',
             ],
             'trainingBudget' => [
-                'skills' => 'Yes, if the course gives me real job skills',
-                'installments' => 'Yes, if I can pay in installments',
-                'fee-first' => 'I’d like to know the fee first',
-                'free-only' => 'I’m looking for a free option only',
+                'no-budget' => 'No budget right now',
+                'has-budget' => 'Yes, I have a budget of ₹25,000–₹30,000',
             ],
         ];
         $answers = [];
         foreach ($choices as $key => $values) {
             $choice = $field($key);
-            if (!isset($values[$choice])) { return self::error('Please answer all of the course questions.'); }
+            if (!isset($values[$choice])) { return self::error($key === 'targetPackage'
+                ? 'Please choose your target salary package. Refresh the page if this question is not visible.'
+                : 'Please answer all of the course questions.'); }
             $answers[$key] = $values[$choice];
         }
 
@@ -112,6 +116,7 @@ trait TLIT_LP_API {
         }
 
         $details = [
+            'target_package' => $answers['targetPackage'],
             'highest_qualification' => $answers['highestQualification'],
             'coding_comfort' => $answers['codingComfort'],
             'enrollment_decision' => $answers['enrollmentDecision'],
