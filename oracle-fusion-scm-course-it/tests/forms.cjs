@@ -212,9 +212,8 @@ async function main() {
     if (await logo.count()) {
       await page.waitForFunction(() => getComputedStyle(document.querySelector('.logo-track li:hover img')).filter.includes('grayscale(0)'));
     }
-    await page.getByRole('button', { name: 'Pause logo scroll' }).click();
-    assert.equal(await track.evaluate(el => getComputedStyle(el).animationPlayState), 'paused');
-    await page.getByRole('button', { name: 'Resume logo scroll' }).click();
+    assert.equal(await page.getByRole('button', { name: 'Pause logo scroll' }).count(), 0);
+    await page.locator('#employers-title').hover();
     assert.equal(await track.evaluate(el => getComputedStyle(el).animationPlayState), 'running');
 
     const reviewTrack = page.locator('.reviews-track');

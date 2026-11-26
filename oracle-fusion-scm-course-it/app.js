@@ -63,13 +63,13 @@ for (const carousel of document.querySelectorAll('[data-loop-carousel]')) {
   const motionControl = document.querySelector('[aria-controls="' + carousel.id + '"]');
 
   function syncMotion() {
-    motionControl.hidden = reducedMotion.matches;
+    if (motionControl) motionControl.hidden = reducedMotion.matches;
     carousel.classList.toggle('is-looping', !reducedMotion.matches);
     if (reducedMotion.matches) copy.remove();
     else if (!copy.isConnected) track.append(copy);
   }
 
-  motionControl.addEventListener('click', () => {
+  motionControl?.addEventListener('click', () => {
     const paused = carousel.classList.toggle('is-paused');
     motionControl.textContent = (paused ? 'Resume ' : 'Pause ') + motionControl.dataset.motionLabel + ' scroll';
   });
