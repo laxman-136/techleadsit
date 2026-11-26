@@ -36,8 +36,6 @@ trait TLIT_LP_Integration {
     static function mapping_keys() { return array_merge(['goal','status','timeline','question','source','remarks','marketingConsent','page_variant','submission_url','lead_status','reference'],self::tracking_keys()); }
     static function crm_statuses() { return array_diff_key(self::statuses(),array_flip(['new','junk'])); }
     static function protected_fields() {
-        if($row->page_variant==='oracle_financials'&&!empty($details['phone_verification'])) $note.="\nPhone verification: ".$details['phone_verification'];
-        if($row->page_variant==='oracle_financials') foreach(tlit_financials_bant_fields($details) as $label=>$answer) { $note.="\n".$label.': '.$answer; }
         $fields=tlit_lp_schema_lead_fields([],'','','','','');
         unset($fields['Remarks']);return array_map('strtolower',array_keys($fields));
     }
@@ -60,6 +58,7 @@ trait TLIT_LP_Integration {
         if(!empty($d['brochure_downloaded'])) { $note.="\nPerson downloaded brochure — ".$brochure; }
         elseif(in_array($row->source,['brochure','chatbot_brochure'],true)) { $note.="\nBrochure requested — ".$brochure; }
         if($row->page_variant==='oracle_scm' && !empty($details['highest_qualification'])) { $note.="\nHighest qualification: ".$details['highest_qualification']; }
+        $note=TLIT_Attribution::note(['tracking'=>$tracking,'details'=>$details],$note);
         $fields=tlit_lp_schema_lead_fields(['tracking'=>$tracking,'details'=>$details],$row->name,$row->phone,$row->email,$d['goal']??'',$note);
         if(in_array($row->page_variant,['oracle_financials','oracle_scm'],true)) { $fields['Course Name']=$course; }
         // The handoff may happen days later; report the original capture date in IST.

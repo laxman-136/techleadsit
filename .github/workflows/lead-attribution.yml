@@ -1,0 +1,17 @@
+name: Lead attribution contract
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  attribution-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: PHP syntax
+        run: find conversation-bridge/includes landing-page-leads digital-marketing-integration -name '*.php' -print0 | xargs -0 -n1 php -l
+      - name: WordPress routing and CRM dry-run
+        run: php run_test.php
+      - name: Attribution through Bridge, Teams and TeleCRM
+        run: php tests/lead-attribution-test.php
+      - name: Browser collection and form decoration contract
+        run: node tests/lead-attribution-test.cjs

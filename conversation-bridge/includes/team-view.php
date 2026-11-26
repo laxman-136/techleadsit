@@ -64,6 +64,7 @@ final class TLIT_CB_Team_View {
         self::fields(array('Course' => TLIT_LP_Leads::course_name($row['page_variant']??''), 'Language' => $chat ? $row['language'] : ($data['details']['preferred_language'] ?? ''), 'Enquiry' => $chat ? 'Chatbot conversation' : (TLIT_LP_Leads::labels()[$row['source']] ?? $row['source']), 'Brochure' => ($chat ? !empty($row['has_brochure']) : (!empty($data['brochure_downloaded']) || !empty($data['details']['brochure_name']))) ? 'Requested / downloaded' : 'Not recorded'));
         if(!$chat&&($row['page_variant']??'')==='oracle_financials') self::fields(tlit_financials_bant_fields($data['details']??array()));
         if(!$chat&&($row['page_variant']??'')==='oracle_scm') self::fields(TLIT_LP_Leads::scm_fields($data['details']??array()));
+        if(!$chat) self::fields(TLIT_Attribution::answers($data['details']??array()));
         if (!$chat) { self::fields(array('Current profile' => $data['status'] ?? ($data['details']['student_status'] ?? ''), 'Joining timeline' => $data['timeline'] ?? ($data['details']['start_timeline'] ?? ''), 'Question or interest' => $data['question'] ?? ($data['details']['main_question'] ?? ''), 'Preferred time to call' => $data['details']['preferred_call_time'] ?? '')); }
         echo '</div></section>';
         if ($chat) {
@@ -77,9 +78,9 @@ final class TLIT_CB_Team_View {
             }
             echo '</div></section>';
         }
-        echo '<details class="team-panel team-attribution"><summary>Page and campaign details</summary><div class="team-panel-body">';
+        echo '<details class="team-panel team-attribution" open><summary>Page and campaign details</summary><div class="team-panel-body">';
         $fields = array('Submitted from' => $source_url);
-        foreach (array('utm_source' => 'Campaign source', 'utm_medium' => 'Medium', 'utm_campaign' => 'Campaign', 'utm_content' => 'Ad content', 'city' => 'City', 'state' => 'State') as $key => $label) { if (!empty($tracking[$key]) && is_scalar($tracking[$key])) { $fields[$label] = (string) $tracking[$key]; } }
+        $fields=array_merge($fields,TLIT_Attribution::display($tracking));
         self::fields($fields); echo '</div></details></div><aside class="team-review">';
         if (class_exists('TLIT_CB_Lead_Ops')) {
             $ops=TLIT_CB_Lead_Ops::state(TLIT_CB_Lead_Ops::reference($grant['entity_type'],$grant['entity_id']));$members=TLIT_CB_Lead_Ops::members();

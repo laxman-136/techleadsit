@@ -121,6 +121,7 @@ function attachLeadForm(container, source, closeButton) {
   let pending = false;
   let requestId;
   let lastSubmission;
+  let attribution;
   let challenge = '';
   let challengeRequestId;
   let resendAvailableAt = 0;
@@ -261,6 +262,7 @@ function attachLeadForm(container, source, closeButton) {
     form.after(statusMessage);
     selectControls.forEach(control => control.sync());
     lastSubmission = undefined;
+    attribution = undefined;
     requestId = undefined;
     clearVerification();
     form.elements.name.setCustomValidity('');
@@ -316,6 +318,9 @@ function attachLeadForm(container, source, closeButton) {
       termsAccepted: String(form.elements.termsAccepted.checked),
       website: form.elements.website.value
     });
+    // Keep attribution stable through SMS verification and safe request retries.
+    const tracking=attribution || (attribution=window.TLITAttribution?.decorate(form) || Object.fromEntries(Array.from(form.querySelectorAll('input.all_params[type="hidden"]'), input=>[input.name,input.value])));
+    for(const [key,value] of Object.entries(tracking)) body.set(key,value);
     if (intent === 'brochure') body.set('brochureType', offer === 'ai-brochure' ? 'ai' : 'scm');
     const submission = body.toString();
     if (submission !== lastSubmission) {

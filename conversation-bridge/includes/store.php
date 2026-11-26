@@ -4,6 +4,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 require_once __DIR__ . '/goals.php';
+require_once __DIR__ . '/attribution.php';
 
 final class TLIT_CB_Store {
     const DB_VERSION = '4';
@@ -160,8 +161,8 @@ final class TLIT_CB_Store {
     }
 
     private static function tracking($values, $session = '') {
-        $values = is_array($values) ? $values : array();
-        $allowed = array('utm_source', 'utm_medium', 'utm_campaign', 'utm_adgroup', 'utm_term', 'utm_content', 'gclid', 'gbraid', 'wbraid', 'fbclid', 'fbp', 'fbc', 'ga_client_id', 'session_id', 'landing_page', 'referrer', 'fb_ad', 'fb_campaign', 'fb_adset_name', 'fb_adset_id', 'fb_lead_id', 'city', 'state');
+        $values = TLIT_Attribution::normalize($values);
+        $allowed = TLIT_Attribution::keys();
         $tracking = array();
         foreach ($allowed as $key) {
             if (!isset($values[$key])) {

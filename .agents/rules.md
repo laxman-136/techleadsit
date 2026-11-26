@@ -1,5 +1,7 @@
 # Project Rules & Safeguards for TechLeadsIT Landing Pages
 
+All lead changes must also follow the mandatory hidden-field, Conversion Bridge, TeleCRM and Teams contract in [../AGENTS.md](../AGENTS.md) and [../docs/lead-attribution.md](../docs/lead-attribution.md). The GitHub `Lead attribution contract` checks must pass; no form or route is exempt from preserving captured attribution.
+
 To prevent any service disruptions or critical errors on the live landing pages, all AI agents working on this codebase must strictly adhere to the following rules:
 
 ---

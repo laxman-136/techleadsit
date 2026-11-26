@@ -383,23 +383,8 @@ class TLIT_CB_Admin {
     private static function attribution($row) {
         $tracking = json_decode(self::value($row, 'tracking_json'), true);
         $tracking = is_array($tracking) ? $tracking : array();
-        $labels = array(
-            'utm_source' => 'UTM source', 'utm_medium' => 'UTM medium', 'utm_campaign' => 'UTM campaign',
-            'utm_adgroup' => 'UTM ad group', 'utm_term' => 'UTM term', 'utm_content' => 'UTM content',
-            'gclid' => 'Google click ID', 'gbraid' => 'Google GBRAID', 'wbraid' => 'Google WBRAID',
-            'fbclid' => 'Facebook click ID', 'fbp' => 'Meta browser ID', 'fbc' => 'Meta click cookie',
-            'ga_client_id' => 'Analytics client ID', 'session_id' => 'Analytics session ID',
-            'landing_page' => 'Landing page', 'referrer' => 'Referrer', 'fb_campaign' => 'Facebook campaign',
-            'fb_ad' => 'Facebook ad', 'fb_adset_name' => 'Facebook ad set', 'fb_adset_id' => 'Facebook ad set ID',
-            'fb_lead_id' => 'Facebook lead ID', 'city' => 'City', 'state' => 'State',
-        );
-        $values = array();
-        foreach ($labels as $key => $label) {
-            if (isset($tracking[$key]) && is_scalar($tracking[$key]) && trim((string) $tracking[$key]) !== '') {
-                $values[$label] = (string) $tracking[$key];
-            }
-        }
-        echo '<details class="tlit-cb-side-panel tlit-cb-attribution"><summary>Attribution details <span class="tlit-cb-count">' . esc_html(count($values)) . '</span></summary>';
+        $values = TLIT_Attribution::display($tracking);
+        echo '<details class="tlit-cb-side-panel tlit-cb-attribution" open><summary>Attribution details <span class="tlit-cb-count">' . esc_html(count($values)) . '</span></summary>';
         if ($values) {
             echo '<p class="tlit-cb-attribution-intro">Captured campaign and source information.</p><dl class="tlit-cb-details">';
             foreach ($values as $label => $value) {

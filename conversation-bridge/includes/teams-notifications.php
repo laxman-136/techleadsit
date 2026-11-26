@@ -1,6 +1,7 @@
 <?php
 /** Automatic new-lead alerts. This service never qualifies leads or calls TeleCRM. */
 if (!defined('ABSPATH')) { exit; }
+require_once __DIR__.'/attribution.php';
 
 final class TLIT_Teams_Notifications {
     const OPTION='tlit_teams_notifications';
@@ -212,7 +213,8 @@ final class TLIT_Teams_Notifications {
         if($dropoff) { $facts['Progress']=$lead['progress']??'';$facts['Status']=$lead['dropoff_status']??'Incomplete form'; }
         foreach(array('Email'=>'email','Language'=>'language','Learning goal'=>'goal','Submitted from'=>'page') as $label=>$key) { if(!empty($lead[$key])) { $facts[$label]=$lead[$key]; } }
         if(!empty($lead['team_pin'])) { $facts['Bridge PIN']=$lead['team_pin'];$facts['Bridge access until (IST)']=$lead['team_expires']; }
-        foreach(array('Campaign source'=>'utm_source','Campaign'=>'utm_campaign') as $label=>$key) { if(!empty($lead['tracking'][$key])) { $facts[$label]=$lead['tracking'][$key]; } }
+        if(!empty($lead['tracking']['utm_source'])) { $facts['Campaign source']=$lead['tracking']['utm_source']; }
+        foreach(TLIT_Attribution::summary($lead['tracking']??array()) as $label=>$value) { $facts[$label]=$value; }
         $facts['Mobile verification']=!empty($lead['verified'])?'OTP verified':'Not OTP verified';
         $facts['Reference']=$lead['reference'];$facts['Notification ID']=$notification_id;
         $items=array();foreach($facts as $title=>$value) { if($value!=='') { $items[]=array('title'=>$title,'value'=>self::text($value)); } }

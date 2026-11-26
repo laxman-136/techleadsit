@@ -1,5 +1,6 @@
 <?php
 if (!defined('ABSPATH')) { exit; }
+require_once dirname(__DIR__).'/conversation-bridge/includes/attribution.php';
 trait TLIT_LP_API {
     static function permission($request) {
         $origin=rtrim($request->get_header('origin'),'/');$url=wp_parse_url(home_url());
@@ -128,6 +129,7 @@ trait TLIT_LP_API {
             'status' => $answers['currentStatus'],
             'timeline' => $answers['startTimeline'],
             'details' => $details,
+            'tracking' => TLIT_Attribution::normalize($form),
             'page_variant' => 'oracle_scm',
             'submission_url' => home_url('/oracle-fusion-scm-course-it'),
             'consent_text' => 'I accept the Terms and Conditions.',

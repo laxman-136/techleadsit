@@ -1992,7 +1992,7 @@ function initFormValidation() {
         }
         data['referrer'] = ref;
         
-        return data;
+        return window.TLITAttribution ? { ...data, ...window.TLITAttribution.collect() } : data;
     }
 
     // Auto-populate hidden tracking inputs in all forms

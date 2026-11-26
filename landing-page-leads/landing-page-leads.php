@@ -186,7 +186,7 @@ final class TLIT_LP_Leads {
             'Brochure requested' => $details['brochure_name'] ?? '',
         ];
     }
-    static function tracking_keys() { return explode(' ','utm_source utm_medium utm_campaign utm_adgroup utm_term utm_content utm_id gclid fbclid gbraid wbraid landing_page referrer fbp fbc ga_client_id session_id fb_ad fb_campaign fb_adset_name fb_adset_id fb_lead_id adset_id ad_id city state'); }
+    static function tracking_keys() { return TLIT_Attribution::keys(); }
     static function url($value) {
         $value=self::clean($value,2000);$parts=wp_parse_url($value);
         if(!is_array($parts)||!in_array($parts['scheme']??'',['https','http'],true)||empty($parts['host'])||isset($parts['user'])||isset($parts['pass'])) { return ''; }
@@ -246,7 +246,7 @@ final class TLIT_LP_Leads {
         $raw_phone=self::clean($safe_values['phone']??'',20);
         $phone=self::canonical_phone($raw_phone);
         $email=is_string($safe_values['email']??null)?sanitize_email($safe_values['email']):'';
-        $tracking=[];foreach(self::tracking_keys() as $key) { $tracking[$key]=self::clean($p['tracking'][$key]??'',500); }
+        $tracking=TLIT_Attribution::normalize($p);
         foreach(['landing_page','referrer'] as $key) { $tracking[$key]=self::url($tracking[$key])?:($key==='referrer'?'direct':''); }
         $url=self::url($p['submission_url']??($tracking['landing_page']??''));
         $variant=self::variant($p['page_variant']??'',$url);
@@ -315,8 +315,7 @@ final class TLIT_LP_Leads {
         $source=$context['source']??($p['intent']??'');
         $optional_email=$source==='chatbot'&&$email==='';
         if(!preg_match('/^[A-Za-z0-9_.:-]{8,80}$/D',$id)||strlen($name)<2||!$phone||(!$optional_email&&!is_email($email))||strlen($email)>254||!isset(self::labels()[$source])) { return self::error('Please check the lead contact details.'); }
-        $tracking=[];
-        foreach(self::tracking_keys() as $key) { $tracking[$key]=self::clean($p['tracking'][$key]??'',500); }
+        $tracking=TLIT_Attribution::normalize($p);
         foreach(['landing_page','referrer'] as $key) { $tracking[$key]=self::url($tracking[$key])?:($key==='referrer'?'direct':''); }
         $url=self::url($p['submission_url']??($p['tracking']['submission_url']??''))?:$tracking['landing_page'];
         $variant=self::variant($context['page_variant']??($p['page_variant']??($p['tracking']['page_variant']??'')),$url);

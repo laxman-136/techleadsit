@@ -2,7 +2,7 @@
 /**
  * Plugin Name: TechLeadsIT Landing Pages
  * Description: Serves high-performance custom HTML landing pages at clean URLs and handles secure lead routing to TeleCRM.
- * Version: 1.7.26
+ * Version: 1.7.27
  * Author: TechLeadsIT
  */
 
@@ -19,6 +19,10 @@ require_once __DIR__.'/digital-marketing-integration/v2-render.php';
 // Shared tracking for every HTML landing/policy route, including early returns.
 // Meta Pixel is managed by the existing GTM container; never initialise it twice here.
 function techleadsit_with_tracking($html) {
+    if (stripos($html, '<head') !== false && strpos($html, 'lead-attribution.js?v=1') === false) {
+        $src=plugin_dir_url(__FILE__).'lead-attribution.js?v=1';
+        $html=preg_replace('~(<head\b[^>]*>)~i','$1<script src="'.esc_url($src).'"></script>',$html,1);
+    }
     if (stripos($html, '<head') === false || strpos($html, 'googletagmanager.com/gtm.js') !== false) return $html;
     $options = get_option('gtm4wp-options', array());
     $id = is_array($options) ? ($options['gtm-code'] ?? '') : '';

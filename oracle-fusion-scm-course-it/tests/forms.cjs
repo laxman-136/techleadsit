@@ -32,8 +32,9 @@ function serve(req, res) {
     return serve(req, res);
   }
   const relative = route === '/' ? 'index.html' : route.slice(1);
-  const file = path.resolve(root, relative);
-  if (!file.startsWith(root + path.sep) || !fs.existsSync(file)) {
+  const shared = path.resolve(root, '../lead-attribution.js');
+  const file = relative === 'lead-attribution.js' ? shared : path.resolve(root, relative);
+  if ((!file.startsWith(root + path.sep) && file !== shared) || !fs.existsSync(file)) {
     res.writeHead(404).end();
     return;
   }
@@ -120,6 +121,13 @@ async function main() {
     await page.route(base + '/wp-json/tlit-leads/v1/scm-registration', async route => {
       const request = route.request();
       const payload = Object.fromEntries(new URLSearchParams(request.postData()));
+      if (wordpress) {
+        assert.equal(payload.utm_source, 'facebook');
+        assert.equal(payload.campaign_name, 'SCM Campaign QA');
+        assert.equal(payload.ad_name, 'SCM Video QA');
+        assert.equal(payload.adset_name, 'SCM Freshers QA');
+        for (const key of 'fbp fbc gclid gbraid wbraid fbclid ga_client_id session_id utm_source utm_medium utm_campaign utm_adgroup utm_term utm_content landing_page referrer'.split(' ')) assert.ok(Object.hasOwn(payload,key), 'Missing hidden field ' + key);
+      }
       if ((payload.countryCode + payload.mobile).startsWith('+91') &&
           (payload.otp !== '1234' || payload.challenge !== challenges.get(payload.registrationId))) {
         return route.fulfill({ status: 400, json: { code: 'tlit_landing_lead', message: 'Incorrect code. Please check the SMS and try again.' } });
@@ -147,7 +155,7 @@ async function main() {
       });
     });
 
-    await page.goto(base);
+    await page.goto(base + '?utm_source=facebook&campaign_name=SCM+Campaign+QA&ad_name=SCM+Video+QA&adset_name=SCM+Freshers+QA');
     assert.equal(await page.locator('main > section').count(), 10);
     assert.equal(await page.locator('.awareness + .faq-section').count(), 1);
     assert.equal(await page.locator('#awareness-title').textContent(), 'What Does an Oracle Fusion SCM Consultant Do?');

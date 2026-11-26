@@ -65,6 +65,7 @@ function fixture($changes=[]) {
         'currentStatus'=>'recent-graduate','highestQualification'=>'engineering','codingComfort'=>'none',
         'careerObjective'=>'first-erp-job','startTimeline'=>'one-month','enrollmentDecision'=>'self',
         'trainingBudget'=>'fee-first','termsAccepted'=>'true','website'=>'',
+        'utm_source'=>'facebook','campaign_name'=>'SCM Campaign QA','ad_name'=>'SCM Video QA','adset_name'=>'SCM Freshers QA','ga_client_id'=>'100.200','session_id'=>'300',
     ],$changes);
 }
 function register($p) { return SCM_OTP_Test::scm_registration(new SCM_Request($p)); }
@@ -82,6 +83,7 @@ check(is_wp_error(register($india))&&SCM_OTP_Test::$ingestCalls===0,'Indian subm
 $foreign=fixture(['registrationId'=>'22222222-2222-4222-8222-222222222222','countryCode'=>'+1','mobile'=>'2025550123','otp_verified'=>true]);
 check(!is_wp_error(register($foreign))&&empty($GLOBALS['sms']),'International submissions should not request SMS.');
 $row=SCM_OTP_Test::$rows[$foreign['registrationId']];
+foreach(['campaign_name'=>'SCM Campaign QA','ad_name'=>'SCM Video QA','adset_name'=>'SCM Freshers QA','ga_client_id'=>'100.200','session_id'=>'300'] as $key=>$value)check(($row['payload']['tracking'][$key]??'')===$value,'SCM adapter must preserve '.$key.' in the main Bridge payload.');
 check($row['context']['otp_verified']===false&&str_contains($row['payload']['details']['phone_verification'],'international'),'Foreign leads must not be labelled verified, even with forged client flags.');
 check(is_wp_error(register(fixture(['countryCode'=>'+9','mobile'=>'19123456789']))),'Splitting the +91 prefix must not bypass OTP.');
 
