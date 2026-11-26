@@ -202,8 +202,8 @@ function techleadsit_route_landing_pages() {
                 if ($slug === 'oracle-fusion-scm-course-it') {
                     $asset_url = plugin_dir_url(__FILE__) . 'oracle-fusion-scm-course-it/';
                     $html_content = str_replace(
-                        array('href="styles.css?v=1.7.26"', 'src="form-controls.js?v=1.7.26"', 'src="app.js?v=1.7.26"', 'src="assets/', 'href="assets/', 'poster="assets/'),
-                        array('href="'.$asset_url.'styles.css?v=1.7.26"', 'src="'.$asset_url.'form-controls.js?v=1.7.26"', 'src="'.$asset_url.'app.js?v=1.7.26"', 'src="'.$asset_url.'assets/', 'href="'.$asset_url.'assets/', 'poster="'.$asset_url.'assets/'),
+                        array('href="styles.css?v=1.7.27"', 'src="form-controls.js?v=1.7.27"', 'src="app.js?v=1.7.27"', 'src="assets/', 'href="assets/', 'poster="assets/'),
+                        array('href="'.$asset_url.'styles.css?v=1.7.27"', 'src="'.$asset_url.'form-controls.js?v=1.7.27"', 'src="'.$asset_url.'app.js?v=1.7.27"', 'src="'.$asset_url.'assets/', 'href="'.$asset_url.'assets/', 'poster="'.$asset_url.'assets/'),
                         $html_content
                     );
                     $html_content = techleadsit_render_scm_schedule($html_content);
@@ -255,7 +255,7 @@ function techleadsit_route_landing_pages() {
                 $html_content = str_replace('href="index.css"', 'href="' . $plugin_url . 'index.css"', $html_content);
                 $html_content = str_replace('src="index.js"', 'src="' . $plugin_url . 'index.js"', $html_content);
                 $html_content = str_replace('href="styles.css"', 'href="' . $plugin_url . 'styles.css?v=12.0"', $html_content);
-                $html_content = str_replace('src="script.js"', 'src="' . $plugin_url . 'script.js?v=12.0"', $html_content);
+                $html_content = str_replace('src="script.js"', 'src="' . $plugin_url . 'script.js?v=12.1"', $html_content);
                 $html_content = str_replace('src="logo-dark.png"', 'src="' . $plugin_url . 'logo-dark.png"', $html_content);
                 $html_content = str_replace('src="logo-light.png"', 'src="' . $plugin_url . 'logo-light.png"', $html_content);
                 $html_content = str_replace('src="images/', 'src="' . $plugin_url . 'images/', $html_content);
