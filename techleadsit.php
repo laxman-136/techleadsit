@@ -167,8 +167,8 @@ function techleadsit_route_landing_pages() {
                 if ($slug === 'oracle-fusion-financials-live-demo') {
                     $asset_url = plugin_dir_url(__FILE__) . 'oracle-fusion-financials-live-demo/';
                     $html_content = str_replace(
-                        array('href="styles.css?v=7"', 'href="financials.css"', 'src="app.js?v=15"', 'src="assets/', 'href="assets/'),
-                        array('href="'.$asset_url.'styles.css?v=7"', 'href="'.$asset_url.'financials.css"', 'src="'.$asset_url.'app.js?v=15"', 'src="'.$asset_url.'assets/', 'href="'.$asset_url.'assets/'),
+                        array('href="styles.css?v=7"', 'href="financials.css"', 'src="app.js?v=14"', 'src="assets/', 'href="assets/'),
+                        array('href="'.$asset_url.'styles.css?v=7"', 'href="'.$asset_url.'financials.css"', 'src="'.$asset_url.'app.js?v=14"', 'src="'.$asset_url.'assets/', 'href="'.$asset_url.'assets/'),
                         $html_content
                     );
                     $html_content = str_replace('https://lp.techleadsit.com/wp-content/plugins/techleadsit-financials-event/', $asset_url, $html_content);
@@ -188,7 +188,7 @@ function techleadsit_route_landing_pages() {
                         $config='<script>window.FINANCIALS_FORM_CONFIG={otpRequired:'.(tlit_financials_otp_required()?'true':'false').'};</script>';
                         $html_content=str_replace('</head>',$config.'</head>',$html_content);
                     }
-                    $html_content=str_replace(array('href="styles.css"','href="theme.css"','src="app.js"','src="assets/','href="assets/'),array('href="'.$asset_url.'styles.css?v=1.7.16"','href="'.$asset_url.'theme.css"','src="'.$asset_url.'app.js?v=1.7.16"','src="'.$asset_url.'assets/','href="'.$asset_url.'assets/'),$html_content);
+                    $html_content=str_replace(array('href="styles.css"','href="theme.css"','src="app.js"','src="assets/','href="assets/'),array('href="'.$asset_url.'styles.css?v=1.7.16"','href="'.$asset_url.'theme.css"','src="'.$asset_url.'app.js?v=1.7.27"','src="'.$asset_url.'assets/','href="'.$asset_url.'assets/'),$html_content);
                     $html_content=str_replace('src="tab-attention.js?v=2"','src="'.$asset_url.'tab-attention.js?v=2"',$html_content);
                     $html_content=str_replace('href="policies.css"','href="'.$asset_url.'policies.css"',$html_content);
                     $html_content=str_replace('href="index.html"','href="/oracle-fusion-financials-course-online/"',$html_content);
