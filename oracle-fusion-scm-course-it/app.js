@@ -1,4 +1,12 @@
 'use strict';
+const originalPageTitle = document.title;
+function updateTabTitle() {
+  document.title = document.hidden ? '(1) New Message!!' : originalPageTitle;
+}
+document.addEventListener('visibilitychange', updateTabTitle);
+window.addEventListener('pageshow', updateTabTitle);
+updateTabTitle();
+
 const registrationEndpoint = window.SCM_REGISTRATION_ENDPOINT || '/wp-json/tlit-leads/v1/scm-registration';
 const otpEndpoint = window.SCM_OTP_ENDPOINT || '/wp-json/tlit-leads/v1/scm-otp';
 const demoDate = document.querySelector('time[data-scm-time="demo"]');
