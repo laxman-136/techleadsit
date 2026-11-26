@@ -168,8 +168,8 @@ async function main() {
       '₹40–65+ LPA', '₹30–45 LPA', '₹20–30 LPA', '₹12–20 LPA', '₹8–12 LPA', '₹5–8 LPA'
     ]);
     assert.equal(await page.locator('.career-growth + .brochure-card [data-lead-intent=brochure]').count(), 1);
-    assert.ok((await page.locator('#career-note').textContent()).includes('not guaranteed'));
-    assert.equal(await page.getByText('Salary references and how to read this chart', { exact: true }).count(), 1);
+    assert.equal(await page.locator('#career-note, .career-sources').count(), 0);
+    assert.equal(await page.locator('.career-figure[aria-describedby]').count(), 0);
     assert.equal(await page.locator('.hero').getByRole('link', { name: 'Contact Us', exact: true }).getAttribute('href'), 'tel:+918125323232');
     assert.equal(await page.locator('.hero a[href="#scm-curriculum"]').count(), 0);
     const footerLinks = page.getByRole('navigation', { name: 'Policies and contact' }).getByRole('link');
