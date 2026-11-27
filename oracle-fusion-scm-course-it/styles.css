@@ -41,6 +41,7 @@ a { color: inherit; text-underline-offset: .22em; }
 .site-header { border-bottom: 1px solid var(--line); }
 .header-inner { display: flex; justify-content: space-between; align-items: center; gap: 16px; min-height: 68px; padding-block: 11px; }
 .site-logo { width: clamp(156px, 20vw, 219px); }
+.site-header .header-cta { flex: none; min-height: 44px; padding: 11px 16px; font-size: 14px; white-space: nowrap; }
 .demo-countdown { display: flex; align-items: center; gap: 12px; }
 #countdown-label { color: var(--muted); font-size: 11px; }
 .countdown-clock { display: flex; gap: 4px; }
@@ -344,6 +345,7 @@ form[aria-busy="true"] [type="submit"]::before { content: ''; width: 14px; heigh
 }
 
 @media (max-width: 740px) {
+  .demo-countdown { display: none; }
   .hero-layout, .split-section, .brochure-card, .closing-inner, .ai-intro { grid-template-columns: minmax(0, 1fr); }
   .hero-layout { grid-template-areas: "heading" "form" "copy"; row-gap: 26px; }
   .hero-intro { margin-top: 0; }
@@ -370,8 +372,9 @@ form[aria-busy="true"] [type="submit"]::before { content: ''; width: 14px; heigh
 @media (max-width: 520px) {
   .wrap { padding-inline: clamp(16px, 4.6vw, 20px); }
   .section-pad { padding-block: 38px; }
-  .header-inner { min-height: 55px; }
-  .demo-countdown { display: none; }
+  .header-inner { min-height: 64px; gap: 12px; padding-block: 10px; }
+  .site-logo { width: clamp(124px, 36vw, 156px); }
+  .site-header .header-cta { padding: 10px 12px; }
   .hero { padding-block: 28px 32px; }
   .hero-layout, .split-section { gap: 22px; }
   .hero-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }

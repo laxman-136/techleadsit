@@ -158,6 +158,20 @@ async function main() {
     });
 
     await page.goto(base + '?utm_source=facebook&campaign_name=SCM+Campaign+QA&ad_name=SCM+Video+QA&adset_name=SCM+Freshers+QA');
+    const headerCTA = page.locator('.site-header').getByRole('button', { name: 'Book a Free Class', exact: true });
+    for (const width of [320, 390, 520, 740, 741, 768, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      assert.equal(await headerCTA.isVisible(), true);
+      assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
+      const button = await headerCTA.boundingBox();
+      assert.ok(button.height >= 44 && button.x >= 0 && button.x + button.width <= width);
+      await headerCTA.click();
+      await page.getByRole('dialog').waitFor({ state: 'visible' });
+      assert.equal(await page.locator('#demo-form [name=name]').evaluate(el => el === document.activeElement), true);
+      await page.getByRole('button', { name: 'Close form', exact: true }).click();
+      assert.equal(await headerCTA.evaluate(el => el === document.activeElement), true);
+    }
+    await page.setViewportSize({ width: 1440, height: 900 });
     const desktopHero = await page.locator('.hero-layout').evaluate(el => {
       const rect = selector => el.querySelector(selector).getBoundingClientRect().toJSON();
       return { heading: rect('h1'), form: rect('#hero-register'), description: rect('.hero-intro') };
