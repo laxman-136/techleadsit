@@ -74,8 +74,9 @@ a { color: inherit; text-underline-offset: .22em; }
 .hero-route::before, .hero-route::after { content: ''; position: absolute; width: 7px; height: 7px; border-radius: 50%; background: #b0e4ff; box-shadow: 0 0 0 4px #61bcfc36, 0 0 16px #68c8ff9e; }
 .hero-route::before { top: -4px; left: 34%; }
 .hero-route::after { right: -4px; bottom: 19%; background: #a1f5e2; box-shadow: 0 0 0 4px #a1f5e232, 0 0 16px #a1f5e291; }
-.hero-layout { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); align-items: center; gap: clamp(26px, 5vw, 68px); }
-.hero h1 { font-size: clamp(34px, 4.2vw, 56px); font-weight: 800; line-height: 1.05; letter-spacing: -.053em; text-wrap: balance; }
+.hero-layout { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); grid-template-areas: "heading form" "copy form"; align-items: center; column-gap: clamp(26px, 5vw, 68px); }
+.hero h1 { grid-area: heading; align-self: end; font-size: clamp(34px, 4.2vw, 56px); font-weight: 800; line-height: 1.05; letter-spacing: -.053em; text-wrap: balance; }
+.hero-copy { grid-area: copy; align-self: start; min-width: 0; }
 .hero h1 span { color: var(--ice); }
 .hero-intro { max-width: 56ch; margin-top: 17px; color: var(--light-text); font-size: clamp(15px, 1.35vw, 18px); line-height: 1.6; }
 .hero-points { display: grid; gap: 7px; margin: 17px 0 0; padding: 0; list-style: none; }
@@ -85,7 +86,7 @@ a { color: inherit; text-underline-offset: .22em; }
 .hero-trust { margin-top: 10px; color: var(--ice); font-size: 13px; line-height: 1.5; }
 .hero-event { display: flex; flex-wrap: wrap; gap: 3px 10px; margin-bottom: 16px; color: var(--muted); font-size: 13px; line-height: 1.5; }
 .hero-event time { font-weight: 700; }
-.hero-registration-panel { min-width: 0; padding: clamp(22px, 2.3vw, 32px); scroll-margin-top: 20px; border-radius: 16px; background: #fff; color: #172b42; box-shadow: 0 24px 64px #020b2338; }
+.hero-registration-panel { grid-area: form; min-width: 0; padding: clamp(22px, 2.3vw, 32px); scroll-margin-top: 20px; border-radius: 16px; background: #fff; color: #172b42; box-shadow: 0 24px 64px #020b2338; }
 .hero-registration-panel h2 { margin-bottom: 9px; font-family: inherit; font-size: clamp(24px, 2vw, 28px); font-weight: 650; line-height: 1.2; letter-spacing: -.025em; text-wrap: initial; }
 
 .cta {
@@ -344,6 +345,8 @@ form[aria-busy="true"] [type="submit"]::before { content: ''; width: 14px; heigh
 
 @media (max-width: 740px) {
   .hero-layout, .split-section, .brochure-card, .closing-inner, .ai-intro { grid-template-columns: minmax(0, 1fr); }
+  .hero-layout { grid-template-areas: "heading" "form" "copy"; row-gap: 26px; }
+  .hero-intro { margin-top: 0; }
   .hero::before { background-size: 36px 36px; mask-image: linear-gradient(115deg, transparent 5%, #0009 58%, transparent 95%); }
   .hero-route { display: none; }
   .hero h1 { max-width: 22ch; font-size: 57px; }

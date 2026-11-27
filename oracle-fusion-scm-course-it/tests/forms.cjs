@@ -158,6 +158,13 @@ async function main() {
     });
 
     await page.goto(base + '?utm_source=facebook&campaign_name=SCM+Campaign+QA&ad_name=SCM+Video+QA&adset_name=SCM+Freshers+QA');
+    const desktopHero = await page.locator('.hero-layout').evaluate(el => {
+      const rect = selector => el.querySelector(selector).getBoundingClientRect().toJSON();
+      return { heading: rect('h1'), form: rect('#hero-register'), description: rect('.hero-intro') };
+    });
+    assert.ok(desktopHero.heading.right <= desktopHero.form.left);
+    assert.ok(desktopHero.description.right <= desktopHero.form.left);
+    assert.ok(desktopHero.heading.bottom <= desktopHero.description.top);
     assert.equal(await page.locator('main > section').count(), 10);
     assert.equal(await page.locator('.awareness + .faq-section').count(), 1);
     assert.equal(await page.locator('#awareness-title').textContent(), 'What Does an Oracle Fusion SCM Consultant Do?');
@@ -454,9 +461,17 @@ async function main() {
     await dialog.getByRole('button', { name: 'Close form' }).click();
 
     await page.goto(base);
-    for (const width of [390, 320]) {
+    for (const width of [740, 430, 390, 320]) {
       await page.setViewportSize({ width, height: 700 });
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
+      const mobileHero = await page.locator('.hero-layout').evaluate(el => {
+        const rect = selector => el.querySelector(selector).getBoundingClientRect().toJSON();
+        return { heading: rect('h1'), form: rect('#hero-register'), description: rect('.hero-intro'), buttons: rect('.hero-actions'), headingSize: getComputedStyle(el.querySelector('h1')).fontSize };
+      });
+      assert.ok(mobileHero.heading.bottom <= mobileHero.form.top, 'Mobile form follows the heading');
+      assert.ok(mobileHero.form.bottom <= mobileHero.description.top, 'Mobile description follows the form');
+      assert.ok(mobileHero.description.bottom <= mobileHero.buttons.top, 'Mobile buttons follow the description');
+      assert.equal(mobileHero.headingSize, '57px');
       await page.locator('.hero-jump').click();
       assert.equal(await heroForm.locator('[name=name]').isVisible(), true);
       assert.equal(await dialog.isVisible(), false);

@@ -2,7 +2,7 @@
 /**
  * Plugin Name: TechLeadsIT Landing Pages
  * Description: Serves high-performance custom HTML landing pages at clean URLs and handles secure lead routing to TeleCRM.
- * Version: 1.7.31
+ * Version: 1.7.32
  * Author: TechLeadsIT
  */
 
@@ -202,8 +202,8 @@ function techleadsit_route_landing_pages() {
                 if ($slug === 'oracle-fusion-scm-course-it') {
                     $asset_url = plugin_dir_url(__FILE__) . 'oracle-fusion-scm-course-it/';
                     $html_content = str_replace(
-                        array('href="styles.css?v=1.7.31"', 'src="form-controls.js?v=1.7.27"', 'src="app.js?v=1.7.30"', 'src="assets/', 'href="assets/', 'poster="assets/'),
-                        array('href="'.$asset_url.'styles.css?v=1.7.31"', 'src="'.$asset_url.'form-controls.js?v=1.7.27"', 'src="'.$asset_url.'app.js?v=1.7.30"', 'src="'.$asset_url.'assets/', 'href="'.$asset_url.'assets/', 'poster="'.$asset_url.'assets/'),
+                        array('href="styles.css?v=1.7.32"', 'src="form-controls.js?v=1.7.27"', 'src="app.js?v=1.7.30"', 'src="assets/', 'href="assets/', 'poster="assets/'),
+                        array('href="'.$asset_url.'styles.css?v=1.7.32"', 'src="'.$asset_url.'form-controls.js?v=1.7.27"', 'src="'.$asset_url.'app.js?v=1.7.30"', 'src="'.$asset_url.'assets/', 'href="'.$asset_url.'assets/', 'poster="'.$asset_url.'assets/'),
                         $html_content
                     );
                     $html_content = techleadsit_render_scm_schedule($html_content);
