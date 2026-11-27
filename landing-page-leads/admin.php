@@ -48,7 +48,7 @@ final class TLIT_LP_Admin {
     }
     public static function render() {
         TLIT_LP_Leads::admin();
-        wp_enqueue_style('tlit-lp-admin',plugin_dir_url(__FILE__).'admin.css',array(),TLIT_LP_Leads::VERSION.'-workspace7');
+        wp_enqueue_style('tlit-lp-admin',plugin_dir_url(__FILE__).'admin.css',array(),TLIT_LP_Leads::VERSION.'-workspace8');
         wp_enqueue_script('tlit-lp-theme',plugins_url('../conversation-bridge/assets/admin.js',__FILE__),array(),'1.5.3-workspace6',true);
         $view = self::input('view');$dropoffs=$view==='dropoffs';
         $is_light_theme=isset($_COOKIE['tlit_bridge_theme'])&&$_COOKIE['tlit_bridge_theme']==='light';
@@ -151,6 +151,12 @@ final class TLIT_LP_Admin {
         }
         echo '</select><p id="lp-status-help" class="lp-help">'.count($qualifications).' lead statuses available. New and Junk Lead stay in WordPress. Saving another status sends or updates this lead in TeleCRM.</p>';
     }
+    public static function call_notes_field($note,$saved_status) {
+        $can_sync=isset(TLIT_LP_Leads::crm_statuses()[$saved_status]);
+        echo '<label for="lp-call-notes">Call notes</label><textarea id="lp-call-notes" name="note" rows="6" maxlength="5000" aria-describedby="lp-notes-help" placeholder="What did you discuss? What should happen next?">'.esc_textarea($note).'</textarea>';
+        echo '<p id="lp-notes-help" class="lp-help">'.($can_sync?'Call notes are included in TeleCRM Remarks. The call-notes button keeps the saved lead qualification.':'New and Junk Lead stay in WordPress. Call notes are saved locally; choose another qualification and save the review to sync them to TeleCRM Remarks.').'</p>';
+        echo '<div class="lp-review-actions"><button type="submit" class="button button-primary lp-full">Save review &amp; sync lead</button><button type="submit" class="button lp-full" name="sync_call_notes" value="1">'.($can_sync?'Save call notes &amp; sync Remarks':'Save call notes').'</button></div>';
+    }
     private static function detail($id) {
         $lead = TLIT_LP_Leads::get($id);
         if (!$lead || is_wp_error($lead)) { echo '<div class="lp-panel"><h2>Lead not found</h2></div>'; return; }
@@ -172,7 +178,8 @@ final class TLIT_LP_Admin {
         self::fields($values); echo '</section></div><aside><section class="lp-panel lp-review"><h3>Counsellor review</h3><p>Call the learner, then choose their lead status.</p>';
         self::form('status',$id);
         self::qualification_field($lead['lead_status']??'new');
-        echo '<label>Call notes<textarea name="note" rows="6" maxlength="5000" placeholder="What did you discuss? What should happen next?">'.esc_textarea($lead['advisor_note']).'</textarea></label><button class="button button-primary lp-full">Save review &amp; sync lead</button></form><details class="lp-help lp-advanced lp-guide" aria-label="Lead qualification guide"><summary>How to qualify a lead <span class="lp-read-more">— Read more</span><span class="lp-read-less">— Read less</span></summary><div class="lp-guide-content"><p><strong>below 50 % Potential:</strong> Interested, but not ready yet. Share useful course details and follow up later.</p><p><strong>50 % Potential:</strong> Exploring the course and asking questions. Understand their needs and offer a demo.</p><p><strong>60-80 Potential:</strong> Strong interest and planning to join soon. Confirm the batch, fees and next step.</p><p><strong>Potential Lead 100:</strong> A good course fit with clear intent to enrol. Confirm their requirements, budget and joining timeline.</p><p><strong>Junk Lead:</strong> Spam, invalid contact details or an irrelevant enquiry. No further sales follow-up needed.</p><p>Use the demo, next batch, contact outcome, course or requirement, trainer, Enrolled or Lost statuses when they match the review. Update the status as circumstances change. A missed call alone does not make a lead Junk Lead.</p></div></details></section><section class="lp-panel lp-sync-panel"><h3>TeleCRM sync</h3>'.self::badge($lead['crm_status'],self::crm_states()[$lead['crm_status']]??$lead['crm_status']).'<p>'.esc_html($lead['crm_message'] ?: 'Waiting for counsellor qualification.').'</p>';
+        self::call_notes_field($lead['advisor_note'],$lead['lead_status']??'new');
+        echo '</form><details class="lp-help lp-advanced lp-guide" aria-label="Lead qualification guide"><summary>How to qualify a lead <span class="lp-read-more">— Read more</span><span class="lp-read-less">— Read less</span></summary><div class="lp-guide-content"><p><strong>below 50 % Potential:</strong> Interested, but not ready yet. Share useful course details and follow up later.</p><p><strong>50 % Potential:</strong> Exploring the course and asking questions. Understand their needs and offer a demo.</p><p><strong>60-80 Potential:</strong> Strong interest and planning to join soon. Confirm the batch, fees and next step.</p><p><strong>Potential Lead 100:</strong> A good course fit with clear intent to enrol. Confirm their requirements, budget and joining timeline.</p><p><strong>Junk Lead:</strong> Spam, invalid contact details or an irrelevant enquiry. No further sales follow-up needed.</p><p>Use the demo, next batch, contact outcome, course or requirement, trainer, Enrolled or Lost statuses when they match the review. Update the status as circumstances change. A missed call alone does not make a lead Junk Lead.</p></div></details></section><section class="lp-panel lp-sync-panel"><h3>TeleCRM sync</h3>'.self::badge($lead['crm_status'],self::crm_states()[$lead['crm_status']]??$lead['crm_status']).'<p>'.esc_html($lead['crm_message'] ?: 'Waiting for counsellor qualification.').'</p>';
         if (!empty($lead['crm_updated'])) { echo '<p class="lp-help">Last update: '.esc_html(self::date($lead['crm_updated'])).'</p>'; }
         $target_status = TLIT_LP_Leads::crm_statuses()[$lead['lead_status']]??'';
         if ($target_status !== '') { echo '<p class="lp-help">TeleCRM status for this qualification: <strong>'.esc_html($target_status).'</strong>.</p>'; }

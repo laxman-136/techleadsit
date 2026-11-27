@@ -481,13 +481,22 @@ final class TLIT_LP_Leads {
         return ['rows'=>$rows,'total'=>$total,'page'=>$page,'per_page'=>$per_page];
     }
     static function counts($filters=[]) { global $wpdb;$rows=$wpdb->get_results('SELECT lead_status,COUNT(*) AS total FROM '.self::table().self::filters($filters).' GROUP BY lead_status');$counts=array_fill_keys(array_keys(self::statuses()),0);foreach($rows as $row) { $counts[$row->lead_status]=(int)$row->total; }return $counts; }
-    static function save_note($id,$note) { $row=self::get($id);return $row?self::save_status($id,$row->lead_status,$note,get_current_user_id(),false):self::error('Lead not found.',404); }
+    static function save_note($id,$note,$deliver=false) {
+        if($deliver && trim(sanitize_textarea_field((string)$note))==='') { return self::error('Enter call notes before syncing Remarks.'); }
+        return self::save_review($id,null,$note,get_current_user_id(),$deliver);
+    }
     static function save_status($id,$status,$note,$actor=0,$deliver=true) {
-        global $wpdb;
         if(!isset(self::statuses()[$status])) { return self::error('Choose a valid counsellor status.'); }
+        return self::save_review($id,$status,$note,$actor,$deliver);
+    }
+    private static function save_review($id,$status,$note,$actor,$deliver) {
+        global $wpdb;
         $lock=self::lock('lead-review-'.absint($id));if(!$lock) { return self::error('This lead is being reviewed. Please retry.',409); }
         try {
             $row=self::get($id);if(!$row) { return self::error('Lead not found.',404); }
+            // Notes-only saves read the current qualification while holding the review lock.
+            $status=$status??$row->lead_status;
+            if(!isset(self::statuses()[$status])) { return self::error('Choose a valid counsellor status.'); }
             $history=json_decode($row->review_history??'[]',true)?:[];$now=current_time('mysql',true);
             $history[]=['from'=>$row->lead_status,'to'=>$status,'actor'=>(int)$actor,'at'=>$now];$history=array_slice($history,-100);
             $saved=$wpdb->update(self::table(),['lead_status'=>$status,'advisor_note'=>substr(sanitize_textarea_field((string)$note),0,5000),'reviewed_by'=>absint($actor),'reviewed_at'=>$now,'updated_at'=>$now,'review_history'=>wp_json_encode($history)],['id'=>$row->id]);
@@ -509,6 +518,7 @@ final class TLIT_LP_Leads {
         $p=wp_unslash($_POST);$operation=sanitize_key($p['operation']??'');$id=absint($p['id']??0);$result=true;
         if($operation==='settings') { $result=self::save_settings($p); }
         elseif($operation==='test_connection') { $result=self::test_connection(); }
+        elseif($operation==='status' && ($p['sync_call_notes']??'')==='1') { $result=self::save_note($id,$p['note']??'',true); }
         elseif($operation==='status') { $result=self::save_status($id,sanitize_key($p['lead_status']??($p['status']??'')),$p['note']??'',get_current_user_id()); }
         elseif($operation==='note') { $result=self::save_note($id,$p['note']??''); }
         elseif($operation==='resolve' && !empty($p['confirmed'])) { $result=self::reconcile($id,($p['resolution']??'')==='received'); }

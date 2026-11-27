@@ -36,18 +36,32 @@ try {
         $history = json_decode($fresh->review_history, true); $latest = end($history);
         stored_status_check($latest['to'] === $key, 'Persist '.$key.' in review history.');
         stored_status_check($fresh->crm_status === 'pending' && (int)$fresh->crm_attempts === 0 && empty($fresh->crm_payload), 'Saving '.$key.' with delivery disabled must never attempt a sync.');
+        $call_notes = "Updated call notes for ".$label."\nFollow up tomorrow about fees & batch timing.";
+        $notes_saved = TLIT_LP_Leads::save_note($id, $call_notes);
+        stored_status_check(!is_wp_error($notes_saved) && $notes_saved->lead_status === $key && $notes_saved->advisor_note === $call_notes, 'Save call notes without changing '.$key.'.');
+        $fields = TLIT_LP_Leads::crm_payload($notes_saved)['fields'];
+        stored_status_check($fields['remarks'] === $fields['Remarks'] && str_contains($fields['remarks'], 'Counsellor notes: '.$call_notes), 'Prepare all call notes in the TeleCRM Remarks field without delivering a request.');
+        stored_status_check((int)$notes_saved->crm_attempts === 0 && empty($notes_saved->crm_payload), 'Local call-notes checks must not attempt a sync.');
         ob_start(); $detail->invoke(null, $id); $page = ob_get_clean();
         $dom = new DOMDocument(); $dom->loadHTML('<?xml encoding="UTF-8">'.$page, LIBXML_NOERROR | LIBXML_NOWARNING);
         $xpath = new DOMXPath($dom); $options = $xpath->query('//select[@name="lead_status"]/option');
         $selected = $xpath->query('//select[@name="lead_status"]/option[@selected]');
         stored_status_check($options->length === 18 && $selected->length === 1 && $selected->item(0)->getAttribute('value') === $key, 'The real review page must reload all choices with '.$key.' selected.');
-        echo 'PASS local save/readback: '.$label."\n";
+        echo 'PASS local status and call-notes save/readback: '.$label."\n";
     }
     $before = TLIT_LP_Leads::get($id);
     stored_status_check(is_wp_error(TLIT_LP_Leads::save_status($id, 'invalid_status', 'Invalid', 0, false)), 'Reject a status outside the original list.');
     stored_status_check(TLIT_LP_Leads::get($id)->lead_status === $before->lead_status, 'An invalid choice must not overwrite the saved status.');
+    stored_status_check(is_wp_error(TLIT_LP_Leads::save_note($id, " \n ", true)), 'An empty notes-sync action must be rejected before any delivery attempt.');
+    stored_status_check(TLIT_LP_Leads::get($id)->advisor_note === $before->advisor_note, 'Empty notes must not erase the saved call notes.');
+    $lock_option = 'tlit_lp_lock_'.TLIT_LP_Leads::hash('lead-review-'.$id);
+    $concurrent_status = function ($option) use ($wpdb,$table,$id,$lock_option) { if ($option === $lock_option) { $wpdb->update($table, array('lead_status'=>'demo_attended'), array('id'=>$id)); } };
+    add_action('add_option', $concurrent_status);
+    try { $note_result = TLIT_LP_Leads::save_note($id, 'Notes after another counsellor updated the status.'); }
+    finally { remove_action('add_option', $concurrent_status); }
+    stored_status_check(!is_wp_error($note_result) && $note_result->lead_status === 'demo_attended', 'A notes-only save must preserve a status changed before it acquired the review lock.');
     stored_status_check($requests === 0, 'No network or sync attempt is allowed.');
-    echo "PASS: all 18 options persisted with notes/history; invalid status rejected; zero sync attempts and zero network requests.\n";
+    echo "PASS: all 18 status/notes saves and Remarks payloads; empty notes and invalid statuses rejected; concurrent qualification preserved; zero sync attempts and network requests.\n";
 } finally {
     if ($id) {
         $wpdb->delete($table, array('id'=>$id));

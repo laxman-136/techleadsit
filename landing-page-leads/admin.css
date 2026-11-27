@@ -52,3 +52,4 @@
 
 /* Compact, keyboard-accessible help disclosures. */
 .lp-workspace .lp-guide{margin-top:18px;padding-top:14px}.lp-workspace .lp-guide summary{cursor:pointer;font-size:13px;line-height:1.6}.lp-workspace .lp-guide .lp-read-less,.lp-workspace .lp-guide[open] .lp-read-more{display:none}.lp-workspace .lp-guide[open] .lp-read-less{display:inline}.lp-workspace .lp-guide-content{padding-top:14px}.lp-workspace .lp-guide-content p:last-child{margin-bottom:0}.lp-workspace .lp-sync-panel{padding:24px}.lp-workspace .lp-sync-panel h3{margin-bottom:12px}
+.lp-review-actions{display:grid;gap:8px}
