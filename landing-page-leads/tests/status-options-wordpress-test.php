@@ -40,7 +40,7 @@ try {
         $notes_saved = TLIT_LP_Leads::save_note($id, $call_notes);
         stored_status_check(!is_wp_error($notes_saved) && $notes_saved->lead_status === $key && $notes_saved->advisor_note === $call_notes, 'Save call notes without changing '.$key.'.');
         $fields = TLIT_LP_Leads::crm_payload($notes_saved)['fields'];
-        stored_status_check($fields['remarks'] === $fields['Remarks'] && str_contains($fields['remarks'], 'Counsellor notes: '.$call_notes), 'Prepare all call notes in the TeleCRM Remarks field without delivering a request.');
+        stored_status_check($fields['remarks'] === $fields['Remarks'] && str_starts_with($fields['remarks'], "Call notes:\n".$call_notes), 'Prepare call notes first in the TeleCRM Remarks field without delivering a request.');
         stored_status_check((int)$notes_saved->crm_attempts === 0 && empty($notes_saved->crm_payload), 'Local call-notes checks must not attempt a sync.');
         ob_start(); $detail->invoke(null, $id); $page = ob_get_clean();
         $dom = new DOMDocument(); $dom->loadHTML('<?xml encoding="UTF-8">'.$page, LIBXML_NOERROR | LIBXML_NOWARNING);

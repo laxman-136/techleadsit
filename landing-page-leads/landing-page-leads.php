@@ -100,6 +100,7 @@ final class TLIT_LP_Leads {
         add_action('rest_api_init',[__CLASS__,'routes']);
         add_action('admin_menu',[__CLASS__,'menu'],30);
         add_action('admin_post_tlit_lp_action',[__CLASS__,'action']);
+        add_action('wp_ajax_tlit_lp_review',[__CLASS__,'ajax_review']);
         add_action('admin_post_tlit_lp_export',[__CLASS__,'export']);
         add_action('tlit_lp_backfill_sources',[__CLASS__,'backfill_sources']);
         if(get_option('tlit_lp_sources_backfill')!=='1'&&!wp_next_scheduled('tlit_lp_backfill_sources')) { wp_schedule_single_event(time()+10,'tlit_lp_backfill_sources'); }
@@ -512,14 +513,37 @@ final class TLIT_LP_Leads {
     }
     static function admin() { if(!current_user_can('manage_options')) { wp_die('Access denied.','',['response'=>403]); } }
     static function render() { self::admin();if(class_exists('TLIT_LP_Admin')) { TLIT_LP_Admin::render(); }else { echo '<div class="wrap"><h1>Landing Page Leads</h1><p>The lead inbox interface is unavailable.</p></div>'; } }
-    static function form_start($operation,$id=0) { echo '<form method="post" action="'.esc_url(admin_url('admin-post.php')).'"><input type="hidden" name="action" value="tlit_lp_action"><input type="hidden" name="operation" value="'.esc_attr($operation).'"><input type="hidden" name="id" value="'.(int)$id.'">';wp_nonce_field('tlit_lp_action'); }
+    static function form_start($operation,$id=0) { echo '<form method="post" action="'.esc_url(admin_url('admin-post.php')).'"'.($operation==='status'?' data-lp-review-form data-ajax-url="'.esc_url(admin_url('admin-ajax.php')).'"':'').'><input type="hidden" name="action" value="tlit_lp_action"><input type="hidden" name="operation" value="'.esc_attr($operation).'"><input type="hidden" name="id" value="'.(int)$id.'">';wp_nonce_field('tlit_lp_action'); }
+    static function review_submission($id,array $input) {
+        $note=$input['note']??'';
+        if(!is_string($note)) { return self::error('Enter valid call notes.'); }
+        $notes_only=$input['sync_call_notes']??'';
+        if(!is_string($notes_only) || !in_array($notes_only,['','1'],true)) { return self::error('Choose a valid review action.'); }
+        if($notes_only==='1') { return self::save_note($id,$note,true); }
+        $status=$input['lead_status']??($input['status']??'');
+        if(!is_string($status)) { return self::error('Choose a valid counsellor status.'); }
+        return self::save_status($id,sanitize_key($status),$note,get_current_user_id());
+    }
+    static function ajax_review() {
+        if(!current_user_can('manage_options')) { wp_send_json_error(['message'=>'Access denied.'],403); }
+        if(($_SERVER['REQUEST_METHOD']??'')!=='POST') { wp_send_json_error(['message'=>'Use the review form.'],405); }
+        if(!check_ajax_referer('tlit_lp_action','_wpnonce',false)) { wp_send_json_error(['message'=>'Your session has expired. Refresh this page before saving.'],403); }
+        $input=wp_unslash($_POST);
+        $id=$input['id']??'';
+        if(!is_scalar($id) || !ctype_digit((string)$id) || (int)$id<1 || ($input['operation']??'status')!=='status') { wp_send_json_error(['message'=>'Use a valid lead review form.'],400); }
+        $result=self::review_submission(absint($id),$input);
+        if(is_wp_error($result)) {
+            $data=$result->get_error_data();$status=is_array($data)?(int)($data['status']??400):400;
+            wp_send_json_error(['message'=>$result->get_error_message()],$status>=400&&$status<=599?$status:400);
+        }
+        wp_send_json_success(self::review_result($result));
+    }
     static function action() {
         self::admin();if(($_SERVER['REQUEST_METHOD']??'')!=='POST') { wp_die('Use the review form.','',['response'=>405]); }check_admin_referer('tlit_lp_action');
         $p=wp_unslash($_POST);$operation=sanitize_key($p['operation']??'');$id=absint($p['id']??0);$result=true;
         if($operation==='settings') { $result=self::save_settings($p); }
         elseif($operation==='test_connection') { $result=self::test_connection(); }
-        elseif($operation==='status' && ($p['sync_call_notes']??'')==='1') { $result=self::save_note($id,$p['note']??'',true); }
-        elseif($operation==='status') { $result=self::save_status($id,sanitize_key($p['lead_status']??($p['status']??'')),$p['note']??'',get_current_user_id()); }
+        elseif($operation==='status') { $result=self::review_submission($id,$p); }
         elseif($operation==='note') { $result=self::save_note($id,$p['note']??''); }
         elseif($operation==='resolve' && !empty($p['confirmed'])) { $result=self::reconcile($id,($p['resolution']??'')==='received'); }
         elseif($operation==='push') { $row=self::get($id);$result=$row?self::save_status($id,$row->lead_status,$row->advisor_note,get_current_user_id()):self::error('Lead not found.',404); }

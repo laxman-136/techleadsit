@@ -47,7 +47,7 @@ trait TLIT_LP_Integration {
         // The provided TeleCRM endpoint creates/updates a lead. Never send a test lead.
         return ['success'=>true,'message'=>'The existing landing-page connection is available. Qualified reviews synchronise automatically; no test lead was sent.','network_tested'=>false];
     }
-    static function crm_payload($row) {
+    static function crm_payload($row,$notes_first=true) {
         $d=json_decode($row->payload,true)?:[];$tracking=$d['tracking']??[];$details=$d['details']??[];
         $details['student_status']=$details['student_status']??($d['status']??'');
         $note="Landing Page Leads | LP-{$row->id}\nPage: {$row->page_variant}\nSubmitted from: {$row->submission_url}\nForm: ".(self::labels()[$row->source]??$row->source)."\nCounsellor qualification: ".(self::statuses()[$row->lead_status]??$row->lead_status)."\nGoal: ".($d['goal']??'')."\nMarketing consent: ".(!empty($d['marketingConsent'])?'Yes':'No')."\nPhone verified: ".(!empty($row->otp_verified)?'Yes':'No')."\nCounsellor notes: {$row->advisor_note}";
@@ -59,6 +59,13 @@ trait TLIT_LP_Integration {
         elseif(in_array($row->source,['brochure','chatbot_brochure'],true)) { $note.="\nBrochure requested — ".$brochure; }
         if($row->page_variant==='oracle_scm' && !empty($details['highest_qualification'])) { $note.="\nHighest qualification: ".$details['highest_qualification']; }
         $note=TLIT_Attribution::note(['tracking'=>$tracking,'details'=>$details],$note);
+        if($notes_first && trim((string)$row->advisor_note)!=='') {
+            // Put the counsellor's text above the long context in TeleCRM's collapsed Remarks preview.
+            $marker="\nCounsellor notes: {$row->advisor_note}";
+            $position=strpos($note,$marker);
+            if($position!==false) { $note=substr_replace($note,'',$position,strlen($marker)); }
+            $note="Call notes:\n{$row->advisor_note}\n\n".$note;
+        }
         $fields=tlit_lp_schema_lead_fields(['tracking'=>$tracking,'details'=>$details],$row->name,$row->phone,$row->email,$d['goal']??'',$note);
         if(in_array($row->page_variant,['oracle_financials','oracle_scm'],true)) { $fields['Course Name']=$course; }
         // The handoff may happen days later; report the original capture date in IST.
@@ -82,6 +89,30 @@ trait TLIT_LP_Integration {
         // Chat visitors need not provide email; never erase a CRM email with a blank.
         if($row->email==='') { unset($fields['email']); }
         return ['fields'=>$fields,'actions'=>[['type'=>'SYSTEM_NOTE','text'=>$note]]];
+    }
+    static function review_result($row) {
+        $eligible=isset(self::crm_statuses()[$row->lead_status]);
+        $confirmed=(string)($row->crm_synced_revision??'');
+        if($confirmed==='' && $row->crm_status==='sent' && !empty($row->crm_payload)) { $confirmed=hash('sha256',$row->crm_payload); }
+        $current=$eligible && $row->crm_status==='sent' && $confirmed!=='' &&
+            (hash_equals($confirmed,hash('sha256',wp_json_encode(self::crm_payload($row)))) ||
+             hash_equals($confirmed,hash('sha256',wp_json_encode(self::crm_payload($row,false)))));
+        $state=$current?'synced':(!$eligible?'local':(in_array($row->crm_status,['failed','uncertain','sending'],true)?$row->crm_status:'pending'));
+        $labels=['synced'=>'Synced to TeleCRM','local'=>'Saved in Bridge','failed'=>'Sync failed','uncertain'=>'Check TeleCRM','sending'=>'Sync in progress','pending'=>'Update not confirmed'];
+        $messages=[
+            'synced'=>'The latest call notes and qualification were accepted by TeleCRM.',
+            'local'=>'Your call notes are saved in Bridge. New and Junk Lead stay in WordPress.',
+            'failed'=>$row->crm_message?:'Your notes are saved in Bridge, but TeleCRM rejected the update.',
+            'uncertain'=>'Your notes are saved. Check the latest update in TeleCRM before retrying.',
+            'sending'=>'An update is already in progress. Wait before saving again.',
+            'pending'=>$row->crm_status==='sent'?'Your latest notes are saved in Bridge but have not been synced. Save and sync to send them.':($row->crm_message?:'Your review is saved. The TeleCRM update has not been confirmed.'),
+        ];
+        return ['state'=>$state,'lead_id'=>(int)$row->id,'lead_status'=>$row->lead_status,
+            'lead_status_label'=>self::statuses()[$row->lead_status]??$row->lead_status,
+            'note'=>$row->advisor_note,'crm_label'=>$labels[$state],'message'=>$messages[$state],
+            'badge_status'=>$current?'sent':($state==='local'?'pending':($state==='pending'?'pending':$state)),
+            'updated_label'=>!empty($row->crm_updated)?self::display_date($row->crm_updated):'',
+            'telecrm_status'=>self::crm_statuses()[$row->lead_status]??''];
     }
     static function push($id) {
         $lock=self::lock('lead-review-'.absint($id));if(!$lock) { return false; }

@@ -54,7 +54,8 @@ foreach (array_keys($expected) as $current) {
     $row = (object) array('id'=>123, 'name'=>'Offline status QA', 'phone'=>'+447700900123',
         'email'=>'offline-status@example.invalid', 'source'=>'general', 'page_variant'=>'oracle_financials',
         'submission_url'=>'https://example.invalid/course/', 'lead_status'=>$current, 'advisor_note'=>$call_notes,
-        'otp_verified'=>false, 'created_at'=>'2026-11-27 04:30:00', 'payload'=>json_encode(array('goal'=>'Course enquiry')));
+        'otp_verified'=>false, 'created_at'=>'2026-11-27 04:30:00', 'payload'=>json_encode(array('goal'=>'Course enquiry')),
+        'crm_status'=>'pending','crm_message'=>'','crm_updated'=>'','crm_synced_revision'=>'','crm_payload'=>'');
     $payload = TLIT_LP_Leads::crm_payload($row); $fields = $payload['fields'];
     if (in_array($current, array('new','junk'), true)) {
         status_check(!array_key_exists('status', $fields), 'New and Junk must not produce a CRM status.');
@@ -63,12 +64,24 @@ foreach (array_keys($expected) as $current) {
     }
     status_check($fields['phone'] === $row->phone && $fields['course'] === 'Oracle Fusion Financials', 'Changing status must retain the lead identity and course.');
     status_check(str_contains($fields['remarks'], 'Counsellor qualification: '.$expected[$current]), 'Remarks must retain the selected status.');
-    status_check($fields['remarks'] === $fields['Remarks'] && str_contains($fields['remarks'], 'Counsellor notes: '.$call_notes), 'Both TeleCRM Remarks aliases must include the complete saved call notes.');
+    status_check($fields['remarks'] === $fields['Remarks'] && str_starts_with($fields['remarks'], "Call notes:\n".$call_notes."\n\nLanding Page Leads"), 'Call notes must be first in both Remarks aliases, ahead of the long context.');
     status_check(str_contains($payload['actions'][0]['text'], $call_notes), 'The existing system note must retain the call notes too.');
+    $row->crm_status='sent';
+    $row->crm_payload=wp_json_encode(TLIT_LP_Leads::crm_payload($row,false));
+    $row->crm_synced_revision=hash('sha256',$row->crm_payload);
+    $held=in_array($current,array('new','junk'),true);
+    status_check(TLIT_LP_Leads::review_result($row)['state']===($held?'local':'synced'), 'Previously accepted Remarks must still be recognised after the presentation update.');
+    $row->advisor_note.="\nLatest note not yet delivered.";
+    status_check(TLIT_LP_Leads::review_result($row)['state']===($held?'local':'pending'), 'An old success must never confirm newly edited notes.');
+    $row->crm_payload=wp_json_encode(TLIT_LP_Leads::crm_payload($row));
+    $row->crm_synced_revision=hash('sha256',$row->crm_payload);
+    status_check(TLIT_LP_Leads::review_result($row)['state']===($held?'local':'synced'), 'Only the accepted current payload can produce a sync success.');
+    $row->crm_status='uncertain';
+    status_check(TLIT_LP_Leads::review_result($row)['state']===($held?'local':'uncertain'), 'An uncertain response must never produce a sync success.');
     foreach (array_keys($fields) as $key) {
         status_check(!preg_match('/enrol|enroll|payment|paid|receipt|fee/i', $key), 'Status review must not populate manual enrolment or payment fields.');
     }
 }
 ob_start(); TLIT_LP_Admin::qualification_field('invalid_status'); $unknown = ob_get_clean();
 status_check(str_contains($unknown, '<option value="" disabled selected>Choose qualification</option>'), 'An unknown legacy status must require an explicit choice.');
-echo "PASS: all 18 choices, selections, notes-save buttons and complete call notes in both Remarks aliases; exact 16 CRM mappings, New/Junk local. No syncs or network requests.\n";
+echo "PASS: all 18 choices and note actions; notes first in Remarks; current/legacy confirmations and stale/uncertain results distinguished; New/Junk local. No network requests.\n";

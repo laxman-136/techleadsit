@@ -15,6 +15,10 @@ jobs:
         run: php tests/lead-attribution-test.php
       - name: All 18 Bridge status options and offline TeleCRM mappings
         run: php landing-page-leads/tests/status-options-test.php
+      - name: Bridge AJAX review permissions
+        run: php landing-page-leads/tests/review-ajax-test.php
+      - name: Bridge sync animation JavaScript syntax
+        run: node --check landing-page-leads/sync-feedback.js
       - name: SCM question validation and verification
         run: php landing-page-leads/tests/scm-otp-test.php
       - name: Browser collection and form decoration contract

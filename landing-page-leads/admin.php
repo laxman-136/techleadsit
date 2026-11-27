@@ -50,6 +50,10 @@ final class TLIT_LP_Admin {
         TLIT_LP_Leads::admin();
         wp_enqueue_style('tlit-lp-admin',plugin_dir_url(__FILE__).'admin.css',array(),TLIT_LP_Leads::VERSION.'-workspace8');
         wp_enqueue_script('tlit-lp-theme',plugins_url('../conversation-bridge/assets/admin.js',__FILE__),array(),'1.5.3-workspace6',true);
+        if(absint(self::input('lead'))) {
+            wp_enqueue_style('tlit-lp-sync',plugin_dir_url(__FILE__).'sync-feedback.css',array(),'1.0.0');
+            wp_enqueue_script('tlit-lp-sync',plugin_dir_url(__FILE__).'sync-feedback.js',array(),'1.0.0',true);
+        }
         $view = self::input('view');$dropoffs=$view==='dropoffs';
         $is_light_theme=isset($_COOKIE['tlit_bridge_theme'])&&$_COOKIE['tlit_bridge_theme']==='light';
         echo '<div class="wrap lp-workspace'.($is_light_theme?' is-light':'').'" data-tlit-theme-root><script>(function(r){try{if(localStorage.getItem("tlit_bridge_theme")==="light"){r.classList.add("is-light");r.dataset.theme="light";}}catch(e){}})(document.currentScript.parentElement);</script><header class="lp-header"><div><p class="lp-eyebrow">TECH LEADS IT / COUNSELLOR WORKSPACE</p><h1>'.($dropoffs?'Form progress &amp; drop-offs':'Landing page leads').'</h1><p>'.($dropoffs?'See every saved form journey, its latest completed step and OTP outcome.':'Every enquiry in one place. Review, call and qualify before syncing with TeleCRM.').'</p></div><div class="lp-header-tools"><span class="lp-private"><span class="dashicons dashicons-lock" aria-hidden="true"></span> Private workspace</span><button type="button" class="tlit-cb-theme-toggle" data-tlit-theme-toggle aria-pressed="false" aria-label="Switch to light theme" title="Switch to light theme"><span aria-hidden="true"></span></button></div></header>';
@@ -142,7 +146,7 @@ final class TLIT_LP_Admin {
     public static function qualification_field($current_qualification) {
         // Use the same status keys and labels as storage, reporting and TeleCRM.
         $qualifications = TLIT_LP_Leads::statuses();
-        echo '<label for="lp-lead-status">Lead qualification</label><select id="lp-lead-status" name="lead_status" aria-describedby="lp-status-help" required>';
+        echo '<label for="lp-lead-status">Lead qualification</label><select id="lp-lead-status" name="lead_status" data-saved-status="'.esc_attr($current_qualification).'" aria-describedby="lp-status-help" required>';
         if (!isset($qualifications[$current_qualification])) {
             echo '<option value="" disabled selected>Choose qualification</option>';
         }
@@ -154,12 +158,13 @@ final class TLIT_LP_Admin {
     public static function call_notes_field($note,$saved_status) {
         $can_sync=isset(TLIT_LP_Leads::crm_statuses()[$saved_status]);
         echo '<label for="lp-call-notes">Call notes</label><textarea id="lp-call-notes" name="note" rows="6" maxlength="5000" aria-describedby="lp-notes-help" placeholder="What did you discuss? What should happen next?">'.esc_textarea($note).'</textarea>';
-        echo '<p id="lp-notes-help" class="lp-help">'.($can_sync?'Call notes are included in TeleCRM Remarks. The call-notes button keeps the saved lead qualification.':'New and Junk Lead stay in WordPress. Call notes are saved locally; choose another qualification and save the review to sync them to TeleCRM Remarks.').'</p>';
+        echo '<p id="lp-notes-help" class="lp-help">'.($can_sync?'Call notes appear first in TeleCRM Remarks. The call-notes button keeps the saved lead qualification.':'New and Junk Lead stay in WordPress. Call notes are saved locally; choose another qualification and save the review to sync them to TeleCRM Remarks.').'</p>';
         echo '<div class="lp-review-actions"><button type="submit" class="button button-primary lp-full">Save review &amp; sync lead</button><button type="submit" class="button lp-full" name="sync_call_notes" value="1">'.($can_sync?'Save call notes &amp; sync Remarks':'Save call notes').'</button></div>';
     }
     private static function detail($id) {
         $lead = TLIT_LP_Leads::get($id);
         if (!$lead || is_wp_error($lead)) { echo '<div class="lp-panel"><h2>Lead not found</h2></div>'; return; }
+        $sync=TLIT_LP_Leads::review_result($lead);
         $lead = (array)$lead; $data = json_decode($lead['payload'],true) ?: array();
         echo '<p><a href="'.esc_url(self::url()).'">← Back to leads</a></p><div class="lp-detail-heading"><div><p class="lp-eyebrow">LANDING PAGE LEAD / LP-'.(int)$id.'</p><h2>'.esc_html($lead['name']).'</h2><p>Received '.esc_html(self::date($lead['created_at'])).'</p></div><a class="button" href="'.esc_url(self::export_url(array('lead'=>$id))).'">Download lead CSV ↓</a></div><div class="lp-review-grid"><div><section class="lp-panel"><h3>Contact details</h3><div class="lp-contact"><a href="tel:'.esc_attr($lead['phone']).'">'.esc_html($lead['phone']).' ↗</a>';
         if ($lead['email'] !== '') { echo '<a href="mailto:'.esc_attr($lead['email']).'">'.esc_html($lead['email']).'</a>'; }
@@ -179,10 +184,11 @@ final class TLIT_LP_Admin {
         self::form('status',$id);
         self::qualification_field($lead['lead_status']??'new');
         self::call_notes_field($lead['advisor_note'],$lead['lead_status']??'new');
-        echo '</form><details class="lp-help lp-advanced lp-guide" aria-label="Lead qualification guide"><summary>How to qualify a lead <span class="lp-read-more">— Read more</span><span class="lp-read-less">— Read less</span></summary><div class="lp-guide-content"><p><strong>below 50 % Potential:</strong> Interested, but not ready yet. Share useful course details and follow up later.</p><p><strong>50 % Potential:</strong> Exploring the course and asking questions. Understand their needs and offer a demo.</p><p><strong>60-80 Potential:</strong> Strong interest and planning to join soon. Confirm the batch, fees and next step.</p><p><strong>Potential Lead 100:</strong> A good course fit with clear intent to enrol. Confirm their requirements, budget and joining timeline.</p><p><strong>Junk Lead:</strong> Spam, invalid contact details or an irrelevant enquiry. No further sales follow-up needed.</p><p>Use the demo, next batch, contact outcome, course or requirement, trainer, Enrolled or Lost statuses when they match the review. Update the status as circumstances change. A missed call alone does not make a lead Junk Lead.</p></div></details></section><section class="lp-panel lp-sync-panel"><h3>TeleCRM sync</h3>'.self::badge($lead['crm_status'],self::crm_states()[$lead['crm_status']]??$lead['crm_status']).'<p>'.esc_html($lead['crm_message'] ?: 'Waiting for counsellor qualification.').'</p>';
-        if (!empty($lead['crm_updated'])) { echo '<p class="lp-help">Last update: '.esc_html(self::date($lead['crm_updated'])).'</p>'; }
+        echo '</form><details class="lp-help lp-advanced lp-guide" aria-label="Lead qualification guide"><summary>How to qualify a lead <span class="lp-read-more">— Read more</span><span class="lp-read-less">— Read less</span></summary><div class="lp-guide-content"><p><strong>below 50 % Potential:</strong> Interested, but not ready yet. Share useful course details and follow up later.</p><p><strong>50 % Potential:</strong> Exploring the course and asking questions. Understand their needs and offer a demo.</p><p><strong>60-80 Potential:</strong> Strong interest and planning to join soon. Confirm the batch, fees and next step.</p><p><strong>Potential Lead 100:</strong> A good course fit with clear intent to enrol. Confirm their requirements, budget and joining timeline.</p><p><strong>Junk Lead:</strong> Spam, invalid contact details or an irrelevant enquiry. No further sales follow-up needed.</p><p>Use the demo, next batch, contact outcome, course or requirement, trainer, Enrolled or Lost statuses when they match the review. Update the status as circumstances change. A missed call alone does not make a lead Junk Lead.</p></div></details></section><section class="lp-panel lp-sync-panel"><h3>TeleCRM sync</h3>'.self::badge($sync['badge_status'],$sync['crm_label']).'<p data-lp-sync-message>'.esc_html($sync['message']).'</p>';
+        echo '<p class="lp-help" data-lp-sync-updated'.($sync['updated_label']===''?' hidden':'').'>Last update: '.esc_html($sync['updated_label']).'</p>';
+        echo '<p class="lp-help" data-lp-sync-refresh'.(in_array($sync['state'],array('uncertain','sending'),true)?'':' hidden').'><a href="'.esc_url(self::url(array('lead'=>$id))).'">Refresh delivery status</a></p>';
         $target_status = TLIT_LP_Leads::crm_statuses()[$lead['lead_status']]??'';
-        if ($target_status !== '') { echo '<p class="lp-help">TeleCRM status for this qualification: <strong>'.esc_html($target_status).'</strong>.</p>'; }
+        echo '<p class="lp-help" data-lp-target-status'.($target_status===''?' hidden':'').'>TeleCRM status for this qualification: <strong>'.esc_html($target_status).'</strong>.</p>';
         if (in_array($lead['crm_status'],array('sending','uncertain'),true)) {
             self::form('resolve',$id);
             echo '<p class="lp-help">Check the latest attempted qualification and notes in TeleCRM before resolving this sync. An older copy of the lead does not confirm the latest update.</p><label class="lp-check"><input type="checkbox" name="confirmed" value="1" required> I checked the latest update in TeleCRM.</label>';
@@ -190,5 +196,6 @@ final class TLIT_LP_Admin {
             echo '<button class="button lp-full">Save delivery result</button></form>';
         }
         echo '<details class="lp-help lp-advanced lp-guide"><summary>About CRM sync <span class="lp-read-more">— Read more</span><span class="lp-read-less">— Read less</span></summary><div class="lp-guide-content"><p>Uses the existing landing-page connection. Marking an already synced lead New or Junk stops further updates; it does not delete its existing TeleCRM record. Payment amounts and enrolment dates remain manual.</p></div></details></section></aside></div>';
+        require __DIR__.'/sync-feedback.php';
     }
 }
