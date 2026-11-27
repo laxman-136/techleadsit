@@ -32,8 +32,13 @@
             if (event.key === 'Escape') { event.preventDefault(); dismiss(); }
             if (event.key === 'Tab') { event.preventDefault(); (busy ? dialog : close).focus(); }
         });
-        note.addEventListener('input', function () { note.setCustomValidity(''); });
-        buttons.forEach(button => button.addEventListener('click', function () { note.setCustomValidity(''); }));
+        function updateAction() {
+            const held = status.value === 'new' || status.value === 'junk';
+            buttons[0].textContent = held ? 'Save review' : 'Save review & sync lead';
+            form.querySelector('#lp-notes-help').textContent = held ? 'Save the selected qualification and call notes together. New and Junk Lead stay in WordPress.' : 'Save the selected qualification and call notes together. Call notes appear first in TeleCRM Remarks.';
+        }
+        status.addEventListener('change', updateAction);
+        updateAction();
         window.addEventListener('pageshow', function () {
             if (!busy) { buttons.forEach(button => { button.disabled = false; }); form.removeAttribute('aria-busy'); }
         });
@@ -41,17 +46,12 @@
             event.preventDefault();
             if (busy) return;
             const submitter = event.submitter || buttons[0];
-            const notesOnly = submitter && submitter.name === 'sync_call_notes';
-            if (notesOnly && !note.value.trim()) {
-                note.setCustomValidity('Enter call notes before syncing Remarks.'); note.reportValidity(); return;
-            }
             if (!form.reportValidity()) return;
-            // Capture the clicked button before disabling it, so a notes-only action cannot become a status change.
+            // Capture both review fields before disabling the single save action.
             const payload = new FormData(form);
             payload.set('action', 'tlit_lp_review');
-            if (notesOnly) payload.set('sync_call_notes', '1'); else payload.delete('sync_call_notes');
-            const targetStatus = notesOnly ? status.dataset.savedStatus : status.value;
-            const local = targetStatus === 'new' || targetStatus === 'junk';
+            payload.delete('sync_call_notes');
+            const local = status.value === 'new' || status.value === 'junk';
             busy = true; returnFocus = submitter;
             buttons.forEach(button => { button.disabled = true; });
             form.setAttribute('aria-busy', 'true');
@@ -70,12 +70,8 @@
                 const phases = ['synced','local','failed','uncertain','sending','pending'];
                 if (!data || !phases.includes(data.state) || !data.lead_status || typeof data.note !== 'string') throw new Error('Unconfirmed response');
                 status.value = data.lead_status;
-                status.dataset.savedStatus = data.lead_status;
                 note.value = data.note;
-                const notesButton = form.querySelector('[name="sync_call_notes"]');
-                const held = data.lead_status === 'new' || data.lead_status === 'junk';
-                notesButton.textContent = held ? 'Save call notes' : 'Save call notes & sync Remarks';
-                form.querySelector('#lp-notes-help').textContent = held ? 'New and Junk Lead stay in WordPress. Call notes are saved locally; choose another qualification and save the review to sync them to TeleCRM Remarks.' : 'Call notes appear first in TeleCRM Remarks. The call-notes button keeps the saved lead qualification.';
+                updateAction();
                 const panel = root.querySelector('.lp-sync-panel');
                 const badge = panel.querySelector('.lp-badge');
                 badge.textContent = data.crm_label;

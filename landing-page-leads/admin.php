@@ -52,7 +52,7 @@ final class TLIT_LP_Admin {
         wp_enqueue_script('tlit-lp-theme',plugins_url('../conversation-bridge/assets/admin.js',__FILE__),array(),'1.5.3-workspace6',true);
         if(absint(self::input('lead'))) {
             wp_enqueue_style('tlit-lp-sync',plugin_dir_url(__FILE__).'sync-feedback.css',array(),'1.0.0');
-            wp_enqueue_script('tlit-lp-sync',plugin_dir_url(__FILE__).'sync-feedback.js',array(),'1.0.0',true);
+            wp_enqueue_script('tlit-lp-sync',plugin_dir_url(__FILE__).'sync-feedback.js',array(),'1.0.1',true);
         }
         $view = self::input('view');$dropoffs=$view==='dropoffs';
         $is_light_theme=isset($_COOKIE['tlit_bridge_theme'])&&$_COOKIE['tlit_bridge_theme']==='light';
@@ -146,7 +146,7 @@ final class TLIT_LP_Admin {
     public static function qualification_field($current_qualification) {
         // Use the same status keys and labels as storage, reporting and TeleCRM.
         $qualifications = TLIT_LP_Leads::statuses();
-        echo '<label for="lp-lead-status">Lead qualification</label><select id="lp-lead-status" name="lead_status" data-saved-status="'.esc_attr($current_qualification).'" aria-describedby="lp-status-help" required>';
+        echo '<label for="lp-lead-status">Lead qualification</label><select id="lp-lead-status" name="lead_status" aria-describedby="lp-status-help" required>';
         if (!isset($qualifications[$current_qualification])) {
             echo '<option value="" disabled selected>Choose qualification</option>';
         }
@@ -158,8 +158,8 @@ final class TLIT_LP_Admin {
     public static function call_notes_field($note,$saved_status) {
         $can_sync=isset(TLIT_LP_Leads::crm_statuses()[$saved_status]);
         echo '<label for="lp-call-notes">Call notes</label><textarea id="lp-call-notes" name="note" rows="6" maxlength="5000" aria-describedby="lp-notes-help" placeholder="What did you discuss? What should happen next?">'.esc_textarea($note).'</textarea>';
-        echo '<p id="lp-notes-help" class="lp-help">'.($can_sync?'Call notes appear first in TeleCRM Remarks. The call-notes button keeps the saved lead qualification.':'New and Junk Lead stay in WordPress. Call notes are saved locally; choose another qualification and save the review to sync them to TeleCRM Remarks.').'</p>';
-        echo '<div class="lp-review-actions"><button type="submit" class="button button-primary lp-full">Save review &amp; sync lead</button><button type="submit" class="button lp-full" name="sync_call_notes" value="1">'.($can_sync?'Save call notes &amp; sync Remarks':'Save call notes').'</button></div>';
+        echo '<p id="lp-notes-help" class="lp-help">'.($can_sync?'Save the selected qualification and call notes together. Call notes appear first in TeleCRM Remarks.':'Save the selected qualification and call notes together. New and Junk Lead stay in WordPress.').'</p>';
+        echo '<div class="lp-review-actions"><button type="submit" class="button button-primary lp-full">'.($can_sync?'Save review &amp; sync lead':'Save review').'</button></div>';
     }
     private static function detail($id) {
         $lead = TLIT_LP_Leads::get($id);

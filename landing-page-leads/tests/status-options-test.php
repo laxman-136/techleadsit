@@ -46,10 +46,10 @@ foreach (array_keys($expected) as $current) {
     $notes_xpath = new DOMXPath($notes_dom);
     $notes_input = $notes_xpath->query('//textarea[@name="note"]');
     status_check($notes_input->length === 1 && $notes_input->item(0)->textContent === $call_notes, 'Call notes must reload intact, including newlines and special characters.');
-    $notes_button = $notes_xpath->query('//button[@name="sync_call_notes" and @value="1" and @type="submit"]');
-    status_check($notes_button->length === 1, 'The review form must offer a separate call-notes save action.');
-    $button_text = in_array($current, array('new','junk'), true) ? 'Save call notes' : 'Save call notes & sync Remarks';
-    status_check($notes_button->item(0)->textContent === $button_text, 'The call-notes button must accurately describe local-only and sync-eligible statuses.');
+    $save_button = $notes_xpath->query('//button[@type="submit"]');
+    status_check($save_button->length === 1 && $notes_xpath->query('//button[@name="sync_call_notes"]')->length === 0, 'The review form must have one combined save action.');
+    $button_text = in_array($current, array('new','junk'), true) ? 'Save review' : 'Save review & sync lead';
+    status_check($save_button->item(0)->textContent === $button_text, 'The single button must accurately describe local-only and sync-eligible reviews.');
 
     $row = (object) array('id'=>123, 'name'=>'Offline status QA', 'phone'=>'+447700900123',
         'email'=>'offline-status@example.invalid', 'source'=>'general', 'page_variant'=>'oracle_financials',
