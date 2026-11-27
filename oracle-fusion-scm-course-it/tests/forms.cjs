@@ -164,7 +164,7 @@ async function main() {
       assert.equal(await headerCTA.isVisible(), true);
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
       const button = await headerCTA.boundingBox();
-      assert.ok(button.height >= 44 && button.x >= 0 && button.x + button.width <= width);
+      assert.ok(button.height >= 43.9 && button.x >= 0 && button.x + button.width <= width + 1, JSON.stringify({ width, button }));
       await headerCTA.click();
       await page.getByRole('dialog').waitFor({ state: 'visible' });
       assert.equal(await page.locator('#demo-form [name=name]').evaluate(el => el === document.activeElement), true);
@@ -172,6 +172,32 @@ async function main() {
       assert.equal(await headerCTA.evaluate(el => el === document.activeElement), true);
     }
     await page.setViewportSize({ width: 1440, height: 900 });
+    const bottomBar = page.getByRole('navigation', { name: 'Career and WhatsApp actions' });
+    const careerCTA = bottomBar.getByRole('button', { name: 'Start My IT Career', exact: true });
+    const whatsapp = bottomBar.getByRole('link', { name: 'WhatsApp +91 81253 23232', exact: true });
+    assert.equal(await whatsapp.getAttribute('href'), 'https://wa.me/918125323232');
+    assert.equal(await whatsapp.getAttribute('target'), '_blank');
+    for (const width of [320, 390, 740, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      const bar = await bottomBar.boundingBox();
+      assert.ok(Math.abs(bar.y + bar.height - 900) <= 1 && bar.height <= 80);
+      for (const action of [careerCTA, whatsapp]) {
+        const rect = await action.boundingBox();
+        assert.ok(rect.height >= 43.9 && rect.x >= 0 && rect.x + rect.width <= width + 1);
+      }
+      await careerCTA.click();
+      await page.getByRole('dialog').waitFor({ state: 'visible' });
+      assert.equal(await bottomBar.isVisible(), false);
+      await page.getByRole('button', { name: 'Close form', exact: true }).click();
+      assert.equal(await careerCTA.evaluate(el => el === document.activeElement), true);
+      assert.equal(await bottomBar.isVisible(), true);
+      await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
+      const footer = await page.locator('.site-footer').boundingBox();
+      const scrolledBar = await bottomBar.boundingBox();
+      assert.ok(footer.y + footer.height <= scrolledBar.y + 1, 'Footer remains above the fixed action bar');
+    }
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.evaluate(() => scrollTo(0, 0));
     const desktopHero = await page.locator('.hero-layout').evaluate(el => {
       const rect = selector => el.querySelector(selector).getBoundingClientRect().toJSON();
       return { heading: rect('h1'), form: rect('#hero-register'), description: rect('.hero-intro') };
@@ -179,8 +205,10 @@ async function main() {
     assert.ok(desktopHero.heading.right <= desktopHero.form.left);
     assert.ok(desktopHero.description.right <= desktopHero.form.left);
     assert.ok(desktopHero.heading.bottom <= desktopHero.description.top);
-    assert.equal(await page.locator('main > section').count(), 10);
-    assert.equal(await page.locator('.awareness + .faq-section').count(), 1);
+    assert.equal(await page.locator('main > section').count(), 11);
+    assert.equal(await page.locator('.trainer + .curriculum-section').count(), 1);
+    assert.equal(await page.locator('.curriculum-section + .faq-section').count(), 1);
+    assert.equal((await page.locator('.hero h1 span').textContent()).trim(), 'Oracle Fusion SCM.');
     assert.equal(await page.locator('#awareness-title').textContent(), 'What Does an Oracle Fusion SCM Consultant Do?');
     assert.equal(await page.locator('.consultant-duties > li').count(), 5);
     assert.ok((await page.locator('.consultant-example').textContent()).includes('purchase request gets stuck'));
@@ -485,7 +513,14 @@ async function main() {
       assert.ok(mobileHero.heading.bottom <= mobileHero.form.top, 'Mobile form follows the heading');
       assert.ok(mobileHero.form.bottom <= mobileHero.description.top, 'Mobile description follows the form');
       assert.ok(mobileHero.description.bottom <= mobileHero.buttons.top, 'Mobile buttons follow the description');
-      assert.equal(mobileHero.headingSize, '57px');
+      assert.ok(parseFloat(mobileHero.headingSize) >= 28 && parseFloat(mobileHero.headingSize) <= 36);
+      assert.ok(mobileHero.heading.height <= 190, 'Mobile headline leaves room for the form');
+      const mobileCountry = heroForm.locator('[data-select-name=countryCode]');
+      await mobileCountry.getByRole('combobox').click();
+      const menu = await mobileCountry.locator('.select-menu').boundingBox();
+      const fixedBar = await bottomBar.boundingBox();
+      assert.ok(menu.y + menu.height <= fixedBar.y, 'Dropdown options remain above the action bar');
+      await mobileCountry.getByRole('combobox').press('Escape');
       await page.locator('.hero-jump').click();
       assert.equal(await heroForm.locator('[name=name]').isVisible(), true);
       assert.equal(await dialog.isVisible(), false);

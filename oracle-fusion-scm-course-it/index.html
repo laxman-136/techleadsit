@@ -26,9 +26,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..800&amp;family=Sora:wght@600..800&amp;display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=1.7.33">
-  <script src="form-controls.js?v=1.7.27" defer></script>
-  <script src="app.js?v=1.7.30" defer></script>
+  <link rel="stylesheet" href="styles.css?v=1.7.34">
+  <script src="form-controls.js?v=1.7.34" defer></script>
+  <script src="app.js?v=1.7.34" defer></script>
 </head>
 <body>
   <header class="site-header">
@@ -51,7 +51,7 @@
     <section class="hero" aria-labelledby="hero-title">
       <div class="hero-route" aria-hidden="true"></div>
       <div class="wrap hero-layout">
-        <h1 id="hero-title">Want an IT Career but Don’t Know Coding? <span>Start with Oracle Fusion SCM.</span></h1>
+        <h1 id="hero-title">Want an IT Career but Don’t Know Coding? Start with <span>Oracle Fusion SCM.</span></h1>
         <div class="hero-registration-panel" id="hero-register" tabindex="-1" aria-labelledby="hero-form-title">
           <h2 id="hero-form-title">Register for the Free Demo</h2>
           <p class="hero-event"><time data-scm-time="demo" datetime="2026-12-12T08:00:00+05:30">Saturday, 12 December 2026 · 8:00 AM IST</time><span data-scm-platform>Live on Zoom</span></p>
@@ -297,8 +297,34 @@
           <h3>A practical example</h3>
           <p>A purchase request gets stuck. You investigate the approval setup, help correct the issue and test the process with the purchasing team.</p>
         </div>
+      </div>
+    </section>
+
+    <section class="trainer section-pad" aria-labelledby="trainer-title">
+      <div class="wrap split-section">
+        <div class="section-copy">
+          <h2 id="trainer-title">Meet Krishna Before You Join</h2>
+          <p>Unsure which IT skills to learn first? Hear Krishna explain what Oracle Fusion SCM is and where a fresher can start.</p>
+          <figure class="trainer-profile">
+            <img src="assets/krishna-v-trainer-photo.webp" alt="Krishna V, Oracle Fusion SCM trainer" width="480" height="853" loading="lazy" decoding="async">
+            <figcaption><strong>Krishna V</strong><span>20+ years of industry experience</span></figcaption>
+          </figure>
+          <p class="text-note">Free live demo with Krishna V · <time data-scm-time="demo" datetime="2026-12-12T08:00:00+05:30">Saturday, 12 December 2026 · 8:00 AM IST</time></p>
+          <button class="cta trainer-cta" type="button" data-lead-intent="demo" aria-haspopup="dialog" aria-controls="registration">Join Krishna’s Free Demo <span aria-hidden="true">→</span></button>
+        </div>
+        <figure class="trainer-media">
+          <video class="trainer-video" controls playsinline muted preload="none" poster="assets/krishna-fresher-intro-poster.jpg" width="720" height="1280" aria-label="Krishna V introduces Oracle Fusion SCM to freshers">
+            <source src="assets/krishna-fresher-intro.mp4" type="video/mp4">
+            Your browser does not support this video.
+          </video>
+        </figure>
+      </div>
+    </section>
+
+    <section class="curriculum-section section-pad" aria-labelledby="scm-curriculum-title">
+      <div class="wrap">
         <div class="curriculum" id="scm-curriculum" tabindex="-1" aria-labelledby="scm-curriculum-title">
-          <h3 id="scm-curriculum-title">16 Core SCM Modules You’ll Cover</h3>
+          <h2 id="scm-curriculum-title">16 Core SCM Modules You’ll Cover</h2>
           <div class="curriculum-grid">
             <div class="curriculum-group">
               <h4><img class="curriculum-icon" src="assets/curriculum/setup.png" alt="" width="34" height="34">Setup and Product Data</h4>
@@ -350,27 +376,6 @@
           <div><dt>How much time should I set aside?</dt><dd>Plan for one hour a day, Monday through Saturday, for about three months.</dd></div>
           <div><dt>What if I miss a live class?</dt><dd>Catch up with class recordings in the learning portal for two years.</dd></div>
         </dl>
-      </div>
-    </section>
-
-    <section class="trainer section-pad" aria-labelledby="trainer-title">
-      <div class="wrap split-section">
-        <div class="section-copy">
-          <h2 id="trainer-title">Meet Krishna Before You Join</h2>
-          <p>Unsure which IT skills to learn first? Hear Krishna explain what Oracle Fusion SCM is and where a fresher can start.</p>
-          <figure class="trainer-profile">
-            <img src="assets/krishna-v-trainer-photo.webp" alt="Krishna V, Oracle Fusion SCM trainer" width="480" height="853" loading="lazy" decoding="async">
-            <figcaption><strong>Krishna V</strong><span>20+ years of industry experience</span></figcaption>
-          </figure>
-          <p class="text-note">Free live demo with Krishna V · <time data-scm-time="demo" datetime="2026-12-12T08:00:00+05:30">Saturday, 12 December 2026 · 8:00 AM IST</time></p>
-          <button class="cta trainer-cta" type="button" data-lead-intent="demo" aria-haspopup="dialog" aria-controls="registration">Join Krishna’s Free Demo <span aria-hidden="true">→</span></button>
-        </div>
-        <figure class="trainer-media">
-          <video class="trainer-video" controls playsinline muted preload="none" poster="assets/krishna-fresher-intro-poster.jpg" width="720" height="1280" aria-label="Krishna V introduces Oracle Fusion SCM to freshers">
-            <source src="assets/krishna-fresher-intro.mp4" type="video/mp4">
-            Your browser does not support this video.
-          </video>
-        </figure>
       </div>
     </section>
 
@@ -525,6 +530,13 @@
       <a href="tel:+918125323232">Questions? +91 81253 23232</a>
     </div>
   </footer>
+
+  <nav class="bottom-action-bar" aria-label="Career and WhatsApp actions">
+    <div class="wrap bottom-action-inner">
+      <button class="cta" type="button" data-lead-intent="demo" aria-haspopup="dialog" aria-controls="registration">Start My IT Career</button>
+      <a class="cta whatsapp-cta" href="https://wa.me/918125323232" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp +91 81253 23232">WhatsApp</a>
+    </div>
+  </nav>
 
   <dialog id="registration" aria-labelledby="form-title" aria-describedby="form-description">
     <div class="dialog-heading">

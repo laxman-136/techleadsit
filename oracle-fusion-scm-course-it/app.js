@@ -99,7 +99,7 @@ if ('IntersectionObserver' in window) {
       sectionMotion.unobserve(entry.target);
     }
   }, { threshold: 0.25 });
-  document.querySelectorAll('main .section-copy h2, .curriculum > h3, .ai-grid article')
+  document.querySelectorAll('main .section-copy h2, .curriculum > h2, .ai-grid article')
     .forEach(element => sectionMotion.observe(element));
 }
 

@@ -39,6 +39,8 @@ The verification screen uses four individual digit boxes. It advances as digits 
 
 ## Form presentation
 
+The mobile headline uses a compact 28–36px scale and highlights only Oracle Fusion SCM; the inline form follows it immediately. The trainer and video section now precede the 16-module curriculum. A compact fixed bottom bar opens demo registration from “Start My IT Career” and links to `https://wa.me/918125323232`. Page/footer spacing, dropdown boundaries and device safe-area padding keep content clear of the bar; it hides behind the registration dialog.
+
 The contact step asks for a target salary package (below ₹4 LPA, ₹4–8 LPA, or job-first with no package preference). The answer is saved as `details.target_package`, appears in the administrator and private consultant views, and is retained in TeleCRM Remarks and the system note. Education includes MCA alongside BCA/B.Sc (IT/CS). Both exploration choices read “Casual Exploring Options”; enrolment excludes employer sponsorship. Training budget offers “No budget right now” and “Yes, I have a budget of ₹25,000–₹30,000”. These questions apply to the inline demo and both brochure popups.
 
 The inline and popup enquiries share a restrained form layout, responsive phone row, named progress stages, inline validation and explicit loading/error/success states. Popup actions remain visible while scrolling longer screens.
