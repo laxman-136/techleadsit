@@ -67,12 +67,13 @@ window.SCMFormControls = (() => {
       function position() {
         if (menu.hidden) return;
         const rect = button.getBoundingClientRect();
-        const boundary = form.closest('dialog') || form.closest('.hero');
+        const boundary = form.closest('.dialog-body') || form.closest('.hero');
         const bounds = boundary?.getBoundingClientRect();
+        const actions = form.closest('dialog') ? form.querySelector('.form-actions')?.getBoundingClientRect() : null;
         const actionBar = form.closest('dialog') ? null : document.querySelector('.bottom-action-bar');
-        const viewportBottom = actionBar && getComputedStyle(actionBar).visibility !== 'hidden'
+        const viewportBottom = actionBar && actionBar.getClientRects().length && getComputedStyle(actionBar).visibility !== 'hidden'
           ? Math.min(innerHeight - 12, actionBar.getBoundingClientRect().top - 12) : innerHeight - 12;
-        const below = Math.min(viewportBottom, bounds ? bounds.bottom - 12 : viewportBottom) - rect.bottom - 8;
+        const below = Math.min(viewportBottom, bounds ? bounds.bottom - 12 : viewportBottom, actions ? actions.top - 8 : viewportBottom) - rect.bottom - 8;
         const above = rect.top - Math.max(12, bounds ? bounds.top + 12 : 12) - 8;
         const upward = below < 220 && above > below;
         menu.dataset.side = upward ? 'above' : 'below';

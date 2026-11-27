@@ -13,6 +13,8 @@ const demoDate = document.querySelector('time[data-scm-time="demo"]');
 const demoTime = Date.parse(demoDate.dateTime);
 const demoSchedule = demoDate.textContent.trim();
 const demoPlatform = document.querySelector('[data-scm-platform]').textContent.trim();
+const shortDemoDate = new Intl.DateTimeFormat('en-IN', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata' }).format(demoTime);
+const shortDemoTime = new Intl.DateTimeFormat('en-IN', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'Asia/Kolkata' }).format(demoTime);
 
 const formCopy = {
   demo: {
@@ -459,23 +461,69 @@ const dialog = document.querySelector('#registration');
 const closeButton = dialog.querySelector('.close');
 attachLeadForm(inlineFields, 'inline');
 const popup = attachLeadForm(popupFields, 'popup', closeButton);
+const mobileForm = matchMedia('(max-width: 740px)');
+let openViewportHeight = 0;
+let viewportFrame;
 let opener;
+
+// Android and iOS can resize only the visual viewport when the keyboard opens.
+// Keep the dialog and its scrollable fields inside that visible area.
+function syncFormViewport() {
+  if (!dialog.open || !mobileForm.matches) {
+    dialog.style.removeProperty('--form-viewport-height');
+    dialog.style.removeProperty('--form-viewport-top');
+    delete dialog.dataset.keyboardOpen;
+    return;
+  }
+  const viewport = window.visualViewport;
+  if (viewport && viewport.scale > 1.05) return;
+  const height = viewport?.height || innerHeight;
+  openViewportHeight = Math.max(openViewportHeight, height);
+  dialog.style.setProperty('--form-viewport-height', height + 'px');
+  dialog.style.setProperty('--form-viewport-top', (viewport?.offsetTop || 0) + 'px');
+  const typing = dialog.contains(document.activeElement) && document.activeElement.matches('input');
+  dialog.toggleAttribute('data-keyboard-open', typing && height < openViewportHeight * 0.75);
+  if (typing) {
+    const input = document.activeElement.getBoundingClientRect();
+    const body = popupFields.getBoundingClientRect();
+    const actions = popupFields.querySelector('.form-actions').getBoundingClientRect();
+    if (input.top < body.top + 8 || input.bottom > Math.min(body.bottom, actions.top) - 8) {
+      document.activeElement.scrollIntoView({ block: 'nearest' });
+    }
+  }
+}
+function scheduleFormViewport() {
+  cancelAnimationFrame(viewportFrame);
+  viewportFrame = requestAnimationFrame(syncFormViewport);
+}
+window.visualViewport?.addEventListener('resize', scheduleFormViewport);
+window.visualViewport?.addEventListener('scroll', scheduleFormViewport);
+window.addEventListener('resize', scheduleFormViewport);
+dialog.addEventListener('focusin', scheduleFormViewport);
+dialog.addEventListener('focusout', scheduleFormViewport);
 
 document.querySelectorAll('[data-lead-intent]').forEach(button => {
   button.addEventListener('click', () => {
     opener = button;
     const offer = button.dataset.leadIntent;
     dialog.querySelector('#form-title').textContent = formCopy[offer].title;
-    dialog.querySelector('#form-description').textContent = formCopy[offer].description;
+    dialog.querySelector('[data-form-description-full]').textContent = formCopy[offer].description;
+    dialog.querySelector('[data-form-description-compact]').textContent = offer === 'demo'
+      ? shortDemoDate + ' · ' + shortDemoTime.toUpperCase() + ' IST · ' + demoPlatform : formCopy[offer].description;
     popup.reset(offer);
+    popupFields.scrollTop = 0;
     dialog.showModal();
     document.body.classList.add('modal-open');
-    popup.focus();
+    openViewportHeight = window.visualViewport?.height || innerHeight;
+    if (mobileForm.matches) dialog.querySelector('#form-title').focus({ preventScroll: true });
+    else popup.focus();
+    syncFormViewport();
   });
 });
 closeButton.addEventListener('click', () => { if (!popup.isPending()) dialog.close(); });
 dialog.addEventListener('cancel', event => { if (popup.isPending()) event.preventDefault(); });
 dialog.addEventListener('close', () => {
   document.body.classList.remove('modal-open');
+  syncFormViewport();
   opener?.focus();
 });

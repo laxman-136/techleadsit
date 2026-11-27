@@ -167,18 +167,24 @@ async function main() {
       assert.ok(button.height >= 43.9 && button.x >= 0 && button.x + button.width <= width + 1, JSON.stringify({ width, button }));
       await headerCTA.click();
       await page.getByRole('dialog').waitFor({ state: 'visible' });
-      assert.equal(await page.locator('#demo-form [name=name]').evaluate(el => el === document.activeElement), true);
+      const initialFocus = width <= 740 ? page.locator('#form-title') : page.locator('#demo-form [name=name]');
+      assert.equal(await initialFocus.evaluate(el => el === document.activeElement), true);
       await page.getByRole('button', { name: 'Close form', exact: true }).click();
       assert.equal(await headerCTA.evaluate(el => el === document.activeElement), true);
     }
-    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.setViewportSize({ width: 390, height: 900 });
     const bottomBar = page.getByRole('navigation', { name: 'Career and WhatsApp actions' });
     const careerCTA = bottomBar.getByRole('button', { name: 'Start My IT Career', exact: true });
     const whatsapp = bottomBar.getByRole('link', { name: 'WhatsApp +91 81253 23232', exact: true });
     assert.equal(await whatsapp.getAttribute('href'), 'https://wa.me/918125323232');
     assert.equal(await whatsapp.getAttribute('target'), '_blank');
-    for (const width of [320, 390, 740, 1440]) {
+    for (const width of [320, 390, 740, 741, 768, 1440]) {
       await page.setViewportSize({ width, height: 900 });
+      if (width > 740) {
+        assert.equal(await bottomBar.isVisible(), false);
+        assert.equal(await page.locator('body').evaluate(el => getComputedStyle(el).paddingBottom), '0px');
+        continue;
+      }
       const bar = await bottomBar.boundingBox();
       assert.ok(Math.abs(bar.y + bar.height - 900) <= 1 && bar.height <= 80);
       for (const action of [careerCTA, whatsapp]) {
@@ -195,6 +201,52 @@ async function main() {
       const footer = await page.locator('.site-footer').boundingBox();
       const scrolledBar = await bottomBar.boundingBox();
       assert.ok(footer.y + footer.height <= scrolledBar.y + 1, 'Footer remains above the fixed action bar');
+    }
+    // Model Android's keyboard: the visual viewport shrinks without changing layout width/height.
+    await page.setViewportSize({ width: 390, height: 800 });
+    await headerCTA.click();
+    const popupName = page.locator('#demo-form [name=name]');
+    await popupName.fill('Mobile Draft');
+    await page.evaluate(() => {
+      Object.defineProperty(visualViewport, 'height', { configurable: true, value: 360 });
+      Object.defineProperty(visualViewport, 'offsetTop', { configurable: true, value: 24 });
+      visualViewport.dispatchEvent(new Event('resize'));
+    });
+    await page.waitForFunction(() => document.querySelector('#registration').hasAttribute('data-keyboard-open'));
+    const keyboardLayout = await page.locator('#registration').evaluate(el => {
+      const rect = selector => el.querySelector(selector).getBoundingClientRect().toJSON();
+      return { dialog: el.getBoundingClientRect().toJSON(), input: rect('[name=name]'), close: rect('.close'), actions: rect('.form-actions'), body: rect('.dialog-body') };
+    });
+    assert.ok(keyboardLayout.dialog.top >= 24 && keyboardLayout.dialog.bottom <= 384, JSON.stringify(keyboardLayout));
+    assert.ok(keyboardLayout.actions.bottom <= keyboardLayout.dialog.bottom);
+    assert.ok(keyboardLayout.input.top >= keyboardLayout.body.top && keyboardLayout.input.bottom <= keyboardLayout.actions.top);
+    assert.ok(keyboardLayout.close.top >= keyboardLayout.dialog.top && keyboardLayout.close.bottom <= keyboardLayout.dialog.bottom);
+    assert.equal(await popupName.inputValue(), 'Mobile Draft');
+    await page.evaluate(() => {
+      delete visualViewport.height; delete visualViewport.offsetTop;
+      visualViewport.dispatchEvent(new Event('resize'));
+    });
+    await page.waitForFunction(() => !document.querySelector('#registration').hasAttribute('data-keyboard-open'));
+    await page.getByRole('button', { name: 'Close form', exact: true }).click();
+    for (const width of [320, 390, 740]) {
+      await page.setViewportSize({ width, height: 360 });
+      await headerCTA.click();
+      const compactDialog = page.locator('#registration');
+      const bounds = await compactDialog.boundingBox();
+      const actions = await compactDialog.locator('.form-actions').boundingBox();
+      assert.ok(bounds.y >= 0 && bounds.y + bounds.height <= 360);
+      assert.ok(actions.y >= bounds.y && actions.y + actions.height <= bounds.y + bounds.height);
+      const email = compactDialog.locator('[name=email]');
+      await email.fill('mobile@example.invalid');
+      const input = await email.boundingBox();
+      assert.ok(input.y >= bounds.y && input.y + input.height <= actions.y + 1, JSON.stringify({ width, input, actions }));
+      const picker = compactDialog.locator('[data-select-name=countryCode]');
+      await picker.getByRole('combobox').click();
+      const menu = await picker.locator('.select-menu').boundingBox();
+      assert.ok(menu.y >= bounds.y && menu.y + menu.height <= bounds.y + bounds.height, JSON.stringify({ width, menu, bounds }));
+      await picker.getByRole('option', { name: 'USA/Canada (+1)', exact: true }).click();
+      assert.equal(await compactDialog.locator('[name=countryCode]').inputValue(), '+1');
+      await page.getByRole('button', { name: 'Close form', exact: true }).click();
     }
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.evaluate(() => scrollTo(0, 0));
@@ -515,6 +567,8 @@ async function main() {
       assert.ok(mobileHero.description.bottom <= mobileHero.buttons.top, 'Mobile buttons follow the description');
       assert.ok(parseFloat(mobileHero.headingSize) >= 28 && parseFloat(mobileHero.headingSize) <= 36);
       assert.ok(mobileHero.heading.height <= 190, 'Mobile headline leaves room for the form');
+      assert.equal(await page.locator('#hero-title').evaluate(el => getComputedStyle(el).textAlign), 'center');
+      assert.ok(Math.abs((mobileHero.heading.left + mobileHero.heading.right) / 2 - width / 2) <= 1);
       const mobileCountry = heroForm.locator('[data-select-name=countryCode]');
       await mobileCountry.getByRole('combobox').click();
       const menu = await mobileCountry.locator('.select-menu').boundingBox();
