@@ -139,6 +139,18 @@ final class TLIT_LP_Admin {
         foreach ($values as $label=>$value) { echo '<div><dt>'.esc_html($label).'</dt><dd>'.esc_html($value !== '' ? $value : 'Not provided').'</dd></div>'; }
         echo '</dl>';
     }
+    public static function qualification_field($current_qualification) {
+        // Use the same status keys and labels as storage, reporting and TeleCRM.
+        $qualifications = TLIT_LP_Leads::statuses();
+        echo '<label for="lp-lead-status">Lead qualification</label><select id="lp-lead-status" name="lead_status" aria-describedby="lp-status-help" required>';
+        if (!isset($qualifications[$current_qualification])) {
+            echo '<option value="" disabled selected>Choose qualification</option>';
+        }
+        foreach ($qualifications as $key=>$label) {
+            echo '<option value="'.esc_attr($key).'" '.selected($current_qualification,$key,false).'>'.esc_html($label).'</option>';
+        }
+        echo '</select><p id="lp-status-help" class="lp-help">'.count($qualifications).' lead statuses available. New and Junk Lead stay in WordPress. Saving another status sends or updates this lead in TeleCRM.</p>';
+    }
     private static function detail($id) {
         $lead = TLIT_LP_Leads::get($id);
         if (!$lead || is_wp_error($lead)) { echo '<div class="lp-panel"><h2>Lead not found</h2></div>'; return; }
@@ -159,17 +171,7 @@ final class TLIT_LP_Admin {
         $values=array_merge($values,TLIT_Attribution::display($data['tracking']??array()));
         self::fields($values); echo '</section></div><aside><section class="lp-panel lp-review"><h3>Counsellor review</h3><p>Call the learner, then choose their lead status.</p>';
         self::form('status',$id);
-        // Offer the complete original status list with its saved keys and TeleCRM labels.
-        $qualifications = TLIT_LP_Leads::statuses();
-        $current_qualification = $lead['lead_status']??'new';
-        echo '<label>Lead qualification<select name="lead_status" required>';
-        if (!isset($qualifications[$current_qualification])) {
-            echo '<option value="" disabled selected>Choose qualification</option>';
-        }
-        foreach ($qualifications as $key=>$label) {
-            echo '<option value="'.esc_attr($key).'" '.selected($current_qualification,$key,false).'>'.esc_html($label).'</option>';
-        }
-        echo '</select></label>';
+        self::qualification_field($lead['lead_status']??'new');
         echo '<label>Call notes<textarea name="note" rows="6" maxlength="5000" placeholder="What did you discuss? What should happen next?">'.esc_textarea($lead['advisor_note']).'</textarea></label><button class="button button-primary lp-full">Save review &amp; sync lead</button></form><details class="lp-help lp-advanced lp-guide" aria-label="Lead qualification guide"><summary>How to qualify a lead <span class="lp-read-more">— Read more</span><span class="lp-read-less">— Read less</span></summary><div class="lp-guide-content"><p><strong>below 50 % Potential:</strong> Interested, but not ready yet. Share useful course details and follow up later.</p><p><strong>50 % Potential:</strong> Exploring the course and asking questions. Understand their needs and offer a demo.</p><p><strong>60-80 Potential:</strong> Strong interest and planning to join soon. Confirm the batch, fees and next step.</p><p><strong>Potential Lead 100:</strong> A good course fit with clear intent to enrol. Confirm their requirements, budget and joining timeline.</p><p><strong>Junk Lead:</strong> Spam, invalid contact details or an irrelevant enquiry. No further sales follow-up needed.</p><p>Use the demo, next batch, contact outcome, course or requirement, trainer, Enrolled or Lost statuses when they match the review. Update the status as circumstances change. A missed call alone does not make a lead Junk Lead.</p></div></details></section><section class="lp-panel lp-sync-panel"><h3>TeleCRM sync</h3>'.self::badge($lead['crm_status'],self::crm_states()[$lead['crm_status']]??$lead['crm_status']).'<p>'.esc_html($lead['crm_message'] ?: 'Waiting for counsellor qualification.').'</p>';
         if (!empty($lead['crm_updated'])) { echo '<p class="lp-help">Last update: '.esc_html(self::date($lead['crm_updated'])).'</p>'; }
         $target_status = TLIT_LP_Leads::crm_statuses()[$lead['lead_status']]??'';

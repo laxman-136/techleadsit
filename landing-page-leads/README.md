@@ -12,6 +12,8 @@ All Digital Marketing page forms first save a durable record in this inbox. Stor
 
 The review dropdown uses the same complete status list as reporting and filters. Each lead's saved status is selected, including New for a new lead; opening the page does not reclassify or sync it. Existing records and CRM mappings are preserved. An unrecognised saved status shows a required “Choose qualification” placeholder. Existing saved keys retain their meanings:
 
+The updated review field shows **18 lead statuses available** below the dropdown. A screen still showing only Junk, Nurture, Warm, Hot and Quality is using the earlier interface; updating the GitHub source alone does not verify that the installed WordPress plugin has been updated.
+
 | Existing saved key | TeleCRM `status` |
 | --- | --- |
 | `potential` | `50 % Potential` |
@@ -42,6 +44,16 @@ After a new insert, `tlit_lp_lead_created` receives the saved ID. Teams notifica
 The existing `/tlit-leads/v1/otp` and `/submit` routes preserve V2/V3 phone verification and response contracts. Existing saved V2 receipts remain replayable after the schema upgrade.
 
 ## Verification
+
+`php landing-page-leads/tests/status-options-test.php` verifies every rendered option, saved selection and exact TeleCRM payload label offline. GitHub runs this check on every push. It builds payloads without calling any sync or HTTP method.
+
+For local database save/readback without attempting delivery, run:
+
+```
+php landing-page-leads/tests/status-options-wordpress-test.php /path/to/isolated-wordpress-bootstrap.php
+```
+
+This test requires localhost with external HTTP blocked, loads the current checkout, saves all 18 statuses with delivery explicitly disabled, checks their notes and history, and removes its local fixture. It rejects any network request; it does not test live TeleCRM acceptance.
 
 Run against an isolated localhost WordPress database with `WP_HTTP_BLOCK_EXTERNAL` enabled:
 
